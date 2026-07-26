@@ -1,0 +1,40 @@
+Modular world generation
+
+This is probably the closest match.
+
+Chunk-based world generation
+Tile chunk generation
+Procedural chunk placement
+Rule-based procedural generation
+Constraint-based level generation
+Wang tiles ⭐⭐⭐
+
+These are incredibly relevant.
+
+Wang tiles are tiles whose edges have "colors." Tiles are only placed next to matching edge colors.
+
+Your chunk system is basically Wang tiles at the chunk scale.
+
+Wave Function Collapse (WFC) ⭐⭐⭐⭐⭐
+
+This is the biggest one I'd recommend reading about.
+
+Despite the intimidating name, it's essentially:
+
+"Choose tiles while respecting neighbor constraints."
+
+You don't have to implement the full algorithm. Even understanding its concepts—neighbor compatibility and constraint propagation—can greatly improve your chunk system.
+
+Many indie games use simplified WFC.
+
+BSP Dungeon Generation
+
+Not because you'll use it directly, but because it teaches how handcrafted rooms are connected procedurally.
+
+Markov Tile Generation
+
+Useful if you later want smarter terrain transitions.
+
+Autotiling
+
+Not for generation itself, but to make chunk seams look clean.
