@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
+[node name="Layer1West01A" instance=ExtResource("1")]
+slot_id = &"layer1_west_01"
+variation_id = &"layer1_west_01_a"
+
+[node name="ReturnSurface" parent="AuthoredContent" instance=ExtResource("2")]
+position = Vector2(180, 110)
+target_layer_id = &"surface"
+target_route_id = "west"
+prompt = "Return to Surface"

@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://game/world/world_run.gd" id="1"]
+[ext_resource type="Script" path="res://game/world/world_generator.gd" id="2"]
+[ext_resource type="PackedScene" path="res://game/world/layers/surface.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://game/world/layers/layer_1.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://game/world/layers/layer_2.tscn" id="5"]
+
+[node name="WorldRun" type="Node2D"]
+script = ExtResource("1")
+surface_scene = ExtResource("3")
+layer_1_scene = ExtResource("4")
+layer_2_scene = ExtResource("5")
+
+[node name="LayerHost" type="Node2D" parent="."]
+
+[node name="WorldGenerator" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="LoadingLayer" type="CanvasLayer" parent="."]
+layer = 90
+
+[node name="Panel" type="ColorRect" parent="LoadingLayer"]
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0.02, 0.025, 0.04, 1)
+
+[node name="Column" type="VBoxContainer" parent="LoadingLayer/Panel"]
+offset_left = 120.0
+offset_top = 140.0
+offset_right = 520.0
+offset_bottom = 220.0
+
+[node name="LoadingLabel" type="Label" parent="LoadingLayer/Panel/Column"]
+layout_mode = 2
+text = "Preparing world..."
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="LoadingLayer/Panel/Column"]
+layout_mode = 2
+value = 0.0
+show_percentage = false

@@ -10,7 +10,7 @@ extends Area2D
 func _ready() -> void:
 	add_to_group(&"interactables")
 	if persistent_id.is_empty():
-		persistent_id = "item_%s_%s" % [Time.get_ticks_usec(), randi()]
+		persistent_id = GameSession.next_runtime_id(&"item", GameSession.current_layer_id)
 	if ContentCatalog.get_item(item_id) != null and ContentCatalog.get_item(item_id).persistent_when_dropped:
 		add_to_group(&"persistent_objects")
 
@@ -41,3 +41,7 @@ func restore_state(data: Dictionary) -> void:
 	instance_state = data.get("instance_state", {}).duplicate(true)
 	var saved_position: Array = data.get("position", [0.0, 0.0])
 	global_position = Vector2(float(saved_position[0]), float(saved_position[1]))
+
+func handle_world_out_of_bounds() -> void:
+	SaveManager.mark_destroyed(persistent_id)
+	queue_free()

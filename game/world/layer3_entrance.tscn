@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/world/layer3_entrance.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="EntranceShape"]
+size = Vector2(96, 72)
+
+[node name="Layer3Entrance" type="Area2D"]
+collision_layer = 64
+collision_mask = 2
+script = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -36)
+shape = SubResource("EntranceShape")
+
+[node name="Visual" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-48, 0, -48, -72, 48, -72, 48, 0)
+color = Color(0.68, 0.3, 0.78, 1)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -45.0
+offset_top = -58.0
+offset_right = 45.0
+offset_bottom = -30.0
+text = "LAYER 3"
+horizontal_alignment = 1

@@ -3,34 +3,107 @@ extends Marker2D
 
 @export var persistent_id: StringName
 @export_range(0.0, 1.0, 0.01) var spawn_chance := 1.0
-@export var scene_pool: Array[PackedScene] = []
-@export_range(0, 16, 1) var minimum_quantity := 1
-@export_range(0, 16, 1) var maximum_quantity := 1
+@export var entries: Array[WorldSpawnEntry] = []
+@export_range(1, 16, 1) var minimum_quantity := 1
+@export_range(1, 16, 1) var maximum_quantity := 1
+@export var spawn_points: Array[Marker2D] = []
+@export var allocation_group: StringName
+@export var required_allocation := false
+@export var facing := 1.0
+@export var patrol_bounds := Rect2()
 
-var resolved_indices: Array[int] = []
+var resolved_results: Array[Dictionary] = []
 
-func resolve(run_seed: int) -> Array[int]:
-	resolved_indices.clear()
-	if persistent_id.is_empty() or scene_pool.is_empty():
-		return resolved_indices
+func validate() -> PackedStringArray:
+	var errors := PackedStringArray()
+	if persistent_id.is_empty():
+		errors.append("DeterministicPlacer persistent_id is blank")
+	if entries.is_empty():
+		errors.append("DeterministicPlacer %s has no entries" % persistent_id)
+	if minimum_quantity > maximum_quantity:
+		errors.append("DeterministicPlacer %s quantity range is invalid" % persistent_id)
+	if maximum_quantity > spawn_points.size():
+		errors.append("DeterministicPlacer %s quantity exceeds SpawnPoint count" % persistent_id)
+	for entry in entries:
+		if entry == null:
+			errors.append("DeterministicPlacer %s has a missing entry" % persistent_id)
+			continue
+		for error in entry.validate():
+			errors.append("DeterministicPlacer %s: %s" % [persistent_id, error])
+	return errors
+
+func resolve(run_seed: int, force_active := false) -> Array[Dictionary]:
+	resolved_results.clear()
+	if persistent_id.is_empty() or entries.is_empty() or spawn_points.is_empty():
+		return resolved_results
 	var random := RandomNumberGenerator.new()
 	random.seed = hash("%s:%s" % [run_seed, persistent_id])
-	if random.randf() > spawn_chance:
-		return resolved_indices
+	if not force_active and random.randf() > spawn_chance:
+		return resolved_results
 	var quantity := random.randi_range(minimum_quantity, maximum_quantity)
-	for _index in quantity:
-		resolved_indices.append(random.randi_range(0, scene_pool.size() - 1))
-	return resolved_indices.duplicate()
+	var available_points: Array[int] = []
+	for index in spawn_points.size():
+		available_points.append(index)
+	for _index in mini(quantity, available_points.size()):
+		var point_list_index := random.randi_range(0, available_points.size() - 1)
+		var point_index: int = available_points.pop_at(point_list_index)
+		var entry := _pick_entry(random)
+		if entry == null:
+			continue
+		resolved_results.append({
+			"content_id": String(entry.content_id),
+			"spawn_point_index": point_index,
+			"persistent_id": "%s:%d" % [persistent_id, point_index],
+		})
+	return resolved_results.duplicate(true)
 
 func spawn_resolved(parent: Node) -> void:
-	for index in resolved_indices:
-		var node := scene_pool[index].instantiate()
+	for result in resolved_results:
+		var entry := _entry_for_id(StringName(result.get("content_id", "")))
+		var point_index := int(result.get("spawn_point_index", -1))
+		if entry == null or entry.scene == null or point_index < 0 or point_index >= spawn_points.size():
+			continue
+		var node := entry.scene.instantiate()
+		_set_property_if_present(node, &"persistent_id", String(result.get("persistent_id", "")))
+		_set_property_if_present(node, &"item_id", entry.content_id)
+		_set_property_if_present(node, &"spawn_position", spawn_points[point_index].global_position)
+		_set_property_if_present(node, &"patrol_bounds", patrol_bounds)
+		if node is Node2D and parent is Node2D:
+			node.position = (parent as Node2D).to_local(spawn_points[point_index].global_position)
+			if facing != 0.0:
+				node.scale.x = absf(node.scale.x) * signf(facing)
 		parent.add_child(node)
-		if node is Node2D:
-			node.global_position = global_position
 
 func capture_state() -> Dictionary:
-	return {"resolved_indices": resolved_indices.duplicate()}
+	return {"resolved_results": resolved_results.duplicate(true)}
 
 func restore_state(data: Dictionary) -> void:
-	resolved_indices.assign(data.get("resolved_indices", []))
+	resolved_results.assign(data.get("resolved_results", []))
+
+func _pick_entry(random: RandomNumberGenerator) -> WorldSpawnEntry:
+	var total_weight := 0
+	for entry in entries:
+		if entry != null:
+			total_weight += maxi(1, entry.weight)
+	if total_weight <= 0:
+		return null
+	var roll := random.randi_range(1, total_weight)
+	for entry in entries:
+		if entry == null:
+			continue
+		roll -= maxi(1, entry.weight)
+		if roll <= 0:
+			return entry
+	return entries.back()
+
+func _entry_for_id(content_id: StringName) -> WorldSpawnEntry:
+	for entry in entries:
+		if entry != null and entry.content_id == content_id:
+			return entry
+	return null
+
+func _set_property_if_present(node: Object, property_name: StringName, value: Variant) -> void:
+	for property in node.get_property_list():
+		if StringName(property.name) == property_name:
+			node.set(property_name, value)
+			return

@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
+[node name="Layer1West03A" instance=ExtResource("1")]
+slot_id = &"layer1_west_03"
+variation_id = &"layer1_west_03_a"
+special_tags = PackedStringArray("crossing")
+
+[node name="EnterLayer2West" parent="AuthoredContent" instance=ExtResource("2")]
+position = Vector2(250, 1540)
+target_layer_id = &"layer_2"
+target_route_id = "west"
+prompt = "Enter Layer 2 West"

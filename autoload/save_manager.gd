@@ -3,7 +3,8 @@ extends Node
 signal save_started
 signal save_finished(success: bool)
 
-const SAVE_VERSION := 1
+const META_SAVE_VERSION := 1
+const RUN_SAVE_VERSION := 2
 
 var meta_path := "user://meta_save.json"
 var run_path := "user://run_save.json"
@@ -16,11 +17,11 @@ func _ready() -> void:
 
 func save_meta() -> bool:
 	var data := GameSession.capture_meta()
-	data["version"] = SAVE_VERSION
+	data["version"] = META_SAVE_VERSION
 	return _write_atomic(meta_path, data)
 
 func load_meta() -> bool:
-	var data := _read_valid(meta_path)
+	var data := _read_valid(meta_path, META_SAVE_VERSION)
 	if data.is_empty():
 		return false
 	GameSession.restore_meta(data)
@@ -28,26 +29,15 @@ func load_meta() -> bool:
 
 func save_run(extra_state: Dictionary = {}) -> bool:
 	save_started.emit()
-	var persistent: Dictionary = {}
-	for node in get_tree().get_nodes_in_group("persistent_objects"):
-		if not node.has_method("capture_state") or node.get("persistent_id") == null:
-			continue
-		var id := String(node.persistent_id)
-		if id.is_empty() or persistent.has(id):
-			push_error("Invalid or duplicate persistent ID: %s" % id)
-			continue
-		if destroyed_ids.has(id):
-			continue
-		var state: Dictionary = node.capture_state()
-		if not node.scene_file_path.is_empty():
-			state["_scene_path"] = node.scene_file_path
-		persistent[id] = state
+	var persistent := loaded_persistent_state.duplicate(true)
+	_capture_registered_objects(persistent)
+	loaded_persistent_state = persistent.duplicate(true)
 	var destroyed: Array[String] = []
 	for id in destroyed_ids:
 		destroyed.append(String(id))
 	destroyed.sort()
 	var data := {
-		"version": SAVE_VERSION,
+		"version": RUN_SAVE_VERSION,
 		"session": GameSession.capture_state(),
 		"persistent_objects": persistent,
 		"destroyed_ids": destroyed,
@@ -57,8 +47,29 @@ func save_run(extra_state: Dictionary = {}) -> bool:
 	save_finished.emit(success)
 	return success
 
+func capture_registered_objects() -> void:
+	_capture_registered_objects(loaded_persistent_state)
+
+func _capture_registered_objects(persistent: Dictionary) -> void:
+	var current_ids: Dictionary = {}
+	for node in get_tree().get_nodes_in_group("persistent_objects"):
+		if not node.has_method("capture_state") or node.get("persistent_id") == null:
+			continue
+		var id := String(node.persistent_id)
+		if id.is_empty() or current_ids.has(id):
+			push_error("Invalid or duplicate persistent ID: %s" % id)
+			continue
+		current_ids[id] = true
+		if destroyed_ids.has(id):
+			continue
+		var state: Dictionary = node.capture_state()
+		if not node.scene_file_path.is_empty():
+			state["_scene_path"] = node.scene_file_path
+		state["_layer_id"] = "" if id == "player" else String(GameSession.current_layer_id)
+		persistent[id] = state
+
 func load_run() -> Dictionary:
-	var data := _read_valid(run_path)
+	var data := _read_valid(run_path, RUN_SAVE_VERSION)
 	if data.is_empty():
 		return {}
 	GameSession.restore_state(data.get("session", {}))
@@ -69,7 +80,7 @@ func load_run() -> Dictionary:
 		destroyed_ids[String(id)] = true
 	return data
 
-func restore_registered_objects() -> void:
+func restore_registered_objects(layer_id: StringName = GameSession.current_layer_id) -> void:
 	var existing: Dictionary = {}
 	for node in get_tree().get_nodes_in_group("persistent_objects"):
 		if not node.has_method("restore_state"):
@@ -83,6 +94,9 @@ func restore_registered_objects() -> void:
 		if destroyed_ids.has(id):
 			continue
 		var state: Dictionary = loaded_persistent_state[id]
+		var saved_layer := StringName(state.get("_layer_id", ""))
+		if not saved_layer.is_empty() and saved_layer != layer_id:
+			continue
 		if existing.has(id):
 			existing[id].restore_state(state)
 			continue
@@ -99,14 +113,16 @@ func restore_registered_objects() -> void:
 			continue
 		root.add_child(node)
 		node.restore_state(state)
-	loaded_persistent_state.clear()
 
 func mark_destroyed(persistent_id: String) -> void:
 	if not persistent_id.is_empty():
 		destroyed_ids[persistent_id] = true
 
 func has_valid_run() -> bool:
-	return not _read_valid(run_path).is_empty()
+	return not _read_valid(run_path, RUN_SAVE_VERSION).is_empty()
+
+func has_run_file() -> bool:
+	return FileAccess.file_exists(run_path)
 
 func delete_run() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(run_path))
@@ -116,7 +132,7 @@ func _clear_run_state() -> void:
 	loaded_extra_state.clear()
 	destroyed_ids.clear()
 
-func _read_valid(path: String) -> Dictionary:
+func _read_valid(path: String, expected_version: int) -> Dictionary:
 	if not FileAccess.file_exists(path):
 		return {}
 	var file := FileAccess.open(path, FileAccess.READ)
@@ -126,7 +142,7 @@ func _read_valid(path: String) -> Dictionary:
 	if json.parse(file.get_as_text()) != OK:
 		return {}
 	var parsed = json.data
-	if not parsed is Dictionary or int(parsed.get("version", -1)) != SAVE_VERSION:
+	if not parsed is Dictionary or int(parsed.get("version", -1)) != expected_version:
 		return {}
 	return parsed
 

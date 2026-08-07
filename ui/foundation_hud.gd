@@ -1,6 +1,8 @@
 class_name FoundationHUD
 extends CanvasLayer
 
+signal world_debug_action_requested(action: StringName)
+
 var player: PlayerController
 var health_label: Label
 var money_label: Label
@@ -15,6 +17,9 @@ var death_panel: PanelContainer
 var dialogue_box: DialogueBox
 var crosshair: Node2D
 var performance_label: Label
+var world_debug_label: Label
+var world_log_panel: PanelContainer
+var world_log_label: Label
 var _selected_container: StringName
 var _selected_index := -1
 var _performance_elapsed := 0.0
@@ -127,6 +132,9 @@ func _build_ui() -> void:
 	add_child(dialogue_box)
 	pause_panel = _make_panel("Paused", Vector2(240, 135))
 	pause_panel.visible = false
+	var seed_label := Label.new()
+	seed_label.text = "Seed: %d" % GameSession.run_seed
+	pause_panel.get_child(0).add_child(seed_label)
 	var resume := Button.new()
 	resume.text = "Resume"
 	resume.pressed.connect(func(): get_tree().paused = false; pause_panel.visible = false)
@@ -139,6 +147,11 @@ func _build_ui() -> void:
 	menu.text = "Save & Menu"
 	menu.pressed.connect(func(): SaveManager.save_run(); get_tree().paused = false; SceneRouter.go_to("res://ui/main_menu.tscn"))
 	pause_panel.get_child(0).add_child(menu)
+	if GameSession.debug_enabled:
+		var world_log := Button.new()
+		world_log.text = "World Gen Log"
+		world_log.pressed.connect(func(): world_log_panel.visible = not world_log_panel.visible)
+		pause_panel.get_child(0).add_child(world_log)
 	death_panel = _make_panel("You Died", Vector2(240, 125))
 	death_panel.visible = false
 	var retry := Button.new()
@@ -154,6 +167,8 @@ func _build_ui() -> void:
 	var debug_column := debug_panel.get_child(0) as VBoxContainer
 	performance_label = Label.new()
 	debug_column.add_child(performance_label)
+	world_debug_label = Label.new()
+	debug_column.add_child(world_debug_label)
 	for spec in [
 		["Give Rock", _debug_give_rock],
 		["Emit Sound", _debug_emit_sound],
@@ -166,6 +181,27 @@ func _build_ui() -> void:
 		button.text = spec[0]
 		button.pressed.connect(spec[1])
 		debug_column.add_child(button)
+	if GameSession.debug_enabled:
+		for spec in [
+			["Toggle World Bounds", &"toggle_bounds"],
+			["Teleport Next Slot", &"teleport_next"],
+			["Teleport Layer 2 Shop", &"teleport_shop"],
+			["Teleport Layer 3 Entrance", &"teleport_ending"],
+			["Teleport Surface", &"teleport_surface"],
+			["Validate World", &"validate_world"],
+			["Dump Manifest", &"dump_manifest"],
+		]:
+			var button := Button.new()
+			button.text = spec[0]
+			button.pressed.connect(_emit_world_debug_action.bind(spec[1]))
+			debug_column.add_child(button)
+	world_log_panel = _make_panel("World Gen Log", Vector2(80, 45))
+	world_log_panel.custom_minimum_size = Vector2(480, 260)
+	world_log_panel.visible = false
+	world_log_label = Label.new()
+	world_log_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	world_log_label.custom_minimum_size.x = 450
+	world_log_panel.get_child(0).add_child(world_log_label)
 	_build_crosshair()
 
 func _build_crosshair() -> void:
@@ -266,7 +302,7 @@ func start_new_run() -> void:
 	get_tree().paused = false
 	SaveManager.delete_run()
 	GameSession.start_new_run()
-	SceneRouter.go_to("res://game/world/foundation_test_room.tscn")
+	SceneRouter.go_to("res://game/world/world_run.tscn")
 
 func _return_to_menu() -> void:
 	get_tree().paused = false
@@ -282,6 +318,35 @@ func _update_performance() -> void:
 	var fps := Engine.get_frames_per_second()
 	var frame_ms := 1000.0 / maxf(float(fps), 1.0)
 	performance_label.text = "FPS: %d\nFrame: %.1f ms" % [fps, frame_ms]
+
+func set_world_debug_text(text: String) -> void:
+	if world_debug_label != null:
+		world_debug_label.text = text
+
+func set_world_generation_log(entries: Array[Dictionary], manifest: Dictionary = {}) -> void:
+	if world_log_label == null:
+		return
+	var lines := PackedStringArray()
+	for entry in entries:
+		lines.append("%s: %.2f ms" % [entry.get("stage", "Unknown"), float(entry.get("duration_ms", 0.0))])
+	var sections: Dictionary = manifest.get("sections", {})
+	if not sections.is_empty():
+		lines.append("\nSections:")
+		var slot_ids := sections.keys()
+		slot_ids.sort()
+		for slot_id in slot_ids:
+			lines.append("%s = %s" % [slot_id, sections[slot_id].get("variation_id", "missing")])
+	var placers: Dictionary = manifest.get("placers", {})
+	if not placers.is_empty():
+		lines.append("\nPlacers:")
+		var placer_ids := placers.keys()
+		placer_ids.sort()
+		for placer_id in placer_ids:
+			lines.append("%s = %d result(s)" % [placer_id, placers[placer_id].size()])
+	world_log_label.text = "No generation log" if lines.is_empty() else "\n".join(lines)
+
+func _emit_world_debug_action(action: StringName) -> void:
+	world_debug_action_requested.emit(action)
 
 func _debug_give_rock() -> void:
 	player.try_pickup_item(&"throwable_rock", 1, {})

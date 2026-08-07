@@ -14,17 +14,31 @@ var whistle_tier: StringName = &"red"
 var delivery := 0
 var known_items: Array[StringName] = []
 var progression_flags: Dictionary = {}
+var world_manifest: Dictionary = {}
+var current_layer_id: StringName = &"surface"
+var current_route_id: StringName = &"west"
+var current_slot_id: StringName = &""
+var debug_enabled := false
+var runtime_id_counter := 0
+var world_generation_log: Array[Dictionary] = []
 
 func _ready() -> void:
 	_setup_input_map()
 
-func start_new_run(seed_value := 0) -> void:
+func start_new_run(seed_value := 0, enable_debug := false) -> void:
 	run_active = true
 	run_seed = seed_value if seed_value != 0 else randi()
 	money = STARTING_MONEY
 	whistle_tier = &"red"
 	delivery = 0
 	progression_flags = {"free_multitool_replacement_used": false}
+	world_manifest.clear()
+	current_layer_id = &"surface"
+	current_route_id = &"west"
+	current_slot_id = &""
+	debug_enabled = enable_debug
+	runtime_id_counter = 0
+	world_generation_log.clear()
 	run_started.emit()
 	money_changed.emit(money)
 	whistle_changed.emit(whistle_tier)
@@ -53,6 +67,13 @@ func capture_state() -> Dictionary:
 		"whistle_tier": String(whistle_tier),
 		"delivery": delivery,
 		"progression_flags": progression_flags.duplicate(true),
+		"world_manifest": world_manifest.duplicate(true),
+		"current_layer_id": String(current_layer_id),
+		"current_route_id": String(current_route_id),
+		"current_slot_id": String(current_slot_id),
+		"debug_enabled": debug_enabled,
+		"runtime_id_counter": runtime_id_counter,
+		"world_generation_log": world_generation_log.duplicate(true),
 	}
 
 func restore_state(data: Dictionary) -> void:
@@ -62,9 +83,20 @@ func restore_state(data: Dictionary) -> void:
 	whistle_tier = StringName(data.get("whistle_tier", "red"))
 	delivery = int(data.get("delivery", 0))
 	progression_flags = data.get("progression_flags", {}).duplicate(true)
+	world_manifest = data.get("world_manifest", {}).duplicate(true)
+	current_layer_id = StringName(data.get("current_layer_id", "surface"))
+	current_route_id = StringName(data.get("current_route_id", "west"))
+	current_slot_id = StringName(data.get("current_slot_id", ""))
+	debug_enabled = bool(data.get("debug_enabled", false))
+	runtime_id_counter = int(data.get("runtime_id_counter", 0))
+	world_generation_log.assign(data.get("world_generation_log", []))
 	money_changed.emit(money)
 	whistle_changed.emit(whistle_tier)
 	delivery_changed.emit(delivery)
+
+func next_runtime_id(prefix: StringName, layer_id: StringName) -> String:
+	runtime_id_counter += 1
+	return "%s:%s:%d" % [layer_id, prefix, runtime_id_counter]
 
 func capture_meta() -> Dictionary:
 	var known: Array[String] = []

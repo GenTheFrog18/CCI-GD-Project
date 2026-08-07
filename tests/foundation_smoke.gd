@@ -40,12 +40,14 @@ func _ready() -> void:
 	_test_ui_input_and_debug()
 	_test_sound()
 	_test_control_locks()
-	_test_determinism()
+	await _test_determinism()
 	_test_shop()
 	_test_prepared_item()
 	_test_save()
+	await _test_world_run_runtime()
 	_test_room_loads()
 	_test_invalid_position_fallback()
+	await get_tree().process_frame
 	print("FOUNDATION_SMOKE_OK")
 	get_tree().quit(0)
 
@@ -327,16 +329,55 @@ func _test_control_locks() -> void:
 func _test_determinism() -> void:
 	var placer := DeterministicPlacer.new()
 	placer.persistent_id = &"test_placer"
-	placer.scene_pool = [preload("res://game/items/world/world_item.tscn")]
+	var entry := WorldSpawnEntry.new()
+	entry.content_id = &"throwable_rock"
+	entry.scene = preload("res://game/items/world/world_item.tscn")
+	placer.entries = [entry]
 	placer.minimum_quantity = 2
 	placer.maximum_quantity = 2
+	var first_point := Marker2D.new()
+	var second_point := Marker2D.new()
+	placer.add_child(first_point)
+	placer.add_child(second_point)
+	placer.spawn_points = [first_point, second_point]
 	var first := placer.resolve(12345)
 	var second := placer.resolve(12345)
 	assert(first == second and first.size() == 2)
+	assert(placer.validate().is_empty())
 	var section := preload("res://game/world/test/section_a.tscn").instantiate() as WorldSection
 	add_child(section)
 	assert(section.validate().is_empty())
 	section.queue_free()
+	var generator := WorldGenerator.new()
+	generator.layer_scenes = [
+		preload("res://game/world/layers/layer_1.tscn"),
+		preload("res://game/world/layers/layer_2.tscn"),
+	]
+	add_child(generator)
+	var first_manifest := await generator.build_manifest(12345)
+	var second_manifest := await generator.build_manifest(12345)
+	assert(not first_manifest.has("errors"))
+	assert(first_manifest.sections == second_manifest.sections)
+	assert(first_manifest.placers == second_manifest.placers)
+	assert(first_manifest.sections.size() == 12)
+	assert(first_manifest.placers.size() == 2)
+	assert(first_manifest.placers["layer1_east_02_a_enemy_01"].size() == 1)
+	assert(generator.validate_templates().is_empty())
+	var layer := preload("res://game/world/layers/layer_1.tscn").instantiate() as WorldLayer
+	var varied_ids: Dictionary = {}
+	var varied_slot: WorldSlot
+	for slot in layer.get_slots():
+		if slot.slot_id == &"layer1_west_01":
+			varied_slot = slot
+	assert(varied_slot != null)
+	for seed in 24:
+		var scene := varied_slot.select_variation(seed + 1)
+		var selected_section := scene.instantiate() as WorldSection
+		varied_ids[selected_section.variation_id] = true
+		selected_section.free()
+	assert(varied_ids.size() == 2)
+	layer.free()
+	generator.free()
 	placer.free()
 
 func _test_shop() -> void:
@@ -418,10 +459,60 @@ func _test_room_loads() -> void:
 	var room := preload("res://game/world/foundation_test_room.tscn").instantiate()
 	assert(room != null)
 	room.free()
+	var world_run := preload("res://game/world/world_run.tscn").instantiate()
+	assert(world_run != null)
+	world_run.free()
+
+func _test_world_run_runtime() -> void:
+	var original_run_path := SaveManager.run_path
+	var original_meta_path := SaveManager.meta_path
+	SaveManager.run_path = "user://foundation_smoke_world_run.json"
+	SaveManager.meta_path = "user://foundation_smoke_world_meta.json"
+	SaveManager.delete_run()
+	GameSession.start_new_run(2468, true)
+	var world := preload("res://game/world/world_run.tscn").instantiate() as WorldRun
+	add_child(world)
+	for _frame in 24:
+		await get_tree().process_frame
+	assert(world.active_layer != null and world.active_layer.layer_id == &"surface")
+	assert(world.player != null and GameSession.world_manifest.sections.size() == 12)
+	await world.request_layer_transition(&"layer_1", &"east")
+	assert(world.active_layer.layer_id == &"layer_1")
+	assert(world.active_layer.instantiated_sections.size() == 6)
+	assert(world.player.global_position.distance_to(world.active_layer.east_spawn.global_position) < 5.0)
+	world._process(0.21)
+	assert(world.active_layer.active_slot_ids.has("layer1_east_01"))
+	assert(world.active_layer.active_slot_ids.has("layer1_east_02"))
+	var found_generated_enemy := false
+	for child in world.active_layer.runtime_root.get_children():
+		if child is TestAmphibian:
+			found_generated_enemy = true
+	assert(found_generated_enemy)
+	await world.request_layer_transition(&"layer_2", &"east")
+	assert(world.active_layer.layer_id == &"layer_2")
+	await world.request_layer_transition(&"layer_1", &"east", &"EastBottomSpawn")
+	assert(world.player.global_position.distance_to(Vector2(960.0, 4660.0)) < 5.0)
+	assert(SaveManager.has_valid_run())
+	world.free()
+	assert(not SaveManager.load_run().is_empty())
+	var continued_world := preload("res://game/world/world_run.tscn").instantiate() as WorldRun
+	add_child(continued_world)
+	for _frame in 24:
+		await get_tree().process_frame
+	assert(continued_world.active_layer.layer_id == &"layer_1")
+	assert(continued_world.player != null and GameSession.world_manifest.sections.size() == 12)
+	continued_world.free()
+	SaveManager.delete_run()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveManager.meta_path))
+	SaveManager.run_path = original_run_path
+	SaveManager.meta_path = original_meta_path
 
 func _test_invalid_position_fallback() -> void:
 	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
 	add_child(player)
-	player.restore_state({"position": [0.0, 2001.0], "last_safe_position": [33.0, 44.0]})
+	player.restore_state({"position": [INF, 2001.0], "last_safe_position": [33.0, 44.0]})
 	assert(player.global_position == Vector2(33.0, 44.0))
+	player.global_position = Vector2(100.0, 9000.0)
+	player.recover_from_out_of_bounds()
+	assert(player.global_position == Vector2(33.0, 44.0) and player.health.health == 1.0)
 	player.free()

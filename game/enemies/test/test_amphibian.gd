@@ -10,6 +10,8 @@ enum State { PATROL, ALERT, INVESTIGATE, WAIT, RETURN }
 @export var patrol_distance := 80.0
 @export var wait_seconds := 1.0
 @export var sound_reaction_delay := 0.35
+@export var fall_damage := 100.0
+@export var fall_immune := false
 
 @onready var health: HealthComponent = $HealthComponent
 
@@ -98,13 +100,22 @@ func _on_damaged(_info: DamageInfo) -> void:
 	$Visual.color = Color.WHITE
 	create_tween().tween_property($Visual, "color", Color(0.45, 0.85, 0.35), 0.12)
 
+func handle_world_out_of_bounds() -> void:
+	if not fall_immune:
+		apply_damage(DamageInfo.new(fall_damage))
+	if not health.is_dead:
+		global_position = _origin
+		velocity = Vector2.ZERO
+		state = State.PATROL
+
 func capture_state() -> Dictionary:
-	return {"alive": not health.is_dead, "health": health.capture_state(), "position": [global_position.x, global_position.y]}
+	return {"alive": not health.is_dead, "health": health.capture_state()}
 
 func restore_state(data: Dictionary) -> void:
 	if not bool(data.get("alive", true)):
 		queue_free()
 		return
 	health.restore_state(data.get("health", {}))
-	var position_data: Array = data.get("position", [_origin.x, _origin.y])
-	global_position = Vector2(float(position_data[0]), float(position_data[1]))
+	global_position = _origin
+	velocity = Vector2.ZERO
+	state = State.PATROL

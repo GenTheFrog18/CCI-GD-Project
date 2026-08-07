@@ -34,7 +34,7 @@ func _ready() -> void:
 	global_position = _spawn_position
 	linear_velocity = _initial_velocity
 	if persistent_id.is_empty():
-		persistent_id = "thrown_%s_%s" % [Time.get_ticks_usec(), randi()]
+		persistent_id = GameSession.next_runtime_id(&"thrown", GameSession.current_layer_id)
 	add_to_group(&"persistent_objects")
 
 func _physics_process(delta: float) -> void:
@@ -97,3 +97,7 @@ func restore_state(data: Dictionary) -> void:
 	freeze = bool(data.get("freeze", true))
 	if freeze:
 		add_to_group(&"interactables")
+
+func handle_world_out_of_bounds() -> void:
+	SaveManager.mark_destroyed(persistent_id)
+	queue_free()

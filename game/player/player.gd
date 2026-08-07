@@ -61,10 +61,6 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		_knockback = Vector2.ZERO
 		return
-	if global_position.y > 1900.0:
-		global_position = Vector2(96.0, 260.0)
-		health.set_health(1.0)
-		velocity = Vector2.ZERO
 	var can_control := not locks.is_locked()
 	var speed_multiplier := status.get_multiplier(&"move_speed")
 	if inventory_open:
@@ -80,8 +76,6 @@ func _physics_process(delta: float) -> void:
 		var fall_damage := minf((_last_air_speed - fall_damage_speed) * 0.2, maximum_fall_damage)
 		apply_damage(DamageInfo.new(fall_damage))
 		_last_air_speed = 0.0
-	if is_on_floor() and global_position.y < 1900.0:
-		last_safe_position = global_position
 	if can_control and Input.is_action_just_pressed(&"jump") and is_on_floor():
 		velocity.y = jump_velocity
 	velocity += _knockback
@@ -148,6 +142,22 @@ func is_alive() -> bool:
 func apply_status(effect_id: StringName, data: Dictionary = {}) -> bool:
 	return status.apply_status(effect_id, data)
 
+func set_last_safe_position(value: Vector2) -> void:
+	last_safe_position = value
+
+func recover_from_out_of_bounds() -> void:
+	global_position = last_safe_position
+	health.set_health(1.0)
+	velocity = Vector2.ZERO
+	_knockback = Vector2.ZERO
+
+func set_camera_bounds(bounds: Rect2) -> void:
+	camera.limit_left = floori(bounds.position.x)
+	camera.limit_top = floori(bounds.position.y)
+	camera.limit_right = ceili(bounds.end.x)
+	camera.limit_bottom = ceili(bounds.end.y)
+	camera.limit_smoothed = true
+
 func capture_state() -> Dictionary:
 	return {
 		"position": [global_position.x, global_position.y],
@@ -165,7 +175,7 @@ func restore_state(data: Dictionary) -> void:
 	var candidate := last_safe_position
 	if saved_position.size() >= 2:
 		candidate = Vector2(float(saved_position[0]), float(saved_position[1]))
-	if not candidate.is_finite() or candidate.y > 1900.0:
+	if not candidate.is_finite():
 		candidate = last_safe_position
 	global_position = candidate
 	health.restore_state(data.get("health", {}))

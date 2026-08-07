@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
+[ext_resource type="Script" path="res://game/world/deterministic_placer.gd" id="2"]
+[ext_resource type="Script" path="res://game/world/world_spawn_entry.gd" id="3"]
+[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="4"]
+
+[sub_resource type="Resource" id="RockEntry"]
+script = ExtResource("3")
+content_id = &"throwable_rock"
+scene = ExtResource("4")
+weight = 1
+
+[node name="Layer1West02A" instance=ExtResource("1")]
+slot_id = &"layer1_west_02"
+variation_id = &"layer1_west_02_a"
+
+[node name="RockPlacer" type="Marker2D" parent="Placers" node_paths=PackedStringArray("spawn_points")]
+position = Vector2(180, 800)
+script = ExtResource("2")
+persistent_id = &"layer1_west_02_a_rock_01"
+spawn_chance = 0.75
+entries = Array[ExtResource("3")]([SubResource("RockEntry")])
+minimum_quantity = 1
+maximum_quantity = 2
+spawn_points = Array[NodePath]([NodePath("Point1"), NodePath("Point2")])
+
+[node name="Point1" type="Marker2D" parent="Placers/RockPlacer"]
+
+[node name="Point2" type="Marker2D" parent="Placers/RockPlacer"]
+position = Vector2(40, -12)

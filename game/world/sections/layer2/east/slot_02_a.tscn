@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://game/shops/test_shop_terminal.tscn" id="2"]
+[node name="Layer2East02A" instance=ExtResource("1")]
+slot_id = &"layer2_east_02"
+variation_id = &"layer2_east_02_a"
+special_tags = PackedStringArray("shop")
+
+[node name="Layer2Shop" parent="AuthoredContent" instance=ExtResource("2")]
+position = Vector2(500, 780)
