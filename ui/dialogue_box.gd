@@ -2,7 +2,6 @@ class_name DialogueBox
 extends PanelContainer
 
 var _sequence: DialogueSequence
-var _player: PlayerController
 var _index := 0
 var _speaker_label: Label
 var _text_label: Label
@@ -23,22 +22,27 @@ func _ready() -> void:
 	advance.pressed.connect(_advance)
 	column.add_child(advance)
 
-func show_sequence(sequence: DialogueSequence, player: PlayerController) -> void:
+func show_sequence(sequence: DialogueSequence) -> void:
 	if sequence == null or sequence.lines.is_empty():
 		return
-	_close()
+	close()
 	_sequence = sequence
-	_player = player
 	_index = 0
-	if sequence.pauses_gameplay:
-		_player.locks.lock(&"dialogue")
 	visible = true
 	_show_line()
+
+func _input(event: InputEvent) -> void:
+	if not visible or get_tree().paused or not event.is_action_pressed(&"interact"):
+		return
+	if event is InputEventKey and event.echo:
+		return
+	_advance()
+	get_viewport().set_input_as_handled()
 
 func _advance() -> void:
 	_index += 1
 	if _sequence == null or _index >= _sequence.lines.size():
-		_close()
+		close()
 	else:
 		_show_line()
 
@@ -46,12 +50,9 @@ func _show_line() -> void:
 	_speaker_label.text = _sequence.speaker
 	_text_label.text = _sequence.lines[_index]
 
-func _close() -> void:
-	if _player != null:
-		_player.locks.unlock(&"dialogue")
+func close() -> void:
 	visible = false
 	_sequence = null
-	_player = null
 
 func _exit_tree() -> void:
-	_close()
+	close()

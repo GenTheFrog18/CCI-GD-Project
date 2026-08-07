@@ -11,6 +11,9 @@ signal prompt_changed(text: String)
 @export var gravity := 900.0
 @export var fall_damage_speed := 420.0
 @export var maximum_fall_damage := 50.0
+@export var camera_base_offset := Vector2(0.0, -40.0)
+@export var camera_max_cursor_offset := Vector2(56.0, 28.0)
+@export_range(0.0, 30.0, 0.1) var camera_smoothing := 8.0
 @export var species_id: StringName = &"player"
 @export var persistent_id := "player"
 
@@ -18,21 +21,42 @@ signal prompt_changed(text: String)
 @onready var status: StatusController = $StatusController
 @onready var item_controller: PlayerItemController = $PlayerItemController
 @onready var interaction_sensor: InteractionSensor = $InteractionSensor
+@onready var camera: Camera2D = $Camera2D
 
 var locks := ControlLocks.new()
 var inventory_open := false
 var last_safe_position := Vector2(96.0, 260.0)
 var _last_air_speed := 0.0
 var _knockback := Vector2.ZERO
+var _camera_target_position := Vector2(0.0, -40.0)
 
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
 	status.tick_damage_requested.connect(func(amount: float): apply_damage(DamageInfo.new(amount)))
 	health.died.connect(_on_died)
+	_camera_target_position = camera_base_offset
 	if ContentCatalog.get_item(&"multitool") != null and item_controller.inventory.get_active_stack().is_empty():
 		item_controller.inventory.try_add_item(&"multitool")
 
+func _input(event: InputEvent) -> void:
+	if not event is InputEventMouseMotion:
+		return
+	var viewport_size := get_viewport_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return
+	_camera_target_position = _camera_target(event.position, viewport_size)
+
+func _camera_target(cursor_position: Vector2, viewport_size: Vector2) -> Vector2:
+	var cursor_ratio := (cursor_position - viewport_size * 0.5) / (viewport_size * 0.5)
+	cursor_ratio.x = clampf(cursor_ratio.x, -1.0, 1.0)
+	cursor_ratio.y = clampf(cursor_ratio.y, -1.0, 1.0)
+	return camera_base_offset + cursor_ratio * camera_max_cursor_offset
+
 func _physics_process(delta: float) -> void:
+	var weight := 1.0 - exp(-camera_smoothing * delta) if camera_smoothing > 0.0 else 1.0
+	camera.position = camera.position.lerp(_camera_target_position, weight)
+	if camera.position.distance_squared_to(_camera_target_position) < 0.01:
+		camera.position = _camera_target_position
 	if not is_alive():
 		velocity = Vector2.ZERO
 		_knockback = Vector2.ZERO

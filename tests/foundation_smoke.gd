@@ -59,6 +59,11 @@ func _test_catalog() -> void:
 	ContentCatalog._register(registry, &"duplicate", definition, "first", errors)
 	ContentCatalog._register(registry, &"duplicate", definition, "second", errors)
 	assert(errors.size() == 1)
+	var has_w_jump := false
+	for event in InputMap.action_get_events(&"jump"):
+		if event is InputEventKey and event.physical_keycode == KEY_W:
+			has_w_jump = true
+	assert(has_w_jump)
 
 func _test_inventory() -> void:
 	var inventory := InventoryModel.new()
@@ -196,6 +201,8 @@ func _test_multitool_range() -> void:
 	frog._physics_process(0.0)
 	assert(frog._knockback == Vector2.ZERO)
 	assert(player.collision_mask == 1)
+	assert(player._camera_target(Vector2(320.0, 180.0), Vector2(640.0, 360.0)) == player.camera_base_offset)
+	assert(player._camera_target(Vector2(640.0, 360.0), Vector2(640.0, 360.0)) == player.camera_base_offset + Vector2(56.0, 28.0))
 	player.free()
 	frog.free()
 
@@ -254,6 +261,16 @@ func _test_ui_input_and_debug() -> void:
 	hud.debug_panel.visible = true
 	hud._update_performance()
 	assert(not hud.performance_label.text.is_empty() and hud.crosshair != null)
+	var dialogue := ContentCatalog.get_dialogue(&"foundation_intro")
+	hud.show_dialogue(dialogue)
+	assert(hud.dialogue_box.visible and not player.locks.is_locked())
+	var interact_event := InputEventAction.new()
+	interact_event.action = &"interact"
+	interact_event.pressed = true
+	hud.dialogue_box._input(interact_event)
+	assert(hud.dialogue_box._index == 1)
+	hud.dialogue_box._input(interact_event)
+	assert(not hud.dialogue_box.visible)
 	var original_run_path := SaveManager.run_path
 	var original_meta_path := SaveManager.meta_path
 	SaveManager.run_path = "user://foundation_smoke_death_run.json"
@@ -261,14 +278,15 @@ func _test_ui_input_and_debug() -> void:
 	var run_file := FileAccess.open(SaveManager.run_path, FileAccess.WRITE)
 	run_file.store_string("living run")
 	run_file.close()
+	hud.show_dialogue(dialogue)
 	player.health.set_health(0.0)
-	assert(not player.is_alive() and hud.death_panel.visible and get_tree().paused)
+	assert(not player.is_alive() and hud.death_panel.visible and not get_tree().paused)
+	assert(not hud.dialogue_box.visible)
 	assert(not FileAccess.file_exists(SaveManager.run_path) and FileAccess.file_exists(SaveManager.meta_path))
 	player.apply_force(Vector2(30.0, 0.0))
 	assert(player._knockback == Vector2.ZERO)
 	hud._input(inventory_event)
-	assert(not player.inventory_open and get_tree().paused)
-	get_tree().paused = false
+	assert(not player.inventory_open and not get_tree().paused)
 	SaveManager.delete_run()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveManager.meta_path))
 	SaveManager.run_path = original_run_path
@@ -284,6 +302,16 @@ func _test_sound() -> void:
 	assert(probe.received == 1)
 	SoundBus.emit_sound(get_tree(), SoundEvent.new(Vector2(100.0, 0.0), 10.0, &"test", 1))
 	assert(probe.received == 1)
+	var frog := preload("res://game/enemies/test/test_amphibian.tscn").instantiate() as TestAmphibian
+	add_child(frog)
+	frog.hear_sound(SoundEvent.new(Vector2(100.0, 0.0), 200.0, &"test", 1))
+	assert(frog.state == TestAmphibian.State.ALERT and frog.get_node("SoundIndicator").text == "!")
+	frog._physics_process(0.36)
+	assert(frog.state == TestAmphibian.State.INVESTIGATE and frog.get_node("SoundIndicator").text == "?")
+	frog.global_position = frog._target
+	frog._physics_process(0.0)
+	assert(frog.state == TestAmphibian.State.WAIT and not frog.get_node("SoundIndicator").visible)
+	frog.free()
 	probe.queue_free()
 
 func _test_control_locks() -> void:

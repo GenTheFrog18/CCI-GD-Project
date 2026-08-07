@@ -80,7 +80,7 @@ func restore_meta(data: Dictionary) -> void:
 func _setup_input_map() -> void:
 	_add_keys(&"move_left", [KEY_A, KEY_LEFT])
 	_add_keys(&"move_right", [KEY_D, KEY_RIGHT])
-	_add_keys(&"jump", [KEY_SPACE])
+	_add_keys(&"jump", [KEY_SPACE, KEY_W])
 	_add_keys(&"interact", [KEY_E])
 	_add_keys(&"inventory", [KEY_TAB])
 	_add_keys(&"hotbar_1", [KEY_1])

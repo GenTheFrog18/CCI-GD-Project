@@ -7,5 +7,4 @@ script = ExtResource("1")
 sequence_id = &"foundation_intro"
 speaker = "Foundation"
 lines = PackedStringArray("Movement, inventory, items, combat, sensing, and persistence share one test room.", "Press E near the brown square to pick up a rock.")
-pauses_gameplay = true
 one_shot = false

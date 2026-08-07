@@ -49,7 +49,7 @@ func set_player(value: PlayerController) -> void:
 	_refresh_inventory()
 
 func show_dialogue(sequence: DialogueSequence) -> void:
-	dialogue_box.show_sequence(sequence, player)
+	dialogue_box.show_sequence(sequence)
 
 func _input(event: InputEvent) -> void:
 	if player == null:
@@ -254,12 +254,13 @@ func _set_health_text(current: float, maximum: float) -> void:
 
 func _on_player_died(_source: Node) -> void:
 	player.set_inventory_open(false)
+	dialogue_box.close()
 	GameSession.run_active = false
 	SaveManager.delete_run()
 	SaveManager.save_meta()
 	pause_panel.visible = false
 	death_panel.visible = true
-	get_tree().paused = true
+	get_tree().paused = false
 
 func start_new_run() -> void:
 	get_tree().paused = false
