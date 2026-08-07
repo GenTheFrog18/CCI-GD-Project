@@ -1,0 +1,338 @@
+# Fondasi Teknis Godot — CCI GD Project
+
+**Status:** keputusan fondasi dan batas ending game-jam dikunci berdasarkan questionnaire tanggal 7 Agustus 2026.
+
+Dokumen ini adalah sumber kebenaran teknis. Dokumen di `docs/reference/` adalah arsip desain lama; jika bertentangan, dokumen ini menang. Aturan penulisan code ada di `docs/panduan_programming.md`.
+
+## 1. Konfigurasi project yang dikunci
+
+| Bagian | Keputusan |
+| --- | --- |
+| Engine | Godot 4.7.1, GDScript |
+| Renderer | Compatibility |
+| Viewport internal | 640×360 |
+| Window awal | 1280×720 |
+| Texture filtering | Nearest |
+| Skala dunia | 32 px per metre |
+| Ukuran item art saat ini | 16×16 px; tidak mengubah skala dunia |
+| Section | 640×1600 px atau 20×50 m |
+| Layer | Tiga section vertikal atau 150 m |
+| Rope | 160 px atau 5 m |
+| Target build pertama | Linux |
+| Input | Keyboard dan mouse; controller di luar scope jam |
+
+Ukuran map masih boleh di-playtest, tetapi angka di atas menjadi kontrak sementara untuk collision, camera, dan art. Perubahan harus diputuskan lead dan dilakukan serentak; programmer tidak boleh memilih skala sendiri per scene.
+
+East dan west adalah rute vertikal terpisah. Keduanya dipilih dari gate di Layer 0; jangan mengasumsikan kedua rute terhubung pada setiap kedalaman.
+
+## 2. Prinsip arsitektur
+
+```text
+Input primary/secondary
+        ↓
+Player → Inventory → ItemBehavior
+                    ├→ world effect
+                    ├→ ThrownItem (item nyata)
+                    └→ ItemActionResult → inventory commit
+
+Enemy attack → Projectile (serangan sementara)
+
+ThrownItem/Projectile/attack
+        ↓
+ImpactData → damage + force + status + agitation
+        ↓
+Actor shared reactions
+```
+
+- Gameplay memakai contract bersama, bukan pengecekan nama item/enemy.
+- Item behavior boleh mengubah dunia, tetapi tidak boleh mengubah inventory langsung.
+- Inventory commit hanya setelah action atau spawn berhasil.
+- Gunakan signal lokal untuk one-to-one/parent-child dan group untuk broadcast seperti sound.
+- Tidak ada global event bus atau behavior tree.
+- Semua nilai balance yang akan berubah berada di Resource/Inspector.
+- Stable ID tidak boleh berasal dari nama node.
+
+## 3. Runtime global
+
+Maksimum empat Autoload untuk scope saat ini:
+
+- `GameSession`: seed, uang, whistle tier, delivery, knowledge, New Game, death, dan ending.
+- `SaveManager`: meta/living-run save, validasi, atomic write, dan fallback.
+- `ContentCatalog`: menemukan Resource, mengurutkannya, memvalidasi type/ID, dan menyediakan lookup.
+- `SceneRouter`: menu/gameplay/death/ending transition.
+
+Jangan menambah `AudioManager` sekarang. Gunakan bus `Master`, `Music`, `SFX`, `UI` dan AudioStreamPlayer milik scene.
+
+## 4. Input dan action item
+
+### Control map
+
+| Input | Action |
+| --- | --- |
+| A/D atau panah | Gerak horizontal |
+| Space | Lompat |
+| E | Pickup, shop, gate, dialogue, dan interaksi umum |
+| Tab | Buka/tutup inventory |
+| 1/2 atau mouse wheel | Pilih hotbar |
+| Klik kiri | `primary_action` item aktif |
+| Klik kanan | `secondary_action` item aktif |
+| Esc | Pause/cancel |
+
+Semua action item pada build jam dipicu dengan satu kali press. Tidak ada hold/release contract sampai item final benar-benar membutuhkannya. Primary dan secondary action diblokir selama inventory terbuka. Inventory memperlambat player, tetapi enemy, status, projectile, dan dunia tetap berjalan.
+
+### Primary dan secondary action
+
+- Setiap item mempunyai primary dan secondary behavior sendiri.
+- Default secondary behavior ordinary item/artifact adalah throw.
+- Item dapat menonaktifkan atau mengganti secondary behavior melalui definition.
+- Multitool mengganti throw dengan secondary action yang belum didesain. Untuk sekarang action tersebut disabled dan memberi feedback singkat.
+- Supply seperti Bandage/Rope/Pill dapat mengganti secondary behavior setelah playtest tanpa mengubah Inventory atau Player.
+- Drop dari inventory adalah context action terpisah.
+- Throw dengan cursor sangat dekat menghasilkan lemparan pendek yang berfungsi seperti drop, tetapi tetap melewati throw behavior.
+- Mengaktifkan item dan melemparkannya adalah dua action terpisah. Item yang memerlukan aktivasi menyimpan active state pada instance.
+
+Contract behavior:
+
+```gdscript
+can_primary(context, state) -> bool
+primary(context, state) -> ItemActionResult
+can_secondary(context, state) -> bool
+secondary(context, state) -> ItemActionResult
+on_thrown(thrown_item, context, state) -> void
+on_impact(thrown_item, impact) -> ItemActionResult
+```
+
+`ItemActionResult` berisi `success`, `consume_count`, `next_state`, dan feedback. `ItemContext` berisi actor, world, cursor position, dan interaction target.
+
+## 5. Inventory dan kepemilikan item
+
+- Lima backpack slot dan dua hotbar slot adalah tujuh slot terpisah.
+- Click-to-swap memindahkan stack; tidak membuat reference/duplikat.
+- Pickup menggabungkan stack kompatibel, lalu mengisi hotbar kosong, lalu backpack kosong.
+- Slot menyimpan `item_id`, quantity, dan `instance_state`.
+- Item hanya stack jika ID dan state kompatibel. Item aktif/stateful dipisah menjadi quantity satu; state default/tenang boleh stack.
+- Drop manual tersedia melalui inventory context action.
+- Item biasa boleh hilang di jurang/out-of-bounds.
+- Important item juga boleh hilang hanya jika ada recovery/replacement yang pasti.
+- Semua item yang berasal dari player dan masih berada di dunia harus masuk living-run save, termasuk ordinary rock.
+
+### Multitool
+
+Multitool adalah item biasa, bukan equipment slot khusus:
+
+- Diberikan satu pada New Game.
+- Dapat dipindah backpack↔hotbar, dikeluarkan, ditinggalkan, hilang, dan dicuri.
+- Tidak stack dan tidak dapat dijual.
+- Hanya dicuri jika player tidak mempunyai item ordinary lain. Whistle berada setelah Multitool dalam urutan fallback pencurian.
+- Kehilangan pertama dalam satu run mendapat satu pengganti gratis di surface.
+- Pengganti berikutnya dibeli dari surface shop; harga masih nilai balance.
+- Primary action: swing/tool use ke cursor. Prioritas target: special tool interaction, breakable rock/snail, lalu damage target.
+- Secondary action: belum didesain dan disabled untuk sekarang; Multitool tidak menggunakan fallback throw.
+
+### Frog theft
+
+Frog memindahkan satu unit/item instance—tidak clone—dengan prioritas active item, hotbar, lalu backpack. Jika tidak ada ordinary item, Multitool dapat dicuri; jika Multitool juga tidak ada, whistle dapat dicuri. Satu hit/impact membuat frog menjatuhkan carried item tanpa wajib mati.
+
+## 6. ThrownItem dan Projectile
+
+Keduanya sengaja terpisah:
+
+| Jenis | `ThrownItem` | `Projectile` |
+| --- | --- | --- |
+| Asal | Inventory/world item nyata | Enemy/attack membuat serangan sementara |
+| Membawa `item_id`/state | Ya | Tidak wajib |
+| Dapat pickup | Sesuai definition | Tidak |
+| Persistent | Jika berasal dari player | Tidak |
+| Ammo enemy jam build | Tidak digunakan | Tidak terbatas, memakai cooldown |
+
+Keduanya memakai `ImpactData` yang sama:
+
+- `source_actor`
+- `source_species_id`
+- `base_damage`
+- `mass`
+- `velocity`
+- `damage_multiplier_min/max`
+- `force`
+- status effects
+- agitation data
+- terrain response
+- penetration/hit limit
+
+Damage dan knockback memakai base damage/mass payload dikali velocity multiplier yang di-clamp. Thrower hanya menentukan initial velocity.
+
+### Collision rules
+
+- Projectile default berhenti pada collision valid pertama.
+- Penetration/multi-hit adalah data/behavior khusus; Silver Weight dapat mengenai beberapa enemy dan wajib menyimpan hit history.
+- Moving payload tidak bertabrakan satu sama lain pada prototype.
+- Terrain response ditentukan per payload: `STOP`, `BOUNCE`, `STICK`, `BREAK`, atau `DISAPPEAR`.
+- Enemy projectile tidak dapat diambil player.
+- Enemy projectile mengincar posisi player saat telegraph dimulai, tanpa prediction.
+- Source actor diabaikan agar tidak terkena projectile sendiri saat spawn.
+- Enemy dapat merusak enemy dari species berbeda, tetapi tidak memberi damage pada species yang sama. Gunakan `species_id`, bukan nama scene.
+- Force/agitation boleh tetap diterima walaupun damage same-species ditolak jika payload mengaturnya.
+- Damage, force, status, dan agitation memakai satu impact pipeline; theft tetap behavior khusus.
+
+## 7. Actor, combat, status, dan sensing
+
+### Combat
+
+- Semua enemy dapat mati ketika health mencapai nol.
+- `damageable` dan `killable` tetap terpisah agar object non-enemy dapat menerima impact.
+- Tidak ada contact damage global. Damage hanya dari hitbox attack aktif.
+- Player mendapat i-frame damage singkat tetapi tetap menerima force.
+- Hit tidak membatalkan item action, interaction, climbing, atau Bandage healing.
+- Fall damage berdasarkan kecepatan dan mempunyai cap.
+- Out-of-bounds mengembalikan player ke spawn Layer 0 dengan health tepat 1.
+- `small_enemy` adalah tag eksplisit untuk semua enemy kecuali `big_roamer` dan `boss`.
+
+Shared contract:
+
+```gdscript
+apply_damage(damage_info) -> bool
+heal(amount, multiplier, health_cap) -> float
+apply_force(force: Vector2) -> void
+apply_status(effect_id, data) -> bool
+```
+
+Death signal hanya dipancarkan sekali. Semua healing melewati satu API agar curse modifier/cap selalu berlaku.
+
+### Sound
+
+- Sound menggunakan radius lurus dan menembus terrain; tidak ada pathfinding/occlusion pada jam build.
+- Listener memilih priority tertinggi, lalu event terbaru, lalu jarak terdekat.
+- Emitter tidak mengenal listener tertentu.
+- Setelah kehilangan target, enemy menuju last-known position, menunggu sesuai definition, lalu kembali ke state normal.
+
+### Sight dan target override
+
+- Sight menggunakan physics ray query terhadap terrain.
+- Hushcap Area2D memblokir sight query dan memberi overlay semi-transparan kepada player; tidak mempunyai collision fisik.
+- Spider mark mempunyai priority lebih tinggi daripada Lantern Snail scream.
+- Target override menyimpan target, priority, duration, dan source.
+
+## 8. World dan persistence
+
+- World memakai authored sections; generator hanya memilih variasi dan placer secara deterministik.
+- Setiap section mempunyai slot ID, variation ID, seam anchors, camera bounds, placer root, dan dynamic-object root.
+- Setiap placer mempunyai stable ID, chance, pool, dan quantity.
+- Seed + stable ID menentukan hasil. Hasil dipersist agar Continue tidak reroll.
+- Enemy mati tidak respawn selama living run.
+- Plant, breakable rock, resin tree, dan harvested creature tidak respawn selama living run.
+- Tidak ada checkpoint gameplay. Continue memulihkan posisi player sebelumnya.
+- `last_safe_position` hanya fallback jika posisi load invalid/out-of-bounds; seam, surface, dan shop dapat memperbaruinya.
+- Pause menghentikan SceneTree. Inventory tidak mengubah global time scale.
+
+### Save boundary
+
+Meta save menyimpan version, known item IDs, dan setting lintas run. Living-run save menyimpan:
+
+- seed dan section/placer results
+- posisi/health/status player
+- inventory/hotbar/item instance state
+- semua dropped/thrown item yang berasal dari player
+- uang, delivery, whistle tier, dan free-Multitool-replacement flag
+- shop stock, gate state, rope, source/enemy state, dan dialogue trigger
+
+Projectile, cloud, active attack frame, dan stun singkat tidak disimpan. Autosave tidak mengambil snapshot item persisten saat masih terbang: item dikembalikan ke last safe owner/state untuk save, sedangkan projectile sementara diabaikan. Implementasi wajib mencegah item ada sekaligus di inventory dan dunia.
+
+## 9. Aturan item yang dikunci
+
+### Rattlepod
+
+- Satu unit hanya dapat digunakan sekali.
+- Primary action mengaktifkan Rattlepod selama 5 detik.
+- Audio clattering bermain terus selama aktif.
+- Setiap satu detik (lima kali total), Rattlepod mengirim sound/targeting event.
+- Aktivasi memisahkan satu unit dari stack menjadi active instance. Pulse berasal dari posisi holder selama dibawa dan dari posisi pod setelah dilempar.
+- Rattlepod aktif tetap dapat dilempar; ini adalah penggunaan utama. Mengganti hotbar tidak menghentikan timer.
+- Jika tidak dilempar, ia tetap berbunyi pada player lalu menghilang saat timer selesai.
+- Jika dilempar sebelum aktivasi, ia hanya menjadi object fisik seperti small rock, tidak membuat sound targeting effect, dan menjadi pickup kembali setelah berhenti.
+- Pod yang sudah diaktifkan menghilang setelah efek selesai, baik masih dibawa maupun sudah dilempar.
+- Rattlepod tidak memberi damage khusus; impact fisik kecil tetap memakai pipeline biasa.
+- Radius dan priority diexport untuk playtest.
+
+### Lantern Snail
+
+- World snail pertama mempunyai 2 HP.
+- Primary Multitool hit mengurangi 1 HP dan mengubah first-time snail menjadi inventory item.
+- Health world awal tidak perlu disimpan sebagai angka pada item; inventory state menandai bahwa snail pernah di-harvest.
+- Deploy/use berikutnya membuat world snail dengan 1 HP.
+- Multitool hit berikutnya membunuh snail; snail tidak dapat di-harvest kedua kali.
+- Inventory/world conversion bukan death drop.
+- Agitation dan scream cooldown disimpan; AI transient state di-reset.
+
+### Item lain
+
+- Throwable Rock menjadi pickup setelah velocity rendah selama durasi pendek; keluar bounds menghilangkannya. Tidak ada durability prototype.
+- Numbing Pill kedua menambah 5 menit, bukan refresh.
+- Silver Weight memakai durability-based sale value dan dapat multi-hit.
+- Bandage healing tidak dibatalkan damage.
+- Driftseed valid untuk player dan boss gatekeeper; target lain tidak valid sampai desain berubah.
+- Supply secondary action belum dikunci dan harus bisa diganti melalui ItemDefinition tanpa mengubah Player/Inventory.
+
+## 10. Economy dan progression
+
+- Shop transaction harus atomic: validasi uang, slot, stock, dan item; baru commit semuanya.
+- Shop dapat menampilkan backpack dan hotbar, tetapi menjual active item memerlukan konfirmasi.
+- `sellable` adalah field ItemDefinition. Multitool/whistle false; supply/rock false pada build jam; relic mengikuti nilai.
+- Delivery menghitung setiap unit dikali `delivery_value` milik ItemDefinition. Tidak semua relic wajib bernilai satu.
+- Blue Whistle tier disimpan terpisah dari item fisik. Replacement memberi tier tertinggi yang sudah diperoleh.
+- Surface menggunakan nilai jual penuh. Layer 2 shop menggunakan rounded 75% dan tidak menambah delivery surface.
+
+### Layer 2 shop gatekeeper
+
+Flow ending game-jam yang dikunci:
+
+- Gatekeeper berada di Layer 2 shop.
+- Ia meminta satu relic quest khusus yang belum didesain.
+- Setelah relic dikembalikan, gatekeeper memberikan **dua reward terpisah**: Moon Whistle dan satu powerful relic biasa.
+- Moon Whistle adalah progression credential/ending reward; powerful relic adalah inventory item dengan behavior sendiri. Keduanya tidak boleh memakai item ID, slot, atau state yang sama.
+- Gatekeeper membuka akses menuju gate Layer 3.
+- Powerful relic ditujukan untuk membantu melewati kumpulan big dan small enemy yang menjaga gate Layer 3.
+- Encounter tersebut adalah gauntlet beberapa enemy, bukan traditional single boss pada desain saat ini.
+- Desain boleh berubah menjadi big-monster boss kemudian; jangan membangun boss framework sebelum keputusan itu dibuat.
+- Build berakhir ketika player berhasil mencapai entrance Layer 3. Layer 3 tidak mempunyai playable section pada jam build.
+- Moon Whistle diberikan sebelum gauntlet; mencapai entrance memicu ending screen, bukan pemberian Moon Whistle kedua.
+
+Istilah “boss” pada pembicaraan desain saat ini merujuk kepada gatekeeper/quest authority. Ia belum membutuhkan combat-boss framework.
+
+## 11. UI, art, dan feedback
+
+- Inventory memakai click-to-swap: klik kiri pilih/swap, klik kanan context action, Esc/Tab atau klik ulang membatalkan.
+- Dotted line pendek menunjukkan arah dan kekuatan throw; tidak perlu full trajectory arc.
+- HUD minimum: health, money, dua hotbar, whistle, status, prompt, delivery, dan autosave feedback.
+- Dialogue memakai control-lock token dan selalu melepasnya saat selesai, skip, scene change, atau error.
+- Item art 16×16 diperbolehkan. Icon inventory dapat memakai source yang sama sementara; jangan memaksa 32×32.
+- Actor/world item memakai pivot bottom-centre. Collision dimiliki programmer, bukan mengikuti ukuran sprite otomatis.
+- Animation names: `idle`, `move`, `telegraph`, `attack`, `hit`, `death` sesuai kebutuhan.
+- Audio/VFX diberikan melalui exported Resource atau signal; jangan hardcode path tersebar.
+
+## 12. Content yang masih boleh TBD
+
+- Identitas dan behavior relic quest yang diminta gatekeeper.
+- Identitas dan behavior powerful relic reward.
+- Komposisi serta balance enemy gauntlet di gate Layer 3.
+- Apakah gauntlet kemudian mempunyai satu big-monster boss.
+
+Semua poin di atas adalah content data/behavior. Mereka tidak mengubah flow reward atau batas playable build yang sudah dikunci.
+
+## 13. Definition of done fondasi
+
+- Project import/headless run tanpa parser error.
+- Catalog menolak ID kosong/duplikat.
+- Inventory lulus stack, overflow, swap, primary, secondary, failed-action rollback, throw, drop, pickup, theft, dan living-item conversion.
+- ThrownItem dan Projectile tidak berbagi ownership state dan tidak menduplikasi item.
+- Same-species damage filter, damage/force/status pipeline, i-frame, serta death signal bekerja.
+- Sound event mengubah listener tanpa emitter mengenal enemy type.
+- Seed sama menghasilkan section/placer sama.
+- Save roundtrip mempertahankan semua item yang berasal dari player dan fallback invalid position bekerja.
+- Pause/dialogue/inventory tidak meninggalkan control lock.
+- Shop transaction atomic dan delivery memakai per-item value.
+- Gatekeeper reward memberikan Moon Whistle dan powerful relic tepat satu kali; Continue tidak menggandakan reward.
+- Entrance Layer 3 memicu ending tanpa membuat playable Layer 3 atau memberikan Moon Whistle kedua.
+- Rattlepod dapat diaktifkan, mengirim lima event, dan dilempar saat aktif; lemparan tidak aktif tidak memicu sound effect.
+- Snail hanya dapat di-harvest sekali sepanjang instance lifecycle.
+
+Gunakan satu assertion-based smoke test bawaan project. Jangan menambah framework sebelum jumlah test membuktikan kebutuhan.

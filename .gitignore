@@ -1,0 +1,13 @@
+# Godot generated files
+.godot/
+
+# Builds and logs
+builds/*
+!builds/.gitkeep
+*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
