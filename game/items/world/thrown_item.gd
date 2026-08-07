@@ -1,0 +1,96 @@
+class_name ThrownItem
+extends RigidBody2D
+
+@export var persistent_id := ""
+@export var stop_speed := 12.0
+@export var stop_seconds := 0.35
+
+var definition: ItemDefinition
+var instance_state: Dictionary = {}
+var source_actor: Node
+var source_species_id: StringName
+var base_damage := 0.0
+var item_mass := 1.0
+var _initial_velocity := Vector2.ZERO
+var _still_time := 0.0
+var _hit_ids: Dictionary = {}
+
+func configure(item_definition: ItemDefinition, state: Dictionary, source: Node, velocity: Vector2, damage := 0.0, mass_value := 1.0) -> void:
+	definition = item_definition
+	instance_state = state.duplicate(true)
+	source_actor = source
+	var species = source.get("species_id") if source != null else null
+	source_species_id = StringName(species) if species != null else &"player"
+	_initial_velocity = velocity
+	base_damage = damage
+	item_mass = mass_value
+
+func _ready() -> void:
+	contact_monitor = true
+	max_contacts_reported = 4
+	body_entered.connect(_on_body_entered)
+	linear_velocity = _initial_velocity
+	if persistent_id.is_empty():
+		persistent_id = "thrown_%s_%s" % [Time.get_ticks_usec(), randi()]
+	add_to_group(&"persistent_objects")
+
+func _physics_process(delta: float) -> void:
+	if freeze:
+		return
+	if linear_velocity.length() <= stop_speed:
+		_still_time += delta
+		if _still_time >= stop_seconds:
+			freeze = true
+			add_to_group(&"interactables")
+	else:
+		_still_time = 0.0
+
+func _on_body_entered(body: Node) -> void:
+	if body == source_actor or _hit_ids.has(body.get_instance_id()):
+		return
+	_hit_ids[body.get_instance_id()] = true
+	var impact := ImpactData.new()
+	impact.source_actor = source_actor
+	impact.source_species_id = source_species_id
+	impact.base_damage = base_damage
+	impact.mass = item_mass
+	impact.velocity = linear_velocity
+	impact.force = linear_velocity.normalized() * item_mass * minf(linear_velocity.length(), 300.0)
+	if body.has_method("apply_damage"):
+		body.apply_damage(impact.to_damage_info())
+	if body.has_method("apply_force"):
+		body.apply_force(impact.force)
+	if definition != null and definition.behavior != null:
+		definition.behavior.on_impact(self, impact)
+
+func get_interaction_prompt(_actor: Node) -> String:
+	return "Pick up %s" % (definition.display_name if definition != null else "item")
+
+func interact(actor: Node) -> bool:
+	if not freeze or definition == null or not actor.has_method("try_pickup_item"):
+		return false
+	if actor.try_pickup_item(definition.item_id, 1, instance_state):
+		SaveManager.mark_destroyed(persistent_id)
+		queue_free()
+		return true
+	return false
+
+func capture_state() -> Dictionary:
+	return {
+		"item_id": String(definition.item_id) if definition != null else "",
+		"instance_state": instance_state.duplicate(true),
+		"position": [global_position.x, global_position.y],
+		"linear_velocity": [0.0, 0.0],
+		"freeze": true,
+	}
+
+func restore_state(data: Dictionary) -> void:
+	definition = ContentCatalog.get_item(StringName(data.get("item_id", "")))
+	instance_state = data.get("instance_state", {}).duplicate(true)
+	var position_data: Array = data.get("position", [0.0, 0.0])
+	global_position = Vector2(float(position_data[0]), float(position_data[1]))
+	var velocity_data: Array = data.get("linear_velocity", [0.0, 0.0])
+	linear_velocity = Vector2(float(velocity_data[0]), float(velocity_data[1]))
+	freeze = bool(data.get("freeze", true))
+	if freeze:
+		add_to_group(&"interactables")
