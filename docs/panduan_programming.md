@@ -224,6 +224,20 @@ Aturan:
 
 Deterministic generation memakai seed + stable placer ID. Jangan memakai urutan iterasi directory/dictionary sebagai sumber randomness.
 
+World generation wajib mengikuti `panduan_world_generation.md`:
+
+- randomness section memakai `seed + slot_id`;
+- randomness placer memakai `seed + persistent_id`;
+- scene pool dan spawn point memakai urutan data authored yang tervalidasi, bukan urutan directory;
+- generated object mendapat ID `placer_id:spawn_point_index` sebelum `_ready()`;
+- runtime object dari player memakai counter run yang disimpan, bukan timestamp atau `randi()`;
+- section tidak boleh menentukan global transform sendiri;
+- runtime tidak memperbaiki marker buruk dengan ground search; validator harus menolak authoring yang salah;
+- player hanya spawn setelah generation dan restore selesai;
+- object lintas seam berada pada layer runtime root, bukan section root.
+
+Jangan menambah procedural geometry, constraint solver, atau streaming per-section. Seluruh terrain layer aktif tetap loaded sampai profiler menunjukkan kebutuhan lain.
+
 ## 13. UI dan control lock
 
 - UI tidak mengubah gameplay state langsung; panggil model/service API.

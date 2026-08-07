@@ -23,7 +23,9 @@ Dokumen ini adalah sumber kebenaran teknis. Dokumen di `docs/reference/` adalah 
 
 Ukuran map masih boleh di-playtest, tetapi angka di atas menjadi kontrak sementara untuk collision, camera, dan art. Perubahan harus diputuskan lead dan dilakukan serentak; programmer tidak boleh memilih skala sendiri per scene.
 
-East dan west adalah rute vertikal terpisah. Keduanya dipilih dari gate di Layer 0; jangan mengasumsikan kedua rute terhubung pada setiap kedalaman.
+Player memakai sprite 32×32 px. Item boleh memakai sprite 16×16 px pada world yang sama. Texture size tidak menentukan collision atau skala dunia. Pertahankan nearest filtering, pivot bottom-centre, dan gunakan integer scale jika sprite perlu diperbesar.
+
+Layer 0 adalah satu authored surface hub. East dan west adalah rute vertikal terpisah pada Layer 1 dan Layer 2. Kedua sisi terhubung hanya pada bagian bawah tiap layer.
 
 ## 2. Prinsip arsitektur
 
@@ -215,14 +217,40 @@ Death signal hanya dipancarkan sekali. Semua healing melewati satu API agar curs
 ## 8. World dan persistence
 
 - World memakai authored sections; generator hanya memilih variasi dan placer secara deterministik.
-- Setiap section mempunyai slot ID, variation ID, seam anchors, camera bounds, placer root, dan dynamic-object root.
-- Setiap placer mempunyai stable ID, chance, pool, dan quantity.
-- Seed + stable ID menentukan hasil. Hasil dipersist agar Continue tidak reroll.
+- Layer 0 adalah satu authored hub. Layer 1 dan Layer 2 masing-masing mempunyai enam slot: west/east × tiga depth.
+- Setiap route section berukuran 640×1600 px, origin kiri atas, dengan entry/exit seam universal di `x = 320`.
+- West berada pada `x = 0`, east pada `x = 640`; depth berada pada `y = 0`, `1600`, dan `3200` di assembly layer.
+- Generator memilih seluruh 12 variation dan semua hasil placer saat New Run, tetapi hanya menginstansiasi layer aktif.
+- Setiap section mempunyai slot ID, variation ID, selection weight, seam anchors/clearance, camera bounds, placer root, dan special tags.
+- Moving/dropped item, enemy, serta Rope berada pada runtime root milik layer agar dapat melewati seam.
+- Setiap placer mempunyai stable ID, weighted content entries, chance, quantity, dan authored spawn points.
+- Seed + stable ID menentukan setiap hasil tanpa RNG global berurutan. Hasil dipersist agar Continue tidak reroll.
+- Terrain utama memakai `TileMapLayer` dan tidak destructible. Breakable/hazard/platform khusus adalah scene object.
+- Semua enam terrain section pada layer aktif tetap terinstansiasi. Hanya section player, tetangga vertikal, dan pasangan crossing yang memproses enemy.
 - Enemy mati tidak respawn selama living run.
 - Plant, breakable rock, resin tree, dan harvested creature tidak respawn selama living run.
 - Tidak ada checkpoint gameplay. Continue memulihkan posisi player sebelumnya.
 - `last_safe_position` hanya fallback jika posisi load invalid/out-of-bounds; seam, surface, dan shop dapat memperbaruinya.
 - Pause menghentikan SceneTree. Inventory tidak mengubah global time scale.
+
+### Topologi yang dikunci
+
+- Surface hub memberi akses bebas ke east/west Layer 1.
+- Semua Layer 1 slot 03 mempunyai crossing east/west dan entrance menuju kedua sisi Layer 2.
+- Semua Layer 2 east slot 02 mempunyai optional shop branch dengan visual/terrain guidance.
+- Semua Layer 2 slot 03 membentuk gauntlet dan crossing east/west.
+- Semua Layer 2 east slot 03 mempunyai tepat satu entrance Layer 3.
+- Quest gatekeeper di shop bersifat optional. Reward powerful relic membantu melewati gauntlet, tetapi bukan hard key.
+- Entrance Layer 3 selalu dapat diinteraksi jika player berhasil mencapainya; interaction tersebut mengakhiri build tanpa requirement tambahan.
+- Tidak ada playable Layer 3.
+
+### Loading dan debug world
+
+- Generation dipecah menjadi stage dan yield antar-frame. Player belum dibuat sampai validation, assembly, placer spawn, dan restore selesai.
+- Loading screen menunjukkan stage dan progress nyata; tidak ada artificial minimum delay.
+- Debug Mode di main menu membuka seed input. Seed selalu terlihat pada pause menu.
+- Debug-only World Gen Log menyimpan duration tiap stage, selection, placer result, warning, fallback, dan error.
+- F3 menampilkan layer/route/slot serta section aktif. Debug juga menyediakan bounds/seam draw, teleport, manifest dump, dan validator.
 
 ### Save boundary
 
@@ -289,11 +317,11 @@ Flow ending game-jam yang dikunci:
 - Ia meminta satu relic quest khusus yang belum didesain.
 - Setelah relic dikembalikan, gatekeeper memberikan **dua reward terpisah**: Moon Whistle dan satu powerful relic biasa.
 - Moon Whistle adalah progression credential/ending reward; powerful relic adalah inventory item dengan behavior sendiri. Keduanya tidak boleh memakai item ID, slot, atau state yang sama.
-- Gatekeeper membuka akses menuju gate Layer 3.
+- Gatekeeper tidak membuka hard gate. Quest dan kedua reward bersifat optional tetapi memberi jalur paling aman melalui gauntlet.
 - Powerful relic ditujukan untuk membantu melewati kumpulan big dan small enemy yang menjaga gate Layer 3.
 - Encounter tersebut adalah gauntlet beberapa enemy, bukan traditional single boss pada desain saat ini.
 - Desain boleh berubah menjadi big-monster boss kemudian; jangan membangun boss framework sebelum keputusan itu dibuat.
-- Build berakhir ketika player berhasil mencapai entrance Layer 3. Layer 3 tidak mempunyai playable section pada jam build.
+- Build berakhir ketika player menginteraksi dengan entrance Layer 3. Interaction tidak memeriksa reward atau whistle; Layer 3 tidak mempunyai playable section pada jam build.
 - Moon Whistle diberikan sebelum gauntlet; mencapai entrance memicu ending screen, bukan pemberian Moon Whistle kedua.
 
 Istilah “boss” pada pembicaraan desain saat ini merujuk kepada gatekeeper/quest authority. Ia belum membutuhkan combat-boss framework.
@@ -304,7 +332,8 @@ Istilah “boss” pada pembicaraan desain saat ini merujuk kepada gatekeeper/qu
 - Dotted line pendek menunjukkan arah dan kekuatan throw; tidak perlu full trajectory arc.
 - HUD minimum: health, money, dua hotbar, whistle, status, prompt, delivery, dan autosave feedback.
 - Dialogue memakai control-lock token dan selalu melepasnya saat selesai, skip, scene change, atau error.
-- Item art 16×16 diperbolehkan. Icon inventory dapat memakai source yang sama sementara; jangan memaksa 32×32.
+- Player art memakai 32×32 px. Item art 16×16 diperbolehkan pada scene yang sama. Icon inventory dapat memakai source yang sama sementara.
+- Resize melalui `Sprite2D.scale` diperbolehkan. Utamakan integer scale seperti `2×`; non-integer scale boleh untuk placeholder tetapi dapat membuat pixel tidak rata.
 - Actor/world item memakai pivot bottom-centre. Collision dimiliki programmer, bukan mengikuti ukuran sprite otomatis.
 - Animation names: `idle`, `move`, `telegraph`, `attack`, `hit`, `death` sesuai kebutuhan.
 - Audio/VFX diberikan melalui exported Resource atau signal; jangan hardcode path tersebar.
