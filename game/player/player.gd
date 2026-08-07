@@ -33,6 +33,10 @@ func _ready() -> void:
 		item_controller.inventory.try_add_item(&"multitool")
 
 func _physics_process(delta: float) -> void:
+	if not is_alive():
+		velocity = Vector2.ZERO
+		_knockback = Vector2.ZERO
+		return
 	if global_position.y > 1900.0:
 		global_position = Vector2(96.0, 260.0)
 		health.set_health(1.0)
@@ -57,11 +61,13 @@ func _physics_process(delta: float) -> void:
 	if can_control and Input.is_action_just_pressed(&"jump") and is_on_floor():
 		velocity.y = jump_velocity
 	velocity += _knockback
-	_knockback = _knockback.move_toward(Vector2.ZERO, 800.0 * delta)
+	_knockback = Vector2.ZERO
 	move_and_slide()
 	_update_prompt()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not is_alive():
+		return
 	if event.is_action_pressed(&"hotbar_1"):
 		item_controller.inventory.select_hotbar(0)
 	if event.is_action_pressed(&"hotbar_2"):
@@ -109,7 +115,11 @@ func apply_damage(info: DamageInfo) -> bool:
 	return health.apply_damage(info, species_id)
 
 func apply_force(force: Vector2) -> void:
-	_knockback += force
+	if is_alive():
+		_knockback += force
+
+func is_alive() -> bool:
+	return not health.is_dead
 
 func apply_status(effect_id: StringName, data: Dictionary = {}) -> bool:
 	return status.apply_status(effect_id, data)

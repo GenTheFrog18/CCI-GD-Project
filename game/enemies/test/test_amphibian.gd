@@ -57,7 +57,7 @@ func _physics_process(delta: float) -> void:
 				state = State.RETURN
 				_target = _origin
 	velocity += _knockback
-	_knockback = _knockback.move_toward(Vector2.ZERO, 700.0 * delta)
+	_knockback = Vector2.ZERO
 	move_and_slide()
 
 func hear_sound(event: SoundEvent) -> void:
@@ -75,7 +75,8 @@ func apply_damage(info: DamageInfo) -> bool:
 	return health.apply_damage(info, species_id)
 
 func apply_force(force: Vector2) -> void:
-	_knockback += force
+	if not health.is_dead:
+		_knockback += force
 
 func _on_damaged(_info: DamageInfo) -> void:
 	$Visual.color = Color.WHITE

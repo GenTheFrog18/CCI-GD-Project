@@ -15,7 +15,9 @@ var _projectile_scene := preload("res://game/projectiles/projectile.tscn")
 @onready var muzzle: Marker2D = $Muzzle
 
 func _process(delta: float) -> void:
-	if target == null:
+	if target == null or (target.has_method("is_alive") and not target.is_alive()):
+		_telegraph_remaining = 0.0
+		$Visual.color = Color(0.65, 0.25, 0.25)
 		return
 	if _telegraph_remaining > 0.0:
 		_telegraph_remaining -= delta

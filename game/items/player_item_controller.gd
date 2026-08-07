@@ -47,7 +47,9 @@ func _execute(is_secondary: bool, actor: Node2D, world: Node, cursor: Vector2, t
 		return false
 	var context := ItemContext.new(actor, world, cursor, target, definition, stack.copy())
 	if held_item_anchor != null:
-		context.action_origin = held_item_anchor.global_position
+		var anchor_offset := held_item_anchor.global_position - actor.global_position
+		anchor_offset.x = absf(anchor_offset.x) * (-1.0 if cursor.x < actor.global_position.x else 1.0)
+		context.action_origin = actor.global_position + anchor_offset
 	var behavior := definition.behavior
 	var allowed := behavior.can_secondary(context, stack.state) if is_secondary else behavior.can_primary(context, stack.state)
 	if not allowed:

@@ -8,8 +8,10 @@ var prompt_label: Label
 var feedback_label: Label
 var inventory_panel: PanelContainer
 var inventory_buttons: Array[Button] = []
+var hotbar_labels: Array[Label] = []
 var debug_panel: PanelContainer
 var pause_panel: PanelContainer
+var death_panel: PanelContainer
 var dialogue_box: DialogueBox
 var crosshair: Node2D
 var performance_label: Label
@@ -37,11 +39,12 @@ func set_player(value: PlayerController) -> void:
 	player = value
 	player.inventory_toggled.connect(_on_inventory_toggled)
 	player.prompt_changed.connect(func(text: String): prompt_label.text = text)
-	player.health.health_changed.connect(func(current: float, maximum: float): health_label.text = "HP %d/%d" % [current, maximum])
+	player.health.health_changed.connect(_set_health_text)
+	player.health.died.connect(_on_player_died)
 	player.item_controller.inventory.changed.connect(_refresh_inventory)
 	player.item_controller.feedback_requested.connect(_show_feedback)
 	GameSession.money_changed.connect(func(value: int): money_label.text = "%dg" % value)
-	health_label.text = "HP %d/%d" % [player.health.health, player.health.max_health]
+	_set_health_text(player.health.health, player.health.max_health)
 	money_label.text = "%dg" % GameSession.money
 	_refresh_inventory()
 
@@ -50,6 +53,10 @@ func show_dialogue(sequence: DialogueSequence) -> void:
 
 func _input(event: InputEvent) -> void:
 	if player == null:
+		return
+	if death_panel.visible:
+		if event.is_action_pressed(&"inventory") or event.is_action_pressed(&"pause"):
+			get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed(&"inventory"):
 		if player.inventory_open or (not get_tree().paused and not player.locks.is_locked()):
@@ -87,6 +94,14 @@ func _build_ui() -> void:
 	feedback_label.size = Vector2(200, 25)
 	feedback_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_child(feedback_label)
+	var hotbar := HBoxContainer.new()
+	hotbar.position = Vector2(10, 292)
+	add_child(hotbar)
+	for index in 2:
+		var label := Label.new()
+		label.custom_minimum_size = Vector2(125, 28)
+		hotbar.add_child(label)
+		hotbar_labels.append(label)
 	inventory_panel = PanelContainer.new()
 	inventory_panel.position = Vector2(180, 105)
 	inventory_panel.custom_minimum_size = Vector2(280, 130)
@@ -116,10 +131,24 @@ func _build_ui() -> void:
 	resume.text = "Resume"
 	resume.pressed.connect(func(): get_tree().paused = false; pause_panel.visible = false)
 	pause_panel.get_child(0).add_child(resume)
+	var new_run := Button.new()
+	new_run.text = "New Run"
+	new_run.pressed.connect(start_new_run)
+	pause_panel.get_child(0).add_child(new_run)
 	var menu := Button.new()
 	menu.text = "Save & Menu"
 	menu.pressed.connect(func(): SaveManager.save_run(); get_tree().paused = false; SceneRouter.go_to("res://ui/main_menu.tscn"))
 	pause_panel.get_child(0).add_child(menu)
+	death_panel = _make_panel("You Died", Vector2(240, 125))
+	death_panel.visible = false
+	var retry := Button.new()
+	retry.text = "New Run"
+	retry.pressed.connect(start_new_run)
+	death_panel.get_child(0).add_child(retry)
+	var death_menu := Button.new()
+	death_menu.text = "Main Menu"
+	death_menu.pressed.connect(_return_to_menu)
+	death_panel.get_child(0).add_child(death_menu)
 	debug_panel = _make_panel("Debug", Vector2(470, 55))
 	debug_panel.visible = false
 	var debug_column := debug_panel.get_child(0) as VBoxContainer
@@ -212,6 +241,35 @@ func _refresh_inventory() -> void:
 		if index < 2 and index == player.item_controller.inventory.active_hotbar_index:
 			label = "[%s]" % label
 		inventory_buttons[index].text = label
+	for index in hotbar_labels.size():
+		var stack := player.item_controller.inventory.hotbar[index]
+		var item_name := "—"
+		if not stack.is_empty():
+			var definition := ContentCatalog.get_item(stack.item_id)
+			item_name = "%s x%d" % [definition.display_name if definition != null else stack.item_id, stack.quantity]
+		hotbar_labels[index].text = "%s%d: %s" % ["▶ " if index == player.item_controller.inventory.active_hotbar_index else "", index + 1, item_name]
+
+func _set_health_text(current: float, maximum: float) -> void:
+	health_label.text = "HP %d/%d" % [ceili(current), ceili(maximum)]
+
+func _on_player_died(_source: Node) -> void:
+	player.set_inventory_open(false)
+	GameSession.run_active = false
+	SaveManager.delete_run()
+	SaveManager.save_meta()
+	pause_panel.visible = false
+	death_panel.visible = true
+	get_tree().paused = true
+
+func start_new_run() -> void:
+	get_tree().paused = false
+	SaveManager.delete_run()
+	GameSession.start_new_run()
+	SceneRouter.go_to("res://game/world/foundation_test_room.tscn")
+
+func _return_to_menu() -> void:
+	get_tree().paused = false
+	SceneRouter.go_to("res://ui/main_menu.tscn")
 
 func _show_feedback(message: String) -> void:
 	feedback_label.text = message

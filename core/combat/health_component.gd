@@ -42,9 +42,12 @@ func heal(amount: float, multiplier := 1.0, health_cap := INF) -> float:
 	return health - before
 
 func set_health(value: float) -> void:
+	var was_dead := is_dead
 	health = clampf(value, 0.0, max_health)
 	is_dead = health == 0.0 and killable
 	health_changed.emit(health, max_health)
+	if is_dead and not was_dead:
+		died.emit(null)
 
 func capture_state() -> Dictionary:
 	return {"health": health, "is_dead": is_dead}

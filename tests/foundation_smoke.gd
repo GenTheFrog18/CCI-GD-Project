@@ -105,6 +105,15 @@ func _test_item_action_rollback_and_pickup() -> void:
 	var picker := PickupProbe.new()
 	assert(thrown.interact(picker))
 	assert(picker.inventory.get_active_stack().quantity == 1)
+	assert(controller.inventory.try_add_item(&"throwable_rock"))
+	assert(controller.secondary(actor, world, actor.global_position + Vector2.LEFT * 100.0))
+	var left_thrown: ThrownItem
+	for child in world.get_children():
+		if child is ThrownItem and not child.is_queued_for_deletion():
+			left_thrown = child
+	assert(left_thrown != null)
+	assert(left_thrown.global_position == actor.global_position + Vector2(-8.0, -12.0))
+	assert(left_thrown.linear_velocity.x < 0.0)
 	picker.free()
 	controller.free()
 	actor.free()
@@ -175,11 +184,18 @@ func _test_multitool_range() -> void:
 	frog.global_position = Vector2(100.0, 0.0)
 	await get_tree().physics_frame
 	assert(player.item_controller.primary(player, self, Vector2(120.0, -14.0)))
-	assert(frog.health.health == 5.0)
+	assert(frog.health.health == 20.0)
 	frog.global_position = Vector2(40.0, 0.0)
 	await get_tree().physics_frame
 	assert(player.item_controller.primary(player, self, Vector2(80.0, -14.0)))
-	assert(frog.health.health == 4.0)
+	assert(frog.health.health == 19.0)
+	player.apply_force(Vector2(30.0, 0.0))
+	player._physics_process(0.0)
+	assert(player._knockback == Vector2.ZERO)
+	frog.apply_force(Vector2(30.0, 0.0))
+	frog._physics_process(0.0)
+	assert(frog._knockback == Vector2.ZERO)
+	assert(player.collision_mask == 1)
 	player.free()
 	frog.free()
 
@@ -201,6 +217,11 @@ func _test_turret_projectile() -> void:
 	assert(projectile != null and projectile.global_position == turret.muzzle.global_position)
 	projectile._handle_collision(player)
 	assert(player.health.health < player.health.max_health)
+	player.health.set_health(0.0)
+	turret.target = player
+	turret._telegraph_remaining = 0.5
+	turret._process(0.1)
+	assert(turret._telegraph_remaining == 0.0)
 	world.free()
 
 func _test_ui_input_and_debug() -> void:
@@ -209,6 +230,9 @@ func _test_ui_input_and_debug() -> void:
 	add_child(player)
 	add_child(hud)
 	hud.set_player(player)
+	assert(hud.hotbar_labels[0].text.contains("Multitool"))
+	player.health.set_health(0.4)
+	assert(hud.health_label.text == "HP 1/100")
 	player.set_inventory_open(true)
 	hud.inventory_buttons[0].grab_focus()
 	hud._slot_pressed(0)
@@ -230,6 +254,25 @@ func _test_ui_input_and_debug() -> void:
 	hud.debug_panel.visible = true
 	hud._update_performance()
 	assert(not hud.performance_label.text.is_empty() and hud.crosshair != null)
+	var original_run_path := SaveManager.run_path
+	var original_meta_path := SaveManager.meta_path
+	SaveManager.run_path = "user://foundation_smoke_death_run.json"
+	SaveManager.meta_path = "user://foundation_smoke_death_meta.json"
+	var run_file := FileAccess.open(SaveManager.run_path, FileAccess.WRITE)
+	run_file.store_string("living run")
+	run_file.close()
+	player.health.set_health(0.0)
+	assert(not player.is_alive() and hud.death_panel.visible and get_tree().paused)
+	assert(not FileAccess.file_exists(SaveManager.run_path) and FileAccess.file_exists(SaveManager.meta_path))
+	player.apply_force(Vector2(30.0, 0.0))
+	assert(player._knockback == Vector2.ZERO)
+	hud._input(inventory_event)
+	assert(not player.inventory_open and get_tree().paused)
+	get_tree().paused = false
+	SaveManager.delete_run()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveManager.meta_path))
+	SaveManager.run_path = original_run_path
+	SaveManager.meta_path = original_meta_path
 	hud.free()
 	player.free()
 
