@@ -12,6 +12,8 @@ var _telegraph_remaining := 0.0
 var _aim_position := Vector2.ZERO
 var _projectile_scene := preload("res://game/projectiles/projectile.tscn")
 
+@onready var muzzle: Marker2D = $Muzzle
+
 func _process(delta: float) -> void:
 	if target == null:
 		return
@@ -25,7 +27,7 @@ func _process(delta: float) -> void:
 	$Visual.color = Color(0.65, 0.25, 0.25)
 	_cooldown_remaining -= delta
 	if _cooldown_remaining <= 0.0:
-		_aim_position = target.global_position
+		_aim_position = target.global_position + Vector2(0.0, -14.0)
 		_telegraph_remaining = telegraph_seconds
 
 func _fire() -> void:
@@ -36,7 +38,7 @@ func _fire() -> void:
 	data.base_damage = 8.0
 	data.mass = 0.5
 	data.max_hits = 1
-	var direction := global_position.direction_to(_aim_position)
+	var direction := muzzle.global_position.direction_to(_aim_position)
 	projectile.configure(data, direction * projectile_speed)
 	get_parent().add_child(projectile)
-	projectile.global_position = global_position
+	projectile.global_position = muzzle.global_position

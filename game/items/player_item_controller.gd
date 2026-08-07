@@ -46,6 +46,8 @@ func _execute(is_secondary: bool, actor: Node2D, world: Node, cursor: Vector2, t
 	if definition == null or definition.behavior == null:
 		return false
 	var context := ItemContext.new(actor, world, cursor, target, definition, stack.copy())
+	if held_item_anchor != null:
+		context.action_origin = held_item_anchor.global_position
 	var behavior := definition.behavior
 	var allowed := behavior.can_secondary(context, stack.state) if is_secondary else behavior.can_primary(context, stack.state)
 	if not allowed:
@@ -73,4 +75,6 @@ func _commit_result(result: ItemActionResult, world: Node) -> bool:
 		return false
 	if not result.next_state.is_empty() and not inventory.get_active_stack().is_empty():
 		inventory.update_active_state(result.next_state)
+	if not result.message.is_empty():
+		feedback_requested.emit(result.message)
 	return true

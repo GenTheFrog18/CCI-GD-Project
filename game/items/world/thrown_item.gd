@@ -11,16 +11,18 @@ var source_actor: Node
 var source_species_id: StringName
 var base_damage := 0.0
 var item_mass := 1.0
+var _spawn_position := Vector2.ZERO
 var _initial_velocity := Vector2.ZERO
 var _still_time := 0.0
 var _hit_ids: Dictionary = {}
 
-func configure(item_definition: ItemDefinition, state: Dictionary, source: Node, velocity: Vector2, damage := 0.0, mass_value := 1.0) -> void:
+func configure(item_definition: ItemDefinition, state: Dictionary, source: Node, spawn_position: Vector2, velocity: Vector2, damage := 0.0, mass_value := 1.0) -> void:
 	definition = item_definition
 	instance_state = state.duplicate(true)
 	source_actor = source
 	var species = source.get("species_id") if source != null else null
 	source_species_id = StringName(species) if species != null else &"player"
+	_spawn_position = spawn_position
 	_initial_velocity = velocity
 	base_damage = damage
 	item_mass = mass_value
@@ -29,6 +31,7 @@ func _ready() -> void:
 	contact_monitor = true
 	max_contacts_reported = 4
 	body_entered.connect(_on_body_entered)
+	global_position = _spawn_position
 	linear_velocity = _initial_velocity
 	if persistent_id.is_empty():
 		persistent_id = "thrown_%s_%s" % [Time.get_ticks_usec(), randi()]

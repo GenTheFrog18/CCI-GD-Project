@@ -2,8 +2,11 @@ class_name InteractionSensor
 extends Area2D
 
 func best_target() -> Node:
-	var candidates := get_overlapping_areas()
-	candidates.append_array(get_overlapping_bodies())
+	var candidates: Array[CollisionObject2D] = []
+	for area in get_overlapping_areas():
+		candidates.append(area)
+	for body in get_overlapping_bodies():
+		candidates.append(body)
 	var best: Node
 	var best_priority := -INF
 	for candidate in candidates:

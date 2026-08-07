@@ -15,13 +15,13 @@ func can_secondary(context: ItemContext, _state: Dictionary) -> bool:
 func secondary(context: ItemContext, state: Dictionary) -> ItemActionResult:
 	if not can_secondary(context, state):
 		return ItemActionResult.failed("Cannot throw here")
-	var direction := context.cursor_position - context.actor.global_position
+	var direction := context.cursor_position - context.action_origin
 	if direction.is_zero_approx():
 		direction = Vector2.RIGHT
 	var strength := clampf(direction.length() / maximum_cursor_distance, 0.0, 1.0)
 	var speed := lerpf(minimum_speed, maximum_speed, strength)
 	var thrown := thrown_scene.instantiate() as ThrownItem
-	thrown.configure(context.definition, state, context.actor, direction.normalized() * speed, base_damage, item_mass)
+	thrown.configure(context.definition, state, context.actor, context.action_origin, direction.normalized() * speed, base_damage, item_mass)
 	var result := ItemActionResult.completed(1)
 	result.world_node = thrown
 	return result

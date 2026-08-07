@@ -4,6 +4,7 @@ extends RefCounted
 var actor: Node2D
 var world: Node
 var cursor_position := Vector2.ZERO
+var action_origin := Vector2.ZERO
 var interaction_target: Node
 var definition: ItemDefinition
 var stack: ItemStack
@@ -19,6 +20,7 @@ func _init(
 	actor = actor_node
 	world = world_node
 	cursor_position = cursor
+	action_origin = actor_node.global_position if actor_node != null else Vector2.ZERO
 	interaction_target = target
 	definition = item_definition
 	stack = item_stack

@@ -25,6 +25,7 @@ func _ready() -> void:
 	_origin = global_position
 	add_to_group(&"sound_listeners")
 	add_to_group(&"persistent_objects")
+	health.damaged.connect(_on_damaged)
 	health.died.connect(func(_source: Node):
 		SaveManager.mark_destroyed(persistent_id)
 		queue_free()
@@ -75,6 +76,10 @@ func apply_damage(info: DamageInfo) -> bool:
 
 func apply_force(force: Vector2) -> void:
 	_knockback += force
+
+func _on_damaged(_info: DamageInfo) -> void:
+	$Visual.color = Color.WHITE
+	create_tween().tween_property($Visual, "color", Color(0.45, 0.85, 0.35), 0.12)
 
 func capture_state() -> Dictionary:
 	return {"alive": not health.is_dead, "health": health.capture_state(), "position": [global_position.x, global_position.y]}

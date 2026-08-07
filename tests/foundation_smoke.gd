@@ -32,8 +32,12 @@ class PickupProbe:
 func _ready() -> void:
 	_test_catalog()
 	_test_inventory()
+	await _test_interaction_sensor()
 	_test_combat_and_status()
 	_test_projectile_hit_history()
+	await _test_multitool_range()
+	_test_turret_projectile()
+	_test_ui_input_and_debug()
 	_test_sound()
 	_test_control_locks()
 	_test_determinism()
@@ -74,23 +78,29 @@ func _test_inventory() -> void:
 func _test_item_action_rollback_and_pickup() -> void:
 	var controller := PlayerItemController.new()
 	var actor := Node2D.new()
+	var anchor := Node2D.new()
 	var world := Node2D.new()
 	add_child(actor)
+	actor.add_child(anchor)
 	add_child(world)
 	add_child(controller)
+	actor.global_position = Vector2(20.0, 30.0)
+	anchor.position = Vector2(8.0, -12.0)
+	controller.held_item_anchor = anchor
 	assert(controller.inventory.try_add_item(&"throwable_rock"))
 	var failed_result := ItemActionResult.completed(2)
 	failed_result.world_node = Node2D.new()
 	assert(not controller._commit_result(failed_result, world))
 	assert(controller.inventory.get_active_stack().quantity == 1)
 	assert(failed_result.world_node.is_queued_for_deletion())
-	assert(controller.secondary(actor, world, actor.global_position + Vector2.RIGHT * 100.0))
+	assert(controller.secondary(actor, world, anchor.global_position + Vector2.RIGHT * 100.0))
 	assert(controller.inventory.get_active_stack().is_empty())
 	var thrown: ThrownItem
 	for child in world.get_children():
 		if child is ThrownItem and not child.is_queued_for_deletion():
 			thrown = child
 	assert(thrown != null)
+	assert(thrown.global_position == anchor.global_position)
 	thrown.freeze = true
 	var picker := PickupProbe.new()
 	assert(thrown.interact(picker))
@@ -99,6 +109,24 @@ func _test_item_action_rollback_and_pickup() -> void:
 	controller.free()
 	actor.free()
 	world.free()
+
+func _test_interaction_sensor() -> void:
+	var sensor := InteractionSensor.new()
+	sensor.collision_mask = 8
+	var sensor_shape := CollisionShape2D.new()
+	var sensor_circle := CircleShape2D.new()
+	sensor_circle.radius = 20.0
+	sensor_shape.shape = sensor_circle
+	sensor.add_child(sensor_shape)
+	add_child(sensor)
+	var thrown := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	thrown.freeze = true
+	add_child(thrown)
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	assert(sensor.best_target() == thrown)
+	thrown.free()
+	sensor.free()
 
 func _test_combat_and_status() -> void:
 	var health := HealthComponent.new()
@@ -137,6 +165,73 @@ func _test_projectile_hit_history() -> void:
 	assert(probe.hits == 1 and probe.forces == 1)
 	projectile.free()
 	probe.free()
+
+func _test_multitool_range() -> void:
+	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	var frog := preload("res://game/enemies/test/test_amphibian.tscn").instantiate() as TestAmphibian
+	add_child(player)
+	add_child(frog)
+	player.global_position = Vector2.ZERO
+	frog.global_position = Vector2(100.0, 0.0)
+	await get_tree().physics_frame
+	assert(player.item_controller.primary(player, self, Vector2(120.0, -14.0)))
+	assert(frog.health.health == 5.0)
+	frog.global_position = Vector2(40.0, 0.0)
+	await get_tree().physics_frame
+	assert(player.item_controller.primary(player, self, Vector2(80.0, -14.0)))
+	assert(frog.health.health == 4.0)
+	player.free()
+	frog.free()
+
+func _test_turret_projectile() -> void:
+	var world := Node2D.new()
+	var turret := preload("res://game/enemies/test/projectile_turret.tscn").instantiate() as ProjectileTurret
+	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	add_child(world)
+	world.add_child(turret)
+	world.add_child(player)
+	turret.global_position = Vector2(100.0, 100.0)
+	player.global_position = Vector2(20.0, 100.0)
+	turret._aim_position = player.global_position + Vector2(0.0, -14.0)
+	turret._fire()
+	var projectile: Projectile
+	for child in world.get_children():
+		if child is Projectile:
+			projectile = child
+	assert(projectile != null and projectile.global_position == turret.muzzle.global_position)
+	projectile._handle_collision(player)
+	assert(player.health.health < player.health.max_health)
+	world.free()
+
+func _test_ui_input_and_debug() -> void:
+	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	var hud := FoundationHUD.new()
+	add_child(player)
+	add_child(hud)
+	hud.set_player(player)
+	player.set_inventory_open(true)
+	hud.inventory_buttons[0].grab_focus()
+	hud._slot_pressed(0)
+	var inventory_event := InputEventAction.new()
+	inventory_event.action = &"inventory"
+	inventory_event.pressed = true
+	hud._input(inventory_event)
+	assert(not player.inventory_open and hud._selected_index == -1)
+	player.set_inventory_open(true)
+	var pause_event := InputEventAction.new()
+	pause_event.action = &"pause"
+	pause_event.pressed = true
+	hud._input(pause_event)
+	assert(not player.inventory_open and not get_tree().paused)
+	hud._input(pause_event)
+	assert(get_tree().paused)
+	hud._input(pause_event)
+	assert(not get_tree().paused)
+	hud.debug_panel.visible = true
+	hud._update_performance()
+	assert(not hud.performance_label.text.is_empty() and hud.crosshair != null)
+	hud.free()
+	player.free()
 
 func _test_sound() -> void:
 	var probe := SoundProbe.new()

@@ -73,7 +73,7 @@ quantity = 3
 persistent_id = "foundation_rock_pickup"
 
 [node name="TestAmphibian" parent="." instance=ExtResource("4")]
-position = Vector2(430, 320)
+position = Vector2(350, 242)
 
 [node name="ProjectileTurret" parent="." instance=ExtResource("5")]
 position = Vector2(570, 320)

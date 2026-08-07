@@ -11,17 +11,31 @@ var inventory_buttons: Array[Button] = []
 var debug_panel: PanelContainer
 var pause_panel: PanelContainer
 var dialogue_box: DialogueBox
+var crosshair: Node2D
+var performance_label: Label
 var _selected_container: StringName
 var _selected_index := -1
+var _performance_elapsed := 0.0
 
 func _ready() -> void:
 	layer = 20
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_ui()
+	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
+
+func _process(delta: float) -> void:
+	crosshair.position = get_viewport().get_mouse_position()
+	if not debug_panel.visible:
+		_performance_elapsed = 0.0
+		return
+	_performance_elapsed += delta
+	if _performance_elapsed >= 0.25:
+		_performance_elapsed = 0.0
+		_update_performance()
 
 func set_player(value: PlayerController) -> void:
 	player = value
-	player.inventory_toggled.connect(func(open: bool): inventory_panel.visible = open; _refresh_inventory())
+	player.inventory_toggled.connect(_on_inventory_toggled)
 	player.prompt_changed.connect(func(text: String): prompt_label.text = text)
 	player.health.health_changed.connect(func(current: float, maximum: float): health_label.text = "HP %d/%d" % [current, maximum])
 	player.item_controller.inventory.changed.connect(_refresh_inventory)
@@ -34,13 +48,25 @@ func set_player(value: PlayerController) -> void:
 func show_dialogue(sequence: DialogueSequence) -> void:
 	dialogue_box.show_sequence(sequence, player)
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"pause"):
-		get_tree().paused = not get_tree().paused
-		pause_panel.visible = get_tree().paused
+func _input(event: InputEvent) -> void:
+	if player == null:
+		return
+	if event.is_action_pressed(&"inventory"):
+		if player.inventory_open or (not get_tree().paused and not player.locks.is_locked()):
+			player.toggle_inventory()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed(&"pause"):
+		if player.inventory_open:
+			player.set_inventory_open(false)
+		else:
+			get_tree().paused = not get_tree().paused
+			pause_panel.visible = get_tree().paused
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"debug_toggle"):
 		debug_panel.visible = not debug_panel.visible
+		if debug_panel.visible:
+			_update_performance()
+		get_viewport().set_input_as_handled()
 
 func _build_ui() -> void:
 	var top := HBoxContainer.new()
@@ -97,6 +123,8 @@ func _build_ui() -> void:
 	debug_panel = _make_panel("Debug", Vector2(470, 55))
 	debug_panel.visible = false
 	var debug_column := debug_panel.get_child(0) as VBoxContainer
+	performance_label = Label.new()
+	debug_column.add_child(performance_label)
 	for spec in [
 		["Give Rock", _debug_give_rock],
 		["Emit Sound", _debug_emit_sound],
@@ -109,6 +137,28 @@ func _build_ui() -> void:
 		button.text = spec[0]
 		button.pressed.connect(spec[1])
 		debug_column.add_child(button)
+	_build_crosshair()
+
+func _build_crosshair() -> void:
+	crosshair = Node2D.new()
+	crosshair.z_index = 100
+	add_child(crosshair)
+	var ring := Line2D.new()
+	ring.width = 1.0
+	ring.default_color = Color.WHITE
+	for index in 17:
+		var angle := TAU * float(index) / 16.0
+		ring.add_point(Vector2.from_angle(angle) * 6.0)
+	crosshair.add_child(ring)
+	for points in [
+		PackedVector2Array([Vector2(-10, 0), Vector2(10, 0)]),
+		PackedVector2Array([Vector2(0, -10), Vector2(0, 10)]),
+	]:
+		var line := Line2D.new()
+		line.width = 1.0
+		line.default_color = Color.WHITE
+		line.points = points
+		crosshair.add_child(line)
 
 func _make_panel(title_text: String, at: Vector2) -> PanelContainer:
 	var panel := PanelContainer.new()
@@ -141,6 +191,12 @@ func _slot_gui_input(event: InputEvent, flat_index: int) -> void:
 		_selected_index = -1
 		_refresh_inventory()
 
+func _on_inventory_toggled(open: bool) -> void:
+	inventory_panel.visible = open
+	if not open:
+		_selected_index = -1
+	_refresh_inventory()
+
 func _refresh_inventory() -> void:
 	if player == null:
 		return
@@ -163,6 +219,11 @@ func _show_feedback(message: String) -> void:
 	tween.tween_interval(1.5)
 	tween.tween_callback(func(): feedback_label.text = "")
 
+func _update_performance() -> void:
+	var fps := Engine.get_frames_per_second()
+	var frame_ms := 1000.0 / maxf(float(fps), 1.0)
+	performance_label.text = "FPS: %d\nFrame: %.1f ms" % [fps, frame_ms]
+
 func _debug_give_rock() -> void:
 	player.try_pickup_item(&"throwable_rock", 1, {})
 
@@ -181,3 +242,6 @@ func _debug_save() -> void:
 func _debug_load() -> void:
 	if not SaveManager.load_run().is_empty():
 		SaveManager.restore_registered_objects()
+
+func _exit_tree() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

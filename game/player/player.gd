@@ -62,11 +62,6 @@ func _physics_process(delta: float) -> void:
 	_update_prompt()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"inventory"):
-		inventory_open = not inventory_open
-		inventory_toggled.emit(inventory_open)
-		get_viewport().set_input_as_handled()
-		return
 	if event.is_action_pressed(&"hotbar_1"):
 		item_controller.inventory.select_hotbar(0)
 	if event.is_action_pressed(&"hotbar_2"):
@@ -85,6 +80,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		item_controller.primary(self, get_parent(), get_global_mouse_position(), target)
 	elif event.is_action_pressed(&"secondary_action"):
 		item_controller.secondary(self, get_parent(), get_global_mouse_position(), target)
+
+func set_inventory_open(open: bool) -> void:
+	if inventory_open == open:
+		return
+	inventory_open = open
+	inventory_toggled.emit(inventory_open)
+
+func toggle_inventory() -> void:
+	set_inventory_open(not inventory_open)
 
 func try_pickup_item(item_id: StringName, quantity: int, state: Dictionary) -> bool:
 	return item_controller.inventory.try_add_item(item_id, quantity, state)
