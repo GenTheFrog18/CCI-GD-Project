@@ -22,6 +22,7 @@ signal prompt_changed(text: String)
 @onready var item_controller: PlayerItemController = $PlayerItemController
 @onready var interaction_sensor: InteractionSensor = $InteractionSensor
 @onready var camera: Camera2D = $Camera2D
+@onready var sword_hitbox: SwordHitbox = $SwordHitbox
 
 var locks := ControlLocks.new()
 var inventory_open := false
@@ -29,12 +30,13 @@ var last_safe_position := Vector2(96.0, 260.0)
 var _last_air_speed := 0.0
 var _knockback := Vector2.ZERO
 var _camera_target_position := Vector2(0.0, -40.0)
+var is_attacking := false
 
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
 	status.tick_damage_requested.connect(func(amount: float): apply_damage(DamageInfo.new(amount)))
 	health.died.connect(_on_died)
-	_camera_target_position = camera_base_offset
+	_camera_target_position = camera_base_offset 
 	if ContentCatalog.get_item(&"multitool") != null and item_controller.inventory.get_active_stack().is_empty():
 		item_controller.inventory.try_add_item(&"multitool")
 
@@ -45,6 +47,51 @@ func _input(event: InputEvent) -> void:
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
 	_camera_target_position = _camera_target(event.position, viewport_size)
+	
+func _update_animation() -> void:
+	if is_attacking:
+		return
+
+	if not is_on_floor():
+		if(velocity.x) < 0:
+			$AnimatedSprite2D.play("jump")
+		else:
+			$AnimatedSprite2D.play("fall")
+	elif abs(velocity.x) > 1.0:
+		$AnimatedSprite2D.play("walk")
+	else:
+		$AnimatedSprite2D.play("idle")
+
+	if velocity.x != 0:
+		$AnimatedSprite2D.flip_h = velocity.x < 0
+		
+func attack() -> void:
+	if is_attacking:
+		return
+
+	is_attacking = true
+
+	velocity.x = 0
+
+	$AnimatedSprite2D.play("combat")
+
+	await get_tree().create_timer(0.15).timeout
+
+	sword_hitbox.start_attack()
+
+	await get_tree().create_timer(0.15).timeout
+
+	sword_hitbox.end_attack()
+	
+	$AnimatedSprite2D.play("combat_end")
+
+	await $AnimatedSprite2D.animation_finished
+
+	is_attacking = false
+	
+	velocity.x = 0
+	
+	_update_animation()
 
 func _camera_target(cursor_position: Vector2, viewport_size: Vector2) -> Vector2:
 	var cursor_ratio := (cursor_position - viewport_size * 0.5) / (viewport_size * 0.5)
@@ -54,21 +101,30 @@ func _camera_target(cursor_position: Vector2, viewport_size: Vector2) -> Vector2
 
 func _physics_process(delta: float) -> void:
 	var weight := 1.0 - exp(-camera_smoothing * delta) if camera_smoothing > 0.0 else 1.0
+	
 	camera.position = camera.position.lerp(_camera_target_position, weight)
+	
 	if camera.position.distance_squared_to(_camera_target_position) < 0.01:
 		camera.position = _camera_target_position
+		
 	if not is_alive():
 		velocity = Vector2.ZERO
 		_knockback = Vector2.ZERO
 		return
+		
 	var can_control := not locks.is_locked()
+		
 	var speed_multiplier := status.get_multiplier(&"move_speed")
+	
 	if inventory_open:
 		speed_multiplier *= 0.35
+		
 	var axis := Input.get_axis(&"move_left", &"move_right") if can_control else 0.0
 	var target_speed := axis * move_speed * speed_multiplier
 	var rate := acceleration if axis != 0.0 else deceleration
+	
 	velocity.x = move_toward(velocity.x, target_speed, rate * delta)
+	
 	if not is_on_floor():
 		velocity.y += gravity * status.get_multiplier(&"gravity") * delta
 		_last_air_speed = maxf(_last_air_speed, velocity.y)
@@ -78,14 +134,19 @@ func _physics_process(delta: float) -> void:
 		_last_air_speed = 0.0
 	if can_control and Input.is_action_just_pressed(&"jump") and is_on_floor():
 		velocity.y = jump_velocity
+		
 	velocity += _knockback
 	_knockback = Vector2.ZERO
+	
 	move_and_slide()
+	_update_animation()
 	_update_prompt()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_alive():
 		return
+	if event.is_action_pressed(&"attack"):
+		attack()
 	if event.is_action_pressed(&"hotbar_1"):
 		item_controller.inventory.select_hotbar(0)
 	if event.is_action_pressed(&"hotbar_2"):
