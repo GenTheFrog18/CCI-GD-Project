@@ -1,12 +1,20 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://c63f51qe7nae7"]
+
 [ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
-[node name="Layer1West01A" instance=ExtResource("1")]
+
+[node name="Layer1West01A" unique_id=885107090 instance=ExtResource("1")]
 slot_id = &"layer1_west_01"
 variation_id = &"layer1_west_01_a"
 
-[node name="ReturnSurface" parent="AuthoredContent" instance=ExtResource("2")]
-position = Vector2(180, 110)
+[node name="ReturnSurface" parent="AuthoredContent" index="1" unique_id=1524248634 instance=ExtResource("2")]
+position = Vector2(360, 110)
 target_layer_id = &"surface"
-target_route_id = "west"
 prompt = "Return to Surface"
+
+[node name="VariationLabel" type="Label" parent="." index="5" unique_id=1526614950]
+offset_left = 739.0
+offset_top = 694.0
+offset_right = 859.0
+offset_bottom = 717.0
+text = "west 01 a end"

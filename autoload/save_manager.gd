@@ -4,7 +4,7 @@ signal save_started
 signal save_finished(success: bool)
 
 const META_SAVE_VERSION := 1
-const RUN_SAVE_VERSION := 2
+const RUN_SAVE_VERSION := 4
 
 var meta_path := "user://meta_save.json"
 var run_path := "user://run_save.json"

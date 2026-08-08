@@ -16,6 +16,6 @@ func _ready() -> void:
 		push_error("\n".join(errors))
 	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
 	add_child(player)
-	player.global_position = section.entry_anchor.global_position + Vector2(0.0, -20.0)
+	player.global_position = section.respawn_anchor.global_position
 	player.set_last_safe_position(player.global_position)
 	player.set_camera_bounds(Rect2(section.global_position, section.section_size))

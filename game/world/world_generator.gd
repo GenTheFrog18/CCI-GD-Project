@@ -6,7 +6,7 @@ signal generation_progress(stage: String, completed: int, total: int)
 signal generation_finished(manifest: Dictionary)
 signal generation_failed(errors: PackedStringArray)
 
-const WORLD_REVISION := 1
+const WORLD_REVISION := 3
 
 @export var layer_scenes: Array[PackedScene] = []
 

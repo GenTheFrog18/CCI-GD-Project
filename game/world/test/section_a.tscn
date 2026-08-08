@@ -2,20 +2,24 @@
 
 [ext_resource type="Script" path="res://game/world/world_section.gd" id="1"]
 
-[node name="SectionA" type="Node2D" node_paths=PackedStringArray("entry_anchor", "exit_anchor", "placer_root", "dynamic_root")]
+[node name="SectionA" type="Node2D" node_paths=PackedStringArray("entry_anchor", "exit_anchor", "respawn_anchor", "placer_root", "dynamic_root")]
 script = ExtResource("1")
 slot_id = &"test_east_01"
 variation_id = &"test_east_01_a"
 entry_anchor = NodePath("Entry")
 exit_anchor = NodePath("Exit")
+respawn_anchor = NodePath("Respawn")
 placer_root = NodePath("Placers")
 dynamic_root = NodePath("Dynamic")
 
 [node name="Entry" type="Marker2D" parent="."]
-position = Vector2(320, 0)
+position = Vector2(640, 0)
 
 [node name="Exit" type="Marker2D" parent="."]
-position = Vector2(320, 1600)
+position = Vector2(640, 800)
+
+[node name="Respawn" type="Marker2D" parent="."]
+position = Vector2(640, 64)
 
 [node name="Placers" type="Node2D" parent="."]
 

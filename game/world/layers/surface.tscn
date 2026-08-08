@@ -1,7 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://e1y7y1n8w688"]
 
-[ext_resource type="Script" path="res://game/world/world_layer.gd" id="1"]
+[ext_resource type="Script" uid="uid://csuwc1l8vngs8" path="res://game/world/world_layer.gd" id="1"]
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://game/shops/test_shop_terminal.tscn" id="3_7hsqt"]
+[ext_resource type="PackedScene" path="res://game/enemies/test/test_amphibian.tscn" id="4_ckure"]
 
 [sub_resource type="RectangleShape2D" id="GroundShape"]
 size = Vector2(640, 40)
@@ -9,7 +11,7 @@ size = Vector2(640, 40)
 [sub_resource type="RectangleShape2D" id="WallShape"]
 size = Vector2(20, 360)
 
-[node name="Surface" type="Node2D" node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn")]
+[node name="Surface" type="Node2D" unique_id=55976657 node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn")]
 script = ExtResource("1")
 layer_id = &"surface"
 slots_root = NodePath("Slots")
@@ -18,55 +20,66 @@ west_spawn = NodePath("WestSpawn")
 east_spawn = NodePath("EastSpawn")
 world_bounds = Rect2(0, 0, 640, 360)
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=173518940]
 offset_right = 640.0
 offset_bottom = 360.0
-color = Color(0.05, 0.07, 0.1, 1)
 mouse_filter = 2
+color = Color(0.05, 0.07, 0.1, 1)
 
-[node name="Slots" type="Node2D" parent="."]
+[node name="Slots" type="Node2D" parent="." unique_id=1818424470]
 
-[node name="RuntimeRoot" type="Node2D" parent="."]
+[node name="RuntimeRoot" type="Node2D" parent="." unique_id=54215688]
 
-[node name="WestSpawn" type="Marker2D" parent="."]
+[node name="WestSpawn" type="Marker2D" parent="." unique_id=1705119377]
 position = Vector2(150, 320)
 
-[node name="EastSpawn" type="Marker2D" parent="."]
+[node name="EastSpawn" type="Marker2D" parent="." unique_id=958335547]
 position = Vector2(490, 320)
 
-[node name="Ground" type="StaticBody2D" parent="."]
+[node name="Ground" type="StaticBody2D" parent="." unique_id=1226066745]
 position = Vector2(320, 340)
-collision_layer = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground" unique_id=29696230]
 shape = SubResource("GroundShape")
 
-[node name="Visual" type="Polygon2D" parent="Ground"]
-polygon = PackedVector2Array(-320, -20, 320, -20, 320, 20, -320, 20)
+[node name="Visual" type="Polygon2D" parent="Ground" unique_id=1826159283]
 color = Color(0.2, 0.26, 0.31, 1)
+polygon = PackedVector2Array(-320, -20, 320, -20, 320, 20, -320, 20)
 
-[node name="LeftWall" type="StaticBody2D" parent="."]
+[node name="LeftWall" type="StaticBody2D" parent="." unique_id=1145039495]
 position = Vector2(-10, 180)
-collision_layer = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall" unique_id=307766124]
 shape = SubResource("WallShape")
 
-[node name="RightWall" type="StaticBody2D" parent="."]
+[node name="RightWall" type="StaticBody2D" parent="." unique_id=941866745]
 position = Vector2(650, 180)
-collision_layer = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall" unique_id=366880150]
 shape = SubResource("WallShape")
 
-[node name="EnterWest" parent="." instance=ExtResource("2")]
+[node name="EnterWest" parent="." unique_id=576122737 instance=ExtResource("2")]
 position = Vector2(200, 320)
 target_layer_id = &"layer_1"
-target_route_id = "west"
 prompt = "Enter Layer 1 West"
 
-[node name="EnterEast" parent="." instance=ExtResource("2")]
+[node name="EnterEast" parent="." unique_id=1582418226 instance=ExtResource("2")]
 position = Vector2(440, 320)
 target_layer_id = &"layer_1"
 target_route_id = "east"
 prompt = "Enter Layer 1 East"
+
+[node name="TestShopTerminal" parent="." unique_id=66068193 instance=ExtResource("3_7hsqt")]
+position = Vector2(312, 320)
+
+[node name="TestAmphibian" parent="." unique_id=1118754930 instance=ExtResource("4_ckure")]
+position = Vector2(33, 319)
+persistent_id = "surface_test_amphibian_01"
+
+[node name="TestAmphibian2" parent="." unique_id=379937351 instance=ExtResource("4_ckure")]
+position = Vector2(70, 283)
+persistent_id = "surface_test_amphibian_02"
+
+[node name="TestAmphibian3" parent="." unique_id=810822037 instance=ExtResource("4_ckure")]
+position = Vector2(59, 315)
+persistent_id = "surface_test_amphibian_03"

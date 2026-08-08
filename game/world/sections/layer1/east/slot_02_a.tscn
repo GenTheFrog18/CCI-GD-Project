@@ -15,7 +15,7 @@ slot_id = &"layer1_east_02"
 variation_id = &"layer1_east_02_a"
 
 [node name="FrogPlacer" type="Marker2D" parent="Placers" node_paths=PackedStringArray("spawn_points")]
-position = Vector2(440, 800)
+position = Vector2(880, 400)
 script = ExtResource("2")
 persistent_id = &"layer1_east_02_a_enemy_01"
 spawn_chance = 1.0

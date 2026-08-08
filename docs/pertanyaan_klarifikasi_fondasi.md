@@ -411,7 +411,11 @@ Apakah keputusan berikut benar: viewport internal 640×360, 32 px/metre, setiap 
 
 **Saran:** kunci ini sebelum art/collision/section dibuat agar tidak ada rescale massal.
 
-**Jawaban:**asset yang sudah dibuat adalah item dengan ukuran 16px by 16px. saya belum bisa mengatakan dengan pasti karena belum tau seperti apa map nanti, tapi untuk sekarang aggap seperti itu
+**Jawaban awal:** asset yang sudah dibuat adalah item 16×16 px; ukuran map saat itu masih sementara.
+
+**Revisi playtest 7 Agustus 2026:** viewport tetap 640×360 dan skala tetap 32 px/metre, tetapi setiap east/west section menjadi 1280×1600 px. Tiga section tetap disusun vertikal per sisi; total layer 2560×4800 px.
+
+**Revisi playtest 8 Agustus 2026:** tinggi section dibagi dua menjadi 800 px. Kontrak authoring map sekarang 1280×800 px per section dan 2560×2400 px per layer.
 
 ## F2 — East/west route — BLOCKER
 
@@ -419,7 +423,7 @@ Apakah sisi east dan west adalah dua rute vertikal terpisah yang hanya terhubung
 
 Ini mengubah section contract, seam anchors, camera bounds, dan cara generator menyusun scene.
 
-**Saran:** dua kolom section 640 px yang dapat mempunyai authored connector. Jangan mengasumsikan koneksi pada setiap ketinggian.
+**Saran revisi:** dua kolom section 1280 px yang dapat mempunyai authored connector. Jangan mengasumsikan koneksi pada setiap ketinggian.
 
 **Jawaban:**east/west route terpisah, dan dapat diakses melalui gate di layer 0
 

@@ -12,4 +12,4 @@ offset_left = 10.0
 offset_top = 10.0
 offset_right = 420.0
 offset_bottom = 42.0
-text = "Set section_scene in Inspector, then press F6."
+text = "Set section_scene in Inspector, paint Terrain, then press F6."

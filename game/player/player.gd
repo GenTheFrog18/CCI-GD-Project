@@ -121,15 +121,18 @@ func drop_inventory_slot(container: StringName, index: int) -> bool:
 	var stack := item_controller.inventory.take_one(container, index)
 	if stack.is_empty():
 		return false
-	var world_item := preload("res://game/items/world/world_item.tscn").instantiate() as WorldItem
-	world_item.item_id = stack.item_id
-	world_item.quantity = 1
-	world_item.instance_state = stack.state
-	get_parent().add_child(world_item)
-	world_item.global_position = global_position + Vector2(20.0, -4.0)
+	var definition := ContentCatalog.get_item(stack.item_id)
+	if definition == null:
+		item_controller.inventory.try_add_item(stack.item_id, 1, stack.state)
+		return false
+	var dropped := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	dropped.configure(definition, stack.state, self, global_position + Vector2(20.0, -4.0), Vector2.ZERO)
+	get_parent().add_child(dropped)
 	return true
 
 func apply_damage(info: DamageInfo) -> bool:
+	if GameSession.debug_unlimited_health:
+		return false
 	return health.apply_damage(info, species_id)
 
 func apply_force(force: Vector2) -> void:
@@ -147,7 +150,7 @@ func set_last_safe_position(value: Vector2) -> void:
 
 func recover_from_out_of_bounds() -> void:
 	global_position = last_safe_position
-	health.set_health(1.0)
+	health.set_health(health.max_health if GameSession.debug_unlimited_health else 1.0)
 	velocity = Vector2.ZERO
 	_knockback = Vector2.ZERO
 

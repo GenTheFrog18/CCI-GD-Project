@@ -15,8 +15,8 @@ Dokumen ini adalah sumber kebenaran teknis. Dokumen di `docs/reference/` adalah 
 | Texture filtering | Nearest |
 | Skala dunia | 32 px per metre |
 | Ukuran item art saat ini | 16×16 px; tidak mengubah skala dunia |
-| Section | 640×1600 px atau 20×50 m |
-| Layer | Tiga section vertikal atau 150 m |
+| Section | 1280×800 px atau 40×25 m |
+| Layer | Dua route 1280 px × tiga section vertikal; total 2560×2400 px |
 | Rope | 160 px atau 5 m |
 | Target build pertama | Linux |
 | Input | Keyboard dan mouse; controller di luar scope jam |
@@ -218,19 +218,21 @@ Death signal hanya dipancarkan sekali. Semua healing melewati satu API agar curs
 
 - World memakai authored sections; generator hanya memilih variasi dan placer secara deterministik.
 - Layer 0 adalah satu authored hub. Layer 1 dan Layer 2 masing-masing mempunyai enam slot: west/east × tiga depth.
-- Setiap route section berukuran 640×1600 px, origin kiri atas, dengan entry/exit seam universal di `x = 320`.
-- West berada pada `x = 0`, east pada `x = 640`; depth berada pada `y = 0`, `1600`, dan `3200` di assembly layer.
+- Setiap route section berukuran 1280×800 px, origin kiri atas, dengan entry/exit seam universal di `x = 640`.
+- West berada pada `x = 0`, east pada `x = 1280`; depth berada pada `y = 0`, `800`, dan `1600` di assembly layer.
 - Generator memilih seluruh 12 variation dan semua hasil placer saat New Run, tetapi hanya menginstansiasi layer aktif.
-- Setiap section mempunyai slot ID, variation ID, selection weight, seam anchors/clearance, camera bounds, placer root, dan special tags.
-- Moving/dropped item, enemy, serta Rope berada pada runtime root milik layer agar dapat melewati seam.
+- Setiap section mempunyai slot ID, variation ID, selection weight, entry/exit/respawn anchors, seam clearance, camera bounds, placer root, dan special tags.
+- Moving/dropped item, enemy, serta Rope berada pada runtime root milik layer agar dapat melewati seam. Loot authored memakai `WorldItem`; item yang dijatuhkan player memakai physics `ThrownItem` dengan velocity awal nol.
 - Setiap placer mempunyai stable ID, weighted content entries, chance, quantity, dan authored spawn points.
 - Seed + stable ID menentukan setiap hasil tanpa RNG global berurutan. Hasil dipersist agar Continue tidak reroll.
 - Terrain utama memakai `TileMapLayer` dan tidak destructible. Breakable/hazard/platform khusus adalah scene object.
+- Base section hanya berisi `TileMapLayer` kosong dan contract marker. Level designer melukis terrain/collision unik pada setiap variation memakai grid 16 px.
+- Entry/exit mempunyai safe zone 96 px. `RespawnAnchor` berada di `(640, 64)` dan digunakan untuk recovery current section dengan 1 HP.
 - Semua enam terrain section pada layer aktif tetap terinstansiasi. Hanya section player, tetangga vertikal, dan pasangan crossing yang memproses enemy.
 - Enemy mati tidak respawn selama living run.
 - Plant, breakable rock, resin tree, dan harvested creature tidak respawn selama living run.
 - Tidak ada checkpoint gameplay. Continue memulihkan posisi player sebelumnya.
-- `last_safe_position` hanya fallback jika posisi load invalid/out-of-bounds; seam, surface, dan shop dapat memperbaruinya.
+- `last_safe_position` hanya fallback jika posisi load invalid/out-of-bounds; perpindahan slot mengaturnya ke `RespawnAnchor` section aktif.
 - Pause menghentikan SceneTree. Inventory tidak mengubah global time scale.
 
 ### Topologi yang dikunci
@@ -248,9 +250,10 @@ Death signal hanya dipancarkan sekali. Semua healing melewati satu API agar curs
 
 - Generation dipecah menjadi stage dan yield antar-frame. Player belum dibuat sampai validation, assembly, placer spawn, dan restore selesai.
 - Loading screen menunjukkan stage dan progress nyata; tidak ada artificial minimum delay.
-- Debug Mode di main menu membuka seed input. Seed selalu terlihat pada pause menu.
+- Debug Run di main menu membuka custom seed dan World Gen Log. Seed selalu terlihat pada pause menu.
 - Debug-only World Gen Log menyimpan duration tiap stage, selection, placer result, warning, fallback, dan error.
-- F3 menampilkan layer/route/slot serta section aktif. Debug juga menyediakan bounds/seam draw, teleport, manifest dump, dan validator.
+- World Gen Log berupa panel scrollable dengan tombol Close; Esc menutup log sebelum menutup pause.
+- F3 selalu tersedia tetapi tersembunyi secara default. Panel menampilkan layer/route/slot, unlimited health, bounds/seam draw, teleport, manifest dump, dan validator. Posisi semantic serta koordinat player selalu terlihat di kanan atas.
 
 ### Save boundary
 

@@ -26,7 +26,7 @@ Label prioritas:
 
 1. Dunia menggunakan section buatan tangan; generator tidak membuat geometry atau terrain prosedural.
 2. Generator memilih variasi section dan hasil placer secara deterministik dari seed run dan ID stabil.
-3. Kontrak sementara saat ini adalah viewport 640×360, skala 32 px/m, section 640×1600 px, dan tiga section vertikal per sisi per layer.
+3. Kontrak hasil playtest terbaru adalah viewport 640×360, skala 32 px/m, section 1280×800 px, dan tiga section vertikal per sisi per layer.
 4. Ada dua layer playable. Layer 3 tidak playable; build berakhir di entrance Layer 3.
 5. Setiap layer mempunyai rute east dan west. Keduanya diakses dari gate di Layer 0 dan tidak boleh dianggap terhubung pada setiap kedalaman.(koreksi: tiap rute terhubung pada bagian terbawah layer, player dapat memilih rute sisi pada entrance untuk layer selanjutnya, jadi di layer 1 bawah player dapat pindah sisi dan juga di bagian bawah dapat memilih entrance east/west untuk layer 2)
 6. Target penuh lama adalah 12 slot terpilih: tiga slot × dua sisi × dua layer. Dua variasi per slot berarti target penuh 24 scene section.
@@ -137,7 +137,11 @@ Asset item 16×16 tidak menentukan ukuran map. Mengubah ukuran setelah graybox d
 
 **Saran:** kunci 640×1600 untuk prototype pertama; evaluasi hanya setelah dua section tersambung dapat dimainkan.
 
-**Jawaban:** sesuai saran
+**Jawaban awal:** sesuai saran.
+
+**Revisi playtest 7 Agustus 2026:** keputusan 640×1600 diganti. Setiap route section sekarang 1280×1600 px; west mulai `x = 0`, east `x = 1280`, dan total layer 2560×4800 px. Perubahan diperlukan agar camera dapat bergerak horizontal dan ruang traversal tidak terasa seperti satu lorong viewport.
+
+**Revisi playtest 8 Agustus 2026:** tinggi section dikurangi menjadi 800 px karena 1600 px terlalu panjang. Kontrak final untuk authoring map sekarang 1280×800 px dan total layer 2560×2400 px.
 
 ## B2 — Ukuran ruang khusus — SEBELUM GRAYBOX
 
@@ -205,7 +209,7 @@ Programmer dapat mengukur nilai dari controller saat ini, tetapi desainer perlu 
 
 **Saran:** buat satu `movement_metrics` graybox test dan gunakan 80% kemampuan maksimum player sebagai batas jalur wajib.
 
-**Jawaban:** sesuai saran, namun akan ada section yang tidak bisa dinaiki tanpa rope, dan tidak bisa turun dengan aman tanpa rope
+**Jawaban:** gunakan margin 80%. Base section sekarang kosong agar level designer dapat melukis map sendiri. Map authored memakai rise wajib maksimal 32 px, gap horizontal maksimal 48 px, dan landing minimal 96 px.
 
 ## B10 — Peran Rope dalam rute wajib — BLOCKER
 
@@ -215,7 +219,7 @@ Dokumen lama mengatakan selalu harus ada rute alami yang lebih berbahaya dan ran
 
 **Saran:** main route selalu dapat diselesaikan tanpa Rope. Rope memperpendek, mengamankan, atau membuka optional loot.
 
-**Jawaban:** beberapa section harus menggunakan rope untuk naik kembali
+**Jawaban:** versi final boleh memiliki section yang membutuhkan Rope untuk naik kembali atau turun aman. Layout tersebut ditunda sampai Rope tersedia; semua placeholder sekarang wajib dapat dilalui dua arah tanpa Rope.
 
 ## B11 — Anchor Rope — SEBELUM GRAYBOX
 
@@ -241,7 +245,11 @@ Apakah camera dibatasi per section, per layer, atau mengikuti player tanpa bound
 
 **Saran:** setiap section mengekspor rectangle camera bounds. World controller memilih bounds section aktif dan melakukan blend singkat tanpa menghentikan gameplay.
 
-**Jawaban:** sesuai saran
+**Jawaban awal:** sesuai saran.
+
+**Revisi playtest 7 Agustus 2026:** depth 01–02 memakai bounds seluruh route 1280×4800, bukan bounds per-section. Depth 03 memakai bounds seluruh layer 2560×4800. Camera tetap mengikuti player pada kedua axis tanpa berhenti di seam vertikal; gate antar-layer tetap memakai loading transition.
+
+**Revisi playtest 8 Agustus 2026:** bounds route menjadi 1280×2400 dan bounds layer menjadi 2560×2400 setelah tinggi section dibagi dua.
 
 ## B14 — Safe zone pada seam — SEBELUM GRAYBOX
 
@@ -249,7 +257,7 @@ Berapa area di sekitar entry/exit yang harus bebas dari enemy, hazard, dan place
 
 **Saran:** sediakan satu viewport-height atau minimal beberapa detik traversal aman pada setiap seam penting; validator melarang enemy placer di area tersebut.
 
-**Jawaban:** sesuai saran
+**Jawaban revisi:** safe zone random enemy/hazard adalah 96 px pada sisi entry dan exit.
 
 ## B15 — Out-of-bounds section — BLOCKER
 
@@ -257,7 +265,7 @@ Apa yang terjadi jika player keluar sisi atau jatuh melewati section tanpa seam 
 
 **Saran:** hanya crossing melalui seam volume yang memindahkan section. Keluar bounds lain menggunakan fallback yang sudah ada: last-safe position dan tepat 1 HP.
 
-**Jawaban:** sesuai saran
+**Jawaban revisi:** jika player jatuh melewati bounds seluruh layer, player kembali ke `RespawnAnchor` section terakhir dengan tepat 1 HP.
 
 ---
 
@@ -693,3 +701,6 @@ Keputusan di dokumen ini diterjemahkan menjadi kontrak implementasi di `fondasi_
 - Layer 2 shop dan gatekeeper bersifat optional. Powerful relic adalah bantuan untuk gauntlet, bukan hard key.
 - Player yang berhasil melewati gauntlet boleh menginteraksi dengan entrance Layer 3 tanpa requirement lain.
 - Player sprite 32×32 px dan item sprite 16×16 px boleh digunakan bersama. Collision dan world scale tetap terpisah dari texture size.
+- Revisi terbaru menetapkan route section 1280×800 px dan total layer 2560×2400 px.
+- Base section memakai TileMap kosong agar setiap variation mudah dilukis lewat GUI; safe zone seam adalah 96 px.
+- Camera memakai bounds route penuh untuk seam vertikal mulus dan bounds layer penuh pada crossing.

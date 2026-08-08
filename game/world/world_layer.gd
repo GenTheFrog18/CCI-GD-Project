@@ -6,7 +6,7 @@ extends Node2D
 @export var runtime_root: Node2D
 @export var west_spawn: Marker2D
 @export var east_spawn: Marker2D
-@export var world_bounds := Rect2(0.0, 0.0, 1280.0, 4800.0)
+@export var world_bounds := Rect2(0.0, 0.0, 2560.0, 2400.0)
 
 var instantiated_sections: Dictionary = {}
 var spawned_by_slot: Dictionary = {}
@@ -116,15 +116,18 @@ func spawn_position(route: StringName, spawn_id: StringName = &"") -> Vector2:
 		return east_spawn.global_position
 	if west_spawn != null:
 		return west_spawn.global_position
-	return global_position + Vector2(320.0, 64.0)
+	return global_position + Vector2(640.0, 64.0)
 
 func camera_bounds_for(section: WorldSection) -> Rect2:
 	if section == null:
 		return world_bounds
 	var slot := slot_for_section(section)
-	if slot != null and slot.depth_index == 3:
-		return Rect2(global_position.x, section.global_position.y, 1280.0, 1600.0)
-	return Rect2(section.global_position + section.camera_bounds.position, section.camera_bounds.size)
+	if slot == null:
+		return world_bounds
+	if slot.depth_index == 3:
+		return world_bounds
+	var route_x := 1280.0 if slot.route_id == "east" else 0.0
+	return Rect2(global_position + Vector2(route_x, 0.0), Vector2(1280.0, 2400.0))
 
 func _collect_slots(node: Node, result: Array[WorldSlot]) -> void:
 	if node == null:

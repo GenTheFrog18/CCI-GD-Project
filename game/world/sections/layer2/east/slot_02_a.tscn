@@ -7,4 +7,4 @@ variation_id = &"layer2_east_02_a"
 special_tags = PackedStringArray("shop")
 
 [node name="Layer2Shop" parent="AuthoredContent" instance=ExtResource("2")]
-position = Vector2(500, 780)
+position = Vector2(1000, 390)

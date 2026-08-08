@@ -6,7 +6,7 @@ slot_id = &"layer2_west_01"
 variation_id = &"layer2_west_01_a"
 
 [node name="ReturnLayer1" parent="AuthoredContent" instance=ExtResource("2")]
-position = Vector2(180, 110)
+position = Vector2(360, 110)
 target_layer_id = &"layer_1"
 target_route_id = "west"
 target_spawn_id = &"WestBottomSpawn"

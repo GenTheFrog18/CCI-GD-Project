@@ -11,10 +11,10 @@
 [ext_resource type="PackedScene" path="res://game/world/sections/layer2/west/slot_01_b.tscn" id="9"]
 
 [sub_resource type="RectangleShape2D" id="OuterWall"]
-size = Vector2(20, 4800)
+size = Vector2(20, 2400)
 
 [sub_resource type="RectangleShape2D" id="MiddleWall"]
-size = Vector2(20, 4320)
+size = Vector2(20, 1920)
 
 [node name="Layer2" type="Node2D" node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn")]
 script = ExtResource("1")
@@ -36,7 +36,7 @@ variations = Array[PackedScene]([ExtResource("3"), ExtResource("9")])
 fallback_scene = ExtResource("3")
 
 [node name="West02" type="Marker2D" parent="Slots"]
-position = Vector2(0, 1600)
+position = Vector2(0, 800)
 script = ExtResource("2")
 slot_id = &"layer2_west_02"
 layer_id = &"layer_2"
@@ -46,7 +46,7 @@ variations = Array[PackedScene]([ExtResource("4")])
 fallback_scene = ExtResource("4")
 
 [node name="West03" type="Marker2D" parent="Slots"]
-position = Vector2(0, 3200)
+position = Vector2(0, 1600)
 script = ExtResource("2")
 slot_id = &"layer2_west_03"
 layer_id = &"layer_2"
@@ -56,7 +56,7 @@ variations = Array[PackedScene]([ExtResource("5")])
 fallback_scene = ExtResource("5")
 
 [node name="East01" type="Marker2D" parent="Slots"]
-position = Vector2(640, 0)
+position = Vector2(1280, 0)
 script = ExtResource("2")
 slot_id = &"layer2_east_01"
 layer_id = &"layer_2"
@@ -66,7 +66,7 @@ variations = Array[PackedScene]([ExtResource("6")])
 fallback_scene = ExtResource("6")
 
 [node name="East02" type="Marker2D" parent="Slots"]
-position = Vector2(640, 1600)
+position = Vector2(1280, 800)
 script = ExtResource("2")
 slot_id = &"layer2_east_02"
 layer_id = &"layer_2"
@@ -76,7 +76,7 @@ variations = Array[PackedScene]([ExtResource("7")])
 fallback_scene = ExtResource("7")
 
 [node name="East03" type="Marker2D" parent="Slots"]
-position = Vector2(640, 3200)
+position = Vector2(1280, 1600)
 script = ExtResource("2")
 slot_id = &"layer2_east_03"
 layer_id = &"layer_2"
@@ -88,22 +88,22 @@ fallback_scene = ExtResource("8")
 [node name="RuntimeRoot" type="Node2D" parent="."]
 
 [node name="WestSpawn" type="Marker2D" parent="."]
-position = Vector2(320, 0)
+position = Vector2(640, 0)
 
 [node name="EastSpawn" type="Marker2D" parent="."]
-position = Vector2(960, 0)
+position = Vector2(1920, 0)
 
 [node name="RouteBoundaries" type="StaticBody2D" parent="."]
 collision_layer = 1
 
 [node name="Left" type="CollisionShape2D" parent="RouteBoundaries"]
-position = Vector2(-10, 2400)
+position = Vector2(-10, 1200)
 shape = SubResource("OuterWall")
 
 [node name="Right" type="CollisionShape2D" parent="RouteBoundaries"]
-position = Vector2(1290, 2400)
+position = Vector2(2570, 1200)
 shape = SubResource("OuterWall")
 
 [node name="Middle" type="CollisionShape2D" parent="RouteBoundaries"]
-position = Vector2(640, 2160)
+position = Vector2(1280, 960)
 shape = SubResource("MiddleWall")

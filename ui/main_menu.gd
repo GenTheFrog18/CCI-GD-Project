@@ -36,7 +36,7 @@ func _ready() -> void:
 		incompatible.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		column.add_child(incompatible)
 	debug_checkbox = CheckBox.new()
-	debug_checkbox.text = "Debug Mode"
+	debug_checkbox.text = "Debug Run (custom seed + world log)"
 	debug_checkbox.toggled.connect(func(enabled: bool): seed_input.visible = enabled)
 	column.add_child(debug_checkbox)
 	seed_input = SpinBox.new()

@@ -32,6 +32,7 @@ class PickupProbe:
 func _ready() -> void:
 	_test_catalog()
 	_test_inventory()
+	await _test_physical_inventory_drop()
 	await _test_interaction_sensor()
 	_test_combat_and_status()
 	_test_projectile_hit_history()
@@ -124,6 +125,26 @@ func _test_item_action_rollback_and_pickup() -> void:
 	picker.free()
 	controller.free()
 	actor.free()
+	world.free()
+
+func _test_physical_inventory_drop() -> void:
+	var world := Node2D.new()
+	add_child(world)
+	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	world.add_child(player)
+	assert(player.item_controller.inventory.try_add_item(&"throwable_rock"))
+	assert(player.drop_inventory_slot(&"hotbar", 1))
+	var dropped: ThrownItem
+	for child in world.get_children():
+		if child is ThrownItem:
+			dropped = child
+	assert(dropped != null and not dropped.freeze)
+	var initial_y := dropped.global_position.y
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	assert(dropped.global_position.y > initial_y)
+	dropped.freeze = true
+	assert(dropped.interact(player))
 	world.free()
 
 func _test_interaction_sensor() -> void:
@@ -234,6 +255,10 @@ func _test_turret_projectile() -> void:
 	world.free()
 
 func _test_ui_input_and_debug() -> void:
+	var original_debug_enabled := GameSession.debug_enabled
+	var original_unlimited_health := GameSession.debug_unlimited_health
+	GameSession.debug_enabled = false
+	GameSession.debug_unlimited_health = false
 	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
 	var hud := FoundationHUD.new()
 	add_child(player)
@@ -262,7 +287,30 @@ func _test_ui_input_and_debug() -> void:
 	assert(not get_tree().paused)
 	hud.debug_panel.visible = true
 	hud._update_performance()
+	hud._process(0.0)
 	assert(not hud.performance_label.text.is_empty() and hud.crosshair != null)
+	assert(hud.location_label.text.contains("X") and hud.location_label.text.contains("Y"))
+	var debug_end := hud.debug_panel.position + hud.debug_panel.size
+	var log_end := hud.world_log_panel.position + hud.world_log_panel.size
+	assert(debug_end.x <= 640.0 and debug_end.y <= 360.0)
+	assert(log_end.x <= 640.0 and log_end.y <= 360.0)
+	hud.unlimited_health_toggle.button_pressed = true
+	assert(GameSession.debug_unlimited_health and hud.health_label.text == "HP ∞")
+	assert(not player.apply_damage(DamageInfo.new(10.0)) and player.health.health == player.health.max_health)
+	hud.unlimited_health_toggle.button_pressed = false
+	assert(player.apply_damage(DamageInfo.new(10.0)) and player.health.health < player.health.max_health)
+	hud.world_log_panel.visible = true
+	get_tree().paused = true
+	hud._input(pause_event)
+	assert(not hud.world_log_panel.visible and get_tree().paused)
+	var close_buttons := hud.world_log_panel.find_children("*", "Button", true, false)
+	assert(close_buttons.size() == 1)
+	var close_button := close_buttons[0] as Button
+	assert(close_button.text == "Close")
+	hud.world_log_panel.visible = true
+	close_button.pressed.emit()
+	assert(not hud.world_log_panel.visible)
+	get_tree().paused = false
 	var dialogue := ContentCatalog.get_dialogue(&"foundation_intro")
 	hud.show_dialogue(dialogue)
 	assert(hud.dialogue_box.visible and not player.locks.is_locked())
@@ -295,6 +343,8 @@ func _test_ui_input_and_debug() -> void:
 	SaveManager.meta_path = original_meta_path
 	hud.free()
 	player.free()
+	GameSession.debug_enabled = original_debug_enabled
+	GameSession.debug_unlimited_health = original_unlimited_health
 
 func _test_sound() -> void:
 	var probe := SoundProbe.new()
@@ -462,6 +512,21 @@ func _test_room_loads() -> void:
 	var world_run := preload("res://game/world/world_run.tscn").instantiate()
 	assert(world_run != null)
 	world_run.free()
+	var section := preload("res://game/world/sections/graybox_section_base.tscn").instantiate() as WorldSection
+	assert(section.section_size == Vector2(1280.0, 800.0))
+	assert(section.entry_anchor.position == Vector2(640.0, 0.0))
+	assert(section.exit_anchor.position == Vector2(640.0, 800.0))
+	assert(section.respawn_anchor.position == Vector2(640.0, 64.0))
+	assert(section.get_node("Terrain") is TileMapLayer)
+	assert(not section.has_node("AuthoredContent/Traversal"))
+	section.free()
+	var surface := preload("res://game/world/layers/surface.tscn").instantiate()
+	var surface_ids: Dictionary = {}
+	for child in surface.get_children():
+		if child is TestAmphibian:
+			surface_ids[child.persistent_id] = true
+	assert(surface_ids.size() == 3)
+	surface.free()
 
 func _test_world_run_runtime() -> void:
 	var original_run_path := SaveManager.run_path
@@ -479,10 +544,24 @@ func _test_world_run_runtime() -> void:
 	await world.request_layer_transition(&"layer_1", &"east")
 	assert(world.active_layer.layer_id == &"layer_1")
 	assert(world.active_layer.instantiated_sections.size() == 6)
+	assert(world.active_layer.world_bounds == Rect2(0.0, 0.0, 2560.0, 2400.0))
 	assert(world.player.global_position.distance_to(world.active_layer.east_spawn.global_position) < 5.0)
 	world._process(0.21)
 	assert(world.active_layer.active_slot_ids.has("layer1_east_01"))
 	assert(world.active_layer.active_slot_ids.has("layer1_east_02"))
+	assert(world.player.camera.limit_left == 1280 and world.player.camera.limit_right == 2560)
+	assert(world.player.camera.limit_top == 0 and world.player.camera.limit_bottom == 2400)
+	world.player.global_position = Vector2(1920.0, 810.0)
+	world._process(0.21)
+	assert(world.player.camera.limit_top == 0 and world.player.camera.limit_bottom == 2400)
+	assert(world.player.last_safe_position == Vector2(1920.0, 864.0))
+	world.player.health.set_health(20.0)
+	world.player.global_position = Vector2(1920.0, 2600.0)
+	world._process(0.21)
+	assert(world.player.global_position == Vector2(1920.0, 864.0) and world.player.health.health == 1.0)
+	world.player.global_position = Vector2(1920.0, 1610.0)
+	world._process(0.21)
+	assert(world.player.camera.limit_left == 0 and world.player.camera.limit_right == 2560)
 	var found_generated_enemy := false
 	for child in world.active_layer.runtime_root.get_children():
 		if child is TestAmphibian:
@@ -491,7 +570,7 @@ func _test_world_run_runtime() -> void:
 	await world.request_layer_transition(&"layer_2", &"east")
 	assert(world.active_layer.layer_id == &"layer_2")
 	await world.request_layer_transition(&"layer_1", &"east", &"EastBottomSpawn")
-	assert(world.player.global_position.distance_to(Vector2(960.0, 4660.0)) < 5.0)
+	assert(world.player.global_position.distance_to(Vector2(1920.0, 2260.0)) < 5.0)
 	assert(SaveManager.has_valid_run())
 	world.free()
 	assert(not SaveManager.load_run().is_empty())

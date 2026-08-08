@@ -20,6 +20,8 @@ var performance_label: Label
 var world_debug_label: Label
 var world_log_panel: PanelContainer
 var world_log_label: Label
+var unlimited_health_toggle: CheckButton
+var location_label: Label
 var _selected_container: StringName
 var _selected_index := -1
 var _performance_elapsed := 0.0
@@ -32,6 +34,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	crosshair.position = get_viewport().get_mouse_position()
+	_update_location()
 	if not debug_panel.visible:
 		_performance_elapsed = 0.0
 		return
@@ -68,7 +71,9 @@ func _input(event: InputEvent) -> void:
 			player.toggle_inventory()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"pause"):
-		if player.inventory_open:
+		if world_log_panel.visible:
+			world_log_panel.visible = false
+		elif player.inventory_open:
 			player.set_inventory_open(false)
 		else:
 			get_tree().paused = not get_tree().paused
@@ -89,6 +94,15 @@ func _build_ui() -> void:
 	top.add_child(health_label)
 	money_label = Label.new()
 	top.add_child(money_label)
+	location_label = Label.new()
+	location_label.anchor_left = 1.0
+	location_label.anchor_right = 1.0
+	location_label.offset_left = -300.0
+	location_label.offset_top = 8.0
+	location_label.offset_right = -10.0
+	location_label.offset_bottom = 42.0
+	location_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	add_child(location_label)
 	prompt_label = Label.new()
 	prompt_label.position = Vector2(230, 320)
 	prompt_label.size = Vector2(180, 28)
@@ -162,9 +176,25 @@ func _build_ui() -> void:
 	death_menu.text = "Main Menu"
 	death_menu.pressed.connect(_return_to_menu)
 	death_panel.get_child(0).add_child(death_menu)
-	debug_panel = _make_panel("Debug", Vector2(470, 55))
+	debug_panel = PanelContainer.new()
+	debug_panel.anchor_left = 1.0
+	debug_panel.anchor_right = 1.0
+	debug_panel.anchor_bottom = 1.0
+	debug_panel.offset_left = -300.0
+	debug_panel.offset_top = 44.0
+	debug_panel.offset_right = -10.0
+	debug_panel.offset_bottom = -10.0
+	add_child(debug_panel)
 	debug_panel.visible = false
-	var debug_column := debug_panel.get_child(0) as VBoxContainer
+	var debug_scroll := ScrollContainer.new()
+	debug_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	debug_panel.add_child(debug_scroll)
+	var debug_column := VBoxContainer.new()
+	debug_column.custom_minimum_size.x = 260
+	debug_scroll.add_child(debug_column)
+	var debug_title := Label.new()
+	debug_title.text = "Debug"
+	debug_column.add_child(debug_title)
 	performance_label = Label.new()
 	debug_column.add_child(performance_label)
 	world_debug_label = Label.new()
@@ -181,27 +211,49 @@ func _build_ui() -> void:
 		button.text = spec[0]
 		button.pressed.connect(spec[1])
 		debug_column.add_child(button)
-	if GameSession.debug_enabled:
-		for spec in [
-			["Toggle World Bounds", &"toggle_bounds"],
-			["Teleport Next Slot", &"teleport_next"],
-			["Teleport Layer 2 Shop", &"teleport_shop"],
-			["Teleport Layer 3 Entrance", &"teleport_ending"],
-			["Teleport Surface", &"teleport_surface"],
-			["Validate World", &"validate_world"],
-			["Dump Manifest", &"dump_manifest"],
-		]:
-			var button := Button.new()
-			button.text = spec[0]
-			button.pressed.connect(_emit_world_debug_action.bind(spec[1]))
-			debug_column.add_child(button)
-	world_log_panel = _make_panel("World Gen Log", Vector2(80, 45))
-	world_log_panel.custom_minimum_size = Vector2(480, 260)
+	unlimited_health_toggle = CheckButton.new()
+	unlimited_health_toggle.text = "Unlimited Health"
+	unlimited_health_toggle.button_pressed = GameSession.debug_unlimited_health
+	unlimited_health_toggle.toggled.connect(_set_unlimited_health)
+	debug_column.add_child(unlimited_health_toggle)
+	for spec in [
+		["Toggle World Bounds", &"toggle_bounds"],
+		["Teleport Next Slot", &"teleport_next"],
+		["Teleport Layer 2 Shop", &"teleport_shop"],
+		["Teleport Layer 3 Entrance", &"teleport_ending"],
+		["Teleport Surface", &"teleport_surface"],
+		["Validate World", &"validate_world"],
+		["Dump Manifest", &"dump_manifest"],
+	]:
+		var button := Button.new()
+		button.text = spec[0]
+		button.pressed.connect(_emit_world_debug_action.bind(spec[1]))
+		debug_column.add_child(button)
+	world_log_panel = PanelContainer.new()
+	world_log_panel.position = Vector2(40, 30)
+	world_log_panel.size = Vector2(560, 300)
+	add_child(world_log_panel)
 	world_log_panel.visible = false
+	var log_column := VBoxContainer.new()
+	world_log_panel.add_child(log_column)
+	var log_header := HBoxContainer.new()
+	log_column.add_child(log_header)
+	var log_title := Label.new()
+	log_title.text = "World Gen Log"
+	log_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	log_header.add_child(log_title)
+	var close_log := Button.new()
+	close_log.text = "Close"
+	close_log.pressed.connect(func(): world_log_panel.visible = false)
+	log_header.add_child(close_log)
+	var log_scroll := ScrollContainer.new()
+	log_scroll.custom_minimum_size = Vector2(540, 250)
+	log_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	log_column.add_child(log_scroll)
 	world_log_label = Label.new()
 	world_log_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	world_log_label.custom_minimum_size.x = 450
-	world_log_panel.get_child(0).add_child(world_log_label)
+	world_log_label.custom_minimum_size.x = 515
+	log_scroll.add_child(world_log_label)
 	_build_crosshair()
 
 func _build_crosshair() -> void:
@@ -286,7 +338,26 @@ func _refresh_inventory() -> void:
 		hotbar_labels[index].text = "%s%d: %s" % ["▶ " if index == player.item_controller.inventory.active_hotbar_index else "", index + 1, item_name]
 
 func _set_health_text(current: float, maximum: float) -> void:
-	health_label.text = "HP %d/%d" % [ceili(current), ceili(maximum)]
+	health_label.text = "HP ∞" if GameSession.debug_unlimited_health else "HP %d/%d" % [ceili(current), ceili(maximum)]
+
+func _set_unlimited_health(enabled: bool) -> void:
+	GameSession.debug_unlimited_health = enabled
+	if enabled and player != null and player.is_alive():
+		player.health.set_health(player.health.max_health)
+	elif player != null:
+		_set_health_text(player.health.health, player.health.max_health)
+
+func _update_location() -> void:
+	if location_label == null or player == null:
+		return
+	var slot := String(GameSession.current_slot_id)
+	location_label.text = "%s / %s / %s\nX %d  Y %d" % [
+		GameSession.current_layer_id,
+		GameSession.current_route_id,
+		slot if not slot.is_empty() else "-",
+		roundi(player.global_position.x),
+		roundi(player.global_position.y),
+	]
 
 func _on_player_died(_source: Node) -> void:
 	player.set_inventory_open(false)

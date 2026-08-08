@@ -7,7 +7,7 @@ variation_id = &"layer1_west_03_a"
 special_tags = PackedStringArray("crossing")
 
 [node name="EnterLayer2West" parent="AuthoredContent" instance=ExtResource("2")]
-position = Vector2(250, 1540)
+position = Vector2(500, 740)
 target_layer_id = &"layer_2"
 target_route_id = "west"
 prompt = "Enter Layer 2 West"

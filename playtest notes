@@ -1,0 +1,5 @@
+f3 debug menu is still kinda screwed but more usable
+when an item is dropped from the inventory it floats instead of acting like an object first and falling
+for now, the player location should be always visible as a text on the top right of the screen
+when player falls out of bounds, teleport to current section entrance with 1 HP
+the toggle for unlimited health isnt present on the debug menu

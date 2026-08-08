@@ -1,10 +1,10 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3 uid="uid://dq7wfm672giiw"]
 
-[ext_resource path="res://game/player/player.gd" type="Script" id="1"]
-[ext_resource path="res://core/combat/health_component.gd" type="Script" id="2"]
-[ext_resource path="res://core/status/status_controller.gd" type="Script" id="3"]
-[ext_resource path="res://game/items/player_item_controller.gd" type="Script" id="4"]
-[ext_resource path="res://core/interaction/interaction_sensor.gd" type="Script" id="5"]
+[ext_resource type="Script" uid="uid://cvdepqc6862xe" path="res://game/player/player.gd" id="1"]
+[ext_resource type="Script" uid="uid://rax7v1pyqa5l" path="res://core/combat/health_component.gd" id="2"]
+[ext_resource type="Script" uid="uid://bq6tumcjn8lea" path="res://core/status/status_controller.gd" id="3"]
+[ext_resource type="Script" uid="uid://c5lccglb28q8r" path="res://game/items/player_item_controller.gd" id="4"]
+[ext_resource type="Script" uid="uid://dbhllx6vqyta7" path="res://core/interaction/interaction_sensor.gd" id="5"]
 
 [sub_resource type="CapsuleShape2D" id="PlayerShape"]
 radius = 8.0
@@ -13,41 +13,40 @@ height = 28.0
 [sub_resource type="CircleShape2D" id="InteractionShape"]
 radius = 34.0
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" unique_id=957350047]
 collision_layer = 2
-collision_mask = 1
 script = ExtResource("1")
+maximum_fall_damage = 0.0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=491973087]
 position = Vector2(0, -14)
 shape = SubResource("PlayerShape")
 
-[node name="Visual" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-8, -28, 8, -28, 8, 0, -8, 0)
+[node name="Visual" type="Polygon2D" parent="." unique_id=2013033215]
 color = Color(0.35, 0.72, 0.95, 1)
+polygon = PackedVector2Array(-8, -28, 8, -28, 8, 0, -8, 0)
 
-[node name="HeldItemAnchor" type="Node2D" parent="."]
+[node name="HeldItemAnchor" type="Node2D" parent="." unique_id=673219421]
 position = Vector2(12, -17)
 
-[node name="HealthComponent" type="Node" parent="."]
+[node name="HealthComponent" type="Node" parent="." unique_id=1680467586]
 script = ExtResource("2")
 
-[node name="StatusController" type="Node" parent="."]
+[node name="StatusController" type="Node" parent="." unique_id=1075097749]
 script = ExtResource("3")
 
-[node name="PlayerItemController" type="Node" parent="." node_paths=PackedStringArray("held_item_anchor")]
+[node name="PlayerItemController" type="Node" parent="." unique_id=56653675 node_paths=PackedStringArray("held_item_anchor")]
 script = ExtResource("4")
 held_item_anchor = NodePath("../HeldItemAnchor")
 
-[node name="InteractionSensor" type="Area2D" parent="."]
+[node name="InteractionSensor" type="Area2D" parent="." unique_id=500746271]
 collision_layer = 128
 collision_mask = 72
-monitoring = true
 script = ExtResource("5")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionSensor"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionSensor" unique_id=1833614476]
 position = Vector2(0, -12)
 shape = SubResource("InteractionShape")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1371483499]
 position = Vector2(0, -40)

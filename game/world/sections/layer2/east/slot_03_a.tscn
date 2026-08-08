@@ -7,4 +7,4 @@ variation_id = &"layer2_east_03_a"
 special_tags = PackedStringArray("gauntlet", "layer3_entrance")
 
 [node name="Layer3Entrance" parent="AuthoredContent" instance=ExtResource("2")]
-position = Vector2(320, 1540)
+position = Vector2(640, 740)

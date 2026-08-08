@@ -1,52 +1,13 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://game/world/world_section.gd" id="1"]
 [ext_resource type="TileSet" path="res://art/world/graybox_tileset.tres" id="2"]
 
-[sub_resource type="SegmentShape2D" id="Segment1"]
-a = Vector2(320, 20)
-b = Vector2(600, 160)
-
-[sub_resource type="SegmentShape2D" id="Segment2"]
-a = Vector2(600, 160)
-b = Vector2(40, 320)
-
-[sub_resource type="SegmentShape2D" id="Segment3"]
-a = Vector2(40, 320)
-b = Vector2(600, 480)
-
-[sub_resource type="SegmentShape2D" id="Segment4"]
-a = Vector2(600, 480)
-b = Vector2(40, 640)
-
-[sub_resource type="SegmentShape2D" id="Segment5"]
-a = Vector2(40, 640)
-b = Vector2(600, 800)
-
-[sub_resource type="SegmentShape2D" id="Segment6"]
-a = Vector2(600, 800)
-b = Vector2(40, 960)
-
-[sub_resource type="SegmentShape2D" id="Segment7"]
-a = Vector2(40, 960)
-b = Vector2(600, 1120)
-
-[sub_resource type="SegmentShape2D" id="Segment8"]
-a = Vector2(600, 1120)
-b = Vector2(40, 1280)
-
-[sub_resource type="SegmentShape2D" id="Segment9"]
-a = Vector2(40, 1280)
-b = Vector2(600, 1440)
-
-[sub_resource type="SegmentShape2D" id="Segment10"]
-a = Vector2(600, 1440)
-b = Vector2(320, 1580)
-
-[node name="GrayboxSection" type="Node2D" node_paths=PackedStringArray("entry_anchor", "exit_anchor", "placer_root", "dynamic_root")]
+[node name="GrayboxSection" type="Node2D" node_paths=PackedStringArray("entry_anchor", "exit_anchor", "respawn_anchor", "placer_root", "dynamic_root")]
 script = ExtResource("1")
 entry_anchor = NodePath("EntryAnchor")
 exit_anchor = NodePath("ExitAnchor")
+respawn_anchor = NodePath("RespawnAnchor")
 placer_root = NodePath("Placers")
 dynamic_root = NodePath("AuthoredContent")
 
@@ -54,49 +15,14 @@ dynamic_root = NodePath("AuthoredContent")
 tile_set = ExtResource("2")
 
 [node name="EntryAnchor" type="Marker2D" parent="."]
-position = Vector2(320, 0)
+position = Vector2(640, 0)
 
 [node name="ExitAnchor" type="Marker2D" parent="."]
-position = Vector2(320, 1600)
+position = Vector2(640, 800)
+
+[node name="RespawnAnchor" type="Marker2D" parent="."]
+position = Vector2(640, 64)
 
 [node name="Placers" type="Node2D" parent="."]
 
 [node name="AuthoredContent" type="Node2D" parent="."]
-
-[node name="Traversal" type="StaticBody2D" parent="AuthoredContent"]
-collision_layer = 1
-
-[node name="Segment1" type="CollisionShape2D" parent="AuthoredContent/Traversal"]
-shape = SubResource("Segment1")
-
-[node name="Segment2" type="CollisionShape2D" parent="AuthoredContent/Traversal"]
-shape = SubResource("Segment2")
-
-[node name="Segment3" type="CollisionShape2D" parent="AuthoredContent/Traversal"]
-shape = SubResource("Segment3")
-
-[node name="Segment4" type="CollisionShape2D" parent="AuthoredContent/Traversal"]
-shape = SubResource("Segment4")
-
-[node name="Segment5" type="CollisionShape2D" parent="AuthoredContent/Traversal"]
-shape = SubResource("Segment5")
-
-[node name="Segment6" type="CollisionShape2D" parent="AuthoredContent/Traversal"]
-shape = SubResource("Segment6")
-
-[node name="Segment7" type="CollisionShape2D" parent="AuthoredContent/Traversal"]
-shape = SubResource("Segment7")
-
-[node name="Segment8" type="CollisionShape2D" parent="AuthoredContent/Traversal"]
-shape = SubResource("Segment8")
-
-[node name="Segment9" type="CollisionShape2D" parent="AuthoredContent/Traversal"]
-shape = SubResource("Segment9")
-
-[node name="Segment10" type="CollisionShape2D" parent="AuthoredContent/Traversal"]
-shape = SubResource("Segment10")
-
-[node name="PathVisual" type="Line2D" parent="AuthoredContent"]
-points = PackedVector2Array(320, 20, 600, 160, 40, 320, 600, 480, 40, 640, 600, 800, 40, 960, 600, 1120, 40, 1280, 600, 1440, 320, 1580)
-width = 8.0
-default_color = Color(0.22, 0.28, 0.33, 1)

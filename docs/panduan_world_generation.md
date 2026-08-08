@@ -16,11 +16,11 @@ Layer 0 adalah satu authored hub. Layer 1 dan Layer 2 masing-masing mempunyai en
 
 ```text
 west_01  east_01   y = 0
-west_02  east_02   y = 1600
-west_03  east_03   y = 3200
+west_02  east_02   y = 800
+west_03  east_03   y = 1600
 ```
 
-West berada pada `x = 0`; east pada `x = 640`. Section biasa berukuran 640×1600 px. Layer scene boleh mempunyai ruang khusus berbeda ukuran jika anchor dan bounds eksplisit.
+West berada pada `x = 0`; east pada `x = 1280`. Section biasa berukuran 1280×800 px atau 80×50 tile. Total bounds layer adalah 2560×2400 px. Layer scene boleh mempunyai ruang khusus berbeda ukuran jika anchor dan bounds eksplisit.
 
 ## 2. Kontrak scene section
 
@@ -31,6 +31,7 @@ WorldSection
 ├── Terrain              TileMapLayer
 ├── EntryAnchor          Marker2D
 ├── ExitAnchor           Marker2D
+├── RespawnAnchor        Marker2D
 ├── Placers              Node2D
 └── AuthoredContent      Node2D
 ```
@@ -40,18 +41,19 @@ Field root wajib:
 - `slot_id`, contoh `layer1_east_02`;
 - `variation_id`, contoh `layer1_east_02_a`;
 - `selection_weight`, default `1`;
-- `section_size = Vector2(640, 1600)`;
-- `camera_bounds = Rect2(0, 0, 640, 1600)`;
-- reference Entry, Exit, Placers, dan AuthoredContent;
+- `section_size = Vector2(1280, 800)`;
+- `camera_bounds = Rect2(0, 0, 1280, 800)`;
+- reference Entry, Exit, Respawn, Placers, dan AuthoredContent;
 - special tags jika section memiliki shop, crossing, atau ending entrance.
 
 Geometry seam:
 
-- entry pada `(320, 0)`;
-- exit pada `(320, 1600)`;
+- entry pada `(640, 0)`;
+- exit pada `(640, 800)`;
+- respawn pada `(640, 64)`;
 - opening 96 px;
 - collision clearance 96 px ke dalam section;
-- 360 px dari entry/exit bebas random enemy dan hazard placer;
+- 96 px atau enam tile dari entry/exit bebas random enemy dan hazard placer;
 - semua variation pada slot sama memakai seam identik.
 
 Sisi luar route tertutup collision. Connector horizontal hanya boleh ada pada slot khusus. Terrain utama tidak destructible; breakable adalah scene object terpisah.
@@ -67,21 +69,21 @@ Gatekeeper shop optional. Quest memberi Moon Whistle dan powerful relic, tetapi 
 
 ## 4. Workflow level designer
 
-1. Duplicate template slot yang tepat; jangan duplicate slot lain lalu mengganti ID saja.
-2. Pertahankan root, size, anchor, clearance, camera bounds, dan inward connector.
-3. Buat jalur turun dan naik yang jelas. Section boleh sengaja membutuhkan Rope untuk return/safe descent.
-4. Pastikan surface shop selalu mempunyai Rope yang terjangkau dan beri warning sebelum rope-required drop.
-5. Buat optional branch di dalam section; generator tidak menyusun topology branch.
-6. Tempatkan placer dan child SpawnPoint dengan GUI.
-7. Jangan menaruh random enemy/hazard di seam safe zone.
-8. Run section melalui shared section test runner.
-9. Run world validator sebelum menyerahkan scene.
+1. Buka variation slot yang tepat sebagai inherited scene; jangan duplicate slot lain lalu mengganti ID saja.
+2. Pilih child `Terrain`, lalu lukis map memakai TileMap GUI pada grid 80×50. Jangan mengubah root ID, tags, anchors, atau bounds.
+3. Seam berada pada kolom tile 40. Sisakan enam baris tile paling atas dan bawah dari random enemy/hazard; buat landing aman di bawah `RespawnAnchor`.
+4. Buat jalur turun dan naik yang jelas. Selama Rope belum tersedia, map wajib dapat dilalui dua arah tanpa Rope. Layout Rope-required dibuat setelah Rope dapat diuji.
+5. Pastikan surface shop selalu mempunyai Rope yang terjangkau dan beri warning sebelum rope-required drop.
+6. Buat optional branch di dalam section; generator tidak menyusun topology branch.
+7. Tempatkan placer dan child SpawnPoint dengan GUI.
+8. Run section melalui shared section test runner, lalu jalankan `Validate World` dari F3.
 
 Target traversal setelah detailed graybox:
 
 - sekitar 10 menit per layer untuk run normal dengan eksplorasi;
 - sekitar 3 menit per layer jika player bergerak cepat;
 - jalur wajib memakai maksimal sekitar 80% kemampuan movement agar tidak pixel-perfect.
+- untuk controller saat ini, graybox wajib memakai rise maksimal 32 px, gap horizontal maksimal 48 px, dan landing minimal 96 px.
 
 ## 5. Kontrak placer
 
@@ -136,7 +138,7 @@ Seluruh terrain layer aktif tetap loaded. Enemy processing aktif hanya pada:
 
 F3 menampilkan current layer/route/slot dan daftar section aktif.
 
-Camera memakai bounds section aktif. Crossing memakai gabungan bounds east/west. `Camera2D` native limit/smoothing dipakai; jangan membuat custom camera framework.
+Camera mengikuti player secara horizontal dan vertikal. Depth 01–02 memakai bounds seluruh route 1280×2400 agar seam vertikal tidak menghentikan camera. Depth 03 memakai bounds seluruh layer 2560×2400 agar crossing east/west mulus. `Camera2D` native limit/smoothing dipakai; jangan membuat custom camera framework.
 
 Keluar world tanpa seam valid mengembalikan player ke `last_safe_position` dengan tepat 1 HP. Safe position diperbarui hanya pada surface, shop, dan seam valid. Enemy out-of-bounds menerima fall damage; survivor atau enemy fall-immune kembali ke placer.
 
@@ -152,7 +154,7 @@ Autosave layer transition dilakukan setelah destination selesai dibuat, player b
 
 ## 9. Debug tools
 
-Main menu Debug Mode menampilkan seed input. Seed `0` berarti random; nilai lain mereproduksi run.
+Main menu Debug Run menampilkan seed input. Seed `0` berarti random; nilai lain mereproduksi run.
 
 Pause menu selalu menunjukkan seed. Debug Mode menambah World Gen Log berisi:
 
@@ -161,7 +163,7 @@ Pause menu selalu menunjukkan seed. Debug Mode menambah World Gen Log berisi:
 - placer result dan quantity;
 - fallback, warning, dan error.
 
-Debug panel menyediakan active-section text, bounds/seam draw, manifest dump, teleport ke slot/shop/gate, dan validate world. Regenerate hanya melalui New Run.
+F3 selalu membuka panel scrollable berisi unlimited health, active-section text, bounds/seam draw, manifest dump, teleport ke slot/shop/gate, dan validate world. World Gen Log hanya ada pada Debug Run dan dapat ditutup dengan tombol Close atau Esc. Regenerate hanya melalui New Run.
 
 ## 10. Acceptance minimum
 
@@ -175,4 +177,7 @@ Debug panel menyediakan active-section text, bounds/seam draw, manifest dump, te
 - Kedua sisi Layer 1 mencapai kedua entrance Layer 2.
 - Shop optional dapat ditemukan di east slot 02.
 - Gauntlet dan ending dapat dicapai tanpa quest reward.
+- Camera tidak berhenti pada seam `y = 800` atau `y = 1600`, dan mengikuti gerak horizontal dalam route.
+- Setiap map authored dapat dimainkan turun dan naik tanpa Rope selama mechanic Rope belum tersedia.
+- Debug panel dan World Gen Log tidak keluar dari viewport 640×360.
 - Headless import dan smoke test selesai tanpa error.

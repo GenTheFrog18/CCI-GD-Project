@@ -15,7 +15,7 @@ slot_id = &"layer1_west_02"
 variation_id = &"layer1_west_02_a"
 
 [node name="RockPlacer" type="Marker2D" parent="Placers" node_paths=PackedStringArray("spawn_points")]
-position = Vector2(180, 800)
+position = Vector2(360, 400)
 script = ExtResource("2")
 persistent_id = &"layer1_west_02_a_rock_01"
 spawn_chance = 0.75

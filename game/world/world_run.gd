@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
 		GameSession.current_route_id = StringName(slot.route_id)
 		if _last_slot_id != slot.slot_id:
 			_last_slot_id = slot.slot_id
-			player.set_last_safe_position(player.global_position)
+			player.set_last_safe_position(section.respawn_anchor.global_position)
 		active_layer.update_activation(player.global_position)
 		player.set_camera_bounds(active_layer.camera_bounds_for(section))
 		if hud != null:
@@ -207,9 +207,9 @@ func _on_debug_action(action: StringName) -> void:
 		&"teleport_next":
 			_teleport_next_slot()
 		&"teleport_shop":
-			_debug_teleport(&"layer_2", &"east", Vector2(1140.0, 2380.0))
+			_debug_teleport(&"layer_2", &"east", Vector2(2280.0, 1190.0))
 		&"teleport_ending":
-			_debug_teleport(&"layer_2", &"east", Vector2(960.0, 4660.0))
+			_debug_teleport(&"layer_2", &"east", Vector2(1920.0, 2260.0))
 		&"teleport_surface":
 			_debug_teleport(&"surface", &"west", Vector2(150.0, 320.0))
 
@@ -224,7 +224,7 @@ func _teleport_next_slot() -> void:
 		if slots[index].slot_id == GameSession.current_slot_id:
 			current_index = index
 	var next_slot := slots[(current_index + 1) % slots.size()]
-	player.global_position = next_slot.global_position + Vector2(320.0, 80.0)
+	player.global_position = next_slot.global_position + Vector2(640.0, 80.0)
 	player.set_last_safe_position(player.global_position)
 
 func _debug_teleport(layer_id: StringName, route_id: StringName, position: Vector2) -> void:
