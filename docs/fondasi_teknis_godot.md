@@ -222,15 +222,19 @@ Death signal hanya dipancarkan sekali. Semua healing melewati satu API agar curs
 - West berada pada `x = 0`, east pada `x = 1280`; depth berada pada `y = 0`, `800`, dan `1600` di assembly layer.
 - Generator memilih seluruh 12 variation dan semua hasil placer saat New Run, tetapi hanya menginstansiasi layer aktif.
 - Setiap section mempunyai slot ID, variation ID, selection weight, entry/exit/respawn anchors, seam clearance, camera bounds, placer root, dan special tags.
+- Entry/exit anchor tetap untuk menjaga seam. Respawn anchor boleh dipindah selama tetap berada di dalam batas section.
+- Template section menampilkan border 1280×800 hanya di editor; border tidak ada saat runtime.
 - Moving/dropped item, enemy, serta Rope berada pada runtime root milik layer agar dapat melewati seam. Loot authored memakai `WorldItem`; item yang dijatuhkan player memakai physics `ThrownItem` dengan velocity awal nol.
 - Setiap placer mempunyai stable ID, weighted content entries, chance, quantity, dan authored spawn points.
+- Child `Marker2D` langsung pada placer dibaca otomatis sebagai spawn points sesuai urutan Scene tree. Preset enemy dan loot memakai resolver deterministik yang sama.
 - Seed + stable ID menentukan setiap hasil tanpa RNG global berurutan. Hasil dipersist agar Continue tidak reroll.
 - Terrain utama memakai `TileMapLayer` dan tidak destructible. Breakable/hazard/platform khusus adalah scene object.
 - Base section hanya berisi `TileMapLayer` kosong dan contract marker. Level designer melukis terrain/collision unik pada setiap variation memakai grid 16 px.
-- Entry/exit mempunyai safe zone 96 px. `RespawnAnchor` berada di `(640, 64)` dan digunakan untuk recovery current section dengan 1 HP.
+- Entry/exit mempunyai safe zone 96 px. `RespawnAnchor` default berada di `(640, 64)`, boleh dipindahkan di dalam section, dan digunakan untuk recovery current section dengan 1 HP.
 - Semua enam terrain section pada layer aktif tetap terinstansiasi. Hanya section player, tetangga vertikal, dan pasangan crossing yang memproses enemy.
 - Enemy mati tidak respawn selama living run.
 - Plant, breakable rock, resin tree, dan harvested creature tidak respawn selama living run.
+- Breakable loot placeholder menghasilkan satu Throwable Rock dan satu nested item yang dipilih saat generation; drop memakai physics dan ID persisten turunan.
 - Tidak ada checkpoint gameplay. Continue memulihkan posisi player sebelumnya.
 - `last_safe_position` hanya fallback jika posisi load invalid/out-of-bounds; perpindahan slot mengaturnya ke `RespawnAnchor` section aktif.
 - Pause menghentikan SceneTree. Inventory tidak mengubah global time scale.

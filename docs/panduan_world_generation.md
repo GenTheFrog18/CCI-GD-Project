@@ -50,13 +50,15 @@ Geometry seam:
 
 - entry pada `(640, 0)`;
 - exit pada `(640, 800)`;
-- respawn pada `(640, 64)`;
+- respawn default pada `(640, 64)`, tetapi level designer boleh memindahkannya ke titik mana pun di dalam section;
 - opening 96 px;
 - collision clearance 96 px ke dalam section;
 - 96 px atau enam tile dari entry/exit bebas random enemy dan hazard placer;
 - semua variation pada slot sama memakai seam identik.
 
 Sisi luar route tertutup collision. Connector horizontal hanya boleh ada pada slot khusus. Terrain utama tidak destructible; breakable adalah scene object terpisah.
+
+Semua variation aktif adalah template authoring dengan `Terrain` kosong. Garis cyan 1280×800 terlihat di editor sebagai batas section, tetapi tidak dirender saat game berjalan. Gate, shop, entrance, dan tag progression yang sudah ada tidak boleh dihapus.
 
 ## 3. Tanggung jawab slot khusus
 
@@ -75,7 +77,7 @@ Gatekeeper shop optional. Quest memberi Moon Whistle dan powerful relic, tetapi 
 4. Buat jalur turun dan naik yang jelas. Selama Rope belum tersedia, map wajib dapat dilalui dua arah tanpa Rope. Layout Rope-required dibuat setelah Rope dapat diuji.
 5. Pastikan surface shop selalu mempunyai Rope yang terjangkau dan beri warning sebelum rope-required drop.
 6. Buat optional branch di dalam section; generator tidak menyusun topology branch.
-7. Tempatkan placer dan child SpawnPoint dengan GUI.
+7. Drag `enemy_placer.tscn` atau `loot_placer.tscn` ke child `Placers`, isi `persistent_id` unik, lalu pindahkan child `SpawnPoint` melalui GUI. Duplicate `SpawnPoint` jika quantity lebih dari satu; marker dibaca otomatis sesuai urutan Scene tree.
 8. Run section melalui shared section test runner, lalu jalankan `Validate World` dari F3.
 
 Target traversal setelah detailed graybox:
@@ -106,6 +108,8 @@ Resolve order:
 5. beri child ID `placer_id:spawn_point_index`.
 
 Quantity tidak boleh melebihi jumlah SpawnPoint. Runtime memakai posisi authored apa adanya; overlap atau marker tanpa ground adalah validation error.
+
+Preset `EnemyPlacer` berisi amphibian placeholder. Preset `LootPlacer` berisi breakable rock dengan nested loot Multitool. Isi `entries` dapat diganti atau ditambah melalui Inspector tanpa mengubah generator. Saat breakable hancur, ia menghasilkan satu Throwable Rock dan item hasil placer sebagai object physics yang jatuh. Kedua drop memakai ID turunan dari ID breakable.
 
 Allocation group memilih maksimal satu placer pemenang di seluruh run. Required group selalu mempunyai satu pemenang; ini dipakai quest relic. Optional group boleh kosong; ini dipakai rare item maksimum satu per run.
 

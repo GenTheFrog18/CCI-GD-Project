@@ -1,3 +1,4 @@
+@tool
 class_name WorldSection
 extends Node2D
 
@@ -34,8 +35,8 @@ func validate() -> PackedStringArray:
 		errors.append("WorldSection %s entry anchor must be at (640, 0)" % slot_id)
 	if exit_anchor != null and exit_anchor.position != Vector2(SEAM_X, 800.0):
 		errors.append("WorldSection %s exit anchor must be at (640, 800)" % slot_id)
-	if respawn_anchor != null and respawn_anchor.position != Vector2(SEAM_X, 64.0):
-		errors.append("WorldSection %s respawn anchor must be at (640, 64)" % slot_id)
+	if respawn_anchor != null and not Rect2(Vector2.ZERO, section_size).has_point(respawn_anchor.position):
+		errors.append("WorldSection %s respawn anchor must be inside the section" % slot_id)
 	if entry_clearance != Rect2(592.0, 0.0, 96.0, 96.0):
 		errors.append("WorldSection %s entry clearance is invalid" % slot_id)
 	if exit_clearance != Rect2(592.0, 704.0, 96.0, 96.0):
@@ -45,3 +46,7 @@ func validate() -> PackedStringArray:
 	if dynamic_root == null:
 		errors.append("WorldSection %s authored content root missing" % slot_id)
 	return errors
+
+func _draw() -> void:
+	if Engine.is_editor_hint():
+		draw_rect(Rect2(Vector2.ZERO, section_size), Color(0.15, 0.9, 1.0, 0.9), false, 4.0)

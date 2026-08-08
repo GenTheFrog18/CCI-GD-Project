@@ -1,29 +1,7 @@
-[gd_scene load_steps=5 format=3]
-[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
-[ext_resource type="Script" path="res://game/world/deterministic_placer.gd" id="2"]
-[ext_resource type="Script" path="res://game/world/world_spawn_entry.gd" id="3"]
-[ext_resource type="PackedScene" path="res://game/enemies/test/test_amphibian.tscn" id="4"]
+[gd_scene load_steps=2 format=3]
 
-[sub_resource type="Resource" id="FrogEntry"]
-script = ExtResource("3")
-content_id = &"test_amphibian"
-scene = ExtResource("4")
-weight = 1
+[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
 
 [node name="Layer1East02A" instance=ExtResource("1")]
 slot_id = &"layer1_east_02"
 variation_id = &"layer1_east_02_a"
-
-[node name="FrogPlacer" type="Marker2D" parent="Placers" node_paths=PackedStringArray("spawn_points")]
-position = Vector2(880, 400)
-script = ExtResource("2")
-persistent_id = &"layer1_east_02_a_enemy_01"
-spawn_chance = 1.0
-entries = Array[ExtResource("3")]([SubResource("FrogEntry")])
-minimum_quantity = 1
-maximum_quantity = 1
-spawn_points = Array[NodePath]([NodePath("Point1")])
-facing = -1.0
-patrol_bounds = Rect2(-80, -20, 160, 40)
-
-[node name="Point1" type="Marker2D" parent="Placers/FrogPlacer"]

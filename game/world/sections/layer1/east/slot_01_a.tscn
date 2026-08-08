@@ -12,10 +12,3 @@ position = Vector2(920, 110)
 target_layer_id = &"surface"
 target_route_id = "east"
 prompt = "Return to Surface"
-
-[node name="VariationLabel" type="Label" parent="." index="5" unique_id=1300867118]
-offset_left = 739.0
-offset_top = 694.0
-offset_right = 859.0
-offset_bottom = 717.0
-text = "east 01 a end"
