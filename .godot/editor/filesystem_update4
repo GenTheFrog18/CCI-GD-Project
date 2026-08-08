@@ -1,0 +1,16 @@
+res://game/world/sections/layer1/east/slot_01_b.tscn
+res://art/world/graybox_tileset.tres
+res://game/world/sections/layer1/east/slot_02_b.tscn
+res://game/world/sections/layer1/east/slot_03_b.tscn
+res://game/world/sections/layer1/west/slot_03_b.tscn
+res://game/world/sections/layer1/west/slot_02_b.tscn
+res://game/world/sections/layer2/west/slot_03_b.tscn
+res://game/world/sections/layer2/west/slot_02_b.tscn
+res://game/world/sections/layer2/east/slot_03_b.tscn
+res://game/world/sections/layer2/east/slot_02_b.tscn
+res://game/world/sections/layer2/east/slot_01_b.tscn
+res://game/world/placers/enemy_placer.tscn
+res://game/world/sources/breakable_loot.tscn
+res://game/world/layers/layer_1.tscn
+res://game/world/layers/layer_2.tscn
+res://game/world/sections/layer1/east/slot_01_a.tscn

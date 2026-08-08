@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://cgytyo528lrnd"]
+
+[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
+
+[node name="Layer2West03B" unique_id=927857934 instance=ExtResource("1")]
+slot_id = &"layer2_west_03"
+variation_id = &"layer2_west_03_b"
+special_tags = PackedStringArray("gauntlet")

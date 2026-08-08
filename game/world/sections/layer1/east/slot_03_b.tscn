@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bk6cg32e0t15a"]
+
+[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1_fm0dl"]
+[ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2_e53c8"]
+
+[node name="Layer1East03B" unique_id=959697104 instance=ExtResource("1_fm0dl")]
+slot_id = &"layer1_east_03"
+variation_id = &"layer1_east_03_b"
+special_tags = PackedStringArray("crossing")
+
+[node name="EnterLayer2East" parent="AuthoredContent" index="0" unique_id=1789822558 instance=ExtResource("2_e53c8")]
+position = Vector2(780, 740)
+target_layer_id = &"layer_2"
+target_route_id = "east"
+prompt = "Enter Layer 2 East"

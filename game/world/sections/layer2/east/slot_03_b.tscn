@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bdfr8wek2r3pg"]
+
+[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://game/world/layer3_entrance.tscn" id="2"]
+
+[node name="Layer2East03A" unique_id=1826323965 instance=ExtResource("1")]
+slot_id = &"layer2_east_03"
+variation_id = &"layer2_east_03_b"
+special_tags = PackedStringArray("gauntlet", "layer3_entrance")
+
+[node name="Layer3Entrance" parent="AuthoredContent" index="0" unique_id=1484873978 instance=ExtResource("2")]
+position = Vector2(640, 740)

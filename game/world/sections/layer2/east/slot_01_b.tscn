@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://b2oofq3j2kbjp"]
+
+[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
+
+[node name="Layer2East01B" unique_id=68265036 instance=ExtResource("1")]
+slot_id = &"layer2_east_01"
+variation_id = &"layer2_east_01_b"
+special_tags = PackedStringArray()
+
+[node name="ReturnLayer1" parent="AuthoredContent" index="0" unique_id=353830021 instance=ExtResource("2")]
+position = Vector2(920, 110)
+target_layer_id = &"layer_1"
+target_route_id = "east"
+target_spawn_id = &"EastBottomSpawn"
+prompt = "Return to Layer 1"

@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://ijluv1w1mqas"]
+
+[ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
+
+[node name="Layer1West02B" unique_id=451219805 instance=ExtResource("1")]
+slot_id = &"layer1_west_02"
+variation_id = &"layer1_west_02_b"
+special_tags = PackedStringArray()

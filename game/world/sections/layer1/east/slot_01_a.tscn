@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dbcv7ixchlequ"]
+[gd_scene format=4 uid="uid://dbcv7ixchlequ"]
 
 [ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
@@ -6,9 +6,13 @@
 [node name="Layer1East01A" unique_id=430228716 instance=ExtResource("1")]
 slot_id = &"layer1_east_01"
 variation_id = &"layer1_east_01_a"
+special_tags = PackedStringArray()
 
-[node name="ReturnSurface" parent="AuthoredContent" index="1" unique_id=2047194342 instance=ExtResource("2")]
-position = Vector2(920, 110)
+[node name="Terrain" parent="." index="0"]
+tile_map_data = PackedByteArray("AAAAAAcAAAAAAAAAAAABAAcAAAAAAAAAAAACAAcAAAAAAAAAAAADAAcAAAAAAAAAAAAEAAcAAAAAAAAAAAAFAAcAAAAAAAAAAAAGAAcAAAAAAAAAAAAHAAcAAAAAAAAAAAAIAAcAAAAAAAAAAAAJAAcAAAAAAAAAAAA=")
+
+[node name="ReturnSurface" parent="AuthoredContent" index="0" unique_id=2047194342 instance=ExtResource("2")]
+position = Vector2(67, 113)
 target_layer_id = &"surface"
 target_route_id = "east"
 prompt = "Return to Surface"
