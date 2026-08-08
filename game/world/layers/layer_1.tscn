@@ -85,10 +85,10 @@ fallback_scene = ExtResource("8")
 [node name="RuntimeRoot" type="Node2D" parent="." unique_id=1920827983]
 
 [node name="WestSpawn" type="Marker2D" parent="." unique_id=2031981361]
-position = Vector2(50, 17)
+position = Vector2(55, 92)
 
 [node name="EastSpawn" type="Marker2D" parent="." unique_id=2077777267]
-position = Vector2(1920, 0)
+position = Vector2(2482, 95)
 
 [node name="WestBottomSpawn" type="Marker2D" parent="." unique_id=2012932737]
 position = Vector2(640, 2260)
