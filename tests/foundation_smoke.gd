@@ -156,19 +156,17 @@ func _test_physical_inventory_drop() -> void:
 func _test_interaction_sensor() -> void:
 	var sensor := InteractionSensor.new()
 	sensor.collision_mask = 8
-	var sensor_shape := CollisionShape2D.new()
-	var sensor_circle := CircleShape2D.new()
-	sensor_circle.radius = 20.0
-	sensor_shape.shape = sensor_circle
-	sensor.add_child(sensor_shape)
 	add_child(sensor)
+	var actor := Node2D.new()
+	add_child(actor)
 	var thrown := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
 	thrown.freeze = true
 	add_child(thrown)
 	await get_tree().physics_frame
 	await get_tree().physics_frame
-	assert(sensor.best_target() == thrown)
+	assert(sensor.best_target(actor, thrown.global_position) == thrown)
 	thrown.free()
+	actor.free()
 	sensor.free()
 
 func _test_combat_and_status() -> void:

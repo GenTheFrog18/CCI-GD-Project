@@ -310,9 +310,6 @@ animations = [{
 "speed": 10.0
 }]
 
-[sub_resource type="CircleShape2D" id="InteractionShape"]
-radius = 34.0
-
 [node name="Player" type="CharacterBody2D" unique_id=957350047]
 collision_layer = 2
 script = ExtResource("1")
@@ -351,14 +348,8 @@ script = ExtResource("3")
 script = ExtResource("4")
 held_item_anchor = NodePath("../HeldItemAnchor")
 
-[node name="InteractionSensor" type="Area2D" parent="." unique_id=500746271]
-collision_layer = 128
-collision_mask = 72
+[node name="InteractionSensor" type="Node2D" parent="." unique_id=500746271]
 script = ExtResource("5")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionSensor" unique_id=1833614476]
-position = Vector2(0, -12)
-shape = SubResource("InteractionShape")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1371483499]
 position = Vector2(0, -40)

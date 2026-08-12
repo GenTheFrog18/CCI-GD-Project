@@ -40,6 +40,8 @@ var _knockback := Vector2.ZERO
 var _coyote_remaining := 0.0
 var _jump_buffer_remaining := 0.0
 var _walking_distance := 0.0
+var _prompt_target: Node
+var _prompt_text := ""
 
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
@@ -109,7 +111,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		item_controller.inventory.select_hotbar(item_controller.inventory.active_hotbar_index - 1)
 	if inventory_open or locks.is_locked():
 		return
-	var target := interaction_sensor.best_target()
+	var target := interaction_sensor.best_target(self, get_global_mouse_position())
 	if event.is_action_pressed(&"interact") and target != null:
 		target.interact(self)
 		get_viewport().set_input_as_handled()
@@ -242,11 +244,14 @@ func restore_state(data: Dictionary) -> void:
 	_jump_buffer_remaining = 0.0
 
 func _update_prompt() -> void:
-	var target := interaction_sensor.best_target()
+	var target := interaction_sensor.best_target(self, get_global_mouse_position())
 	var text := ""
 	if target != null and target.has_method("get_interaction_prompt"):
 		text = target.get_interaction_prompt(self)
-	prompt_changed.emit(text)
+	if target != _prompt_target or text != _prompt_text:
+		_prompt_target = target
+		_prompt_text = text
+		prompt_changed.emit(text)
 
 func _on_died(_source: Node) -> void:
 	locks.lock(&"death")
