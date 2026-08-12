@@ -116,7 +116,9 @@ func restore_meta(data: Dictionary) -> void:
 func _setup_input_map() -> void:
 	_add_keys(&"move_left", [KEY_A, KEY_LEFT])
 	_add_keys(&"move_right", [KEY_D, KEY_RIGHT])
-	_add_keys(&"jump", [KEY_SPACE, KEY_W])
+	_set_keys(&"jump", [KEY_SPACE])
+	_add_keys(&"move_up", [KEY_W, KEY_UP])
+	_add_keys(&"move_down", [KEY_S, KEY_DOWN])
 	_add_keys(&"interact", [KEY_E])
 	_add_keys(&"inventory", [KEY_TAB])
 	_add_keys(&"hotbar_1", [KEY_1])
@@ -127,6 +129,12 @@ func _setup_input_map() -> void:
 	_add_mouse(&"secondary_action", MOUSE_BUTTON_RIGHT)
 	_add_mouse(&"hotbar_next", MOUSE_BUTTON_WHEEL_DOWN)
 	_add_mouse(&"hotbar_previous", MOUSE_BUTTON_WHEEL_UP)
+
+func _set_keys(action: StringName, keys: Array[Key]) -> void:
+	if not InputMap.has_action(action):
+		InputMap.add_action(action)
+	InputMap.action_erase_events(action)
+	_add_keys(action, keys)
 
 func _add_keys(action: StringName, keys: Array[Key]) -> void:
 	if not InputMap.has_action(action):

@@ -67,7 +67,12 @@ func _test_catalog() -> void:
 	for event in InputMap.action_get_events(&"jump"):
 		if event is InputEventKey and event.physical_keycode == KEY_W:
 			has_w_jump = true
-	assert(has_w_jump)
+	assert(not has_w_jump)
+	var has_w_climb := false
+	for event in InputMap.action_get_events(&"move_up"):
+		if event is InputEventKey and event.physical_keycode == KEY_W:
+			has_w_climb = true
+	assert(has_w_climb)
 
 func _test_inventory() -> void:
 	var inventory := InventoryModel.new()
@@ -225,8 +230,8 @@ func _test_multitool_range() -> void:
 	frog._physics_process(0.0)
 	assert(frog._knockback == Vector2.ZERO)
 	assert(player.collision_mask == 1)
-	assert(player._camera_target(Vector2(320.0, 180.0), Vector2(640.0, 360.0)) == player.camera_base_offset)
-	assert(player._camera_target(Vector2(640.0, 360.0), Vector2(640.0, 360.0)) == player.camera_base_offset + Vector2(56.0, 28.0))
+	assert(player.camera.target_offset_for(player.global_position) == player.camera.base_offset)
+	assert(player.camera.target_offset_for(player.global_position + Vector2(1000.0, 0.0)) == player.camera.base_offset + Vector2(56.0, 0.0))
 	player.free()
 	frog.free()
 
@@ -410,7 +415,7 @@ func _test_determinism() -> void:
 	assert(first_manifest.sections == second_manifest.sections)
 	assert(first_manifest.placers == second_manifest.placers)
 	assert(first_manifest.sections.size() == 12)
-	assert(first_manifest.placers.is_empty())
+	assert(not first_manifest.placers.is_empty())
 	assert(generator.validate_templates().is_empty())
 	var layer := preload("res://game/world/layers/layer_1.tscn").instantiate() as WorldLayer
 	var varied_ids: Dictionary = {}

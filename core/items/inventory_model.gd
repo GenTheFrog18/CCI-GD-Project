@@ -16,6 +16,17 @@ func _init() -> void:
 func get_active_stack() -> ItemStack:
 	return hotbar[active_hotbar_index]
 
+func get_total_weight() -> int:
+	var total := 0
+	for container in [hotbar, backpack]:
+		for stack in container:
+			if stack.is_empty():
+				continue
+			var definition := ContentCatalog.get_item(stack.item_id)
+			if definition != null:
+				total += stack.quantity * definition.weight
+	return total
+
 func select_hotbar(index: int) -> void:
 	active_hotbar_index = posmod(index, HOTBAR_SIZE)
 	changed.emit()

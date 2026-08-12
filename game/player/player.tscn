@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dq7wfm672giiw"]
 
 [ext_resource type="Script" uid="uid://cvdepqc6862xe" path="res://game/player/player.gd" id="1"]
+[ext_resource type="Script" path="res://game/player/player_camera.gd" id="7_camera"]
 [ext_resource type="Script" uid="uid://rax7v1pyqa5l" path="res://core/combat/health_component.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://b2uyck5qi7mp6" path="res://assets/art/characters/test_player/fall.png" id="2_5ghna"]
 [ext_resource type="Texture2D" uid="uid://l2de8nk5o42q" path="res://assets/art/characters/test_player/combo_1.png" id="2_gb4gm"]
@@ -361,5 +362,6 @@ shape = SubResource("InteractionShape")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1371483499]
 position = Vector2(0, -40)
+script = ExtResource("7_camera")
 
 [connection signal="body_entered" from="SwordHitbox" to="SwordHitbox" method="_on_body_entered"]

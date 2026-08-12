@@ -8,6 +8,7 @@ extends Resource
 @export var category: StringName = &"ordinary"
 @export var icon: Texture2D
 @export var world_scene: PackedScene
+@export_range(0, 999, 1) var weight := 1
 @export_range(1, 99, 1) var max_stack := 1
 @export var purchase_price := 0
 @export var surface_sale_value := 0
@@ -26,6 +27,8 @@ func validate() -> PackedStringArray:
 		errors.append("%s display_name is blank" % item_id)
 	if max_stack < 1:
 		errors.append("%s max_stack must be positive" % item_id)
+	if weight < 0:
+		errors.append("%s weight cannot be negative" % item_id)
 	if behavior == null:
 		errors.append("%s behavior is missing" % item_id)
 	return errors

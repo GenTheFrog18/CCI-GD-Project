@@ -9,6 +9,12 @@ signal prepared_item_changed(item: Node2D)
 var inventory := InventoryModel.new()
 var prepared_item: Node2D
 
+func cancel_prepared() -> void:
+	if is_instance_valid(prepared_item):
+		prepared_item.queue_free()
+	prepared_item = null
+	prepared_item_changed.emit(null)
+
 func primary(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> bool:
 	if prepared_item != null:
 		feedback_requested.emit("Item already prepared")
