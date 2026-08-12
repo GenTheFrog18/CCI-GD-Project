@@ -16,3 +16,6 @@ shape = SubResource("CircleShape")
 [node name="Visual" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-6, -6, 6, -6, 6, 6, -6, 6)
 color = Color(0.65, 0.55, 0.35, 1)
+
+[node name="Icon" type="Sprite2D" parent="."]
+position = Vector2(0, -7)

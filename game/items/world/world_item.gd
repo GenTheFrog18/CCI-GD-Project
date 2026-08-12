@@ -9,6 +9,7 @@ extends Area2D
 
 func _ready() -> void:
 	add_to_group(&"interactables")
+	_apply_visual()
 	if persistent_id.is_empty():
 		persistent_id = GameSession.next_runtime_id(&"item", GameSession.current_layer_id)
 	if ContentCatalog.get_item(item_id) != null and ContentCatalog.get_item(item_id).persistent_when_dropped:
@@ -41,6 +42,17 @@ func restore_state(data: Dictionary) -> void:
 	instance_state = data.get("instance_state", {}).duplicate(true)
 	var saved_position: Array = data.get("position", [0.0, 0.0])
 	global_position = Vector2(float(saved_position[0]), float(saved_position[1]))
+	_apply_visual()
+
+func _apply_visual() -> void:
+	var definition := ContentCatalog.get_item(item_id)
+	var icon := get_node_or_null("Icon") as Sprite2D
+	var fallback := get_node_or_null("Visual") as CanvasItem
+	if icon != null:
+		icon.texture = definition.icon if definition != null else null
+		icon.visible = icon.texture != null
+	if fallback != null:
+		fallback.visible = icon == null or icon.texture == null
 
 func handle_world_out_of_bounds() -> void:
 	SaveManager.mark_destroyed(persistent_id)

@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="ItemDefinition" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
 [ext_resource type="Script" path="res://game/items/behaviors/multitool_behavior.gd" id="2"]
 [ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
+[ext_resource type="Texture2D" path="res://assets/art/items/multitool.png" id="4"]
 
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
@@ -16,6 +17,7 @@ display_name = "Multitool"
 unknown_description = "A small practical tool."
 known_description = "Breaks fragile rocks, harvests certain creatures, and deals weak close-range damage."
 category = &"tool"
+icon = ExtResource("4")
 world_scene = ExtResource("3")
 max_stack = 1
 purchase_price = 40

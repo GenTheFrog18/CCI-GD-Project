@@ -36,6 +36,7 @@ func _ready() -> void:
 	if persistent_id.is_empty():
 		persistent_id = GameSession.next_runtime_id(&"thrown", GameSession.current_layer_id)
 	add_to_group(&"persistent_objects")
+	_apply_visual()
 
 func _physics_process(delta: float) -> void:
 	if freeze:
@@ -103,6 +104,16 @@ func restore_state(data: Dictionary) -> void:
 		add_to_group(&"interactables")
 	else:
 		remove_from_group(&"interactables")
+	_apply_visual()
+
+func _apply_visual() -> void:
+	var icon := get_node_or_null("Icon") as Sprite2D
+	var fallback := get_node_or_null("Visual") as CanvasItem
+	if icon != null:
+		icon.texture = definition.icon if definition != null else null
+		icon.visible = icon.texture != null
+	if fallback != null:
+		fallback.visible = icon == null or icon.texture == null
 
 func handle_world_out_of_bounds() -> void:
 	SaveManager.mark_destroyed(persistent_id)
