@@ -4,11 +4,8 @@
 [ext_resource type="Script" path="res://game/player/player_camera.gd" id="7_camera"]
 [ext_resource type="Script" uid="uid://rax7v1pyqa5l" path="res://core/combat/health_component.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://b2uyck5qi7mp6" path="res://assets/art/characters/test_player/fall.png" id="2_5ghna"]
-[ext_resource type="Texture2D" uid="uid://l2de8nk5o42q" path="res://assets/art/characters/test_player/combo_1.png" id="2_gb4gm"]
-[ext_resource type="Script" uid="uid://ce6fogb804adg" path="res://game/player/sword_hitbox.gd" id="2_uv2nh"]
 [ext_resource type="Script" uid="uid://bq6tumcjn8lea" path="res://core/status/status_controller.gd" id="3"]
 [ext_resource type="Texture2D" uid="uid://iol00vddkpjl" path="res://assets/art/characters/test_player/walk.png" id="3_anr75"]
-[ext_resource type="Texture2D" uid="uid://5ybnrt4up2lr" path="res://assets/art/characters/test_player/combo_1_end.png" id="3_uv2nh"]
 [ext_resource type="Script" uid="uid://c5lccglb28q8r" path="res://game/items/player_item_controller.gd" id="4"]
 [ext_resource type="Texture2D" uid="uid://dgeps51vcvppr" path="res://assets/art/characters/test_player/jump.png" id="4_j0mij"]
 [ext_resource type="Script" uid="uid://dbhllx6vqyta7" path="res://core/interaction/interaction_sensor.gd" id="5"]
@@ -17,34 +14,6 @@
 [sub_resource type="CapsuleShape2D" id="PlayerShape"]
 radius = 8.0
 height = 28.0
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_bdb11"]
-atlas = ExtResource("2_gb4gm")
-region = Rect2(0, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_p3uph"]
-atlas = ExtResource("2_gb4gm")
-region = Rect2(128, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qfwia"]
-atlas = ExtResource("2_gb4gm")
-region = Rect2(256, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_gyg5y"]
-atlas = ExtResource("3_uv2nh")
-region = Rect2(0, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_7dece"]
-atlas = ExtResource("3_uv2nh")
-region = Rect2(128, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_25nor"]
-atlas = ExtResource("3_uv2nh")
-region = Rect2(256, 0, 128, 128)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4e7mj"]
-atlas = ExtResource("3_uv2nh")
-region = Rect2(384, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cgi3i"]
 atlas = ExtResource("2_5ghna")
@@ -170,37 +139,6 @@ region = Rect2(1152, 0, 128, 128)
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_bdb11")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_p3uph")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qfwia")
-}],
-"loop": 0,
-"name": &"combat",
-"speed": 10.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_gyg5y")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_7dece")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_25nor")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4e7mj")
-}],
-"loop": 0,
-"name": &"combat_end",
-"speed": 10.0
-}, {
-"frames": [{
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_cgi3i")
 }, {
 "duration": 1.0,
@@ -319,16 +257,9 @@ maximum_fall_damage = 0.0
 position = Vector2(0, -14)
 shape = SubResource("PlayerShape")
 
-[node name="SwordHitbox" type="Area2D" parent="." unique_id=1270670438]
-monitoring = false
-script = ExtResource("2_uv2nh")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SwordHitbox" unique_id=102362855]
-disabled = true
-
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=627026240]
 sprite_frames = SubResource("SpriteFrames_uoqeo")
-animation = &"combat"
+animation = &"idle"
 
 [node name="Visual" type="Polygon2D" parent="." unique_id=2013033215]
 visible = false
@@ -338,15 +269,18 @@ polygon = PackedVector2Array(-8, -28, 8, -28, 8, 0, -8, 0)
 [node name="HeldItemAnchor" type="Node2D" parent="." unique_id=673219421]
 position = Vector2(12, -17)
 
+[node name="HeldItemIcon" type="Sprite2D" parent="HeldItemAnchor"]
+
 [node name="HealthComponent" type="Node" parent="." unique_id=1680467586]
 script = ExtResource("2")
 
 [node name="StatusController" type="Node" parent="." unique_id=1075097749]
 script = ExtResource("3")
 
-[node name="PlayerItemController" type="Node" parent="." unique_id=56653675 node_paths=PackedStringArray("held_item_anchor")]
+[node name="PlayerItemController" type="Node" parent="." unique_id=56653675 node_paths=PackedStringArray("held_item_anchor", "held_item_icon")]
 script = ExtResource("4")
 held_item_anchor = NodePath("../HeldItemAnchor")
+held_item_icon = NodePath("../HeldItemAnchor/HeldItemIcon")
 
 [node name="InteractionSensor" type="Node2D" parent="." unique_id=500746271]
 script = ExtResource("5")
@@ -354,5 +288,3 @@ script = ExtResource("5")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1371483499]
 position = Vector2(0, -40)
 script = ExtResource("7_camera")
-
-[connection signal="body_entered" from="SwordHitbox" to="SwordHitbox" method="_on_body_entered"]

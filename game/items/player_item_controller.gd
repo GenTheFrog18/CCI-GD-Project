@@ -5,15 +5,28 @@ signal feedback_requested(message: String)
 signal prepared_item_changed(item: Node2D)
 
 @export var held_item_anchor: Node2D
+@export var held_item_icon: Sprite2D
 
 var inventory := InventoryModel.new()
 var prepared_item: Node2D
+var _active_item_id: StringName
+
+func _ready() -> void:
+	inventory.changed.connect(_on_inventory_changed)
+	_on_inventory_changed()
 
 func cancel_prepared() -> void:
 	if is_instance_valid(prepared_item):
 		prepared_item.queue_free()
 	prepared_item = null
 	prepared_item_changed.emit(null)
+	_refresh_held_icon()
+
+func get_movement_multiplier() -> float:
+	if not is_instance_valid(prepared_item):
+		return 1.0
+	var value = prepared_item.get("movement_multiplier")
+	return float(value) if value != null else 1.0
 
 func primary(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> bool:
 	if prepared_item != null:
@@ -25,12 +38,14 @@ func secondary(actor: Node2D, world: Node, cursor: Vector2, target: Node = null)
 	if prepared_item != null:
 		if not prepared_item.has_method("throw_toward"):
 			return false
-		var keep_transform := prepared_item.global_transform
-		prepared_item.reparent(world)
-		prepared_item.global_transform = keep_transform
-		prepared_item.throw_toward(cursor)
+		var item := prepared_item
+		var keep_transform := item.global_transform
+		item.reparent(world)
+		item.global_transform = keep_transform
+		item.throw_toward(cursor)
 		prepared_item = null
 		prepared_item_changed.emit(null)
+		_refresh_held_icon()
 		return true
 	return _execute(true, actor, world, cursor, target)
 
@@ -38,10 +53,33 @@ func try_prepare(node: Node2D) -> bool:
 	if node == null or prepared_item != null or held_item_anchor == null:
 		return false
 	prepared_item = node
+	node.tree_exited.connect(_on_prepared_exited.bind(node), CONNECT_ONE_SHOT)
 	held_item_anchor.add_child(node)
 	node.position = Vector2.ZERO
+	_refresh_held_icon()
 	prepared_item_changed.emit(node)
 	return true
+
+func _on_prepared_exited(node: Node) -> void:
+	if prepared_item == node:
+		prepared_item = null
+		prepared_item_changed.emit(null)
+		_refresh_held_icon()
+
+func _on_inventory_changed() -> void:
+	var stack := inventory.get_active_stack()
+	var current_id := stack.item_id if not stack.is_empty() else &""
+	if current_id != _active_item_id and is_instance_valid(prepared_item):
+		cancel_prepared()
+	_active_item_id = current_id
+	_refresh_held_icon()
+
+func _refresh_held_icon() -> void:
+	if held_item_icon == null:
+		return
+	var definition := ContentCatalog.get_item(_active_item_id)
+	held_item_icon.texture = definition.icon if definition != null else null
+	held_item_icon.visible = held_item_icon.texture != null and not is_instance_valid(prepared_item)
 
 func _execute(is_secondary: bool, actor: Node2D, world: Node, cursor: Vector2, target: Node) -> bool:
 	var stack := inventory.get_active_stack()

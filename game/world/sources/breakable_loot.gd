@@ -12,6 +12,7 @@ var _broken := false
 
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
+	add_to_group(&"multitool_breakable")
 	health.died.connect(_break)
 
 func apply_damage(info: DamageInfo) -> bool:

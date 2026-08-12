@@ -216,10 +216,14 @@ func _test_multitool_range() -> void:
 	frog.global_position = Vector2(100.0, 0.0)
 	await get_tree().physics_frame
 	assert(player.item_controller.primary(player, self, Vector2(120.0, -14.0)))
-	assert(frog.health.health == 20.0)
-	frog.global_position = Vector2(40.0, 0.0)
 	await get_tree().physics_frame
-	assert(player.item_controller.primary(player, self, Vector2(80.0, -14.0)))
+	assert(frog.health.health == 20.0)
+	for _frame in 24:
+		await get_tree().physics_frame
+	frog.global_position = player.global_position + Vector2(26.0, 0.0)
+	await get_tree().physics_frame
+	assert(player.item_controller.primary(player, self, player.global_position + Vector2(80.0, -14.0)))
+	await get_tree().physics_frame
 	assert(frog.health.health == 19.0)
 	player.apply_force(Vector2(30.0, 0.0))
 	player._physics_process(0.0)

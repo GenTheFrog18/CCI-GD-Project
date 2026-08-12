@@ -73,7 +73,7 @@ func _physics_process(delta: float) -> void:
 	if inventory_open:
 		speed_multiplier *= 0.35
 	var axis := Input.get_axis(&"move_left", &"move_right") if can_control else 0.0
-	var target_speed := axis * move_speed * speed_multiplier
+	var target_speed := axis * move_speed * speed_multiplier * item_controller.get_movement_multiplier()
 	var rate := _horizontal_rate(axis, was_on_floor)
 	velocity.x = move_toward(velocity.x, target_speed, rate * delta)
 
