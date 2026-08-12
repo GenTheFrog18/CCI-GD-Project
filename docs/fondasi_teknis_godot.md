@@ -1,6 +1,6 @@
 # Fondasi Teknis Godot — CCI GD Project
 
-**Status:** keputusan fondasi dan batas ending game-jam dikunci berdasarkan questionnaire tanggal 7 Agustus 2026.
+**Status:** keputusan fondasi, world generation, dan player dikunci berdasarkan questionnaire 7–12 Agustus 2026.
 
 Dokumen ini adalah sumber kebenaran teknis. Dokumen di `docs/reference/` adalah arsip desain lama; jika bertentangan, dokumen ini menang. Aturan penulisan code ada di `docs/panduan_programming.md`.
 
@@ -106,6 +106,21 @@ on_impact(thrown_item, impact) -> ItemActionResult
 
 `ItemActionResult` berisi `success`, `consume_count`, `next_state`, dan feedback. `ItemContext` berisi actor, world, cursor position, dan interaction target.
 
+### Interaction berbasis cursor
+
+- `E` memilih kandidat di area 16 px sekitar titik cursor yang sudah di-clamp ke radius 72 px dari player; kedua angka diexport untuk tuning.
+- Kandidat diurutkan berdasarkan `interaction_priority` tertinggi, lalu jarak terdekat ke titik query cursor.
+- Terrain solid di antara player dan kandidat membatalkan target. Target di balik dinding tidak menampilkan prompt dan tidak dapat diinteraksi.
+- Cursor di luar reach tetap mengarahkan query ke batas reach, bukan membuat target otomatis invalid.
+- Foundation memakai prompt yang sudah ada. Glow/highlight sprite ditunda sampai treatment art disepakati.
+
+### Camera berbasis cursor
+
+- Camera target memakai vector world-space player→cursor yang di-clamp dengan limit horizontal/vertical terpisah. Default awal tetap sekitar 56 px horizontal dan 28 px vertical; keduanya diexport.
+- Native `Camera2D` limit dan smoothing tetap menjaga view di bounds route/layer. Jangan membuat camera framework kedua.
+- Saat inventory/pause/UI mouse aktif, camera ease kembali ke base player offset dan zoom sedikit ke player. Zoom dan smoothing diexport.
+- Git history adalah backup implementasi lama; tidak ada duplicate script, runtime toggle, atau folder backup.
+
 ## 5. Inventory dan kepemilikan item
 
 - Lima backpack slot dan dua hotbar slot adalah tujuh slot terpisah.
@@ -117,6 +132,10 @@ on_impact(thrown_item, impact) -> ItemActionResult
 - Item biasa boleh hilang di jurang/out-of-bounds.
 - Important item juga boleh hilang hanya jika ada recovery/replacement yang pasti.
 - Semua item yang berasal dari player dan masih berada di dunia harus masuk living-run save, termasuk ordinary rock.
+- Setiap `ItemDefinition` nantinya mempunyai integer `weight >= 0`. Inventory menghitung total quantity × weight satu kali; active/held item tetap berada dalam inventory total dan tidak dihitung lagi.
+- Carry capacity adalah soft threshold. Tidak ada penalty sampai capacity; dari capacity sampai dua kali capacity, move speed dan jump strength turun linear sampai nol. Falling acceleration naik pada rentang yang sama sampai cap yang diexport.
+- Weight hanya mengubah maximum move speed, jump launch strength, dan falling acceleration. Ground/air acceleration, steering, dan knockback tidak berubah.
+- UI weight, nilai balance final, dan revisi fall damage ditunda ke tahap item/playtest. Fall-damage code yang ada tidak didesain ulang pada foundation player ini.
 
 ### Multitool
 
@@ -128,7 +147,12 @@ Multitool adalah item biasa, bukan equipment slot khusus:
 - Hanya dicuri jika player tidak mempunyai item ordinary lain. Whistle berada setelah Multitool dalam urutan fallback pencurian.
 - Kehilangan pertama dalam satu run mendapat satu pengganti gratis di surface.
 - Pengganti berikutnya dibeli dari surface shop; harga masih nilai balance.
-- Primary action: swing/tool use ke cursor. Prioritas target: special tool interaction, breakable rock/snail, lalu damage target.
+- Primary action: thrust/tool use ke arah cursor dari held-item pivot. Multitool memakai sprite terpisah; tidak memerlukan attack sprite-sheet player.
+- Saat primary ditekan, sprite mengunci arah cursor, snap ke full extension, aktif selama durasi pendek yang diexport, lalu kembali. Player tetap dapat bergerak dengan multiplier lebih rendah dan dapat memakai action di udara tanpa mengubah velocity vertical.
+- Shape collision yang di-author mengikuti ukuran visual Multitool dan berotasi bersama sprite; tidak ada pixel-perfect collision atau cursor hitscan.
+- Satu thrust menyelesaikan tepat satu target dalam urutan: special Multitool interaction, breakable/harvestable, lalu damage target. Target yang sama tidak dapat diproses dua kali dalam satu thrust.
+- Press tambahan selama recovery diabaikan. Damage biasa tidak membatalkan thrust; death, scene exit, atau kehilangan active item membatalkannya dan selalu mematikan hitbox.
+- Player tidak mempunyai input `attack` terpisah atau `SwordHitbox` khusus. Semua use masuk melalui active item `primary_action`.
 - Secondary action: belum didesain dan disabled untuk sekarang; Multitool tidak menggunakan fallback throw.
 
 ### Frog theft
@@ -163,6 +187,16 @@ Keduanya memakai `ImpactData` yang sama:
 
 Damage dan knockback memakai base damage/mass payload dikali velocity multiplier yang di-clamp. Thrower hanya menentukan initial velocity.
 
+### Weight, power, dan trajectory preview
+
+- Cursor distance tetap menentukan strength tanpa menambah hold/release input.
+- Initial throw speed berasal dari base throw power yang diexport lalu dikurangi dengan kurva sederhana `1 / sqrt(max(weight, 1))`; minimum/maximum speed tetap di-clamp.
+- Satu integer item `weight` dipakai untuk inventory burden, throw distance, impact mass, dan rigid-body mass pada scope jam. Item-specific base power/impact behavior hanya ditambah bila item nyata memerlukannya.
+- Dotted parabolic preview tampil setiap kali item di tangan dapat dilempar, baik instance sudah diaktifkan maupun belum.
+- Panjang preview awal sekitar 1,5 tinggi player atau 48 px dan diexport. Preview hanya petunjuk visual dari velocity/gravity; tidak memprediksi collision terrain atau dynamic body.
+- Debug menu menyediakan satu temporary heavy item untuk membandingkan hasilnya dengan Throwable Rock. Item tersebut tidak masuk normal loot/economy.
+- Throw action mengirim sound event dari player. Impact item boleh mengirim event terpisah dari titik benturan melalui behavior item.
+
 ### Collision rules
 
 - Projectile default berhenti pada collision valid pertama.
@@ -188,6 +222,7 @@ Damage dan knockback memakai base damage/mass payload dikali velocity multiplier
 - Fall damage berdasarkan kecepatan dan mempunyai cap.
 - Out-of-bounds mengembalikan player ke spawn Layer 0 dengan health tepat 1.
 - `small_enemy` adalah tag eksplisit untuk semua enemy kecuali `big_roamer` dan `boss`.
+- Attack direction/hitbox dikunci saat action dimulai. Satu active hitbox menyimpan receiver yang sudah diproses agar overlap beberapa physics frame tidak menggandakan hit.
 
 Shared contract:
 
@@ -200,19 +235,39 @@ apply_status(effect_id, data) -> bool
 
 Death signal hanya dipancarkan sekali. Semua healing melewati satu API agar curse modifier/cap selalu berlaku.
 
+### Movement player
+
+- Full jump unencumbered mempertahankan kira-kira kemampuan sekarang: rise sekitar 44 px dan horizontal travel sekitar 75 px. Semua angka movement tetap exported agar map dapat di-playtest tanpa edit code.
+- Melepas jump saat naik memotong upward velocity sehingga tap jump mencapai sekitar 40–50% full height.
+- Coyote time dan jump buffer default masing-masing 0,12 detik dan diexport. Buffer tidak membuat double jump.
+- Air steering memakai normal target speed dengan air acceleration/deceleration terpisah dan lebih rendah; player boleh membalik arah di udara.
+- Animation airborne memilih `jump`/`fall` dari velocity vertical, bukan arah horizontal.
+
 ### Sound
 
 - Sound menggunakan radius lurus dan menembus terrain; tidak ada pathfinding/occlusion pada jam build.
 - Listener memilih priority tertinggi, lalu event terbaru, lalu jarak terdekat.
 - Emitter tidak mengenal listener tertentu.
 - Setelah kehilangan target, enemy menuju last-known position, menunggu sesuai definition, lalu kembali ke state normal.
+- Radius menentukan apakah event terdengar; priority memilih event yang sudah terdengar. Priority tidak mempunyai global maximum. Listener memakai minimum accepted priority dan tidak menolak suara karena terlalu tinggi.
+- Default action priority: walking `1`, jump takeoff `3`, throw `1`, whistle `10`; radius dan item-use sound ditentukan terpisah lewat data.
+- Walking event dipancarkan per jarak grounded yang ditempuh, bukan setiap frame. Jump memancarkan event saat takeoff; landing boleh memancarkan event terpisah berdasarkan impact dengan clamp.
+- Tiga accepted event dari producer yang sama dalam dua detik default-nya mengubah mode dari investigate menjadi direct sound target. Count/window diexport per enemy.
+- Direct sound target memperbarui last-known position hanya saat event baru terdengar; tidak mengikuti producer menembus dinding. Silence/out-of-range timeout dan wait/search duration diexport.
+- Sound tetap event-driven dan langsung dikirim. Tidak ada polling sound.
 
 ### Sight dan target override
 
-- Sight menggunakan physics ray query terhadap terrain.
+- Producer hanya menghasilkan signal/detectability; listener enemy memfilter sight/sound; script AI enemy tetap memilih investigate/chase/return. Jangan memindahkan seluruh state machine ke component umum.
+- Sight memakai cone/area arah hadap sebagai broad phase lalu physics ray query terhadap terrain untuk obstruction. Normal/aggravated angle dan range diexport.
+- Aggravated profile memakai cone lebih besar ditambah proximity radius 360°. Proximity tetap membutuhkan jalur tanpa terrain solid.
+- Sight/proximity scan default sekitar 0,1 detik dan distagger antar-enemy. Detection tidak berjalan ketika processing enemy/section tidak aktif.
+- Setelah line of sight putus, enemy mengejar last-known position dan mencari sampai memory timeout default 10 detik; posisi target tidak diperbarui menembus obstruction.
 - Hushcap Area2D memblokir sight query dan memberi overlay semi-transparan kepada player; tidak mempunyai collision fisik.
-- Spider mark mempunyai priority lebih tinggi daripada Lantern Snail scream.
-- Target override menyimpan target, priority, duration, dan source.
+- Item anti-detection pada scope sekarang tidak menonaktifkan producer. Smoke/deployable sight blocker membuat obstruction; distraction item menghasilkan sound event dengan priority lebih tinggi.
+- Direct sight/proximity menang atas sound secara default. Setiap enemy boleh mengaktifkan override agar high-priority sound dapat memutus chase yang masih mempunyai sight.
+- Enemy dapat mengatur minimum distraction priority dan ignored sound types. Direct sound target adalah mode, bukan magic maximum priority.
+- Target override menyimpan target/last-known position, source, mode, priority, dan timeout yang relevan.
 
 ## 8. World dan persistence
 
@@ -234,6 +289,22 @@ Death signal hanya dipancarkan sekali. Semua healing melewati satu API agar curs
 - Tidak ada checkpoint gameplay. Continue memulihkan posisi player sebelumnya.
 - `last_safe_position` hanya fallback jika posisi load invalid/out-of-bounds; perpindahan slot mengaturnya ke `RespawnAnchor` section aktif.
 - Pause menghentikan SceneTree. Inventory tidak mengubah global time scale.
+
+### Rope: final contract dan prototype pertama
+
+Final Rope tetap harus persistent selama living run, berada pada layer runtime root, dan aman melewati seam. Implementasi player pertama sengaja hanya prototype item-flow dan **belum** memenuhi final persistence contract.
+
+Prototype pertama mencakup:
+
+- Rope dipilih sebagai item; primary menampilkan preview dan memasang langsung pada anchor valid maksimal 72 px dari player.
+- Invalid/out-of-range placement memberi feedback dan tidak mengonsumsi item. Placement valid mengonsumsi tepat satu Rope.
+- Anchor boleh pada top surface, ceiling, atau side wall yang tidak membuat Rope berada di dalam terrain. Semua anchor menjadi titik atas; Rope selalu menggantung vertical ke bawah.
+- Panjang maksimal 160 px dan berhenti sebelum solid terrain pertama. Seluruh segment harus berada dalam active layer bounds.
+- Rope adalah `Area2D` vertical tetap, bukan physics rope. Player menyentuh area lalu menekan up/down untuk attach; gravity berhenti dan posisi horizontal ease ke tengah Rope.
+- Up/down memanjat. Space detach+jump; left/right saja tidak detach, tetapi menentukan arah saat Space ditekan.
+- `E`, primary, dan secondary item tetap dapat dipakai saat climbing walaupun art gabungan belum ada.
+- Damage tanpa force tidak detach. Force/knockback apa pun detach; death selalu detach.
+- Prototype tidak menyimpan placed Rope atau climbing state, tidak menjamin crossing seam, tidak masuk shop, dan tidak dianggap final integration. Save/load, seam persistence, serta restore di posisi sama dikerjakan setelah prototype disetujui.
 
 ### Topologi yang dikunci
 
@@ -332,7 +403,7 @@ Istilah “boss” pada pembicaraan desain saat ini merujuk kepada gatekeeper/qu
 ## 11. UI, art, dan feedback
 
 - Inventory memakai click-to-swap: klik kiri pilih/swap, klik kanan context action, Esc/Tab atau klik ulang membatalkan.
-- Dotted line pendek menunjukkan arah dan kekuatan throw; tidak perlu full trajectory arc.
+- Dotted parabolic line sepanjang default 48 px menunjukkan arah dan kekuatan throw; visual guide tidak melakukan collision prediction.
 - HUD minimum: health, money, dua hotbar, whistle, status, prompt, delivery, dan autosave feedback.
 - Dialogue memakai control-lock token dan selalu melepasnya saat selesai, skip, scene change, atau error.
 - Player art memakai 32×32 px. Item art 16×16 diperbolehkan pada scene yang sama. Icon inventory dapat memakai source yang sama sementara.
@@ -340,6 +411,8 @@ Istilah “boss” pada pembicaraan desain saat ini merujuk kepada gatekeeper/qu
 - Actor/world item memakai pivot bottom-centre. Collision dimiliki programmer, bukan mengikuti ukuran sprite otomatis.
 - Animation names: `idle`, `move`, `telegraph`, `attack`, `hit`, `death` sesuai kebutuhan.
 - Audio/VFX diberikan melalui exported Resource atau signal; jangan hardcode path tersebar.
+- Asset item runtime berada di `assets/art/items/`; asset UI di `assets/art/ui/`; source `.aseprite` disimpan terpisah di `assets/source/`. Nama memakai `snake_case`.
+- Asset Rope 16×16 tidak di-resample: `rope_item` adalah coil inventory/world, `rope_segment` diulang/dipotong untuk body, dan `rope_end` menjadi bottom cap. Gunakan nearest filtering dan native scale sebelum playtest membuktikan perlu integer scale lain.
 
 ## 12. Content yang masih boleh TBD
 
@@ -366,5 +439,11 @@ Semua poin di atas adalah content data/behavior. Mereka tidak mengubah flow rewa
 - Entrance Layer 3 memicu ending tanpa membuat playable Layer 3 atau memberikan Moon Whistle kedua.
 - Rattlepod dapat diaktifkan, mengirim lima event, dan dilempar saat aktif; lemparan tidak aktif tidak memicu sound effect.
 - Snail hanya dapat di-harvest sekali sepanjang instance lifecycle.
+- Tap/full jump, coyote time, jump buffer, dan air steering tidak membuat double jump serta tetap melewati graybox unencumbered.
+- Multitool hanya mengenai satu priority target saat shape visual aktif; tidak ada hit dari cursor atau selama recovery.
+- Interaction cursor memilih priority target di titik clamp, menolak obstruction, dan camera tetap mengikuti bounds saat UI zoom aktif.
+- Rock dan debug heavy item mempunyai trajectory berbeda sesuai weight; preview tersedia tanpa hold input.
+- Sight berhenti pada obstruction, sound priority/tie/escalation benar, dan unloaded enemy tidak melakukan scan.
+- Rope prototype dapat preview, consume satu item, attach/climb/jump-away, memakai item saat climb, dan detach oleh knockback. Persistence/seam bukan acceptance prototype.
 
 Gunakan satu assertion-based smoke test bawaan project. Jangan menambah framework sebelum jumlah test membuktikan kebutuhan.

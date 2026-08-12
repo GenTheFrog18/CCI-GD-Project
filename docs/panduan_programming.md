@@ -29,9 +29,24 @@ data/      Resource definition dan content .tres
 game/      scene/script gameplay, dikelompokkan per fitur
 ui/        menu, HUD, inventory, dialogue
 tests/     assertion smoke test
+assets/art/     exported runtime art, grouped by feature
+assets/source/  editable art source seperti .aseprite
 ```
 
 Letakkan script di samping scene pemiliknya. Jangan membuat folder `utils/`, `managers/`, atau `helpers/` sebagai tempat code tanpa owner. Helper satu fitur tetap bersama fitur tersebut; pindahkan ke `core/` hanya setelah dipakai minimal dua subsystem nyata.
+
+Asset item memakai `assets/art/items/<fitur>/`; asset UI memakai `assets/art/ui/<fitur>/`. Nama file `snake_case`. Jangan menaruh asset final di folder sementara seperti `current assets`, dan jangan mengubah ukuran bitmap pixel-art untuk menyesuaikan collision. Simpan `.aseprite` yang sesuai di `assets/source/` dengan grouping yang sama.
+
+Mapping asset delivery 12 Agustus yang wajib dipakai saat integration:
+
+| File sementara | Tujuan runtime |
+| --- | --- |
+| `bandage.png`, `info book.png`, `multitool.png`, `numbing pills.png`, `rock.png` | `assets/art/items/` dengan nama `snake_case` |
+| `whistle-red.png`, `whistle-blue.png`, `whistle-moon.png` | `assets/art/items/whistles/whistle_red.png`, `whistle_blue.png`, `whistle_moon.png` |
+| `rope-item.png`, `rope-mid.png`, `rope-end.png` | `assets/art/items/rope/rope_item.png`, `rope_segment.png`, `rope_end.png` |
+| `backpack.png`, `hotbar-main.png`, `hotbar-sec.png`, `arrow-hotbar.png` | `assets/art/ui/inventory/backpack.png`, `hotbar_main.png`, `hotbar_secondary.png`, `hotbar_arrow.png` |
+
+Pindahkan `.aseprite` pasangan ke `assets/source/items/`, `assets/source/items/whistles/`, `assets/source/items/rope/`, atau `assets/source/ui/inventory/` dengan nama stem yang sama. File source yang memang tidak diberikan tidak perlu dibuat. Lakukan move lewat Godot FileSystem jika asset sudah direferensikan; jika belum direferensikan, filesystem move biasa aman lalu periksa `.import` yang dibentuk ulang.
 
 ## 3. GDScript style
 
@@ -152,6 +167,22 @@ Throw wajib atomic:
 
 Ini mencegah duplikasi dan kehilangan.
 
+### Weight dan action visual
+
+- `ItemDefinition.weight` adalah integer non-negatif yang dibaca inventory, throw, dan impact. Jangan menyimpan salinan weight pada Player.
+- Inventory menyediakan satu total quantity × weight; held/prepared item tidak dihitung ulang.
+- Player tidak boleh mempunyai branch `if item_id == ...`. Behavior active item memulai action dan memakai held-item anchor yang sama.
+- Untuk Multitool, behavior memakai satu reusable hit area/visual child yang dikonfigurasi item. Jangan mempertahankan input `attack`, `SwordHitbox`, timer hardcoded, atau raycast damage lama.
+- Karena thrust pertama tidak mempunyai frame animation, sprite/hit shape snap ke full extension, aktif satu durasi exported, lalu kembali. Cleanup death/scene/item-change wajib mematikan shape.
+- Satu thrust menyimpan receiver yang sudah diproses dan menyelesaikan hanya satu target menurut urutan fondasi. Jangan membuat combo/buffer framework.
+
+### Throw preview
+
+- Preview memakai perhitungan initial velocity dan gravity yang sama dengan throw sebenarnya, lalu menggambar sample sampai configured visual length.
+- Preview tidak melakukan physics query collision. Jangan membuat simulator projectile kedua.
+- Weight modifier dihitung satu kali di shared throw path agar preview dan real throw tidak berbeda.
+- Temporary heavy comparison item hanya didaftarkan/diberikan melalui debug path; jangan masukkan ke placer/shop normal.
+
 ## 9. ThrownItem dan Projectile
 
 Jangan menyatukan keduanya:
@@ -188,6 +219,23 @@ Shared component/contract:
 Enemy script memilih reaksi. Contoh: `hear_sound(event)` pada amphibian mengubah target investigasi; Rattlepod tidak memanggil `Amphibian`.
 
 Attack damage hanya aktif selama telegraph selesai dan hitbox attack aktif. Tidak ada contact damage otomatis.
+
+### Player movement, interaction, dan camera
+
+- Satu controller memiliki timer coyote/buffer, jump cut, ground/air acceleration, dan encumbrance multiplier. Status/item tidak menulis velocity atau exported base value langsung.
+- Hitung load ratio dari inventory total: `0` sampai capacity tidak memberi penalty; capacity sampai `2 × capacity` lerp speed/jump ke nol dan fall acceleration ke cap.
+- Interaction sensor menerima actor position dan clamped world cursor point, memfilter reach/obstruction, lalu sort priority dan cursor distance. Jangan scan seluruh group atau membiarkan tiap interactable memilih dirinya sendiri.
+- Camera tetap satu `Camera2D`. Target world cursor, limit ellipse, UI return/zoom, smoothing, dan native bounds berada pada owner camera/player yang sama; tidak ada backup runtime implementation.
+- Semua action player memeriksa alive, inventory/UI ownership, control lock, dan climbing rule sebelum menjalankan behavior.
+
+### Detection ownership dan biaya
+
+- Producer membuat `SoundEvent` atau menjadi candidate sight; ia tidak memilih enemy.
+- Listener memfilter radius, minimum priority, ignored type, sight cone/obstruction, proximity, serta optional sound-over-sight override.
+- Enemy script memutuskan state transition. Jangan membuat universal AI controller atau behavior tree.
+- Sound tetap immediate group broadcast. Sight/proximity memakai staggered tick sekitar 0,1 detik dan disabled bersama processing enemy yang tidak loaded.
+- Simpan last-known position dan timestamps, bukan tracking Node position menembus obstruction.
+- Repeat escalation memakai producer identity, tiga event/dua detik sebagai default, dan direct-target mode; jangan membuat synthetic maximum priority.
 
 ## 11. Status dan modifier
 
@@ -238,6 +286,15 @@ World generation wajib mengikuti `panduan_world_generation.md`:
 
 Jangan menambah procedural geometry, constraint solver, atau streaming per-section. Seluruh terrain layer aktif tetap loaded sampai profiler menunjukkan kebutuhan lain.
 
+### Rope prototype boundary
+
+- Rope pertama adalah fixed `Area2D`, bukan joints/physics chain.
+- Placement memakai normal item-result transaction: validasi penuh, buat preview/node, baru consume satu item.
+- Visual memakai native 16×16 `rope_segment` yang diulang/dipotong dan satu `rope_end`; logic panjang tidak membaca opaque pixel.
+- Player menyimpan climbing state sementara dan current Rope reference; Rope tidak mengubah Player lewat path parent panjang.
+- Knockback meminta detach melalui method/signal yang dimiliki Player, bukan menghapus Rope.
+- Prototype tidak mengimplementasikan `capture_state`, runtime ID, seam transfer, shop stock, atau load restore. Jangan membuat stub persistence yang seolah-olah sudah aman.
+
 ## 13. UI dan control lock
 
 - UI tidak mengubah gameplay state langsung; panggil model/service API.
@@ -279,6 +336,16 @@ Smoke test fondasi harus memeriksa:
 - save roundtrip dan corrupt-save fallback,
 - control lock selalu terlepas.
 
+Player-foundation check tambahan:
+
+- tap/full jump, coyote, buffer, dan no-double-jump;
+- encumbrance boundary pada capacity dan `2 × capacity`;
+- Multitool hanya satu priority target dan cleanup hitbox;
+- cursor clamp, obstruction, dan tie-break interaction;
+- preview/real initial velocity memakai weight formula sama;
+- sound priority/tie/repeat escalation dan blocked sight memory;
+- Rope prototype consume/invalid rollback, attach/climb/jump, item action saat climb, serta force detach.
+
 Perintah wajib sebelum merge:
 
 ```bash
@@ -295,6 +362,9 @@ Jangan menambah test framework sampai assertion runner sederhana tidak lagi cuku
 - Jangan commit `.godot/`, build, log, atau imported cache.
 - Sebelum merge: rebase/update dari main, jalankan test, periksa debugger, lalu minta satu anggota tim mencoba fitur.
 - Reviewer memeriksa ownership state, duplicate logic, data tuning, cleanup, save boundary, dan failure path.
+- Sebelum player programming, merge `feature/world-generation` ke `feature/player` tanpa rebase branch shared; pertahankan world/persistence fix terbaru.
+- Pada merge tersebut hapus tracked `.godot/`, aktifkan kembali ignore `.godot/`, dan pulihkan `texture_region_size`/`tile_size` graybox 16×16. Jangan menyelesaikan conflict generated cache secara manual.
+- Pisahkan commit integration/cleanup, asset organization, dan behavior agar teammate dapat review atau revert satu jenis perubahan.
 
 Programmer item tidak mengedit Inventory, Player, SaveManager, atau ContentCatalog kecuali contract terbukti tidak cukup dan perubahan disetujui lead.
 
@@ -320,5 +390,24 @@ Fitur selesai hanya jika:
 - Procedural terrain.
 - Custom test framework.
 - Controller support selama P0 belum lengkap.
+- Pixel-perfect weapon collision, skeletal/equipment framework, combo system, physics Rope, dan duplicate camera implementation.
+- Rope persistence/seam/shop sampai prototype item-flow disetujui.
 
 Tambahkan hanya ketika kebutuhan nyata tidak dapat ditangani contract yang sudah ada.
+
+## 19. Urutan implementation player setelah greenlight
+
+Urutan ini wajib agar perubahan world, asset, dan player tidak saling menimpa:
+
+1. Merge `feature/world-generation` ke `feature/player`; bersihkan `.godot/` dan pulihkan TileSet 16×16 dalam commit integration tersendiri.
+2. Pindahkan delivered asset sesuai mapping section 2, biarkan Godot membuat import cache lokal, lalu commit asset organization tersendiri.
+3. Perbaiki controller movement/animation, variable jump, coyote, buffer, air steering, camera cursor, dan UI zoom tanpa mengubah item behavior.
+4. Ganti `InteractionSensor` player-centred dengan query cursor clamp/reach/obstruction dan pertahankan public `interact(actor)` pada target.
+5. Hapus jalur `J`/`SwordHitbox`; hubungkan Multitool snap-thrust melalui `primary_action` dan shared damage contract.
+6. Tambahkan field/total weight, encumbrance modifier, shared throw calculation, dotted preview, serta satu debug heavy item.
+7. Perluas `SoundEvent`/listener secukupnya, tambah sight/proximity scan, lalu buktikan pada test amphibian sebelum enemy lain.
+8. Buat Rope item-flow prototype tanpa persistence/seam/shop; jangan melanjutkan final integration sampai prototype di-playtest lead.
+9. Tambahkan debug draw melalui menu debug yang ada dan lengkapi integrated graybox/check terkecil.
+10. Jalankan clean import, smoke test, representative 60 FPS playtest, dan satu teammate test sebelum commit final player foundation.
+
+Setiap langkah harus runnable sebelum langkah berikutnya. Jangan mencampur asset move, branch conflict resolution, dan gameplay behavior dalam satu commit.

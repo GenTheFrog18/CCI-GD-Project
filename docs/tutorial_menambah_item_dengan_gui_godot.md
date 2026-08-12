@@ -22,7 +22,8 @@ Untuk task item biasa, file yang boleh disentuh adalah:
 ```text
 data/items/<item_id>.tres
 game/items/behaviors/<item_id>_behavior.gd   # hanya jika behavior baru diperlukan
-art/items/...                                 # jika asset sudah tersedia
+assets/art/items/...                          # PNG runtime jika asset tersedia
+assets/source/items/...                       # source .aseprite bila tersedia
 tests/foundation_smoke.gd                     # assertion minimum
 ```
 
@@ -57,6 +58,7 @@ Sebelum membuat file, minta atau tulis jawaban untuk checklist ini:
 - Apakah item dikonsumsi?
 - Apakah item dapat dilempar dan diambil kembali?
 - Berapa `max_stack`?
+- Berapa integer `weight`? Field ini direncanakan untuk tahap player/item berikutnya; jangan mengarang field sebelum code foundation menyediakannya.
 - Apakah item menyimpan state seperti `active`, durability, atau timer?
 - Target validnya player, enemy, terrain, atau interaction object?
 - Apakah item dapat dijual dan berapa nilainya?
@@ -283,7 +285,7 @@ Jika art team sudah memberikan PNG:
 2. Melalui file manager OS, letakkan file di folder asset yang disepakati tim, misalnya:
 
    ```text
-   art/items/practice_pebble.png
+   assets/art/items/practice_pebble.png
    ```
 
 3. Kembali ke Godot dan tunggu asset muncul di FileSystem.

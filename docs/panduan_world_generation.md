@@ -72,7 +72,7 @@ Gatekeeper shop optional. Quest memberi Moon Whistle dan powerful relic, tetapi 
 1. Buka variation slot yang tepat sebagai inherited scene; jangan duplicate slot lain lalu mengganti ID saja.
 2. Pilih child `Terrain`, lalu lukis map memakai TileMap GUI pada grid 80×50. Jangan mengubah root ID, tags, anchors, atau bounds.
 3. Seam berada pada kolom tile 40. Sisakan enam baris tile paling atas dan bawah dari random enemy/hazard; buat landing aman di bawah `RespawnAnchor`.
-4. Buat jalur turun dan naik yang jelas. Selama Rope belum tersedia, map wajib dapat dilalui dua arah tanpa Rope. Layout Rope-required dibuat setelah Rope dapat diuji.
+4. Buat jalur turun dan naik yang jelas. Selama Rope baru berupa prototype non-persistent, map wajib dapat dilalui dua arah tanpa Rope. Layout Rope-required dibuat setelah persistence/seam Rope final dapat diuji.
 5. Pastikan surface shop selalu mempunyai Rope yang terjangkau dan beri warning sebelum rope-required drop.
 6. Buat optional branch di dalam section; generator tidak menyusun topology branch.
 7. Tempatkan placer dan child SpawnPoint dengan GUI.
@@ -150,6 +150,8 @@ Placer result terpisah dari spawned object state. Destroyed child tidak muncul l
 
 Item, enemy, dan Rope yang dapat melewati seam berada pada layer runtime root. Dynamic object menyimpan layer ID dan global position. Rope boleh melewati seam karena seluruh layer tetap instantiated; Rope menyimpan root placement dan geometry/state miliknya.
 
+Aturan di atas adalah contract Rope final. Prototype player pertama sengaja hanya menguji item selection, placement/consume, visual, climbing, dan control. Prototype belum disimpan, belum dijamin melewati seam, dan tidak boleh dipakai level designer sebagai jalur wajib. Setelah prototype disetujui, barulah Rope dipindahkan ke layer runtime root dan diberi stable runtime ID/state sesuai contract ini.
+
 Autosave layer transition dilakukan setelah destination selesai dibuat, player berada pada safe anchor, dan restore selesai. State source ditahan di memory selama transition agar tidak hilang.
 
 ## 9. Debug tools
@@ -179,5 +181,6 @@ F3 selalu membuka panel scrollable berisi unlimited health, active-section text,
 - Gauntlet dan ending dapat dicapai tanpa quest reward.
 - Camera tidak berhenti pada seam `y = 800` atau `y = 1600`, dan mengikuti gerak horizontal dalam route.
 - Setiap map authored dapat dimainkan turun dan naik tanpa Rope selama mechanic Rope belum tersedia.
+- Prototype Rope tidak dianggap memenuhi acceptance persistence/seam; map tetap tidak boleh bergantung kepadanya.
 - Debug panel dan World Gen Log tidak keluar dari viewport 640×360.
 - Headless import dan smoke test selesai tanpa error.
