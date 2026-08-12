@@ -8,6 +8,7 @@ var action_origin := Vector2.ZERO
 var interaction_target: Node
 var definition: ItemDefinition
 var stack: ItemStack
+var world_bounds := Rect2()
 
 func _init(
 	actor_node: Node2D = null,

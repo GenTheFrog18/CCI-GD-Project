@@ -13,6 +13,9 @@ func can_secondary(_context: ItemContext, _state: Dictionary) -> bool:
 func secondary(_context: ItemContext, _state: Dictionary) -> ItemActionResult:
 	return ItemActionResult.failed("Secondary action unavailable")
 
+func get_preview(_context: ItemContext, _state: Dictionary) -> Dictionary:
+	return {}
+
 func on_thrown(_thrown_item: Node2D, _context: ItemContext, _state: Dictionary) -> void:
 	pass
 

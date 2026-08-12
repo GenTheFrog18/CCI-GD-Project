@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cvdepqc6862xe" path="res://game/player/player.gd" id="1"]
 [ext_resource type="Script" path="res://game/player/player_camera.gd" id="7_camera"]
+[ext_resource type="Script" path="res://game/player/player_item_preview.gd" id="8_preview"]
 [ext_resource type="Script" uid="uid://rax7v1pyqa5l" path="res://core/combat/health_component.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://b2uyck5qi7mp6" path="res://assets/art/characters/test_player/fall.png" id="2_5ghna"]
 [ext_resource type="Script" uid="uid://bq6tumcjn8lea" path="res://core/status/status_controller.gd" id="3"]
@@ -270,6 +271,10 @@ polygon = PackedVector2Array(-8, -28, 8, -28, 8, 0, -8, 0)
 position = Vector2(12, -17)
 
 [node name="HeldItemIcon" type="Sprite2D" parent="HeldItemAnchor"]
+
+[node name="ItemPreview" type="Node2D" parent="."]
+z_index = 5
+script = ExtResource("8_preview")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=1680467586]
 script = ExtResource("2")

@@ -16,7 +16,7 @@ var _initial_velocity := Vector2.ZERO
 var _still_time := 0.0
 var _hit_ids: Dictionary = {}
 
-func configure(item_definition: ItemDefinition, state: Dictionary, source: Node, spawn_position: Vector2, velocity: Vector2, damage := 0.0, mass_value := 1.0) -> void:
+func configure(item_definition: ItemDefinition, state: Dictionary, source: Node, spawn_position: Vector2, velocity: Vector2, damage := 0.0) -> void:
 	definition = item_definition
 	instance_state = state.duplicate(true)
 	source_actor = source
@@ -25,7 +25,8 @@ func configure(item_definition: ItemDefinition, state: Dictionary, source: Node,
 	_spawn_position = spawn_position
 	_initial_velocity = velocity
 	base_damage = damage
-	item_mass = mass_value
+	item_mass = maxf(float(item_definition.weight), 0.1) if item_definition != null else 1.0
+	mass = item_mass
 
 func _ready() -> void:
 	contact_monitor = true
@@ -92,6 +93,8 @@ func capture_state() -> Dictionary:
 
 func restore_state(data: Dictionary) -> void:
 	definition = ContentCatalog.get_item(StringName(data.get("item_id", "")))
+	item_mass = maxf(float(definition.weight), 0.1) if definition != null else 1.0
+	mass = item_mass
 	instance_state = data.get("instance_state", {}).duplicate(true)
 	var position_data: Array = data.get("position", [0.0, 0.0])
 	global_position = Vector2(float(position_data[0]), float(position_data[1]))

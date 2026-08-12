@@ -201,6 +201,7 @@ func _build_ui() -> void:
 	debug_column.add_child(world_debug_label)
 	for spec in [
 		["Give Rock", _debug_give_rock],
+		["Give Heavy Pack", _debug_give_heavy_pack],
 		["Emit Sound", _debug_emit_sound],
 		["Apply Slow", _debug_apply_slow],
 		["Damage 10", _debug_damage],
@@ -421,6 +422,9 @@ func _emit_world_debug_action(action: StringName) -> void:
 
 func _debug_give_rock() -> void:
 	player.try_pickup_item(&"throwable_rock", 1, {})
+
+func _debug_give_heavy_pack() -> void:
+	player.try_pickup_item(&"debug_heavy_pack", 1, {})
 
 func _debug_emit_sound() -> void:
 	SoundBus.emit_sound(get_tree(), SoundEvent.new(player.global_position, 300.0, &"debug", 1, player))

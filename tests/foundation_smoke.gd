@@ -32,6 +32,7 @@ class PickupProbe:
 func _ready() -> void:
 	_test_catalog()
 	_test_inventory()
+	_test_weighted_throw()
 	await _test_physical_inventory_drop()
 	await _test_interaction_sensor()
 	_test_combat_and_status()
@@ -57,6 +58,7 @@ func _test_catalog() -> void:
 	assert(ContentCatalog.rebuild().is_empty())
 	assert(ContentCatalog.get_item(&"multitool") != null)
 	assert(ContentCatalog.get_item(&"throwable_rock") != null)
+	assert(ContentCatalog.get_item(&"debug_heavy_pack").weight == 12)
 	var registry: Dictionary = {}
 	var errors := PackedStringArray()
 	var definition := ContentCatalog.get_item(&"multitool")
@@ -87,7 +89,30 @@ func _test_inventory() -> void:
 	var restored := InventoryModel.new()
 	restored.restore_state(inventory.capture_state())
 	assert(restored.backpack[0].quantity == 8)
+	assert(restored.get_total_weight() == 8)
 	_test_item_action_rollback_and_pickup()
+
+func _test_weighted_throw() -> void:
+	var actor := Node2D.new()
+	var world := Node2D.new()
+	add_child(actor)
+	add_child(world)
+	var rock := ContentCatalog.get_item(&"throwable_rock")
+	var heavy := ContentCatalog.get_item(&"debug_heavy_pack")
+	var rock_context := ItemContext.new(actor, world, Vector2(240.0, 0.0), null, rock, ItemStack.new(rock.item_id))
+	var heavy_context := ItemContext.new(actor, world, Vector2(240.0, 0.0), null, heavy, ItemStack.new(heavy.item_id))
+	var rock_behavior := rock.behavior as DefaultThrowBehavior
+	var heavy_behavior := heavy.behavior as DefaultThrowBehavior
+	assert(rock_behavior.launch_velocity(rock_context).length() > heavy_behavior.launch_velocity(heavy_context).length())
+	var preview := rock_behavior.get_preview(rock_context, {})
+	assert(preview.get("kind") == &"trajectory" and preview.get("points").size() > 1)
+	var result := heavy_behavior.secondary(heavy_context, {})
+	world.add_child(result.world_node)
+	var thrown := result.world_node as ThrownItem
+	assert(is_equal_approx(thrown.mass, float(heavy.weight)))
+	assert(thrown.linear_velocity.is_equal_approx(heavy_behavior.launch_velocity(heavy_context)))
+	actor.free()
+	world.free()
 
 func _test_item_action_rollback_and_pickup() -> void:
 	var controller := PlayerItemController.new()

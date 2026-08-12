@@ -28,6 +28,17 @@ func get_movement_multiplier() -> float:
 	var value = prepared_item.get("movement_multiplier")
 	return float(value) if value != null else 1.0
 
+func get_preview(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> Dictionary:
+	if is_instance_valid(prepared_item):
+		return {}
+	var stack := inventory.get_active_stack()
+	if stack.is_empty():
+		return {}
+	var definition := ContentCatalog.get_item(stack.item_id)
+	if definition == null or definition.behavior == null:
+		return {}
+	return definition.behavior.get_preview(_make_context(actor, world, cursor, target, definition, stack), stack.state)
+
 func primary(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> bool:
 	if prepared_item != null:
 		feedback_requested.emit("Item already prepared")
@@ -89,20 +100,31 @@ func _execute(is_secondary: bool, actor: Node2D, world: Node, cursor: Vector2, t
 	var definition := ContentCatalog.get_item(stack.item_id)
 	if definition == null or definition.behavior == null:
 		return false
-	var context := ItemContext.new(actor, world, cursor, target, definition, stack.copy())
-	if held_item_anchor != null:
-		var anchor_offset := held_item_anchor.global_position - actor.global_position
-		anchor_offset.x = absf(anchor_offset.x) * (-1.0 if cursor.x < actor.global_position.x else 1.0)
-		context.action_origin = actor.global_position + anchor_offset
+	var context := _make_context(actor, world, cursor, target, definition, stack)
 	var behavior := definition.behavior
 	var allowed := behavior.can_secondary(context, stack.state) if is_secondary else behavior.can_primary(context, stack.state)
 	if not allowed:
 		feedback_requested.emit("Action unavailable")
 		return false
 	var result := behavior.secondary(context, stack.state) if is_secondary else behavior.primary(context, stack.state)
-	return _commit_result(result, world)
+	return _commit_result(result, world, actor)
 
-func _commit_result(result: ItemActionResult, world: Node) -> bool:
+func _make_context(actor: Node2D, world: Node, cursor: Vector2, target: Node, definition: ItemDefinition, stack: ItemStack) -> ItemContext:
+	var context := ItemContext.new(actor, world, cursor, target, definition, stack.copy())
+	if held_item_anchor != null:
+		var anchor_offset := held_item_anchor.global_position - actor.global_position
+		anchor_offset.x = absf(anchor_offset.x) * (-1.0 if cursor.x < actor.global_position.x else 1.0)
+		context.action_origin = actor.global_position + anchor_offset
+	var owner := world
+	while owner != null:
+		var bounds = owner.get("world_bounds")
+		if bounds is Rect2:
+			context.world_bounds = bounds
+			break
+		owner = owner.get_parent()
+	return context
+
+func _commit_result(result: ItemActionResult, world: Node, actor: Node2D = null) -> bool:
 	if result == null or not result.success:
 		if result != null and not result.message.is_empty():
 			feedback_requested.emit(result.message)
@@ -123,4 +145,12 @@ func _commit_result(result: ItemActionResult, world: Node) -> bool:
 		inventory.update_active_state(result.next_state)
 	if not result.message.is_empty():
 		feedback_requested.emit(result.message)
+	if actor != null and result.sound_priority >= 0 and result.sound_radius > 0.0:
+		SoundBus.emit_sound(actor.get_tree(), SoundEvent.new(
+			actor.global_position,
+			result.sound_radius,
+			result.sound_type,
+			result.sound_priority,
+			actor
+		))
 	return true

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
 [ext_resource type="Script" path="res://game/items/behaviors/default_throw_behavior.gd" id="2"]
 [ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
-[ext_resource type="Texture2D" path="res://assets/art/items/rock.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/backpack.png" id="4"]
 
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
@@ -14,15 +14,15 @@ base_damage = 2.0
 
 [resource]
 script = ExtResource("1")
-item_id = &"throwable_rock"
-display_name = "Throwable Rock"
-unknown_description = "A small rock."
-known_description = "A recoverable thrown object that deals velocity-based damage and knockback."
-category = &"ordinary"
+item_id = &"debug_heavy_pack"
+display_name = "Debug Heavy Pack"
+unknown_description = "A deliberately heavy test object."
+known_description = "Debug-only comparison item for weight and throwing."
+category = &"debug"
 icon = ExtResource("4")
 world_scene = ExtResource("3")
-weight = 1
-max_stack = 8
+weight = 12
+max_stack = 2
 sellable = false
 persistent_when_dropped = true
 retrievable = true

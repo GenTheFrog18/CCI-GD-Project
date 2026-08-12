@@ -19,6 +19,7 @@ known_description = "Breaks fragile rocks, harvests certain creatures, and deals
 category = &"tool"
 icon = ExtResource("4")
 world_scene = ExtResource("3")
+weight = 2
 max_stack = 1
 purchase_price = 40
 sellable = false
