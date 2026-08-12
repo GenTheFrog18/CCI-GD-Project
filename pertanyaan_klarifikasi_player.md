@@ -48,7 +48,7 @@ The player branch split before later world-generation, persistence, section, pla
 
 **Recommendation:** merge the latest world-generation branch into the published player branch before programming. Do not rebase the shared branch. Resolve meaningful source conflicts deliberately and discard generated-cache conflicts.
 
-**Answer:**
+**Answer:** yes, the world generation branch should be merged into player, make the player branch to be the most up to date
 
 ## A2 — Generated Godot files in Git — BLOCKER
 
@@ -58,7 +58,7 @@ These files contain machine-specific editor state, imported cache data, shaders,
 
 **Recommendation:** remove `.godot/` from Git and correctly ignore it. Keep source assets and their adjacent `.import` descriptions only where the project already intentionally tracks them.
 
-**Answer:**
+**Answer:** yes that was a mistake in my part
 
 ## A3 — Graybox TileSet regression — BLOCKER
 
@@ -68,7 +68,7 @@ The removal is unrelated to the requested player work and can prevent or corrupt
 
 **Recommendation:** restore both 16×16 settings unless the map team deliberately migrated the entire TileSet to another size.
 
-**Answer:**
+**Answer:** that was probably an accidental removal
 
 ## A4 — Status of the current attack prototype — BLOCKER
 
@@ -78,7 +78,7 @@ Keeping its hardcoded input, timers, and sword-specific ownership would conflict
 
 **Recommendation:** preserve useful animation assets and visual timing as reference, but replace the attack code with the smallest item-owned swing implementation that reuses the existing item controller and combat contracts.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -92,7 +92,7 @@ This determines the required animations, weapon pivot, collision transforms, and
 
 **Recommendation:** use left/right attacks for the first implementation. The cursor chooses the facing side, while future items may provide other swing profiles if final art requires them.
 
-**Answer:**
+**Answer:** i have just realised part way into answering this section that what i meant by swing is actually more of a thrust. since we're limited on time, we do not have a swing animation, instead the attack with multitool would be more like a poke towards the cursor from player's item holding pivot point, so the direction is supported to be everywhere the player can aim their mouse, the size of the hitbox is based on the item visual size. like this: player holds the multitool in hand, when cursor clicks primary use to a direction, the sprite appears facing to that direction from the player's item pivot point
 
 ## B2 — Body and weapon artwork separation — BLOCKER
 
@@ -106,7 +106,7 @@ A combined sheet is fast for one item but requires new player sheets for every f
 
 **Recommendation:** use the existing body animation and a separate weapon sprite attached to a per-frame hand/pivot position. Do not build skeletal animation or a general equipment-rendering framework for the jam.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B3 — Meaning of literal weapon-sprite overlap — BLOCKER
 
@@ -116,7 +116,7 @@ Godot physics operates on collision shapes, not opaque sprite pixels. Pixel-perf
 
 **Recommendation:** use a small authored `Shape2D` that follows the visible weapon closely enough to feel honest. The shape is enabled only during explicitly marked active animation frames.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B4 — Attack timing source — BLOCKER
 
@@ -126,7 +126,7 @@ Second-based timers can drift away from the visible sprite when animation FPS or
 
 **Recommendation:** start and stop the hitbox from animation method tracks or frame markers. Keep damage, force, shape, and allowed targets in the item's swing configuration.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B5 — Movement during a swing — BEFORE IMPLEMENTATION
 
@@ -136,7 +136,7 @@ Stopping gives the attack commitment but can make the weak utility tool feel slu
 
 **Recommendation:** allow reduced horizontal movement during wind-up and recovery; do not forcibly set velocity to zero at the start or end of the animation.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B6 — Airborne Multitool use — BEFORE IMPLEMENTATION
 
@@ -146,7 +146,7 @@ Disallowing it simplifies animation but prevents breaking or attacking targets b
 
 **Recommendation:** allow one normal swing in the air without stopping gravity or vertical movement.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B7 — Facing during the attack — BEFORE IMPLEMENTATION
 
@@ -156,7 +156,7 @@ Changing side mid-swing can make the damaging area disagree with the startup ani
 
 **Recommendation:** lock attack facing when left click is pressed and release it when recovery finishes.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B8 — Number of targets per swing — BLOCKER
 
@@ -166,7 +166,7 @@ An overlap hitbox is likely to observe the same body across several physics fram
 
 **Recommendation:** allow multiple distinct targets, but each target can be affected only once per swing.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B9 — Tool target, breakable, and enemy priority — BLOCKER
 
@@ -176,7 +176,7 @@ The existing documentation gives special tool interactions priority over breakab
 
 **Recommendation:** a special tool interaction consumes that swing's effect; otherwise the hitbox may affect all overlapping breakables/enemies once. This preserves authored interactions without making ordinary combat single-target.
 
-**Answer:**
+**Answer:** im assuming special tool here means an item with an effect for its primary, in that case the item primary use is the special effect, it does not have any swing mechanic as for now that is only for the multitool primary effect
 
 ## B10 — Repeated input, queueing, and combos — BEFORE IMPLEMENTATION
 
@@ -186,7 +186,7 @@ Queueing and combos add control state, cancellation rules, and additional art re
 
 **Recommendation:** ignore additional presses until recovery finishes. Add buffering or combos only when a final item explicitly needs them.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ## B11 — Action cancellation and cleanup — BLOCKER
 
@@ -196,7 +196,7 @@ The earlier decision says ordinary damage does not cancel an item action. Death 
 
 **Recommendation:** ordinary damage does not cancel the swing. Death, scene transition, and loss of the active item cancel it immediately. Inventory/dialogue block new attacks but allow an already-started swing to finish. Starting a climb waits until recovery ends.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B12 — Final animation delivery contract — BLOCKER
 
@@ -206,7 +206,7 @@ Please specify the frame-cell size, frame count, playback FPS, loop setting, lef
 
 **Recommendation:** agree on one short handoff table before final art is imported. The game should not infer damaging frames from filenames or opaque pixels.
 
-**Answer:**
+**Answer:** we do not have the time for that, instead the tool sprite will kind of teleportto the direction cursor is facing
 
 ---
 
@@ -220,7 +220,7 @@ Pure distance can make small pickups steal focus from a shop/gate. Pure priority
 
 **Recommendation:** filter by player reach first, then choose highest `interaction_priority`, then shortest cursor distance as the tie-breaker.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## C2 — Interaction through terrain — BLOCKER
 
@@ -230,7 +230,7 @@ Allowing it can open gates, shops, or pickups through authored barriers.
 
 **Recommendation:** require an unobstructed physics line from the player to the target, while allowing each special interactable to opt out only if a real design requires it.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## C3 — Cursor outside interaction reach — BEFORE IMPLEMENTATION
 
@@ -240,7 +240,7 @@ Clamping can select an object that the cursor is not visibly near.
 
 **Recommendation:** return no target and no interaction prompt until the cursor is both near an object and within player reach.
 
-**Answer:**
+**Answer:** it should clamp to the reachable area
 
 ## C4 — Initial interaction tuning — LATER
 
@@ -250,7 +250,7 @@ Both will remain Inspector-adjustable, but initial values are needed for consist
 
 **Recommendation:** start with 72 px maximum reach and a 16 px cursor radius, then tune after one map playtest.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## C5 — Target feedback — BEFORE IMPLEMENTATION
 
@@ -260,7 +260,7 @@ A highlight is clearer but needs an art-compatible shader or alternate sprite tr
 
 **Recommendation:** use the existing prompt for the foundation. Add highlighting only when the art team chooses a consistent visual treatment.
 
-**Answer:**
+**Answer:** use existing prompt for now, but a simple glow to the highlited item sprite could work
 
 ## C6 — Intended camera calculation — BLOCKER
 
@@ -270,7 +270,7 @@ This produces different behavior when the player is not centered because of worl
 
 **Recommendation:** target `player position + clamped(player-to-world-cursor vector) + base offset`, smooth toward it, and continue applying native world bounds.
 
-**Answer:**
+**Answer:**` follow the recommendation`
 
 ## C7 — Camera limit shape and starting values — LATER
 
@@ -280,7 +280,7 @@ A separate vertical limit prevents showing too much empty vertical space while r
 
 **Recommendation:** keep an elliptical limit with the current approximate 56 px horizontal and 28 px vertical offsets, plus the existing base vertical offset and smoothing.
 
-**Answer:**
+**Answer:** this should be easily adjustable
 
 ## C8 — Camera while UI owns the cursor — BEFORE IMPLEMENTATION
 
@@ -290,7 +290,7 @@ Following UI clicks can move the world view behind an overlay and feel distracti
 
 **Recommendation:** ease back to the base player offset while inventory/pause owns the cursor; resume cursor look after it closes.
 
-**Answer:**
+**Answer:**  follow the recommendation, but do a slight adjustable zoom into the player when it happens
 
 ## C9 — Meaning of “make a backup” — BLOCKER
 
@@ -300,7 +300,7 @@ Keeping two implementations in the game adds testing and maintenance for behavio
 
 **Recommendation:** use Git history as the backup. Do not retain duplicate camera code or a runtime toggle unless playtesting requires direct comparison.
 
-**Answer:**
+**Answer:** follow the recommendation, also if needed you can just make a folder in this directory as a backup
 
 ---
 
@@ -314,7 +314,7 @@ The authored map guidance assumes a roughly 32 px maximum required rise and 48 p
 
 **Recommendation:** preserve or slightly improve the current full-jump envelope. Variable jump should only add shorter jumps, not reduce the unencumbered maximum.
 
-**Answer:**
+**Answer:** this should be easily adjustable
 
 ## D2 — Variable jump behavior — BEFORE IMPLEMENTATION
 
@@ -324,7 +324,7 @@ The simplest responsive implementation applies the normal launch velocity, then 
 
 **Recommendation:** retain full height while held and target roughly 40–50% of full height for a quick tap. Keep the release multiplier adjustable.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D3 — Coyote time and jump buffer defaults — LATER
 
@@ -334,7 +334,7 @@ These are tuning values and remain exported. Much longer windows can make the pl
 
 **Recommendation:** begin at 0.12 seconds for each and tune together in the graybox maps.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D4 — Midair steering strength — BEFORE IMPLEMENTATION
 
@@ -344,7 +344,7 @@ Keeping the same target speed but reducing acceleration gives useful correction 
 
 **Recommendation:** keep the normal horizontal speed target, use separate lower air acceleration/deceleration values, and allow reversing direction in the air.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D5 — Carry limit semantics — BLOCKER
 
@@ -354,7 +354,7 @@ A hard weight rejection affects pickup, shops, drops, quest rewards, and full-in
 
 **Recommendation:** use a soft encumbrance threshold; the existing slot limits remain the only hard capacity limit.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D6 — Weight penalty curve and cap — BLOCKER
 
@@ -364,7 +364,7 @@ Without caps, a heavily loaded player could become immobile, unable to jump, or 
 
 **Recommendation:** use a linear normalized load ratio with configurable minimum movement speed, minimum jump strength, and maximum gravity multiplier. Do not allow weight alone to make movement impossible.
 
-**Answer:**
+**Answer:** no, weight can make the the player immobile if its heavy enough. but downward acceleration should be capped, make it adjustable
 
 ## D7 — Weight work included in this player stage — BLOCKER
 
@@ -374,7 +374,7 @@ The request says not to focus on item weight until item implementation, but move
 
 **Recommendation:** add one integer weight field and one inventory total calculation when coding begins, but postpone weight UI, final values, and elaborate capacity rules. The player reads the total through the inventory rather than duplicating item data.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D8 — Which movement properties weight changes — BEFORE IMPLEMENTATION
 
@@ -384,7 +384,7 @@ Changing every movement value makes tuning difficult and can make a heavy player
 
 **Recommendation:** initially modify maximum run speed, jump launch velocity, and downward gravity only. Leave acceleration, steering, and knockback unchanged.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D9 — Weight and fall damage — BLOCKER
 
@@ -394,7 +394,7 @@ The current fall-damage system uses impact speed, so this will happen automatica
 
 **Recommendation:** allow heavy loads to increase fall-damage risk, but retain the existing threshold and damage cap so a normal weighted jump cannot damage the player.
 
-**Answer:**
+**Answer:** when testing previously the fall damage system feels unresponsive, we'll get back to this later after playtest
 
 ---
 
@@ -408,7 +408,7 @@ One contrast item is enough to validate the formula without creating unnecessary
 
 **Recommendation:** add one clearly heavy temporary test object. Use the existing rock as the light/normal baseline.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## E2 — Access to the comparison item — BEFORE IMPLEMENTATION
 
@@ -418,7 +418,7 @@ Putting temporary content into normal generation can accidentally make it part o
 
 **Recommendation:** expose it through a clearly marked debug/test pickup or debug grant, not normal loot tables.
 
-**Answer:**
+**Answer:** follow the recommendation, make sure its accessible through the debug menu
 
 ## E3 — When the dotted trajectory appears — BLOCKER
 
@@ -428,7 +428,7 @@ Changing right click to hold-and-release would expand the action contract for ev
 
 **Recommendation:** show the short trajectory whenever a throwable/prepared item is active and the inventory is closed. Right click remains a single press to throw.
 
-**Answer:**
+**Answer:** show the short trajectory whenever a held item can be thrown
 
 ## E4 — Trajectory collision prediction — BEFORE IMPLEMENTATION
 
@@ -438,7 +438,7 @@ Predicting every moving body can make the preview flicker and costs more queries
 
 **Recommendation:** use the same launch velocity and gravity as the real item, stop at the first static terrain collision, and leave dynamic-target collision unpredicted.
 
-**Answer:**
+**Answer:** it shouldn't even care about terrain collision, the trajectory is only 1.5 player height in length, this should be adjustable in the settings, but its just a visual guide that does not account terrain
 
 ## E5 — Cursor distance and throw power — BLOCKER
 
@@ -448,7 +448,7 @@ This rule provides analog strength without adding a hold input, but it must comb
 
 **Recommendation:** keep cursor-distance strength. Apply configurable throw power first, then reduce launch speed by a simple weight curve such as dividing by the square root of weight, with safe minimum and maximum speeds.
 
-**Answer:**
+**Answer:** follow the recommendation, should be adjustable
 
 ## E6 — Weight versus physical mass — BLOCKER
 
@@ -458,7 +458,7 @@ One value is easier for designers. Separate values support unusual artifacts but
 
 **Recommendation:** use one integer `weight` for the jam. Keep item-specific base throw power and impact behavior separate only where an actual item requires it.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ## E7 — Throwing sound events — BLOCKER
 
@@ -468,7 +468,7 @@ Release noise identifies the thrower; impact noise supports distraction gameplay
 
 **Recommendation:** emit the priority-1 throw action at the player. Let each item's impact behavior optionally emit a separate impact sound from the landing position.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## E8 — Prepared/activated item preview — BEFORE IMPLEMENTATION
 
@@ -478,7 +478,7 @@ Showing an arc before the item is prepared may imply that right click is immedia
 
 **Recommendation:** show the trajectory for the actual item currently ready to be thrown, including its current instance state; do not create a separate simulated item state.
 
-**Answer:**
+**Answer:** show the trajectory whenever a throwable item is in hand, as items will be throwable whether or not its activated
 
 ---
 
@@ -492,7 +492,7 @@ Components without one real integration can appear correct while their ownership
 
 **Recommendation:** build the minimal reusable producer/listener data and prove it on the existing test amphibian. Do not build every future enemy or a universal AI framework.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F2 — Detection ownership — BLOCKER
 
@@ -506,7 +506,7 @@ This keeps sensing reusable without moving the entire enemy state machine into a
 
 **Recommendation:** use this separation. A producer describes its detectability and emits events; a listener filters candidates; the enemy retains patrol/investigate/chase decisions.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F3 — Normal sight geometry — BLOCKER
 
@@ -516,7 +516,7 @@ A single ray is cheap but frequently misses a 32 px character unless perfectly a
 
 **Recommendation:** use an adjustable forward cone/area as broad phase and a physics ray for obstruction. Scan at a reduced, staggered frequency rather than every physics frame.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F4 — Aggravated sight coverage — BLOCKER
 
@@ -526,7 +526,7 @@ Full 360-degree reacquisition makes flanking impossible during the memory period
 
 **Recommendation:** use a larger forward cone plus a small 360-degree proximity radius. Keep all ranges and angles per enemy.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F5 — Sight memory after obstruction — BLOCKER
 
@@ -536,7 +536,7 @@ Live tracking through walls makes obstruction irrelevant once an enemy has seen 
 
 **Recommendation:** remember and pursue the last-known position. A new valid sight check refreshes both the position and timer.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F6 — End of sight pursuit — BEFORE IMPLEMENTATION
 
@@ -546,7 +546,7 @@ The existing test enemy already supports investigate, wait, and return states.
 
 **Recommendation:** wait/search at the last-known position for the remaining configured investigation time, then return to normal.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F7 — Anti-detection effects — BLOCKER
 
@@ -556,7 +556,7 @@ The representation affects every artifact and enemy even if only one anti-detect
 
 **Recommendation:** use per-channel multipliers on the producer. Zero means fully hidden from that channel; values between zero and one reduce effective range. Do not change event priority unless the item explicitly says it changes perceived importance.
 
-**Answer:**
+**Answer:** currently no item implementation will be able to disable any detection, the sight blocker will make a deployable smoke that acts as an obstruction for visiom check, the sound item will create a hugher priority sound that can take over the enemy sound priority target
 
 ## F8 — Proximity detection — BLOCKER
 
@@ -566,7 +566,7 @@ An unconditional radius prevents standing inside an enemy unnoticed but can dete
 
 **Recommendation:** proximity overrides distraction and partial concealment, but still requires no solid terrain between enemy and producer. Complete supernatural concealment can explicitly opt out.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F9 — Visible player versus artifact distraction — BLOCKER
 
@@ -576,7 +576,7 @@ Allowing ordinary distractions to override direct sight makes enemies easy to re
 
 **Recommendation:** direct sight or valid proximity to the current player target wins. Artifact signals can redirect idle/investigating enemies and enemies that have lost sight, unless a specific high-priority artifact states otherwise.
 
-**Answer:**
+**Answer:** refer to my f7 answer
 
 ## F10 — “Harder to distract” configuration — BLOCKER
 
@@ -586,7 +586,7 @@ These approaches create different designer controls and target-selection rules.
 
 **Recommendation:** give the listener a configurable distraction threshold for non-current producers plus optional ignored sound types. Avoid a complicated universal scoring formula.
 
-**Answer:**
+**Answer:** follow the recommendation, make it adjustable
 
 ## F11 — Sound priority versus hearing radius — BLOCKER
 
@@ -596,7 +596,7 @@ Priority chooses between sounds already heard; radius determines whether a liste
 
 **Recommendation:** keep `priority` and `radius` separate, matching the existing `SoundEvent` contract. Priorities have no global maximum.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F12 — Meaning of listener upper priority bound — BLOCKER
 
@@ -606,7 +606,7 @@ Ignoring unusually important sounds is counterintuitive, but the request explici
 
 **Recommendation:** use only a minimum heard priority; accept all higher values. If an upper value is needed for balance, treat it as a comparison cap rather than making stronger sounds inaudible.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F13 — Repeated-sound escalation — BLOCKER
 
@@ -616,7 +616,7 @@ Without fixed rules, normal footsteps may immediately cause direct chase or rapi
 
 **Recommendation:** start with three accepted sounds from the same producer within two seconds. Count all sound types together, reset after the window, and expose both values per enemy.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F14 — Priority of an escalated sound target — BLOCKER
 
@@ -626,7 +626,7 @@ A global arbitrary maximum conflicts with the rule that sound priority has no ma
 
 **Recommendation:** store “direct sound target” as a target mode above ordinary investigation rather than inventing a magic numeric maximum. Direct sight/proximity can still take precedence.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F15 — Tracking a direct sound target — BLOCKER
 
@@ -636,7 +636,7 @@ Continuous tracking through walls gives sound a stronger capability than the eve
 
 **Recommendation:** update location when a fresh sound is heard. Between events, pursue the last-known sound location; lose the direct target after the configured silence/out-of-range timeout.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F16 — Sound timeout and completed investigation — BEFORE IMPLEMENTATION
 
@@ -646,7 +646,7 @@ The request allows either finishing the check or timing out, but the waiting beh
 
 **Recommendation:** use an adjustable short wait/search duration at the location. Completion clears that ordinary sound target; the 10-second timeout is the safety limit for unreachable or stale targets.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F17 — Walking sound cadence — BEFORE IMPLEMENTATION
 
@@ -656,7 +656,7 @@ Physics-frame emission would flood listeners and instantly trigger repetition es
 
 **Recommendation:** emit one event per configured distance travelled while grounded, later synchronize it to animation footstep markers when final animation timing is stable. Do not add crouching unless separately requested.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F18 — Jump sound timing — BEFORE IMPLEMENTATION
 
@@ -666,7 +666,7 @@ Takeoff reveals the action source; landing supports heavy/fall interactions but 
 
 **Recommendation:** emit priority 3 at takeoff and a separate landing event whose radius/priority can scale within configured limits. Normal soft landings may use a lower priority.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F19 — Detection update frequency — BLOCKER
 
@@ -676,7 +676,7 @@ The existing sound bus is already event-driven and does no repeated spatial scan
 
 **Recommendation:** dispatch sound immediately. Scan sight/proximity around every 0.1 seconds and stagger enemies across frames so they do not all query physics together.
 
-**Answer:**
+**Answer:** follow the recommendation, the detection should only happen when an enemy's detection is loaded in
 
 ## F20 — Initial sight and sound tuning — LATER
 
@@ -686,11 +686,12 @@ The architecture only needs adjustable fields; exact balance can follow the firs
 
 **Recommendation:** use clearly documented temporary values and tune them in one graybox section instead of blocking the foundation on final enemy balance.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
 # G. Rope placement and climbing
+IMPORTANT: this rope mechanic is a prototype, this is just exploring one implementation method. do not make it fully integrated
 
 ## G1 — Rope asset handoff — BLOCKER
 
@@ -700,7 +701,7 @@ Please provide or push the exact paths and specify pixel dimensions, whether the
 
 **Recommendation:** provide one tileable vertical rope body and one optional top anchor. The programming foundation should not scale a finite illustration to every possible rope length.
 
-**Answer:**
+**Answer:** i will provide all of the made assets later after i have given all of the answers
 
 ## G2 — Direct placement or placement mode — BLOCKER
 
@@ -710,7 +711,7 @@ A two-step mode conflicts with the current press-only item contract and needs ca
 
 **Recommendation:** direct placement on one press. Show a valid/invalid preview whenever Rope is selected so the player knows what the press will do.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G3 — Valid anchor surfaces — BLOCKER
 
@@ -720,7 +721,7 @@ What exactly can receive a Rope anchor: the top edge of solid terrain, ceilings,
 
 **Recommendation:** allow the top surface of ordinary solid terrain and optional authored Rope anchor nodes within range. Reject midair, side-wall, ceiling, and out-of-bounds placement for the first version.
 
-**Answer:**
+**Answer:** follow the recommendation, but allow side wall and ceiling placement if they're not inside of terrain
 
 ## G4 — Placement range and cursor behavior — BEFORE IMPLEMENTATION
 
@@ -730,7 +731,7 @@ Long-distance placement can bypass traversal challenges; clamping can place a co
 
 **Recommendation:** use the same approximate 72 px reach as interaction and never clamp. Invalid or out-of-range placement consumes nothing and shows feedback.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G5 — Rope length and intervening terrain — BLOCKER
 
@@ -740,7 +741,7 @@ The visual, climbable area, and save data must all agree on the final length.
 
 **Recommendation:** extend vertically up to 160 px and stop before the first solid terrain collision. Decide separately whether one-way platforms are intentionally ignored.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G6 — Attaching to the Rope — BLOCKER
 
@@ -750,7 +751,7 @@ Automatic attachment can interrupt a fall unexpectedly. Requiring `E` adds an ex
 
 **Recommendation:** while overlapping the Rope, pressing up or down attaches and begins climbing. Merely touching it does not change movement.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G7 — Jump input conflict — BLOCKER
 
@@ -760,7 +761,7 @@ One input cannot reliably start a normal jump and climb in the same frame.
 
 **Recommendation:** keep Space as jump. Use `W/S` or up/down for climbing while attached; Space jumps away from the Rope.
 
-**Answer:**
+**Answer:** follow the recommendation, space when attached to the rope is detach and jump
 
 ## G8 — Positioning and exits — BEFORE IMPLEMENTATION
 
@@ -770,7 +771,7 @@ Without a small snap/ease, the player can visually climb beside the Rope. Automa
 
 **Recommendation:** quickly ease the player's horizontal position to the Rope center, disable gravity while attached, and detach safely at either end. Add automatic top-out only if map playtesting proves it necessary.
 
-**Answer:**
+**Answer:** follow the recommendation, player can press space to jump out of the rope
 
 ## G9 — Horizontal movement while climbing — BEFORE IMPLEMENTATION
 
@@ -780,7 +781,7 @@ Immediate detachment is responsive but can cause accidental falls during small c
 
 **Recommendation:** left/right plus a small threshold detaches in that direction; Space performs a clearer jump-away. Keep both tunable.
 
-**Answer:**
+**Answer:** pressing left/right by itself wont release, but pressing a direction while jumping away will make the player jump that way
 
 ## G10 — Item actions while climbing — BLOCKER
 
@@ -790,7 +791,7 @@ Allowing item actions requires climbing-compatible facing, hand positions, and a
 
 **Recommendation:** allow `E` interaction if a target is valid, but block primary/secondary item actions during the first climbing implementation. Revisit when climbing attack art exists.
 
-**Answer:**
+**Answer:** allow interaction and primary/secondary actions, its fine even though we do not have the art asset as this is a jam
 
 ## G11 — Damage, force, and Rope attachment — BLOCKER
 
@@ -800,7 +801,7 @@ Applying normal knockback would physically separate the player from the Rope eve
 
 **Recommendation:** ordinary damage keeps the player attached and suppresses horizontal/vertical displacement from its force while climbing. Explicit launch/stun effects may request detachment; death always detaches.
 
-**Answer:**
+**Answer:** ordinary damage doesnt do anything, but if an enemy does knockback of any kind, it knocks the player out of the rope
 
 ## G12 — Saving while attached — BLOCKER
 
@@ -810,7 +811,7 @@ Saving transient input/animation state is fragile, but restoring inside a Rope w
 
 **Recommendation:** save the normal player position and Rope separately, but not climbing state. On load, place the player safely beside the Rope or at `last_safe_position` if the saved position is invalid.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G13 — Rope behavior near world bounds — BLOCKER
 
@@ -820,7 +821,7 @@ The existing world documentation explicitly requires Rope not to create an out-o
 
 **Recommendation:** validate the whole rope segment against active layer bounds and terrain before consuming the item.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ## G14 — Physics model — BLOCKER
 
@@ -830,7 +831,7 @@ Physics rope requires joints, moving collision, save reconstruction, character c
 
 **Recommendation:** use a fixed, non-solid vertical `Area2D` with a repeated/tiled visual. Add physical swinging only if it becomes an explicit core mechanic.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -844,7 +845,7 @@ These invisible systems will otherwise be difficult for an amateur programmer an
 
 **Recommendation:** add lightweight debug drawing behind the existing debug mode, disabled in normal play. Do not build a separate debug UI framework.
 
-**Answer:**
+**Answer:** follow the recommendation, make it toggleable in debug menu
 
 ## H2 — Performance target — BEFORE IMPLEMENTATION
 
@@ -854,7 +855,7 @@ The VM previously exposed large performance regressions, and the new design can 
 
 **Recommendation:** require 60 FPS in the test scene and use staggered sight scans. Sound remains event-driven. Optimize further only if a measured representative scene misses the target.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## H3 — Required integrated test scene — BLOCKER
 
@@ -864,7 +865,7 @@ Unit-level contracts alone cannot verify movement feel, visible overlap, targeti
 
 **Recommendation:** use one compact integrated test area plus the existing assertion smoke test. Do not introduce a new test framework.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## H4 — Minimum acceptance scenarios — BLOCKER
 
@@ -882,7 +883,7 @@ Are the following required before the player foundation is considered complete?
 
 **Recommendation:** accept this list as the minimum integrated contract, with exact feel values remaining tunable.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -894,3 +895,4 @@ Once the blocker questions are answered:
 2. Record contradictions as explicit replacements rather than leaving both old and new rules in separate files.
 3. Produce a decision-complete implementation plan covering integration order, minimal interfaces, tests, and asset handoff.
 4. Do not write gameplay code until that documentation-only update has been reviewed and a separate programming greenlight is given.
+
