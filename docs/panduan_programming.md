@@ -278,6 +278,7 @@ World generation wajib mengikuti `panduan_world_generation.md`:
 - randomness placer memakai `seed + persistent_id`;
 - scene pool dan spawn point memakai urutan data authored yang tervalidasi, bukan urutan directory;
 - generated object mendapat ID `placer_id:spawn_point_index` sebelum `_ready()`;
+- direct child `Marker2D` pada placer menentukan urutan spawn point; jangan mengubah urutannya setelah content freeze;
 - runtime object dari player memakai counter run yang disimpan, bukan timestamp atau `randi()`;
 - section tidak boleh menentukan global transform sendiri;
 - runtime tidak memperbaiki marker buruk dengan ground search; validator harus menolak authoring yang salah;

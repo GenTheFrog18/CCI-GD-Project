@@ -11,10 +11,3 @@ target_layer_id = &"layer_1"
 target_route_id = "west"
 target_spawn_id = &"WestBottomSpawn"
 prompt = "Return to Layer 1"
-
-[node name="VariationLabel" type="Label" parent="AuthoredContent"]
-offset_left = 580.0
-offset_top = 190.0
-offset_right = 700.0
-offset_bottom = 220.0
-text = "L2 WEST 01 B"

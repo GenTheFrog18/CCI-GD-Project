@@ -50,13 +50,15 @@ Geometry seam:
 
 - entry pada `(640, 0)`;
 - exit pada `(640, 800)`;
-- respawn pada `(640, 64)`;
+- respawn default pada `(640, 64)`, tetapi level designer boleh memindahkannya ke titik mana pun di dalam section;
 - opening 96 px;
 - collision clearance 96 px ke dalam section;
 - 96 px atau enam tile dari entry/exit bebas random enemy dan hazard placer;
 - semua variation pada slot sama memakai seam identik.
 
 Sisi luar route tertutup collision. Connector horizontal hanya boleh ada pada slot khusus. Terrain utama tidak destructible; breakable adalah scene object terpisah.
+
+Semua variation aktif adalah template authoring dengan `Terrain` kosong. Garis cyan 1280×800 terlihat di editor sebagai batas section, tetapi tidak dirender saat game berjalan. Gate, shop, entrance, dan tag progression yang sudah ada tidak boleh dihapus.
 
 ## 3. Tanggung jawab slot khusus
 
@@ -75,7 +77,7 @@ Gatekeeper shop optional. Quest memberi Moon Whistle dan powerful relic, tetapi 
 4. Buat jalur turun dan naik yang jelas. Selama Rope baru berupa prototype non-persistent, map wajib dapat dilalui dua arah tanpa Rope. Layout Rope-required dibuat setelah persistence/seam Rope final dapat diuji.
 5. Pastikan surface shop selalu mempunyai Rope yang terjangkau dan beri warning sebelum rope-required drop.
 6. Buat optional branch di dalam section; generator tidak menyusun topology branch.
-7. Tempatkan placer dan child SpawnPoint dengan GUI.
+7. Drag `enemy_placer.tscn` atau `loot_placer.tscn` ke child `Placers`, isi `persistent_id` unik, lalu pindahkan child `SpawnPoint` melalui GUI. Duplicate `SpawnPoint` jika quantity lebih dari satu; marker dibaca otomatis sesuai urutan Scene tree.
 8. Run section melalui shared section test runner, lalu jalankan `Validate World` dari F3.
 
 Target traversal setelah detailed graybox:
@@ -106,6 +108,32 @@ Resolve order:
 5. beri child ID `placer_id:spawn_point_index`.
 
 Quantity tidak boleh melebihi jumlah SpawnPoint. Runtime memakai posisi authored apa adanya; overlap atau marker tanpa ground adalah validation error.
+
+Preset `EnemyPlacer` berisi amphibian placeholder. Preset `LootPlacer` berisi breakable rock dengan nested loot Multitool. Isi `entries` dapat diganti atau ditambah melalui Inspector tanpa mengubah generator. Saat breakable hancur, ia menghasilkan satu Throwable Rock dan item hasil placer sebagai object physics yang jatuh. Kedua drop memakai ID turunan dari ID breakable.
+
+### 5.1 Referensi property EnemyPlacer dan LootPlacer
+
+Kedua preset memakai `DeterministicPlacer`, sehingga property dasarnya sama:
+
+- `Position`: memindahkan seluruh placer. SpawnPoint default berada pada posisi lokal `(0, 0)`, sehingga content muncul pada posisi placer.
+- `Persistent Id`: ID permanen yang wajib unik. Gunakan pola seperti `layer1_east_02_a_enemy_01` atau `layer2_west_01_a_loot_02`. Jangan mengganti ID setelah content freeze karena save memakai ID ini.
+- `Spawn Chance`: peluang seluruh placer aktif saat New Game, dari `0.0` sampai `1.0`. Nilai `1.0` selalu aktif dan `0.5` berarti peluang 50%.
+- `Entries`: daftar weighted content yang dapat dipilih. Setiap hasil spawn memilih satu entry.
+- `Minimum Quantity`: jumlah minimum object ketika placer aktif. Nilai minimum adalah `1`; kondisi kosong diatur melalui `Spawn Chance`.
+- `Maximum Quantity`: jumlah maksimum object. Nilai ini tidak boleh melebihi jumlah SpawnPoint.
+- `Allocation Group`: ID group opsional untuk content unik. Placer dengan group sama berkompetisi dan maksimal satu placer menjadi pemenang.
+- `Required Allocation`: jika aktif bersama `Allocation Group`, world wajib memilih satu pemenang dari group. Gunakan untuk quest atau progression item yang tidak boleh hilang dari run.
+- `Facing`: arah horizontal scene hasil spawn. Gunakan `1` untuk arah normal/kanan dan `-1` untuk flip/kiri. Property ini terutama dipakai enemy; loot biasanya memakai `1`.
+- `Patrol Bounds`: rectangle patrol authored yang diteruskan kepada enemy yang mempunyai property `patrol_bounds`. Abaikan untuk loot. Amphibian placeholder belum memakai property ini.
+- child `SpawnPoint`: direct child `Marker2D` yang menentukan posisi spawn. Urutan Scene tree menghasilkan suffix ID `:0`, `:1`, dan seterusnya. Jangan mengubah urutannya setelah content freeze.
+
+Setiap object `WorldSpawnEntry` di dalam `Entries` mempunyai:
+
+- `Content Id`: stable ID content. Pada EnemyPlacer, isi dengan ID jenis enemy seperti `test_amphibian`. Pada LootPlacer, isi dengan ID item di dalam breakable seperti `multitool`.
+- `Scene`: scene yang dibuat. EnemyPlacer memakai scene enemy. LootPlacer tetap memakai `breakable_loot.tscn`; `Content Id` menentukan item di dalamnya.
+- `Weight`: bobot relatif pemilihan entry. Dua entry dengan weight `3` dan `1` mempunyai peluang sekitar 75% dan 25%.
+
+Default EnemyPlacer memakai `test_amphibian`, quantity `1–1`, dan chance `1.0`. Default LootPlacer memakai `breakable_loot.tscn` dengan nested item `multitool`, quantity `1–1`, dan chance `1.0`. Loot rock selalu menghasilkan satu `throwable_rock` ditambah satu item dari `Content Id`. Jangan mengisi `persistent_id` atau `item_id` pada breakable secara manual karena placer mengisinya saat spawn.
 
 Allocation group memilih maksimal satu placer pemenang di seluruh run. Required group selalu mempunyai satu pemenang; ini dipakai quest relic. Optional group boleh kosong; ini dipakai rare item maksimum satu per run.
 

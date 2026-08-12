@@ -1,14 +1,16 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene format=3 uid="uid://d0y3so7uoe438"]
 
-[ext_resource type="Script" path="res://game/world/world_layer.gd" id="1"]
-[ext_resource type="Script" path="res://game/world/world_slot.gd" id="2"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/west/slot_01_a.tscn" id="3"]
+[ext_resource type="Script" uid="uid://csuwc1l8vngs8" path="res://game/world/world_layer.gd" id="1"]
+[ext_resource type="Script" uid="uid://qe67kbamixq5" path="res://game/world/world_slot.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://c63f51qe7nae7" path="res://game/world/sections/layer1/west/slot_01_a.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://game/world/sections/layer1/west/slot_02_a.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://game/world/sections/layer1/west/slot_03_a.tscn" id="5"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/east/slot_01_a.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://dbcv7ixchlequ" path="res://game/world/sections/layer1/east/slot_01_a.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://ijluv1w1mqas" path="res://game/world/sections/layer1/west/slot_02_b.tscn" id="6_0c1d5"]
 [ext_resource type="PackedScene" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/east/slot_03_a.tscn" id="8"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/west/slot_01_b.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://bddta4kbxsboo" path="res://game/world/sections/layer1/east/slot_03_a.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://vjs0idvynj0w" path="res://game/world/sections/layer1/west/slot_03_b.tscn" id="8_wj7ke"]
+[ext_resource type="PackedScene" uid="uid://tjdlwrxnt2gs" path="res://game/world/sections/layer1/west/slot_01_b.tscn" id="9"]
 
 [sub_resource type="RectangleShape2D" id="OuterWall"]
 size = Vector2(20, 2400)
@@ -16,7 +18,7 @@ size = Vector2(20, 2400)
 [sub_resource type="RectangleShape2D" id="MiddleWall"]
 size = Vector2(20, 1920)
 
-[node name="Layer1" type="Node2D" node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn")]
+[node name="Layer1" type="Node2D" unique_id=672591515 node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn")]
 script = ExtResource("1")
 layer_id = &"layer_1"
 slots_root = NodePath("Slots")
@@ -24,48 +26,43 @@ runtime_root = NodePath("RuntimeRoot")
 west_spawn = NodePath("WestSpawn")
 east_spawn = NodePath("EastSpawn")
 
-[node name="Slots" type="Node2D" parent="."]
+[node name="Slots" type="Node2D" parent="." unique_id=751789428]
 
-[node name="West01" type="Marker2D" parent="Slots"]
+[node name="West01" type="Marker2D" parent="Slots" unique_id=477087502]
 script = ExtResource("2")
 slot_id = &"layer1_west_01"
 layer_id = &"layer_1"
-route_id = "west"
-depth_index = 1
 variations = Array[PackedScene]([ExtResource("3"), ExtResource("9")])
 fallback_scene = ExtResource("3")
 
-[node name="West02" type="Marker2D" parent="Slots"]
+[node name="West02" type="Marker2D" parent="Slots" unique_id=1715781223]
 position = Vector2(0, 800)
 script = ExtResource("2")
 slot_id = &"layer1_west_02"
 layer_id = &"layer_1"
-route_id = "west"
 depth_index = 2
-variations = Array[PackedScene]([ExtResource("4")])
+variations = Array[PackedScene]([ExtResource("4"), ExtResource("6_0c1d5")])
 fallback_scene = ExtResource("4")
 
-[node name="West03" type="Marker2D" parent="Slots"]
+[node name="West03" type="Marker2D" parent="Slots" unique_id=2085210856]
 position = Vector2(0, 1600)
 script = ExtResource("2")
 slot_id = &"layer1_west_03"
 layer_id = &"layer_1"
-route_id = "west"
 depth_index = 3
-variations = Array[PackedScene]([ExtResource("5")])
+variations = Array[PackedScene]([ExtResource("5"), ExtResource("8_wj7ke")])
 fallback_scene = ExtResource("5")
 
-[node name="East01" type="Marker2D" parent="Slots"]
+[node name="East01" type="Marker2D" parent="Slots" unique_id=1781049290]
 position = Vector2(1280, 0)
 script = ExtResource("2")
 slot_id = &"layer1_east_01"
 layer_id = &"layer_1"
 route_id = "east"
-depth_index = 1
 variations = Array[PackedScene]([ExtResource("6")])
 fallback_scene = ExtResource("6")
 
-[node name="East02" type="Marker2D" parent="Slots"]
+[node name="East02" type="Marker2D" parent="Slots" unique_id=1563552056]
 position = Vector2(1280, 800)
 script = ExtResource("2")
 slot_id = &"layer1_east_02"
@@ -75,7 +72,7 @@ depth_index = 2
 variations = Array[PackedScene]([ExtResource("7")])
 fallback_scene = ExtResource("7")
 
-[node name="East03" type="Marker2D" parent="Slots"]
+[node name="East03" type="Marker2D" parent="Slots" unique_id=150727557]
 position = Vector2(1280, 1600)
 script = ExtResource("2")
 slot_id = &"layer1_east_03"
@@ -85,31 +82,30 @@ depth_index = 3
 variations = Array[PackedScene]([ExtResource("8")])
 fallback_scene = ExtResource("8")
 
-[node name="RuntimeRoot" type="Node2D" parent="."]
+[node name="RuntimeRoot" type="Node2D" parent="." unique_id=1920827983]
 
-[node name="WestSpawn" type="Marker2D" parent="."]
-position = Vector2(640, 0)
+[node name="WestSpawn" type="Marker2D" parent="." unique_id=2031981361]
+position = Vector2(55, 92)
 
-[node name="EastSpawn" type="Marker2D" parent="."]
-position = Vector2(1920, 0)
+[node name="EastSpawn" type="Marker2D" parent="." unique_id=2077777267]
+position = Vector2(2482, 95)
 
-[node name="WestBottomSpawn" type="Marker2D" parent="."]
+[node name="WestBottomSpawn" type="Marker2D" parent="." unique_id=2012932737]
 position = Vector2(640, 2260)
 
-[node name="EastBottomSpawn" type="Marker2D" parent="."]
+[node name="EastBottomSpawn" type="Marker2D" parent="." unique_id=273022750]
 position = Vector2(1920, 2260)
 
-[node name="RouteBoundaries" type="StaticBody2D" parent="."]
-collision_layer = 1
+[node name="RouteBoundaries" type="StaticBody2D" parent="." unique_id=784673541]
 
-[node name="Left" type="CollisionShape2D" parent="RouteBoundaries"]
+[node name="Left" type="CollisionShape2D" parent="RouteBoundaries" unique_id=1238979125]
 position = Vector2(-10, 1200)
 shape = SubResource("OuterWall")
 
-[node name="Right" type="CollisionShape2D" parent="RouteBoundaries"]
+[node name="Right" type="CollisionShape2D" parent="RouteBoundaries" unique_id=877206293]
 position = Vector2(2570, 1200)
 shape = SubResource("OuterWall")
 
-[node name="Middle" type="CollisionShape2D" parent="RouteBoundaries"]
+[node name="Middle" type="CollisionShape2D" parent="RouteBoundaries" unique_id=724391683]
 position = Vector2(1280, 960)
 shape = SubResource("MiddleWall")

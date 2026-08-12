@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://c2bqm1i7s12tp"]
+
+[ext_resource type="Script" uid="uid://dc53into45tgb" path="res://game/world/deterministic_placer.gd" id="1"]
+[ext_resource type="Script" uid="uid://dmbspp22qtl7r" path="res://game/world/world_spawn_entry.gd" id="2"]
+[ext_resource type="PackedScene" path="res://game/enemies/test/test_amphibian.tscn" id="3"]
+
+[sub_resource type="Resource" id="EnemyEntry"]
+script = ExtResource("2")
+content_id = &"test_amphibian"
+scene = ExtResource("3")
+
+[node name="EnemyPlacer" type="Marker2D" unique_id=1751430608]
+script = ExtResource("1")
+entries = Array[ExtResource("2")]([SubResource("EnemyEntry")])
+
+[node name="SpawnPoint" type="Marker2D" parent="." unique_id=839070229]

@@ -6,7 +6,7 @@ extends Marker2D
 @export var entries: Array[WorldSpawnEntry] = []
 @export_range(1, 16, 1) var minimum_quantity := 1
 @export_range(1, 16, 1) var maximum_quantity := 1
-@export var spawn_points: Array[Marker2D] = []
+@export_storage var spawn_points: Array[Marker2D] = []
 @export var allocation_group: StringName
 @export var required_allocation := false
 @export var facing := 1.0
@@ -16,13 +16,14 @@ var resolved_results: Array[Dictionary] = []
 
 func validate() -> PackedStringArray:
 	var errors := PackedStringArray()
+	var points := _get_spawn_points()
 	if persistent_id.is_empty():
 		errors.append("DeterministicPlacer persistent_id is blank")
 	if entries.is_empty():
 		errors.append("DeterministicPlacer %s has no entries" % persistent_id)
 	if minimum_quantity > maximum_quantity:
 		errors.append("DeterministicPlacer %s quantity range is invalid" % persistent_id)
-	if maximum_quantity > spawn_points.size():
+	if maximum_quantity > points.size():
 		errors.append("DeterministicPlacer %s quantity exceeds SpawnPoint count" % persistent_id)
 	for entry in entries:
 		if entry == null:
@@ -34,7 +35,8 @@ func validate() -> PackedStringArray:
 
 func resolve(run_seed: int, force_active := false) -> Array[Dictionary]:
 	resolved_results.clear()
-	if persistent_id.is_empty() or entries.is_empty() or spawn_points.is_empty():
+	var points := _get_spawn_points()
+	if persistent_id.is_empty() or entries.is_empty() or points.is_empty():
 		return resolved_results
 	var random := RandomNumberGenerator.new()
 	random.seed = hash("%s:%s" % [run_seed, persistent_id])
@@ -42,7 +44,7 @@ func resolve(run_seed: int, force_active := false) -> Array[Dictionary]:
 		return resolved_results
 	var quantity := random.randi_range(minimum_quantity, maximum_quantity)
 	var available_points: Array[int] = []
-	for index in spawn_points.size():
+	for index in points.size():
 		available_points.append(index)
 	for _index in mini(quantity, available_points.size()):
 		var point_list_index := random.randi_range(0, available_points.size() - 1)
@@ -58,18 +60,19 @@ func resolve(run_seed: int, force_active := false) -> Array[Dictionary]:
 	return resolved_results.duplicate(true)
 
 func spawn_resolved(parent: Node) -> void:
+	var points := _get_spawn_points()
 	for result in resolved_results:
 		var entry := _entry_for_id(StringName(result.get("content_id", "")))
 		var point_index := int(result.get("spawn_point_index", -1))
-		if entry == null or entry.scene == null or point_index < 0 or point_index >= spawn_points.size():
+		if entry == null or entry.scene == null or point_index < 0 or point_index >= points.size():
 			continue
 		var node := entry.scene.instantiate()
 		_set_property_if_present(node, &"persistent_id", String(result.get("persistent_id", "")))
 		_set_property_if_present(node, &"item_id", entry.content_id)
-		_set_property_if_present(node, &"spawn_position", spawn_points[point_index].global_position)
+		_set_property_if_present(node, &"spawn_position", points[point_index].global_position)
 		_set_property_if_present(node, &"patrol_bounds", patrol_bounds)
 		if node is Node2D and parent is Node2D:
-			node.position = (parent as Node2D).to_local(spawn_points[point_index].global_position)
+			node.position = (parent as Node2D).to_local(points[point_index].global_position)
 			if facing != 0.0:
 				node.scale.x = absf(node.scale.x) * signf(facing)
 		parent.add_child(node)
@@ -107,3 +110,10 @@ func _set_property_if_present(node: Object, property_name: StringName, value: Va
 		if StringName(property.name) == property_name:
 			node.set(property_name, value)
 			return
+
+func _get_spawn_points() -> Array[Marker2D]:
+	var points: Array[Marker2D] = []
+	for child in get_children():
+		if child is Marker2D:
+			points.append(child)
+	return points if not points.is_empty() else spawn_points

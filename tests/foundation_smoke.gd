@@ -42,6 +42,7 @@ func _ready() -> void:
 	_test_sound()
 	_test_control_locks()
 	await _test_determinism()
+	_test_world_authoring_foundation()
 	_test_shop()
 	_test_prepared_item()
 	_test_save()
@@ -389,7 +390,6 @@ func _test_determinism() -> void:
 	var second_point := Marker2D.new()
 	placer.add_child(first_point)
 	placer.add_child(second_point)
-	placer.spawn_points = [first_point, second_point]
 	var first := placer.resolve(12345)
 	var second := placer.resolve(12345)
 	assert(first == second and first.size() == 2)
@@ -410,8 +410,7 @@ func _test_determinism() -> void:
 	assert(first_manifest.sections == second_manifest.sections)
 	assert(first_manifest.placers == second_manifest.placers)
 	assert(first_manifest.sections.size() == 12)
-	assert(first_manifest.placers.size() == 2)
-	assert(first_manifest.placers["layer1_east_02_a_enemy_01"].size() == 1)
+	assert(first_manifest.placers.is_empty())
 	assert(generator.validate_templates().is_empty())
 	var layer := preload("res://game/world/layers/layer_1.tscn").instantiate() as WorldLayer
 	var varied_ids: Dictionary = {}
@@ -429,6 +428,60 @@ func _test_determinism() -> void:
 	layer.free()
 	generator.free()
 	placer.free()
+
+func _test_world_authoring_foundation() -> void:
+	var section := preload("res://game/world/test/section_a.tscn").instantiate() as WorldSection
+	add_child(section)
+	section.respawn_anchor.position = Vector2(100.0, 300.0)
+	assert(section.validate().is_empty())
+	section.respawn_anchor.position = Vector2(-1.0, 300.0)
+	assert(not section.validate().is_empty())
+	section.free()
+
+	var enemy_placer := preload("res://game/world/placers/enemy_placer.tscn").instantiate() as DeterministicPlacer
+	enemy_placer.persistent_id = &"smoke_enemy_placer"
+	assert(enemy_placer.validate().is_empty())
+	assert(enemy_placer.resolve(10).size() == 1)
+	enemy_placer.free()
+	var loot_placer := preload("res://game/world/placers/loot_placer.tscn").instantiate() as DeterministicPlacer
+	loot_placer.persistent_id = &"smoke_loot_placer"
+	add_child(loot_placer)
+	assert(loot_placer.validate().is_empty())
+	assert(loot_placer.resolve(10).size() == 1)
+
+	var drop_root := Node2D.new()
+	add_child(drop_root)
+	loot_placer.spawn_resolved(drop_root)
+	var breakable := drop_root.get_child(0) as BreakableLoot
+	assert(breakable != null and breakable.item_id == &"multitool")
+	assert(breakable.apply_damage(DamageInfo.new(1.0)))
+	var dropped_ids: Dictionary = {}
+	for child in drop_root.get_children():
+		if child is ThrownItem:
+			dropped_ids[child.definition.item_id] = true
+			assert(not child.freeze)
+	assert(dropped_ids.has(&"throwable_rock") and dropped_ids.has(&"multitool"))
+	assert(dropped_ids.size() == 2)
+	SaveManager.destroyed_ids.erase("smoke_loot_placer:0")
+	drop_root.free()
+	loot_placer.free()
+
+	var moving := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	moving.configure(ContentCatalog.get_item(&"throwable_rock"), {}, null, Vector2(10.0, 20.0), Vector2(30.0, -40.0))
+	add_child(moving)
+	moving.rotation = 0.5
+	moving.angular_velocity = 1.25
+	var state := moving.capture_state()
+	var restored := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	add_child(restored)
+	restored.restore_state(state)
+	assert(restored.global_position == Vector2(10.0, 20.0))
+	assert(restored.linear_velocity == Vector2(30.0, -40.0))
+	assert(is_equal_approx(restored.rotation, 0.5))
+	assert(is_equal_approx(restored.angular_velocity, 1.25))
+	assert(not restored.freeze and not restored.is_in_group(&"interactables"))
+	moving.free()
+	restored.free()
 
 func _test_shop() -> void:
 	GameSession.start_new_run(111)
@@ -562,11 +615,6 @@ func _test_world_run_runtime() -> void:
 	world.player.global_position = Vector2(1920.0, 1610.0)
 	world._process(0.21)
 	assert(world.player.camera.limit_left == 0 and world.player.camera.limit_right == 2560)
-	var found_generated_enemy := false
-	for child in world.active_layer.runtime_root.get_children():
-		if child is TestAmphibian:
-			found_generated_enemy = true
-	assert(found_generated_enemy)
 	await world.request_layer_transition(&"layer_2", &"east")
 	assert(world.active_layer.layer_id == &"layer_2")
 	await world.request_layer_transition(&"layer_1", &"east", &"EastBottomSpawn")

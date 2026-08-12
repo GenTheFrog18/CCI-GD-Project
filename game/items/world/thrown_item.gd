@@ -83,8 +83,10 @@ func capture_state() -> Dictionary:
 		"item_id": String(definition.item_id) if definition != null else "",
 		"instance_state": instance_state.duplicate(true),
 		"position": [global_position.x, global_position.y],
-		"linear_velocity": [0.0, 0.0],
-		"freeze": true,
+		"rotation": rotation,
+		"linear_velocity": [linear_velocity.x, linear_velocity.y],
+		"angular_velocity": angular_velocity,
+		"freeze": freeze,
 	}
 
 func restore_state(data: Dictionary) -> void:
@@ -92,11 +94,15 @@ func restore_state(data: Dictionary) -> void:
 	instance_state = data.get("instance_state", {}).duplicate(true)
 	var position_data: Array = data.get("position", [0.0, 0.0])
 	global_position = Vector2(float(position_data[0]), float(position_data[1]))
+	rotation = float(data.get("rotation", 0.0))
 	var velocity_data: Array = data.get("linear_velocity", [0.0, 0.0])
 	linear_velocity = Vector2(float(velocity_data[0]), float(velocity_data[1]))
+	angular_velocity = float(data.get("angular_velocity", 0.0))
 	freeze = bool(data.get("freeze", true))
 	if freeze:
 		add_to_group(&"interactables")
+	else:
+		remove_from_group(&"interactables")
 
 func handle_world_out_of_bounds() -> void:
 	SaveManager.mark_destroyed(persistent_id)

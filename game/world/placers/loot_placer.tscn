@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://game/world/deterministic_placer.gd" id="1"]
+[ext_resource type="Script" path="res://game/world/world_spawn_entry.gd" id="2"]
+[ext_resource type="PackedScene" path="res://game/world/sources/breakable_loot.tscn" id="3"]
+
+[sub_resource type="Resource" id="LootEntry"]
+script = ExtResource("2")
+content_id = &"multitool"
+scene = ExtResource("3")
+weight = 1
+
+[node name="LootPlacer" type="Marker2D"]
+script = ExtResource("1")
+entries = Array[ExtResource("2")]([SubResource("LootEntry")])
+
+[node name="SpawnPoint" type="Marker2D" parent="."]
