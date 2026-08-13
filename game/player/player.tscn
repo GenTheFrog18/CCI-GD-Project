@@ -1,8 +1,6 @@
 [gd_scene format=3 uid="uid://dq7wfm672giiw"]
 
 [ext_resource type="Script" uid="uid://cvdepqc6862xe" path="res://game/player/player.gd" id="1"]
-[ext_resource type="Script" path="res://game/player/player_camera.gd" id="7_camera"]
-[ext_resource type="Script" path="res://game/player/player_item_preview.gd" id="8_preview"]
 [ext_resource type="Script" uid="uid://rax7v1pyqa5l" path="res://core/combat/health_component.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://b2uyck5qi7mp6" path="res://assets/art/characters/test_player/fall.png" id="2_5ghna"]
 [ext_resource type="Script" uid="uid://bq6tumcjn8lea" path="res://core/status/status_controller.gd" id="3"]
@@ -11,9 +9,11 @@
 [ext_resource type="Texture2D" uid="uid://dgeps51vcvppr" path="res://assets/art/characters/test_player/jump.png" id="4_j0mij"]
 [ext_resource type="Script" uid="uid://dbhllx6vqyta7" path="res://core/interaction/interaction_sensor.gd" id="5"]
 [ext_resource type="Texture2D" uid="uid://3hsn2tdnc5id" path="res://assets/art/characters/player/idle.png" id="6_uv2nh"]
+[ext_resource type="Script" uid="uid://cw04hr0tcjxom" path="res://game/player/player_camera.gd" id="7_camera"]
+[ext_resource type="Script" uid="uid://dtp8poa044sqh" path="res://game/player/player_item_preview.gd" id="8_preview"]
 
 [sub_resource type="CapsuleShape2D" id="PlayerShape"]
-radius = 8.0
+radius = 6.0
 height = 28.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cgi3i"]
@@ -250,15 +250,16 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D" unique_id=957350047]
+z_index = 2
 collision_layer = 2
 script = ExtResource("1")
-maximum_fall_damage = 0.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=491973087]
 position = Vector2(0, -14)
 shape = SubResource("PlayerShape")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=627026240]
+position = Vector2(0, -16)
 sprite_frames = SubResource("SpriteFrames_uoqeo")
 animation = &"idle"
 
@@ -270,9 +271,9 @@ polygon = PackedVector2Array(-8, -28, 8, -28, 8, 0, -8, 0)
 [node name="HeldItemAnchor" type="Node2D" parent="." unique_id=673219421]
 position = Vector2(12, -17)
 
-[node name="HeldItemIcon" type="Sprite2D" parent="HeldItemAnchor"]
+[node name="HeldItemIcon" type="Sprite2D" parent="HeldItemAnchor" unique_id=1553752519]
 
-[node name="ItemPreview" type="Node2D" parent="."]
+[node name="ItemPreview" type="Node2D" parent="." unique_id=1520472294]
 z_index = 5
 script = ExtResource("8_preview")
 

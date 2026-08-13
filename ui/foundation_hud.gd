@@ -6,6 +6,7 @@ signal world_debug_action_requested(action: StringName)
 var player: PlayerController
 var health_label: Label
 var money_label: Label
+var weight_label: Label
 var prompt_label: Label
 var feedback_label: Label
 var inventory_panel: PanelContainer
@@ -94,6 +95,8 @@ func _build_ui() -> void:
 	top.add_child(health_label)
 	money_label = Label.new()
 	top.add_child(money_label)
+	weight_label = Label.new()
+	top.add_child(weight_label)
 	location_label = Label.new()
 	location_label.anchor_left = 1.0
 	location_label.anchor_right = 1.0
@@ -202,6 +205,7 @@ func _build_ui() -> void:
 	for spec in [
 		["Give Rock", _debug_give_rock],
 		["Give Heavy Pack", _debug_give_heavy_pack],
+		["Give Rope", _debug_give_rope],
 		["Emit Sound", _debug_emit_sound],
 		["Apply Slow", _debug_apply_slow],
 		["Damage 10", _debug_damage],
@@ -217,6 +221,11 @@ func _build_ui() -> void:
 	unlimited_health_toggle.button_pressed = GameSession.debug_unlimited_health
 	unlimited_health_toggle.toggled.connect(_set_unlimited_health)
 	debug_column.add_child(unlimited_health_toggle)
+	var gameplay_draw_toggle := CheckButton.new()
+	gameplay_draw_toggle.text = "Show Gameplay Ranges"
+	gameplay_draw_toggle.button_pressed = GameSession.debug_gameplay_draw
+	gameplay_draw_toggle.toggled.connect(func(enabled: bool): GameSession.debug_gameplay_draw = enabled)
+	debug_column.add_child(gameplay_draw_toggle)
 	for spec in [
 		["Toggle World Bounds", &"toggle_bounds"],
 		["Teleport Next Slot", &"teleport_next"],
@@ -337,6 +346,7 @@ func _refresh_inventory() -> void:
 			var definition := ContentCatalog.get_item(stack.item_id)
 			item_name = "%s x%d" % [definition.display_name if definition != null else stack.item_id, stack.quantity]
 		hotbar_labels[index].text = "%s%d: %s" % ["▶ " if index == player.item_controller.inventory.active_hotbar_index else "", index + 1, item_name]
+	weight_label.text = "Weight %d/%d" % [player.item_controller.inventory.get_total_weight(), player.carry_capacity]
 
 func _set_health_text(current: float, maximum: float) -> void:
 	health_label.text = "HP ∞" if GameSession.debug_unlimited_health else "HP %d/%d" % [ceili(current), ceili(maximum)]
@@ -425,6 +435,9 @@ func _debug_give_rock() -> void:
 
 func _debug_give_heavy_pack() -> void:
 	player.try_pickup_item(&"debug_heavy_pack", 1, {})
+
+func _debug_give_rope() -> void:
+	player.try_pickup_item(&"rope", 1, {})
 
 func _debug_emit_sound() -> void:
 	SoundBus.emit_sound(get_tree(), SoundEvent.new(player.global_position, 300.0, &"debug", 1, player))

@@ -226,6 +226,7 @@ Display Name: Practice Pebble
 Unknown Description: A small unfamiliar pebble.
 Known Description: A simple recoverable throwing item.
 Category: ordinary
+Weight: 1
 Max Stack: 8
 Sellable: Off
 Persistent When Dropped: On
@@ -246,7 +247,6 @@ Minimum Speed
 Maximum Speed
 Maximum Cursor Distance
 Base Damage
-Item Mass
 ```
 
 Gunakan nilai awal yang aman:
@@ -256,8 +256,9 @@ Minimum Speed: 80
 Maximum Speed: 420
 Maximum Cursor Distance: 240
 Base Damage: 1
-Item Mass: 0.5
 ```
+
+`Weight` hanya ada pada `ItemDefinition`, bukan pada Behavior. Throw speed, physics mass, impact force, total inventory weight, dan load save membaca angka yang sama. Jangan menambah field mass kedua pada script behavior.
 
 Tekan **Ctrl+S**. Perhatikan tanda bintang pada tab/file; tanda tersebut harus hilang setelah tersimpan.
 
@@ -269,6 +270,8 @@ Dengan hanya Resource di atas:
 - inventory dapat menyimpan dan men-stack item,
 - klik kanan melempar satu unit,
 - kekuatan lempar mengikuti jarak cursor,
+- garis titik trajectory memakai perhitungan velocity/gravity yang sama dengan lemparan nyata,
+- item lebih berat bergerak lebih lambat dan memakai physics mass lebih besar,
 - thrown item menghasilkan damage/force,
 - item berhenti lalu dapat diambil kembali,
 - state/quantity inventory dapat disimpan.
@@ -457,7 +460,6 @@ Jangan menulis `get_node("/root/.../Frog")` atau memeriksa nama scene enemy.
    Maximum Speed: 420
    Maximum Cursor Distance: 240
    Base Damage: 0
-   Item Mass: 0.5
    ```
 
 7. Tekan Ctrl+S.

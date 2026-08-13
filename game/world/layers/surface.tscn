@@ -73,13 +73,13 @@ prompt = "Enter Layer 1 East"
 position = Vector2(312, 320)
 
 [node name="TestAmphibian" parent="." unique_id=1118754930 instance=ExtResource("4_ckure")]
-position = Vector2(33, 319)
+position = Vector2(576, 312)
 persistent_id = "surface_test_amphibian_01"
 
 [node name="TestAmphibian2" parent="." unique_id=379937351 instance=ExtResource("4_ckure")]
-position = Vector2(70, 283)
+position = Vector2(595, 309)
 persistent_id = "surface_test_amphibian_02"
 
 [node name="TestAmphibian3" parent="." unique_id=810822037 instance=ExtResource("4_ckure")]
-position = Vector2(59, 315)
+position = Vector2(554, 312)
 persistent_id = "surface_test_amphibian_03"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://game/world/foundation_test_room.gd" id="1"]
 [ext_resource type="PackedScene" path="res://game/player/player.tscn" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://game/enemies/test/projectile_turret.tscn" id="5"]
 [ext_resource type="Script" path="res://ui/foundation_hud.gd" id="6"]
 [ext_resource type="PackedScene" path="res://game/shops/test_shop_terminal.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://game/world/sources/breakable_loot.tscn" id="8"]
 
 [sub_resource type="RectangleShape2D" id="GroundShape"]
 size = Vector2(700, 40)
@@ -71,6 +72,13 @@ position = Vector2(175, 310)
 item_id = &"throwable_rock"
 quantity = 3
 persistent_id = "foundation_rock_pickup"
+
+[node name="BreakableLoot" parent="." instance=ExtResource("8")]
+position = Vector2(210, 320)
+persistent_id = &"foundation_breakable"
+
+[node name="RopeAnchor" type="Marker2D" parent="." groups=["rope_anchors"]]
+position = Vector2(252, 240)
 
 [node name="TestAmphibian" parent="." instance=ExtResource("4")]
 position = Vector2(350, 242)

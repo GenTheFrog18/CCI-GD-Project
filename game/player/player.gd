@@ -23,6 +23,11 @@ signal prompt_changed(text: String)
 @export var jump_sound_radius := 160.0
 @export var landing_sound_radius := 96.0
 @export var hard_landing_speed := 420.0
+@export var rope_climb_speed := 90.0
+@export var rope_snap_speed := 240.0
+@export var rope_jump_horizontal_speed := 120.0
+@export var rope_lateral_range := 8.0
+@export var rope_lateral_speed := 48.0
 @export var species_id: StringName = &"player"
 @export var persistent_id := "player"
 
@@ -42,12 +47,18 @@ var _jump_buffer_remaining := 0.0
 var _walking_distance := 0.0
 var _prompt_target: Node
 var _prompt_text := ""
+var facing_direction := 1.0
+var _nearby_ropes: Array[PlacedRope] = []
+var _climbing_rope: PlacedRope
+var _rope_lateral_offset := 0.0
+var _rope_attach_blocked := false
 
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
 	add_to_group(&"detection_producers")
 	status.tick_damage_requested.connect(func(amount: float): apply_damage(DamageInfo.new(amount)))
 	health.died.connect(_on_died)
+	_set_facing(facing_direction)
 	if ContentCatalog.get_item(&"multitool") != null and item_controller.inventory.get_active_stack().is_empty():
 		item_controller.inventory.try_add_item(&"multitool")
 
@@ -60,6 +71,13 @@ func _physics_process(delta: float) -> void:
 	var was_on_floor := is_on_floor()
 	var before_move := global_position
 	var can_control := not locks.is_locked()
+	_try_begin_climb(can_control)
+	if is_instance_valid(_climbing_rope):
+		if can_control and Input.is_action_just_pressed(&"jump"):
+			_jump_from_rope()
+		else:
+			_physics_climb(delta, can_control)
+			return
 	_coyote_remaining = coyote_time if was_on_floor else maxf(0.0, _coyote_remaining - delta)
 	_jump_buffer_remaining = maxf(0.0, _jump_buffer_remaining - delta)
 	if can_control and Input.is_action_just_pressed(&"jump"):
@@ -116,8 +134,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		target.interact(self)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"primary_action"):
+		_face_toward(get_global_mouse_position())
 		item_controller.primary(self, get_parent(), get_global_mouse_position(), target)
 	elif event.is_action_pressed(&"secondary_action"):
+		_face_toward(get_global_mouse_position())
 		item_controller.secondary(self, get_parent(), get_global_mouse_position(), target)
 
 func get_encumbrance_ratio() -> float:
@@ -141,8 +161,8 @@ func _update_animation() -> void:
 		$AnimatedSprite2D.play(&"walk")
 	else:
 		$AnimatedSprite2D.play(&"idle")
-	if velocity.x != 0.0:
-		$AnimatedSprite2D.flip_h = velocity.x < 0.0
+	if velocity.x != 0.0 and not is_instance_valid(item_controller.prepared_item):
+		_set_facing(signf(velocity.x))
 
 func _update_walking_sound(horizontal_distance: float) -> void:
 	if not is_on_floor() or absf(horizontal_distance) <= 0.001:
@@ -196,6 +216,8 @@ func apply_damage(info: DamageInfo) -> bool:
 
 func apply_force(force: Vector2) -> void:
 	if is_alive():
+		if not force.is_zero_approx():
+			_detach_rope(true)
 		_knockback += force
 
 func is_alive() -> bool:
@@ -208,6 +230,7 @@ func set_last_safe_position(value: Vector2) -> void:
 	last_safe_position = value
 
 func recover_from_out_of_bounds() -> void:
+	_detach_rope()
 	global_position = last_safe_position
 	health.set_health(health.max_health if GameSession.debug_unlimited_health else 1.0)
 	velocity = Vector2.ZERO
@@ -217,8 +240,9 @@ func set_camera_bounds(bounds: Rect2) -> void:
 	camera.set_world_bounds(bounds)
 
 func capture_state() -> Dictionary:
+	var saved_position := last_safe_position if is_climbing() else global_position
 	return {
-		"position": [global_position.x, global_position.y],
+		"position": [saved_position.x, saved_position.y],
 		"last_safe_position": [last_safe_position.x, last_safe_position.y],
 		"health": health.capture_state(),
 		"inventory": item_controller.inventory.capture_state(),
@@ -226,6 +250,7 @@ func capture_state() -> Dictionary:
 	}
 
 func restore_state(data: Dictionary) -> void:
+	_detach_rope()
 	var saved_safe: Array = data.get("last_safe_position", [96.0, 260.0])
 	if saved_safe.size() >= 2:
 		last_safe_position = Vector2(float(saved_safe[0]), float(saved_safe[1]))
@@ -254,5 +279,80 @@ func _update_prompt() -> void:
 		prompt_changed.emit(text)
 
 func _on_died(_source: Node) -> void:
+	_detach_rope()
 	locks.lock(&"death")
 	item_controller.cancel_prepared()
+
+func register_climbable(rope: PlacedRope) -> void:
+	if rope != null and rope not in _nearby_ropes:
+		_nearby_ropes.append(rope)
+
+func unregister_climbable(rope: PlacedRope) -> void:
+	_nearby_ropes.erase(rope)
+
+func is_climbing() -> bool:
+	return is_instance_valid(_climbing_rope)
+
+func _try_begin_climb(can_control: bool) -> void:
+	_nearby_ropes = _nearby_ropes.filter(func(rope: PlacedRope): return is_instance_valid(rope))
+	if is_instance_valid(_climbing_rope) or not can_control or is_instance_valid(item_controller.prepared_item):
+		return
+	if not Input.is_action_pressed(&"move_up") and not Input.is_action_pressed(&"move_down"):
+		_rope_attach_blocked = false
+		return
+	if _rope_attach_blocked:
+		return
+	try_attach_nearby_rope()
+
+func try_attach_nearby_rope() -> bool:
+	var closest: PlacedRope
+	var distance := INF
+	for rope in _nearby_ropes:
+		var candidate_distance := absf(global_position.x - rope.global_position.x)
+		if candidate_distance < distance:
+			closest = rope
+			distance = candidate_distance
+	if closest == null:
+		return false
+	_climbing_rope = closest.get_chain_root()
+	_rope_lateral_offset = 0.0
+	velocity = Vector2.ZERO
+	return true
+
+func _physics_climb(delta: float, can_control: bool) -> void:
+	var vertical := Input.get_axis(&"move_up", &"move_down") if can_control else 0.0
+	var horizontal := Input.get_axis(&"move_left", &"move_right") if can_control else 0.0
+	_rope_lateral_offset = move_toward(_rope_lateral_offset, horizontal * rope_lateral_range, rope_lateral_speed * delta)
+	var chain_top := _climbing_rope.get_chain_top()
+	var chain_bottom := _climbing_rope.get_chain_bottom()
+	if (vertical < 0.0 and global_position.y <= chain_top) or (vertical > 0.0 and global_position.y >= chain_bottom):
+		vertical = 0.0
+	var target_x := _climbing_rope.global_position.x + _rope_lateral_offset
+	velocity = Vector2(clampf((target_x - global_position.x) / maxf(delta, 0.001), -rope_snap_speed, rope_snap_speed), vertical * rope_climb_speed)
+	move_and_slide()
+	global_position.y = clampf(global_position.y, chain_top, chain_bottom)
+	_update_animation()
+	_update_prompt()
+
+func _jump_from_rope() -> void:
+	var horizontal := Input.get_axis(&"move_left", &"move_right")
+	_detach_rope(true)
+	velocity = Vector2(horizontal * rope_jump_horizontal_speed, jump_velocity * (1.0 - get_encumbrance_ratio()))
+	_coyote_remaining = 0.0
+	_jump_buffer_remaining = 0.0
+	_emit_sound(&"jump", 3, jump_sound_radius)
+
+func _detach_rope(block_attach := false) -> void:
+	_climbing_rope = null
+	_rope_lateral_offset = 0.0
+	_rope_attach_blocked = block_attach
+
+func _face_toward(world_position: Vector2) -> void:
+	if not is_equal_approx(world_position.x, global_position.x):
+		_set_facing(signf(world_position.x - global_position.x))
+
+func _set_facing(direction: float) -> void:
+	facing_direction = -1.0 if direction < 0.0 else 1.0
+	$AnimatedSprite2D.flip_h = facing_direction < 0.0
+	$HeldItemAnchor.position.x = absf($HeldItemAnchor.position.x) * facing_direction
+	$HeldItemAnchor/HeldItemIcon.flip_h = facing_direction < 0.0

@@ -1,0 +1,2 @@
+the previous fixes works.
+the rope is still a bit broken, when  placed consecutively the end of the first rope is still an end rope sprite, it should transform into a mid rope if there is another rope after it. also the player cant smoothly go up or down the connected rope, the player stops at end and falls down when reaching the bottom. also, make it so the player dont just jump down when they press s at the bottom of the rope or w at the top of the rope, only pressing space can detach the player.

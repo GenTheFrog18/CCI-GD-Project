@@ -3,6 +3,7 @@ extends Area2D
 
 var movement_multiplier := 0.6
 var selected_target: Node
+var selected_targets: Array[Node] = []
 
 var _actor: Node2D
 var _damage := 1.0
@@ -48,6 +49,7 @@ func _ready() -> void:
 	monitoring = true
 
 func _physics_process(delta: float) -> void:
+	queue_redraw()
 	if not _resolved:
 		_resolved = true
 		_resolve_hit()
@@ -82,14 +84,23 @@ func _resolve_hit() -> void:
 	if targets.is_empty():
 		return
 	selected_target = targets.front()
-	if selected_target.has_method("receive_multitool"):
-		selected_target.receive_multitool(_actor)
+	if _target_priority(selected_target) < 2:
+		_apply_target(selected_target)
+		return
+	for target in targets:
+		if _target_priority(target) == 2:
+			_apply_target(target)
+
+func _apply_target(target: Node) -> void:
+	selected_targets.append(target)
+	if target.has_method("receive_multitool"):
+		target.receive_multitool(_actor)
 		return
 	var species = _actor.get("species_id")
-	if selected_target.has_method("apply_damage"):
-		selected_target.apply_damage(DamageInfo.new(_damage, _actor, StringName(species) if species != null else &""))
-	if selected_target.has_method("apply_force"):
-		selected_target.apply_force(Vector2.RIGHT.rotated(global_rotation) * _force)
+	if target.has_method("apply_damage"):
+		target.apply_damage(DamageInfo.new(_damage, _actor, StringName(species) if species != null else &""))
+	if target.has_method("apply_force"):
+		target.apply_force(Vector2.RIGHT.rotated(global_rotation) * _force)
 
 func _sort_targets(a: Node, b: Node) -> bool:
 	var a_priority := _target_priority(a)
@@ -111,3 +122,9 @@ func _target_priority(target: Node) -> int:
 	if target.has_method("apply_damage"):
 		return 2
 	return 3
+
+func _draw() -> void:
+	if not GameSession.debug_gameplay_draw or hit_shape == null or hit_shape.shape is not RectangleShape2D:
+		return
+	var size := (hit_shape.shape as RectangleShape2D).size
+	draw_rect(Rect2(hit_shape.position - size * 0.5, size), Color(1.0, 0.2, 0.2, 0.75), false, 1.0)

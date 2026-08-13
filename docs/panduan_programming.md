@@ -224,9 +224,11 @@ Attack damage hanya aktif selama telegraph selesai dan hitbox attack aktif. Tida
 
 - Satu controller memiliki timer coyote/buffer, jump cut, ground/air acceleration, dan encumbrance multiplier. Status/item tidak menulis velocity atau exported base value langsung.
 - Hitung load ratio dari inventory total: `0` sampai capacity tidak memberi penalty; capacity sampai `2 × capacity` lerp speed/jump ke nol dan fall acceleration ke cap.
-- Interaction sensor menerima actor position dan clamped world cursor point, memfilter reach/obstruction, lalu sort priority dan cursor distance. Jangan scan seluruh group atau membiarkan tiap interactable memilih dirinya sendiri.
-- Camera tetap satu `Camera2D`. Target world cursor, limit ellipse, UI return/zoom, smoothing, dan native bounds berada pada owner camera/player yang sama; tidak ada backup runtime implementation.
+- Interaction sensor membuat satu rectangle terrotasi dari pusat collision actor ke clamped cursor, memfilter obstruction, lalu sort cursor distance sebelum priority tie-break. Jangan scan seluruh group atau membiarkan tiap interactable memilih dirinya sendiri.
+- Camera tetap satu `Camera2D`. Input look-ahead berasal dari cursor screen-space dengan center deadzone agar camera movement tidak memberi feedback ke cursor world-space. Limit offset, UI return/zoom, smoothing, dan native bounds berada pada owner camera/player yang sama.
+- Held-item pivot adalah transform nyata yang dimirror oleh facing player. Jangan menghitung offset virtual berbeda dari posisi sprite/hitbox.
 - Semua action player memeriksa alive, inventory/UI ownership, control lock, dan climbing rule sebelum menjalankan behavior.
+- Rope extension tetap beberapa `Area2D`, tetapi gameplay membaca root, batas, dan end-cap sebagai satu chain. Area exit satu segment tidak boleh detach; input up/down di ujung hanya berhenti, sedangkan Space adalah input detach. Force, death, load, dan recovery tetap boleh membersihkan climbing state.
 
 ### Detection ownership dan biaya
 
@@ -287,14 +289,34 @@ World generation wajib mengikuti `panduan_world_generation.md`:
 
 Jangan menambah procedural geometry, constraint solver, atau streaming per-section. Seluruh terrain layer aktif tetap loaded sampai profiler menunjukkan kebutuhan lain.
 
-### Rope prototype boundary
+### Rope runtime contract
 
 - Rope pertama adalah fixed `Area2D`, bukan joints/physics chain.
 - Placement memakai normal item-result transaction: validasi penuh, buat preview/node, baru consume satu item.
 - Visual memakai native 16×16 `rope_segment` yang diulang/dipotong dan satu `rope_end`; logic panjang tidak membaca opaque pixel.
 - Player menyimpan climbing state sementara dan current Rope reference; Rope tidak mengubah Player lewat path parent panjang.
 - Knockback meminta detach melalui method/signal yang dimiliki Player, bukan menghapus Rope.
-- Prototype tidak mengimplementasikan `capture_state`, runtime ID, seam transfer, shop stock, atau load restore. Jangan membuat stub persistence yang seolah-olah sudah aman.
+- Placed Rope memakai catch width 24 px, visual scale horizontal 0,5, dan stride 14 px. Climbing left/right memakai velocity collision biasa untuk offset maksimal 8 px; jangan menulis posisi langsung atau teleport melewati terrain.
+- Endpoint atas/bawah memilih chain yang sama dan menambah node segment baru dari bottom chain. Extension memakai validasi terrain/bounds yang sama dan normal `ItemActionResult` consumption.
+- Hanya root chain masuk `persistent_objects` dan mendapat runtime ID. `capture_state()` menyimpan posisi root serta panjang segment terurut; extension tidak mempunyai ID/save record sendiri.
+- `restore_state()` wajib idempotent: hapus extension lama, bangun ulang geometry/collision, sambungkan extension ke root, lalu sisakan satu end-cap terbawah. Restore selalu menaruh chain di runtime root layer asal melalui `SaveManager` yang sudah ada.
+- Climbing state tidak persistent. Save saat climbing memakai safe position player. Shop stock dan guaranteed acquisition bukan bagian persistence Rope.
+
+### Lokasi implementasi player foundation
+
+| Sistem | File utama | Data/scene |
+|---|---|---|
+| Movement, encumbrance, climb | `game/player/player.gd` | `game/player/player.tscn` |
+| Camera cursor/bounds | `game/player/player_camera.gd` | child `Camera2D` pada Player |
+| Cursor interaction | `core/interaction/interaction_sensor.gd` | child `InteractionSensor` pada Player |
+| Item transaction/preview | `game/items/player_item_controller.gd` | `game/player/player_item_preview.gd` |
+| Weighted throw | `game/items/behaviors/default_throw_behavior.gd` | `game/items/world/thrown_item.gd` |
+| Multitool thrust | `game/items/behaviors/multitool_behavior.gd` | `game/items/actions/held_thrust.tscn` |
+| Sight/hearing | `core/sensing/sight_sensor.gd`, `core/sensing/sound_listener.gd` | integrated pada `game/enemies/test/test_amphibian.tscn` |
+| Rope placement/persistence | `game/items/behaviors/rope_behavior.gd` | `data/items/rope.tres`, `game/items/world/placed_rope.tscn` |
+| Integrated graybox | `game/world/foundation_test_room.tscn` | pilih Debug Run lalu Foundation Test Room |
+
+Rope authored anchor optional adalah `Marker2D` dalam group `rope_anchors`. Tanpa marker, behavior mencari solid surface dekat cursor. Debug menu `F3` mempunyai `Show Gameplay Ranges` untuk melihat interaction reach, Multitool shape, sight cone/ray, accepted sound radius, trajectory, dan validitas Rope.
 
 ## 13. UI dan control lock
 
@@ -341,11 +363,11 @@ Player-foundation check tambahan:
 
 - tap/full jump, coyote, buffer, dan no-double-jump;
 - encumbrance boundary pada capacity dan `2 × capacity`;
-- Multitool hanya satu priority target dan cleanup hitbox;
+- Multitool satu utility target atau multi-enemy sekali per target, plus cleanup hitbox;
 - cursor clamp, obstruction, dan tie-break interaction;
 - preview/real initial velocity memakai weight formula sama;
 - sound priority/tie/repeat escalation dan blocked sight memory;
-- Rope prototype consume/invalid rollback, attach/climb/jump, item action saat climb, serta force detach.
+- Rope consume/invalid rollback, endpoint extension, held-input attach, lateral climb/jump, item action saat climb, force detach, layer round-trip, dan Continue tanpa duplicate chain.
 
 Perintah wajib sebelum merge:
 
@@ -392,7 +414,7 @@ Fitur selesai hanya jika:
 - Custom test framework.
 - Controller support selama P0 belum lengkap.
 - Pixel-perfect weapon collision, skeletal/equipment framework, combo system, physics Rope, dan duplicate camera implementation.
-- Rope persistence/seam/shop sampai prototype item-flow disetujui.
+- Rope shop stock dan guaranteed acquisition sampai content flow disetujui.
 
 Tambahkan hanya ketika kebutuhan nyata tidak dapat ditangani contract yang sudah ada.
 
@@ -407,7 +429,7 @@ Urutan ini wajib agar perubahan world, asset, dan player tidak saling menimpa:
 5. Hapus jalur `J`/`SwordHitbox`; hubungkan Multitool snap-thrust melalui `primary_action` dan shared damage contract.
 6. Tambahkan field/total weight, encumbrance modifier, shared throw calculation, dotted preview, serta satu debug heavy item.
 7. Perluas `SoundEvent`/listener secukupnya, tambah sight/proximity scan, lalu buktikan pada test amphibian sebelum enemy lain.
-8. Buat Rope item-flow prototype tanpa persistence/seam/shop; jangan melanjutkan final integration sampai prototype di-playtest lead.
+8. Buat dan playtest Rope item-flow, lalu integrasikan root-only persistence/seam setelah disetujui lead; shop tetap tahap content.
 9. Tambahkan debug draw melalui menu debug yang ada dan lengkapi integrated graybox/check terkecil.
 10. Jalankan clean import, smoke test, representative 60 FPS playtest, dan satu teammate test sebelum commit final player foundation.
 

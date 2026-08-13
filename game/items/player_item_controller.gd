@@ -112,9 +112,7 @@ func _execute(is_secondary: bool, actor: Node2D, world: Node, cursor: Vector2, t
 func _make_context(actor: Node2D, world: Node, cursor: Vector2, target: Node, definition: ItemDefinition, stack: ItemStack) -> ItemContext:
 	var context := ItemContext.new(actor, world, cursor, target, definition, stack.copy())
 	if held_item_anchor != null:
-		var anchor_offset := held_item_anchor.global_position - actor.global_position
-		anchor_offset.x = absf(anchor_offset.x) * (-1.0 if cursor.x < actor.global_position.x else 1.0)
-		context.action_origin = actor.global_position + anchor_offset
+		context.action_origin = held_item_anchor.global_position
 	var owner := world
 	while owner != null:
 		var bounds = owner.get("world_bounds")

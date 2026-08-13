@@ -108,15 +108,15 @@ on_impact(thrown_item, impact) -> ItemActionResult
 
 ### Interaction berbasis cursor
 
-- `E` memilih kandidat di area 16 px sekitar titik cursor yang sudah di-clamp ke radius 72 px dari player; kedua angka diexport untuk tuning.
-- Kandidat diurutkan berdasarkan `interaction_priority` tertinggi, lalu jarak terdekat ke titik query cursor.
+- `E` memilih kandidat di dalam rectangle dari pusat collision player ke cursor yang sudah di-clamp ke radius 72 px. Lebar awal 32 px; reach dan lebar diexport untuk tuning.
+- Kandidat terdekat ke cursor menang. Kandidat dengan selisih jarak maksimal 4 px memakai `interaction_priority` sebagai tie-break, lalu instance ID untuk hasil stabil.
 - Terrain solid di antara player dan kandidat membatalkan target. Target di balik dinding tidak menampilkan prompt dan tidak dapat diinteraksi.
 - Cursor di luar reach tetap mengarahkan query ke batas reach, bukan membuat target otomatis invalid.
 - Foundation memakai prompt yang sudah ada. Glow/highlight sprite ditunda sampai treatment art disepakati.
 
 ### Camera berbasis cursor
 
-- Camera target memakai vector world-space player→cursor yang di-clamp dengan limit horizontal/vertical terpisah. Default awal tetap sekitar 56 px horizontal dan 28 px vertical; keduanya diexport.
+- Camera target memakai posisi cursor screen-space agar gerakan camera tidak mengubah inputnya sendiri. Deadzone tengah awal 24 px mencegah drift; setelah deadzone, offset naik bertahap sampai sekitar 56 px horizontal dan 28 px vertical pada tepi viewport. Semua nilai diexport.
 - Native `Camera2D` limit dan smoothing tetap menjaga view di bounds route/layer. Jangan membuat camera framework kedua.
 - Saat inventory/pause/UI mouse aktif, camera ease kembali ke base player offset dan zoom sedikit ke player. Zoom dan smoothing diexport.
 - Git history adalah backup implementasi lama; tidak ada duplicate script, runtime toggle, atau folder backup.
@@ -148,9 +148,10 @@ Multitool adalah item biasa, bukan equipment slot khusus:
 - Kehilangan pertama dalam satu run mendapat satu pengganti gratis di surface.
 - Pengganti berikutnya dibeli dari surface shop; harga masih nilai balance.
 - Primary action: thrust/tool use ke arah cursor dari held-item pivot. Multitool memakai sprite terpisah; tidak memerlukan attack sprite-sheet player.
+- Facing player memindahkan held-item pivot nyata ke kiri/kanan. Primary/secondary menghadap cursor sebelum action; thrust mengunci sisi sampai recovery selesai.
 - Saat primary ditekan, sprite mengunci arah cursor, snap ke full extension, aktif selama durasi pendek yang diexport, lalu kembali. Player tetap dapat bergerak dengan multiplier lebih rendah dan dapat memakai action di udara tanpa mengubah velocity vertical.
 - Shape collision yang di-author mengikuti ukuran visual Multitool dan berotasi bersama sprite; tidak ada pixel-perfect collision atau cursor hitscan.
-- Satu thrust menyelesaikan tepat satu target dalam urutan: special Multitool interaction, breakable/harvestable, lalu damage target. Target yang sama tidak dapat diproses dua kali dalam satu thrust.
+- Satu thrust memilih kategori prioritas: special Multitool interaction, breakable/harvestable, lalu damage target. Kategori special/breakable hanya memproses target prioritas tertinggi; jika tidak ada utility target, semua damage target yang overlap terkena tepat sekali.
 - Press tambahan selama recovery diabaikan. Damage biasa tidak membatalkan thrust; death, scene exit, atau kehilangan active item membatalkannya dan selalu mematikan hitbox.
 - Player tidak mempunyai input `attack` terpisah atau `SwordHitbox` khusus. Semua use masuk melalui active item `primary_action`.
 - Secondary action: belum didesain dan disabled untuk sekarang; Multitool tidak menggunakan fallback throw.
@@ -294,21 +295,26 @@ Death signal hanya dipancarkan sekali. Semua healing melewati satu API agar curs
 - `last_safe_position` hanya fallback jika posisi load invalid/out-of-bounds; perpindahan slot mengaturnya ke `RespawnAnchor` section aktif.
 - Pause menghentikan SceneTree. Inventory tidak mengubah global time scale.
 
-### Rope: final contract dan prototype pertama
+### Rope: contract runtime
 
-Final Rope tetap harus persistent selama living run, berada pada layer runtime root, dan aman melewati seam. Implementasi player pertama sengaja hanya prototype item-flow dan **belum** memenuhi final persistence contract.
+Rope persistent selama living run, berada pada layer runtime root, dan aman melewati seam section. Satu chain disimpan sebagai satu record milik root; extension tidak menjadi persistent object terpisah.
 
-Prototype pertama mencakup:
+Implementasi mencakup:
 
 - Rope dipilih sebagai item; primary menampilkan preview dan memasang langsung pada anchor valid maksimal 72 px dari player.
 - Invalid/out-of-range placement memberi feedback dan tidak mengonsumsi item. Placement valid mengonsumsi tepat satu Rope.
 - Anchor boleh pada top surface, ceiling, atau side wall yang tidak membuat Rope berada di dalam terrain. Semua anchor menjadi titik atas; Rope selalu menggantung vertical ke bawah.
 - Panjang maksimal 160 px dan berhenti sebelum solid terrain pertama. Seluruh segment harus berada dalam active layer bounds.
 - Rope adalah `Area2D` vertical tetap, bukan physics rope. Player menyentuh area lalu menekan up/down untuk attach; gravity berhenti dan posisi horizontal ease ke tengah Rope.
-- Up/down memanjat. Space detach+jump; left/right saja tidak detach, tetapi menentukan arah saat Space ditekan.
+- Catch area Rope selebar 24 px. Up/down yang sudah ditahan saat masuk area tetap attach. Saat climbing, left/right menggeser player maksimal 8 px dari tengah melalui collision movement tanpa detach.
+- Visual Rope memakai skala horizontal 0,5 dan stride segment 14 px agar sprite lebih tipis dan tidak mempunyai gap. Chain hanya mempunyai satu `rope_end` pada ujung terbawah; end lama berubah menjadi `rope_segment` ketika Rope diperpanjang.
+- Cursor di endpoint atas atau bawah chain dapat mengonsumsi satu Rope untuk menambah segment sampai 160 px dari endpoint terbawah. Terrain/bounds dapat memendekkan atau menolak extension; kegagalan tidak mengonsumsi item.
+- Seluruh segment yang tersambung adalah satu climbable chain. Up/down melintasi sambungan tanpa detach dan berhenti pada batas chain. Menahan up di atas atau down di bawah tetap attached; Space detach+jump. Left/right saja tidak detach, tetapi menentukan arah saat Space ditekan.
 - `E`, primary, dan secondary item tetap dapat dipakai saat climbing walaupun art gabungan belum ada.
 - Damage tanpa force tidak detach. Force/knockback apa pun detach; death selalu detach.
-- Prototype tidak menyimpan placed Rope atau climbing state, tidak menjamin crossing seam, tidak masuk shop, dan tidak dianggap final integration. Save/load, seam persistence, serta restore di posisi sama dikerjakan setelah prototype disetujui.
+- Root Rope mempunyai runtime `persistent_id`, posisi global, dan daftar panjang segment terurut. Save/Continue serta perpindahan layer membangun kembali satu chain identik pada runtime root layer asal tanpa duplikasi.
+- Climbing state tidak disimpan. Save saat climbing memakai `last_safe_position`; Continue memulihkan Rope tetapi player dalam keadaan detached.
+- Rope boleh melintasi seam section karena seluruh layer aktif tetap instantiated. Rope tidak boleh keluar dari bounds layer. Stock shop dan jaminan perolehan Rope tetap pekerjaan content terpisah.
 
 ### Topologi yang dikunci
 
@@ -416,7 +422,7 @@ Istilah “boss” pada pembicaraan desain saat ini merujuk kepada gatekeeper/qu
 - Animation names: `idle`, `move`, `telegraph`, `attack`, `hit`, `death` sesuai kebutuhan.
 - Audio/VFX diberikan melalui exported Resource atau signal; jangan hardcode path tersebar.
 - Asset item runtime berada di `assets/art/items/`; asset UI di `assets/art/ui/`; source `.aseprite` disimpan terpisah di `assets/source/`. Nama memakai `snake_case`.
-- Asset Rope 16×16 tidak di-resample: `rope_item` adalah coil inventory/world, `rope_segment` diulang/dipotong untuk body, dan `rope_end` menjadi bottom cap. Gunakan nearest filtering dan native scale sebelum playtest membuktikan perlu integer scale lain.
+- Bitmap Rope tetap 16×16 dan tidak di-resample: `rope_item` adalah coil inventory/world, `rope_segment` diulang dengan stride 14 px, dan `rope_end` menjadi bottom cap. Placed visual memakai nearest filtering dan scale horizontal 0,5 berdasarkan hasil playtest; source art tetap utuh.
 
 ## 12. Content yang masih boleh TBD
 
@@ -444,10 +450,10 @@ Semua poin di atas adalah content data/behavior. Mereka tidak mengubah flow rewa
 - Rattlepod dapat diaktifkan, mengirim lima event, dan dilempar saat aktif; lemparan tidak aktif tidak memicu sound effect.
 - Snail hanya dapat di-harvest sekali sepanjang instance lifecycle.
 - Tap/full jump, coyote time, jump buffer, dan air steering tidak membuat double jump serta tetap melewati graybox unencumbered.
-- Multitool hanya mengenai satu priority target saat shape visual aktif; tidak ada hit dari cursor atau selama recovery.
-- Interaction cursor memilih priority target di titik clamp, menolak obstruction, dan camera tetap mengikuti bounds saat UI zoom aktif.
+- Multitool memproses satu utility target atau semua damage target yang overlap tepat sekali saat shape visual aktif; tidak ada hit dari cursor atau selama recovery.
+- Interaction rectangle memilih target terdekat ke cursor, menolak obstruction, dan camera screen-space tetap stabil serta mengikuti bounds saat UI zoom aktif.
 - Rock dan debug heavy item mempunyai trajectory berbeda sesuai weight; preview tersedia tanpa hold input.
 - Sight berhenti pada obstruction, sound priority/tie/escalation benar, dan unloaded enemy tidak melakukan scan.
-- Rope prototype dapat preview, consume satu item, attach/climb/jump-away, memakai item saat climb, dan detach oleh knockback. Persistence/seam bukan acceptance prototype.
+- Rope dapat preview, consume/extend satu item, attach dari input tertahan, shift/climb/jump-away, memakai item saat climb, detach oleh knockback, serta kembali identik setelah layer transition dan Continue.
 
 Gunakan satu assertion-based smoke test bawaan project. Jangan menambah framework sebelum jumlah test membuktikan kebutuhan.

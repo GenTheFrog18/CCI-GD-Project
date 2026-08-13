@@ -931,6 +931,19 @@ The delivered Rope files are 16×16 px:
 
 Their `.aseprite` source files must be preserved. The source bitmaps stay at 16×16 with nearest filtering; the placed Rope is built by repeating/cropping the segment rather than stretching it.
 
+## I8 — Player playtest decisions
+
+- Camera look-ahead uses screen-space cursor input with a small adjustable center deadzone.
+- Interaction uses an adjustable rectangle between player and clamped cursor. Cursor distance wins; priority only breaks near-equal distance.
+- Multitool processes one utility target, or every overlapping damage target once when no utility target is present.
+- Player collider is 12 px wide. Rope catch width is 24 px; held up/down attaches on overlap, and left/right shifts the climbing player up to 8 px without detaching.
+- Rope visual uses 0.5 horizontal scale and 14 px segment stride. Selecting either endpoint extends the connected chain downward from its bottom, consuming one Rope only on success.
+- Connected Rope pieces behave as one climbable chain and only its lowest piece uses the end sprite. Up/down stops without detaching at chain boundaries; Space is the deliberate player detach input.
+
+## I9 — Rope prototype approval and persistence
+
+The playtested Rope mechanic is approved for final living-run persistence. One chain root owns the runtime ID and serialized ordered segment lengths; extensions are reconstructed rather than saved separately. The chain belongs to its layer runtime root and survives section seams, layer transitions, Save & Menu, and Continue. Climbing state remains transient and restores the player detached at `last_safe_position`. Shop stock and guaranteed Rope acquisition remain separate content work.
+
 ---
 
 # Result

@@ -1,0 +1,42 @@
+attack
+attack here means swinging to use an item, for now its only for the multitool. first read up the current implementation for this.
+the attack deals damage when the weapon sprite actually hits the enemy hitbox, not with a hitscan from the cursor. the current multitool swing mechanic already exists, all we need is to wait for the artists assets for it to be finished, so i want you to implement this thoroughly until the only thing we need to do is applying the multitool sprite. make sure its modular and not just attached to the multitool since in the future we might need to add another item.
+
+camera & interact
+the current camera system works well but i think it needs a slight revision, and the interact system needs a whole rework
+
+for the interact system, the current way is an interaction hitbox near the player, but the way it would be better is this:
+object thats interacted should be determined by where the cursor is pointing, or what the closest thing to the cursor location is, but the range is bounded near the player, the distance of interaction and range of the cursor area should be easily adjustable.
+
+for the camera system, make a backup of the current system first. after that i want you to implement the camera movement like the interaction system, its not bounded to the player at all but instead the cursor with a range limit of the player. the range of movement should be adjustable
+
+
+weight
+there will be a simple weight system.
+each item has an interger weight value with the value easily adjustable for each item, but this will be implemented when we move on to the item implementation, lets not focus on it here.
+the heavier the player inventory is, the slower they are, shorter jumps, faster falling (refer to player movement notes), this will affect the player until their inventory weight is reduced, holding an item still counts towards that inventory weight (this will be implemented better when we move on to the inventory implementation).
+each item individually also have their own weight which affects throwing, refer to the throwing section.
+
+
+throw
+the current throwing system works but it needs refining.
+as currently the existing item that can be thrown is a rock, i need you make another temporary item as a different thing to be compared to the rock.
+so the throwing should stay as a configurable secondary action as it is now. the player should see a short dotted parabolic trajectory line.
+as each item has their own weight, they need to react differently when thrown. light object can be thrown the farthest, medium slightly shorter, and heavy objects should be difficult to throw, make it so that the throwing power to be easily adjustable.
+
+
+enemy detection of the player/artefact should also be done here.
+the detection system should be modular, as in its not intrinsic to the player. the detection system be it sight or sound is normally on the player, but when an artifact is used (depending on its effects) should give off a detection signal that makes the enemies become interested in those signals, but the player detection signal should not be moved onto that item, the player can still be detected even though they used an item depending on some things such as what kind of item anti detection method they used (sight/sound), when an enemy is already actively chasing the player, being too close to the distracted enemy, or when an enemy is specifically harder to distract.
+
+for sight detection, at first it should be a simple lightweight raycast (or maybe just a vision cone?) from where the enemy is facing (area of detection should be easily adjustable), that detects if there is an obstruction in the way of the player and that enemy. when an enemy is targeting the player specifically (detailed more when enemy implementation stage), the detection changes. the area of detection becomes larger and always checks if the player is in line of sight. when an enemy is targeting the player they can still see the player even though line of sight is broken, but when line of sight is broken for more than 10 seconds (adjustable to each enemy), they return to a non aggrevated state.
+
+for sound detection, the player produces different sound values for different actions, each value should be easily adjustable, the value has no max limit. sound is detected by the enemy with an area detection that doesnt care if there is something blocking line of sight. when a sound is detected by an enemy, it remembers the latest sound location with the highest priority until its done checking what it is, or after 10 seconds of not being able to check the sound (adjustable). if an enemy detects that a sound producer make a lot of sound within a short time, they will immediately target the sound producer instead of just checking the noise, this direct target from sound is assigned its own sound priority but a high value (the area detector should have an adjustable range of priority it detects, adjustable lower and upper bound). when an enemy already has a high priority value sound to check/target, they will ignore a new sound producer that has a lower sound priority value. if the value is the same, then they check the new producer. the enemy will lose sound target when the producer is out of their sound detection area for 10 seconds, or does not produce any sound for 10 seconds (adjustable).
+the player action that makes noise are(all fo these should be adjustable):
+action (priority value)
+walking (1)
+jumping (3)
+throwing (1)
+item use (adjustable for each item)
+blowing the whistle (10)
+
+again, all of this should be modular, you should not assume whenever i type "player" to just be player, but instead a detection signal producer. to lower processing cost, each detection should only detects once every few frame

@@ -20,6 +20,7 @@ var current_route_id: StringName = &"west"
 var current_slot_id: StringName = &""
 var debug_enabled := false
 var debug_unlimited_health := false
+var debug_gameplay_draw := false
 var runtime_id_counter := 0
 var world_generation_log: Array[Dictionary] = []
 
@@ -39,6 +40,7 @@ func start_new_run(seed_value := 0, enable_debug := false) -> void:
 	current_slot_id = &""
 	debug_enabled = enable_debug
 	debug_unlimited_health = false
+	debug_gameplay_draw = false
 	runtime_id_counter = 0
 	world_generation_log.clear()
 	run_started.emit()
@@ -75,6 +77,7 @@ func capture_state() -> Dictionary:
 		"current_slot_id": String(current_slot_id),
 		"debug_enabled": debug_enabled,
 		"debug_unlimited_health": debug_unlimited_health,
+		"debug_gameplay_draw": debug_gameplay_draw,
 		"runtime_id_counter": runtime_id_counter,
 		"world_generation_log": world_generation_log.duplicate(true),
 	}
@@ -92,6 +95,7 @@ func restore_state(data: Dictionary) -> void:
 	current_slot_id = StringName(data.get("current_slot_id", ""))
 	debug_enabled = bool(data.get("debug_enabled", false))
 	debug_unlimited_health = bool(data.get("debug_unlimited_health", false))
+	debug_gameplay_draw = bool(data.get("debug_gameplay_draw", false))
 	runtime_id_counter = int(data.get("runtime_id_counter", 0))
 	world_generation_log.assign(data.get("world_generation_log", []))
 	money_changed.emit(money)

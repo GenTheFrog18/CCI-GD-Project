@@ -2,6 +2,7 @@ extends Control
 
 var debug_checkbox: CheckBox
 var seed_input: SpinBox
+var test_room_button: Button
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -37,7 +38,7 @@ func _ready() -> void:
 		column.add_child(incompatible)
 	debug_checkbox = CheckBox.new()
 	debug_checkbox.text = "Debug Run (custom seed + world log)"
-	debug_checkbox.toggled.connect(func(enabled: bool): seed_input.visible = enabled)
+	debug_checkbox.toggled.connect(func(enabled: bool): seed_input.visible = enabled; test_room_button.visible = enabled)
 	column.add_child(debug_checkbox)
 	seed_input = SpinBox.new()
 	seed_input.min_value = 0
@@ -47,6 +48,11 @@ func _ready() -> void:
 	seed_input.prefix = "Seed (0 = random): "
 	seed_input.visible = false
 	column.add_child(seed_input)
+	test_room_button = Button.new()
+	test_room_button.text = "Foundation Test Room"
+	test_room_button.visible = false
+	test_room_button.pressed.connect(_start_test_room)
+	column.add_child(test_room_button)
 	var controls := Label.new()
 	controls.text = "A/D gerak | Space lompat | E interact\n1/2 hotbar  LMB primary  RMB secondary\nTab inventory  Esc pause  F3 debug"
 	controls.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -65,3 +71,8 @@ func _continue_run() -> void:
 	if SaveManager.load_run().is_empty():
 		return
 	SceneRouter.go_to("res://game/world/world_run.tscn")
+
+func _start_test_room() -> void:
+	GameSession.start_new_run(int(seed_input.value), true)
+	SaveManager.loaded_persistent_state.clear()
+	SceneRouter.go_to("res://game/world/foundation_test_room.tscn")

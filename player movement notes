@@ -1,0 +1,11 @@
+player jump height should be variable determined by how long they hold the button.
+there should be a tiny grace period to jump after walking off a ledge, basically coyote time.
+there should be jump buffering, registering a jump input slightly before hitting the ground
+the air control should also feel good, allow steering and acceleration adjustments mid air.
+
+there will be a simple weight system.
+each relic will have a weight, the carry limit and punishment should be easily adjustable.
+when a player is carrying a heavy load, they will walk slower, shorter max jump height, faster when falling
+
+rope
+the asset for rope is done, so it needs to be implemented now because its essential for player movements. we first need to think of how the rope will be implemented first, how the player places the rope, how its saved, how the player interacts with the rope, how the player climbs up and down with the rope
