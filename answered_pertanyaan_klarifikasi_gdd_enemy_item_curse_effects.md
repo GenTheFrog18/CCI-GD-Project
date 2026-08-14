@@ -742,7 +742,7 @@ Does it use sight, sound, proximity, or all three? At what relative range does i
 
 **Recommendation:** reuse shared sight/sound components, approach to a configured tongue range, then stop for a readable telegraph.
 
-**Answer:** it relies on sight more than sound, that means the sound detector has a hugher minimum priority value and sight is used more.  follow the recommendationa
+**Answer:** it relies on sight more than sound, that means the sound detector has a higher minimum priority value and sight is used more.  follow the recommendations. make the settings adjustable so i can fine tune it myself
 
 ## I3 — Tongue attack form — IMPLEMENTATION BLOCKER
 
@@ -750,7 +750,7 @@ Is the tongue an extending hitbox, ray/line query after telegraph, or physical p
 
 **Recommendation:** use a short-lived extending/line hitbox that stops on terrain and locks its aim at telegraph start.
 
-**Answer:**  follow the recommendation. it can do another attack after an adjustable cooldown. the hitbox should extend and retract, the size should be adjustable. it doesnt stop when going through the same species but will stop on another enemy/terrain/player. frog primarily targets an item on the ground
+**Answer:**  follow the recommendation. it can do another attack after an adjustable cooldown. the hitbox should extend and retract, the size should be adjustable. it doesnt stop when going through the same species but will stop on another enemy/terrain/player. frog primarily targets an item on the ground instead of the player
 
 ## I4 — Theft impact details — IMPLEMENTATION BLOCKER
 
@@ -758,7 +758,7 @@ On a successful tongue hit, does the player also take damage, exactly one second
 
 **Recommendation:** theft is independent of damage i-frames; apply the documented one-second slow, low/no damage, and clear feedback about the stolen item.
 
-**Answer:**  follow the recommendation, when the frog successfuly steals an item, it does not deal damage.
+**Answer:**  follow the recommendation, when the frog successfuly steals an item, it does not deal damage. the frog deals one damage when the player has no items to steal in their inventory
 
 ## I5 — Retreat and carried-item recovery — IMPLEMENTATION BLOCKER
 
@@ -766,7 +766,7 @@ Where does the amphibian retreat, how long does it carry the item, and can it es
 
 **Recommendation:** retreat toward its placer within a leash, never delete the item, and drop a normal persistent world item after any accepted hit/impact.
 
-**Answer:**
+**Answer:**   follow the recommendation
 
 ## I6 — Edge cases and systemic reactions — IMPLEMENTATION BLOCKER
 
@@ -774,7 +774,7 @@ What happens if the amphibian falls out of bounds while carrying an item, dies d
 
 **Recommendation:** tag it small; recover carried items at its safe placer before applying ordinary out-of-bounds/death cleanup.
 
-**Answer:**
+**Answer:**  follow the recommendation. if frog dies the item is dropped, any item that is dropped out of bounds can be retrieved at the layer 1 gatekeeper.
 
 ---
 
@@ -786,7 +786,7 @@ Does one bird attack alone, or do birds always operate as a flock? What group si
 
 **Recommendation:** first encounter uses one bird; later encounters use small authored groups with staggered attack timing.
 
-**Answer:**
+**Answer:** birds are found near a nest that is set by the level designer, the nest has a placer that can spawn at least 1 bird but can spawn up to 3 birds.
 
 ## J2 — Flight and target acquisition — IMPLEMENTATION BLOCKER
 
@@ -794,7 +794,7 @@ Does the bird follow a fixed aerial patrol, perch, circle a region, or roam free
 
 **Recommendation:** use an authored flight region plus shared sight; sound may draw it to investigate but should not immediately produce a swoop through terrain.
 
-**Answer:**
+**Answer:**  follow the recommendation. the flight region is around the bird's nest/spawner. it mainly reacts to sight detection similar like the frog, with the sound detection having a higher minimum priority but with a bigger radius. the bird is neutral when the player is not close to the nest, but will become aggresive when player is near the nest. 
 
 ## J3 — Swoop sequence — IMPLEMENTATION BLOCKER
 
@@ -802,7 +802,7 @@ Define the states from acquiring a target through telegraph, dive, active hitbox
 
 **Recommendation:** lock target position at telegraph end, perform one committed pass, then recover outside immediate melee range.
 
-**Answer:**
+**Answer:**  follow the recommendation. the telegraph is done by a warning sign above the player head and a triangle arrow pointing at the incoming attack as we do not have the resource to make a proper animated telegraph signal. if the bird is damaged when doing a swoop, it will cancel that swoop and return as if it successfully hit the player.
 
 ## J4 — Individual hit result — IMPLEMENTATION BLOCKER
 
@@ -810,7 +810,7 @@ Does every bird hit deal zero damage plus knockback until the group threshold, o
 
 **Recommendation:** individual hits primarily apply force; threshold adds damage so the flock identity stays clear.
 
-**Answer:**
+**Answer:**  follow the recommendation. the player should be applied a force horizontally and vertically, with a horizontal force being 70% of the total force and vertical force being 30%
 
 ## J5 — Shared recent-hit window — IMPLEMENTATION BLOCKER
 
@@ -818,7 +818,7 @@ How many bird hits within how many seconds cause damage? Is the counter shared b
 
 **Recommendation:** share one counter across the bird species, reset after threshold damage, and expose count/window/damage for tuning.
 
-**Answer:**
+**Answer:**  follow the recommendation. but for now make the default to be 1 attack every second because each individual bird has a cooldown of 2 seconds before attacking. but make sure all of this are adjustable
 
 ## J6 — Reactions and failure safety — IMPLEMENTATION BLOCKER
 
@@ -826,7 +826,7 @@ Can birds be slowed, poisoned, distracted, blocked by Hushcap, killed by Silver 
 
 **Recommendation:** tag birds small; shared reactions work normally, while authored encounter placement must keep a recoverable safe position.
 
-**Answer:**
+**Answer:**  follow the recommendation. for every flying enemy implementations, make it so that they have another tag explaining that they're flying, this will be used for a layer 2 relic implementation that im still designing, in which when a flying enemy is hit they become stunned and falls down, dealing fall damage
 
 ---
 
@@ -838,7 +838,7 @@ Is Thorn Bloom a killable enemy, neutral defensive plant, harvestable resource, 
 
 **Recommendation:** classify it as a neutral killable hazard with a strong readable armed/agitated state.
 
-**Answer:**
+**Answer:** in the technical, the thorn bloom is an immobile enemy that looks like a plant. it is not harvestable, the player could mistake it if they're not careful at first, but its design is intentionally distinct to make it easy to spot.
 
 ## K2 — Agitation triggers — IMPLEMENTATION BLOCKER
 
@@ -846,7 +846,7 @@ What agitates it: any damage, physical impact, nearby movement, sound priority, 
 
 **Recommendation:** physical impact/damage triggers immediately; ordinary sound alone does not, unless a specific item is meant to trigger it.
 
-**Answer:**
+**Answer:** physical impact/damage, it does not have sound nor sight detection, but if the player comes near it's proximity, it will also go off
 
 ## K3 — Needle firing pattern — IMPLEMENTATION BLOCKER
 
@@ -854,7 +854,7 @@ How many needles fire, in what directions, with what telegraph and delay? Does i
 
 **Recommendation:** use a readable wind-up followed by a small radial/fan burst; keep count and spread in the scene Resource.
 
-**Answer:**
+**Answer:** it fires 6 needles, 3 in each direction left/right in a radial firework pattern. the distance of each needle is different.
 
 ## K4 — Needle collision and persistence — IMPLEMENTATION BLOCKER
 
@@ -862,7 +862,7 @@ Do needles fly straight or use gravity? Do they stop, stick, disappear, or becom
 
 **Recommendation:** temporary non-pickup projectiles stick to terrain as visible hazards, then expire; do not save them through Continue.
 
-**Answer:**
+**Answer:**   follow the recommendation, the needle flies in a projectile pattern affected by gravity. they stick to terrain and stay that way for 5 minutes. and then disappear
 
 ## K5 — Needle damage and bleed — IMPLEMENTATION BLOCKER
 
@@ -870,7 +870,7 @@ How much immediate damage and what bleed package should a needle apply? Can one 
 
 **Recommendation:** one accepted hit applies immediate damage plus one bleed application; same burst should not stack accidental repeated hits.
 
-**Answer:**
+**Answer:**   one needle hit for 10 damage and then disappears (make it adjustable), a hit from the needle apply small iframe, it immediately applies bleed.  follow the recommendation but same burst can stack accidental repeated hits if the i-frame wore off
 
 ## K6 — Cooldown, death, and interactions — IMPLEMENTATION BLOCKER
 
@@ -878,7 +878,7 @@ Can a Bloom fire repeatedly, run out of needles, calm down, or remain armed? Wha
 
 **Recommendation:** give it a repeatable cooldown and no movement; death cancels wind-up but already-fired needles remain.
 
-**Answer:**
+**Answer:**   follow the recommendation, a bloom regains its full needless at once every five minutes. the bloom does not get affected by detection blockers as it works by player proximity and some other enemy proximity, but it has not been decided yet what those enemies are. so make it adjustable
 
 ---
 
@@ -890,7 +890,7 @@ Does a calm world snail remain stationary, crawl, hide, react to light, or attem
 
 **Recommendation:** keep movement minimal for scope; use light, idle motion, and reaction animation to communicate life.
 
-**Answer:**
+**Answer:**  follow the recommendation. snail has idle motion, and moving. might have more soon but depending on our artist. the snail can walk on terrain, can stick to walls and ceiling. the snail roams near its spawner thats set by the level designer
 
 ## L2 — Light behaviour — IMPLEMENTATION BLOCKER
 
@@ -898,7 +898,7 @@ How large and bright is its passive light? Does it illuminate while calm, carrie
 
 **Recommendation:** light is active in world and when held/selected, not while buried in backpack unless the design explicitly wants inventory-wide light.
 
-**Answer:**
+**Answer:** light is active in world. we have changed it so that the snail can be killed and harvested, but not carried
 
 ## L3 — Agitation sources and wind-up — IMPLEMENTATION BLOCKER
 
@@ -906,7 +906,7 @@ What agitates a snail: primary use, direct damage, sufficient impact speed, near
 
 **Recommendation:** primary use and hard impacts agitate; show a short visible tremble before the scream.
 
-**Answer:**
+**Answer:**   follow the recommendation, the telegraph signal is also going to be an exclamation point on top of the player head with a triangle arrow pointing towards the enemy. the snail will also be agitated by sound, the snail does not have vision detector. the sound agitation needs to be tuned by me, but the radius is very small.
 
 ## L4 — Scream sound event — IMPLEMENTATION BLOCKER
 
@@ -914,7 +914,7 @@ What radius, priority, pulse count, and target-override duration should the scre
 
 **Recommendation:** one high-priority event attracts the large flyer, but spider mark remains higher priority until it expires.
 
-**Answer:**
+**Answer:**   follow the recommendation. the radius, pulse count, and max duration should be adjustable
 
 ## L5 — Dazzle behaviour — IMPLEMENTATION BLOCKER
 
@@ -922,7 +922,7 @@ Who is dazzled: only the player holding/near the snail, all nearby actors, or si
 
 **Recommendation:** begin as a short player-facing visual effect with no control loss; make intensity distance-based and accessibility-safe.
 
-**Answer:**
+**Answer:** every enemy that has vision detection can be dazzled if they are visible when the snail is going off, when going off the snail will make a big circle area detection to detect enemies, make a raycast if they can be seen by the snail, and then apply dazzle to every enemy and player if the raycast is clear. for the player it is a visual effect with no control loss, duration is distance based where 0 seconds is at the edge of the area detection
 
 ## L6 — Harvest, death, and redeployment — IMPLEMENTATION BLOCKER
 
@@ -930,7 +930,7 @@ Confirm the 2 HP first-harvest and 1 HP redeployed rules. Can non-Multitool dama
 
 **Recommendation:** only a valid Multitool utility hit converts the first snail; other lethal damage kills it without an item reward.
 
-**Answer:**
+**Answer:** change has been made, when a snail dies, it drops its shell instead, but it still has 2 health
 
 ---
 
@@ -942,7 +942,7 @@ Does the spider walk on floors only, cling to walls/ceilings, remain in a nest, 
 
 **Recommendation:** use floor/wall authored perches for jam scope; do not build arbitrary surface-crawling navigation unless essential.
 
-**Answer:**
+**Answer:** spider has roaming mode in which it can walk on any surface. but when it detects a player it will first try to come closer near the player and shoot a projectile even if its still walking on the ceiling/wall. after that if the spider is locked on to the player it will walk only on the ground normally.
 
 ## M2 — Detection and preferred range — IMPLEMENTATION BLOCKER
 
@@ -950,7 +950,7 @@ Does it use sight, sound, proximity, or web vibration? Does it keep distance, re
 
 **Recommendation:** use shared sight/sound, hold an authored firing area, and reposition only within simple bounds.
 
-**Answer:**
+**Answer:**   follow the recommendation. it mainly uses sound, having a very low minimum priority sound detection, while its sight detection is smaller and the raycast update is once every half a second, but it uses the raycast to fire the projectile.
 
 ## M3 — Projectile sequence — IMPLEMENTATION BLOCKER
 
@@ -958,7 +958,7 @@ Define telegraph, aim locking, projectile speed, gravity, cooldown, maximum rang
 
 **Recommendation:** lock the player's position at telegraph start, use a visible straight projectile, and stop on first valid collision.
 
-**Answer:**
+**Answer:**  follow the recommendation. telegraph is as usual, just an exclamation mark above the payer's head with a triangle arrow pointing at the enemy, the projectile speed should be adjustable, cooldown is 4 seconds, maximum range is adjustable.
 
 ## M4 — Combined hit payload — IMPLEMENTATION BLOCKER
 
@@ -966,7 +966,7 @@ Should one hit always apply small direct damage, slow, poison, and tracking mark
 
 **Recommendation:** one readable projectile applies the documented complete package; avoid random effect omission during first implementation.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ## M5 — Poison, slow, and mark timing — IMPLEMENTATION BLOCKER
 
@@ -974,7 +974,7 @@ Beyond poison's locked total of 25 damage over 10 seconds, what slow strength/du
 
 **Recommendation:** refresh slow and mark; define poison stacking separately in the effects section.
 
-**Answer:**
+**Answer:**   follow the recommendation
 
 ## M6 — Flyer relationship and systemic reactions — IMPLEMENTATION BLOCKER
 
@@ -982,7 +982,7 @@ Does the spider communicate with any large flyer anywhere in the active layer, o
 
 **Recommendation:** target only valid active flyers in the same route/encounter scope; tag the spider small.
 
-**Answer:**
+**Answer:**   follow the recommendation. spider will run away if it detects a sound with priority as high as a rattlepod/snail scream, it will run away from light sources. it can be killed with silver weight
 
 ---
 
@@ -994,7 +994,7 @@ Does “one major open-air threat on the player's side” mean one flyer per eas
 
 **Recommendation:** one persistent flyer per route, with authored territories that prevent both attacking the player together at the crossing.
 
-**Answer:**
+**Answer:** one total active flyer that changes side of whichever side the player is in. it spawns on the bottom most layer thats designed by the level designer
 
 ## N2 — Normal movement — IMPLEMENTATION BLOCKER
 
@@ -1002,7 +1002,7 @@ Does it patrol fixed points, circle a territory, perch, or roam? How does it avo
 
 **Recommendation:** use authored patrol points/rectangles plus obstruction probes; do not build a general flight navigation system.
 
-**Answer:**
+**Answer:**  follow the recommendation. the roaming system is this: there will be placed points of interest that the flyer will target, it moving sort of randomly, and every 15 seconds it will be given the signal for it to fly to the next randomly chosen point of interest
 
 ## N3 — Detection profile — IMPLEMENTATION BLOCKER
 
@@ -1010,7 +1010,7 @@ What normal/aggravated sight ranges and angles distinguish it from smaller enemi
 
 **Recommendation:** strong long-range sight in open air, high minimum sound priority, and explicit snail/mark target overrides.
 
-**Answer:**
+**Answer:**  follow the recommendation. when it sees the player it wont be alarmed immediately, but waits if the player is visible for 4 seconds (adjustable).
 
 ## N4 — Attack form and 75 damage — IMPLEMENTATION BLOCKER
 
@@ -1018,7 +1018,7 @@ Is its attack a dive, bite, grab/drop, projectile, or sweeping pass? Does the do
 
 **Recommendation:** use one telegraphed committed dive/pass with 75 damage and controlled force; no grab system for first implementation.
 
-**Answer:**
+**Answer:** follow the recommendation. telegraph is like what has been defined previously
 
 ## N5 — Obstruction, caves, and lost target — IMPLEMENTATION BLOCKER
 
@@ -1026,7 +1026,7 @@ Can the flyer enter caves or narrow openings? What obstacle clearance makes a sp
 
 **Recommendation:** authored cave ceilings/openings block pursuit; flyer searches last-known position within territory, then returns.
 
-**Answer:**
+**Answer:**  follow the recommendation, there needs to be a blocker that the level editor can place, it acts like a physical transparent terrain but only for the big flyer, it can still see through but gets blocked. the roaming mode route turns off when it locks in the player, after line of sight breaks, it goes in a state of roaming near the area it last saw the player and the timer for roaming starts again, after 15 seconds it will then travel to the next point of interest
 
 ## N6 — Threat classification and counterplay — IMPLEMENTATION BLOCKER
 
@@ -1034,7 +1034,7 @@ Is it tagged `big_roamer`, how much health should it have relative to ordinary e
 
 **Recommendation:** tag it big; allow shared effects with reduced/explicit response rather than blanket immunity, and do not allow Silver Weight instant kill.
 
-**Answer:**
+**Answer:** follow the recommendations. it has 500 health (adjustable). flying enemy in general cannot be slowed, can be distracted, can be poisoned, cannot be knocked back. silver weight does 200 damage
 
 ---
 
@@ -1046,7 +1046,7 @@ Is the senior diver physically the gate interaction target, a separate actor bes
 
 **Recommendation:** keep gate/progression state on `WorldGate`; senior diver requests it through a small public API.
 
-**Answer:**
+**Answer:** senior gatekeeper is an interactable npc with dialogue.
 
 ## O2 — Initial disposition and denial — GDD BLOCKER
 
@@ -1054,7 +1054,7 @@ Is the diver neutral until attacked, automatically hostile to a Red Whistle hold
 
 **Recommendation:** provide a warning/denial interaction before hostility so the credential rule is understandable.
 
-**Answer:**
+**Answer:** the diver is idle at first, when the diver sees the player, the game then checks for player whistle and then does the dialogue interaction. there should be an area detection where if the player goes into that area, the diver gets aggresive, the player gets knocked backwards, and the diver chases the player. if the diver does not see the player for 3 seconds, it comes back to its post that is determined by the level designer.
 
 ## O3 — Blue Whistle passage — IMPLEMENTATION BLOCKER
 
@@ -1062,7 +1062,7 @@ Does possession of Blue Whistle permanently open the gate, open it only while pr
 
 **Recommendation:** check earned whistle tier, persist gate passage once granted, and let replacement restore the physical item separately.
 
-**Answer:**
+**Answer:** when diver sees player that has a blue whistle, diver confirms through dialogue and does not get into an aggresive state. the gate can always be accessed wether or not the player has proper whistle. its just guarded by the diver
 
 ## O4 — Hostility triggers and reset — IMPLEMENTATION BLOCKER
 
@@ -1070,7 +1070,7 @@ What makes the diver attack: player damage, forced bypass, entering a restricted
 
 **Recommendation:** attack/forced trespass causes lasting encounter hostility; a valid Blue Whistle interaction should still provide one safe de-escalation path unless the diver is dead.
 
-**Answer:**
+**Answer:** i have answered that above.
 
 ## O5 — Slow movement and fast attack — IMPLEMENTATION BLOCKER
 
@@ -1078,7 +1078,7 @@ What attack does the diver use, what makes it fast but fair, and how do slow mov
 
 **Recommendation:** use one short-range committed strike with clear wind-up, small active window, and longer recovery.
 
-**Answer:**
+**Answer:** the diver walks slowly towards the player, but attacks very quickly, the wind up from attack initiation and finish is very quick, the diver attacks by grabbing the player, the grab does not damage the player but locks the player with the diver, this triggers a dialogue and 1 second of movement/interaction control freeze, and then the player is teleported back to the surface with all of their found resources taken. found resources are the items they found in the maps, not the one they are given at the start or bought.
 
 ## O6 — Bypass, defeat, and item reactions — IMPLEMENTATION BLOCKER
 
@@ -1086,7 +1086,7 @@ Which non-Blue-Whistle solutions are intended: distraction, Hushcap, resin, Drif
 
 **Recommendation:** Blue Whistle and defeat are reliable paths; systemic bypasses work when existing mechanics naturally permit them, without bespoke puzzle scripting.
 
-**Answer:**
+**Answer:** the player can distract the diver from the gate entrance, and quickly reach the entrance before the diver gets to them. this can be done by using relics, or just clever navigation. gate is always available, its never locked
 
 ---
 
@@ -1098,7 +1098,7 @@ Which items must be implemented in this work package? Confirm whether it include
 
 **Recommendation:** implement/regression-test every item available before entering Layer 2; treat Moon Whistle and the undesigned quest/reward relics as later progression content.
 
-**Answer:**
+**Answer:**   follow the recommendation
 
 ## P2 — Item identity and naming freeze — IMPLEMENTATION BLOCKER
 
@@ -1106,7 +1106,7 @@ Are the current IDs and English display names final? List any rename needed for 
 
 **Recommendation:** freeze stable IDs before adding saves; display names may still be localised without changing IDs.
 
-**Answer:**
+**Answer:** follow the recommendation, lantern snail item is renamed to lantern crystal
 
 ## P3 — Primary/secondary design rule — IMPLEMENTATION BLOCKER
 
@@ -1114,7 +1114,7 @@ Should every item explicitly provide two behaviors, or may it inherit a generic 
 
 **Recommendation:** each definition explicitly assigns primary and secondary behaviors; generic throw is a reusable Resource, not a hidden inventory fallback.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## P4 — Activation, prepared state, and throwing — IMPLEMENTATION BLOCKER
 
@@ -1122,7 +1122,7 @@ For items activated before throwing, should primary move one unit into a prepare
 
 **Recommendation:** stateful activation separates one unit, preserves its state, and continues independently when switching slots only if the item's rules require it.
 
-**Answer:**
+**Answer:**  when activated, it may still stay in the stack but the activation state is not saved. when an item is activaed in a stack, when thrown/deactivated, the rest of the stack becomes inactive. switching slots deactivates it.
 
 ## P5 — Consumption moment and rollback — IMPLEMENTATION BLOCKER
 
@@ -1130,7 +1130,7 @@ Should an item be consumed on button press, successful spawn, valid target appli
 
 **Recommendation:** consume only after the irreversible world/status operation succeeds; failed actions retain the item and return feedback.
 
-**Answer:**
+**Answer:** follow the recommendation. for some items like rattlepod, when its activated in the inventory, it only consumes after the duration ends, if the player switches held item, the active item will drop to the ground. this applies to items with similar activation mechanic
 
 ## P6 — Stack compatibility and instance state — IMPLEMENTATION BLOCKER
 
@@ -1138,7 +1138,7 @@ Which states prevent stacking: activation, remaining duration/charges, durabilit
 
 **Recommendation:** only stateless/default instances stack; any mutable per-instance state uses quantity one unless equality is explicitly proven safe.
 
-**Answer:**
+**Answer:** i have answered some of them above, but for items that changes like heavy weight, they cannot be stacked as they have a different id. most items should be identical, ask me if there is a conflict
 
 ## P7 — World persistence classes — IMPLEMENTATION BLOCKER
 
@@ -1146,7 +1146,7 @@ Which item-created objects survive Continue: ordinary dropped items, active Ratt
 
 **Recommendation:** real retrievable items persist; short-lived fields/clouds/projectiles clear safely; persistent status remaining time lives on the affected actor.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## P8 — Item effects on enemies and world objects — IMPLEMENTATION BLOCKER
 
@@ -1162,7 +1162,7 @@ What counts as one discovery use: activation, valid effect, impact, full duratio
 
 **Recommendation:** count only successful signature effects; keep thresholds small and data-driven.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## P10 — Item completion boundary — IMPLEMENTATION BLOCKER
 
@@ -1170,7 +1170,7 @@ For “almost finished,” must every item have debug grant, placeholder icon/wo
 
 **Recommendation:** yes; defer only final sprites/animations/audio files and manual numeric fine tuning.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ---
 
@@ -1182,7 +1182,7 @@ Should Rope, Multitool, Throwable Rock, and weighted throw systems remain functi
 
 **Recommendation:** treat them as regression baselines; do not redesign working mechanics during content implementation.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## Q2 — Rope inventory details — BEFORE PLAYTEST
 
@@ -1190,7 +1190,7 @@ Archived specs say stack 8, current Resource says stack 4, and each Rope weighs 
 
 **Recommendation:** choose values through content planning, not code; keep current mechanics unchanged.
 
-**Answer:**
+**Answer:** follow the recommendation, stack size should be adjustable for each item
 
 ## Q3 — Whistle object behaviour — IMPLEMENTATION BLOCKER
 
@@ -1198,7 +1198,7 @@ Do Red, Blue, and Moon Whistles have any primary/secondary action, sound event, 
 
 **Recommendation:** no active action for this build; theft temporarily empties the physical slot while earned tier remains in `GameSession`.
 
-**Answer:**
+**Answer:** yes, the whistles have an action. the dedicated whistle slot can be clicked during gameplay, when clicked it will make a very high priority sound event, but thats it.
 
 ## Q4 — Multitool content responsibilities — IMPLEMENTATION BLOCKER
 
@@ -1206,7 +1206,7 @@ Beyond its implemented thrust, which new targets must support Multitool utility 
 
 **Recommendation:** add utility interfaces to targets; do not add item-ID checks to Multitool behavior.
 
-**Answer:**
+**Answer:** follow the recommendation, harvest source needs 2 hit before break
 
 ## Q5 — Throwable Rock final rules — BEFORE PLAYTEST
 
@@ -1214,7 +1214,7 @@ Should primary remain disabled, inspect/aim, or another action? Which hazards ca
 
 **Recommendation:** primary disabled with feedback; secondary retains generic throw, and impact may agitate plus emit one data-driven sound.
 
-**Answer:**
+**Answer:** make the primary to be an attack similar to multitool attack
 
 ## Q6 — Bandage use and healing lifecycle — IMPLEMENTATION BLOCKER
 
@@ -1222,7 +1222,7 @@ Can Bandage be used at full health when bleeding, at damaged health without blee
 
 **Recommendation:** valid if health is missing or bleed exists; remove bleed immediately, apply one refreshable persistent heal-over-time, and use generic throw secondary.
 
-**Answer:**
+**Answer:** follow the recommendation. if health is not missing, reject bandage use
 
 ## Q7 — Info Book scope and repeated use — IMPLEMENTATION BLOCKER
 
@@ -1230,7 +1230,7 @@ Does Info Book unlock only implemented relics, every catalog item, or future hid
 
 **Recommendation:** unlock all items marked discoverable in the catalog, prevent wasteful use/purchase when none remain, save meta immediately, and allow ordinary throw.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ## Q8 — Numbing Pill suppression lifecycle — IMPLEMENTATION BLOCKER
 
@@ -1238,7 +1238,7 @@ Confirm that each use adds 300 seconds, does not remove old Curse effects/stacks
 
 **Recommendation:** gameplay and inventory advance it; pause/menu stop it; remaining time persists through layer transition and Continue.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## Q9 — Sun Sphere activation and throw — IMPLEMENTATION BLOCKER
 
@@ -1246,7 +1246,7 @@ Does primary activate it in the player's hand, deploy it at the player's feet, o
 
 **Recommendation:** primary prepares/activates one sphere; active secondary throws it. An unactivated throw stays physical until impact, then activates once.
 
-**Answer:**
+**Answer:** follow the recommendation.
 
 ## Q10 — Sun Sphere lifetime and persistence — IMPLEMENTATION BLOCKER
 
@@ -1254,7 +1254,7 @@ Can an active sphere be picked up, moved, extinguished, or damaged? Does it beco
 
 **Recommendation:** consumed deployment, no pickup after activation, fade then disappear, and clear active temporary light safely on load.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## Q11 — Lantern Snail inventory behaviour — IMPLEMENTATION BLOCKER
 
@@ -1262,7 +1262,7 @@ Does a calm snail provide light in backpack, only selected hotbar, or only when 
 
 **Recommendation:** selected snail provides light; primary prepares/squeezes it, secondary throws the same living instance, and deployed state persists as a real item-creature conversion.
 
-**Answer:**
+**Answer:** this has been reworked: when held the shell provides light, primary activates it on player location, secondary throws it as physical until impact, and then it will activates upon impact
 
 ## Q12 — Rattlepod exact active-state flow — IMPLEMENTATION BLOCKER
 
@@ -1270,7 +1270,7 @@ Does the first pulse occur immediately or after one second? Can an active pod be
 
 **Recommendation:** pulse once per second including the first after one second; active pod cannot be recovered/sold and disappears after the fifth pulse.
 
-**Answer:**
+**Answer:**  pulse twice per second now (adjustable), active pod cannot be recovered/sold, disappears after tenth pulse. opening inventory, or selecting a different item, or opening shop menu will drop it
 
 ## Q13 — Hushcap deployment — IMPLEMENTATION BLOCKER
 
@@ -1278,7 +1278,7 @@ Does primary burst at the player and secondary create a cloud only on impact? Wh
 
 **Recommendation:** one consumed cloud at player or first impact; overlapping clouds do not multiply visual penalty, and sight rays crossing any cloud are blocked.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ## Q14 — Cling Resin patch rules — IMPLEMENTATION BLOCKER
 
@@ -1286,7 +1286,7 @@ Define primary patch position/size versus thrown patch size, valid surfaces, dur
 
 **Recommendation:** primary creates a small ground patch, thrown impact creates a larger patch, same effect refreshes rather than stacks, and lightweight moving payloads receive a velocity multiplier.
 
-**Answer:**
+**Answer:**  follow the recommendation. the resin effect is not just slow. but another special effect where entity affected recieves 50% less knockback, and jump is reduced to barely nothing.
 
 ## Q15 — Driftseed attachment and valid targets — IMPLEMENTATION BLOCKER
 
@@ -1294,7 +1294,7 @@ Confirm only player and boss/gatekeeper are valid. Does primary attach to player
 
 **Recommendation:** primary self-applies; a valid thrown hit applies to gatekeeper; misses become recoverable until valid impact; reapplication refreshes and remaining time persists.
 
-**Answer:**
+**Answer:** follow the recommendation. primary consumes one instance, thrown and gatekeeper hits consumes one instance. it applies an effect that slows descent. so because this is an effect, i think it could be applied to small enemies too. specifically for flying enemy it will slow their general movements
 
 ## Q16 — Silver Weight activation, throws, and value — IMPLEMENTATION BLOCKER
 
@@ -1302,7 +1302,7 @@ Press-only input conflicts with the archived “hold primary” rule. Should pri
 
 **Recommendation:** primary toggles prepared heavy state until secondary throw/switch; decrement on first meaningful impact, allow each target once, break after the second throw's impact, and scale sale value by remaining durability.
 
-**Answer:**
+**Answer:** follow the recommendation.
 
 ---
 
@@ -1314,7 +1314,7 @@ Should this system use the names and fiction of Made in Abyss directly, or only 
 
 **Recommendation:** identify inspiration in credits/GDD, then define every gameplay rule independently so players do not need outside knowledge.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## R2 — Intended gameplay purpose — GDD BLOCKER
 
@@ -1322,7 +1322,7 @@ What should the Curse make the player do differently: stop and rest, prepare med
 
 **Recommendation:** choose one primary and one secondary purpose; avoid effects that merely make controls randomly unpleasant without a planning response.
 
-**Answer:**
+**Answer:** it should make the player choose safer ascent paths, stop and rest, and meds. its tension, resource cost, and pacing, but not a punishment
 
 ## R3 — Who and what the Curse affects — IMPLEMENTATION BLOCKER
 
@@ -1330,7 +1330,7 @@ Does the Curse affect only the player, all humans, gatekeepers, neutral creature
 
 **Recommendation:** implement player-only for jam scope unless an enemy interaction is essential to the design.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## R4 — Trigger distance and world units — IMPLEMENTATION BLOCKER
 
@@ -1338,7 +1338,7 @@ Current `CurseProfile` defaults to 360 px, one viewport height, while 10 metres 
 
 **Recommendation:** use a world-space pixel distance stored per profile, independent of viewport; start at 320 px if the ten-metre reference matters.
 
-**Answer:**
+**Answer:** should use 10 meters instead
 
 ## R5 — Depth-reference algorithm — IMPLEMENTATION BLOCKER
 
@@ -1346,7 +1346,7 @@ Should the tracker store the deepest world Y reached and trigger when the player
 
 **Recommendation:** store a reference depth; trigger at each threshold crossed and advance the reference upward by exactly one threshold.
 
-**Answer:**
+**Answer:** follow the recommendation. but the reference height does not change, only change when the 10 second stillness reset and when under pill effect.
 
 ## R6 — Ten-second stillness reset — IMPLEMENTATION BLOCKER
 
@@ -1354,7 +1354,7 @@ Existing design says staying sufficiently still for ten seconds resets reference
 
 **Recommendation:** use vertical movement tolerance, reset only while grounded/climbing safely, and treat staged resting as intended counterplay.
 
-**Answer:**
+**Answer:**  follow the recommendation. but vertical stillness alone does count while walking horizontally, movement tolerance is allowed if below 1 meter
 
 ## R7 — Which upward movement counts — IMPLEMENTATION BLOCKER
 
@@ -1362,7 +1362,7 @@ Should jumping, Rope climbing, enemy knockback, moving platforms, scripted trans
 
 **Recommendation:** count continuous world traversal, but grant transition/load/recovery grace and set threshold above normal jump height.
 
-**Answer:**
+**Answer:** follow the recommendation, but any upward movements can trigger the curse, if the criteria of 10 meter treshold is reached. with the exception of surface teleport, as it will reset the max y height back to 0
 
 ## R8 — Multiple thresholds and rapid ascent — IMPLEMENTATION BLOCKER
 
@@ -1370,7 +1370,7 @@ If one frame/teleport crosses multiple thresholds, should all Curse applications
 
 **Recommendation:** apply each legitimately crossed threshold with a short queued presentation interval; ignore exempt teleports instead of discarding ordinary ascent debt.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## R9 — Layer package selection — IMPLEMENTATION BLOCKER
 
@@ -1378,7 +1378,7 @@ Which package applies when ascent begins in Layer 2 but crosses into Layer 1: th
 
 **Recommendation:** use the layer at the trigger position and explicitly define whether packages replace or extend one another.
 
-**Answer:**
+**Answer:** follow the recommendation. trigger effect is determined at player's current layer position
 
 ## R10 — Safe zones, seams, and transitions — IMPLEMENTATION BLOCKER
 
@@ -1386,7 +1386,7 @@ Are surface, shops, gate rooms, section seams, and Layer 3 entrance Curse-free? 
 
 **Recommendation:** shops/surface reset safely; seamless section seams do nothing; explicit layer transitions restore reference with short no-trigger grace.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## R11 — Numbing Pill and ascent debt — IMPLEMENTATION BLOCKER
 
@@ -1394,7 +1394,7 @@ While suppression is active, does the reference continue tracking descent/ascent
 
 **Recommendation:** keep updating deepest/current reference but consume suppressed thresholds without effects; suppression ending must not cause delayed burst punishment.
 
-**Answer:**
+**Answer:** follow the recommendation. but when a curse effect is applied, subtract the pill effect by 20 seconds for layer 1 and 40 seconds for layer 2, and when this happens the max y height is reset to player's current y height. 
 
 ## R12 — Layer 1 Curse package — IMPLEMENTATION BLOCKER
 
@@ -1402,7 +1402,7 @@ Define what “random maximum-movement-speed modification,” reduced healing, r
 
 **Recommendation:** each trigger rolls penalties within profile ranges, refreshes one Layer 1 Curse effect, and never increases speed or reduces control below a safe clamp.
 
-**Answer:**
+**Answer:** follow the recommendation. effect stays for 20 seconds (adjustable)
 
 ## R13 — Layer 2 Curse package — IMPLEMENTATION BLOCKER
 
@@ -1410,7 +1410,7 @@ Confirm health-cap reduction of 10% base health per application to a 50% maximum
 
 **Recommendation:** cap healing only without deleting current health; explicit stop uses control lock but does not cancel item state unless stated; health-cap stacks persist for the run.
 
-**Answer:**
+**Answer:**  follow the recommendation. every second there is a 5% chance of movement stop. it can detach from rope. the throwing/color penalty does not stack.  health cap does not stay permanent and disappears for each stack of curse. effect stays for 40 seconds (adjustable)
 
 ## R14 — Recovery, feedback, persistence, and debug — IMPLEMENTATION BLOCKER
 
@@ -1418,7 +1418,7 @@ When do temporary Curse penalties end: fixed duration, rest, descent, surface re
 
 **Recommendation:** save reference, layer, suppression, health-cap stacks, and persistent penalty time; provide distance/profile overlay plus force-trigger/suppress/reset debug actions.
 
-**Answer:**
+**Answer:** follow the recommendation. for now add a debug menu to draw a line where the max y height is., a debug menu to reset y height to player location. a debug menu to remove all effects, a debug menu to add health effect, and menu for curse effect for current layer
 
 ---
 
@@ -1430,7 +1430,7 @@ Confirm which concepts are true `EffectDefinition` statuses: bleed, poison, slow
 
 **Recommendation:** statuses own actor duration/modifiers; world areas own occupancy; sight/sound/target overrides remain their specialised systems.
 
-**Answer:**
+**Answer:** follow the recommendation, and add the statuses that i have specified earlier in this questionnare
 
 ## S2 — Effect source and provider ownership — IMPLEMENTATION BLOCKER
 
@@ -1438,7 +1438,7 @@ Must each active effect remember source actor/species, source item, world-area p
 
 **Recommendation:** track provider/source tokens for area effects; a provider removes only its own contribution.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## S3 — Stack, refresh, replace, and immunity rules — IMPLEMENTATION BLOCKER
 
@@ -1446,7 +1446,7 @@ Should stack behavior live entirely in each `EffectDefinition`, and can one effe
 
 **Recommendation:** one explicit rule per effect ID; use separate IDs when sources need genuinely different behavior.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## S4 — Modifier aggregation order — IMPLEMENTATION BLOCKER
 
@@ -1454,7 +1454,7 @@ Should movement, gravity, knockback received, healing, throw range, and health-c
 
 **Recommendation:** multiply ordinary modifiers, add explicit health-cap stacks, then clamp once in the shared player/actor query.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## S5 — Tick damage and i-frames — IMPLEMENTATION BLOCKER
 
@@ -1462,7 +1462,7 @@ Should poison/bleed ticks bypass normal impact i-frames, use a separate damage c
 
 **Recommendation:** status ticks bypass impact i-frames, may kill, and show status feedback without applying physical hit reactions or unrelated counters.
 
-**Answer:**
+**Answer:** follow the recommendation. 
 
 ## S6 — Effect clocks, pause, and save — IMPLEMENTATION BLOCKER
 
@@ -1470,7 +1470,7 @@ Which effects advance during inventory, dialogue, paused game, inactive sections
 
 **Recommendation:** gameplay/inventory advance; pause/menu/loading stop; save remaining seconds for deterministic Continue behavior.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## S7 — Effect removal and death cleanup — IMPLEMENTATION BLOCKER
 
@@ -1478,7 +1478,7 @@ Which events clear effects: expiry, leaving an area, Bandage, surface rest, laye
 
 **Recommendation:** define removal per effect; death/New Game clear run effects, while Continue restores only definitions marked persistent.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## S8 — HUD, VFX, and inspectability — BEFORE PLAYTEST
 
@@ -1486,7 +1486,7 @@ For each effect, what icon, stack count, timer, progress, colour, screen treatme
 
 **Recommendation:** always communicate consequence and duration; unknown status labels may be descriptive rather than revealing item lore.
 
-**Answer:**
+**Answer:** status effect names should be displayed below the health bar, stacking downwards with each effect. there is no unknown status label
 
 ## S9 — Bleed — IMPLEMENTATION BLOCKER
 
@@ -1494,7 +1494,7 @@ Define total damage, duration, tick interval, stack/refresh rule, valid actors, 
 
 **Recommendation:** one refreshable bleed effect, fixed tick damage, lethal if ignored, and Bandage removes it completely.
 
-**Answer:**
+**Answer:** follow the recommendation. make the values adjustable. it deals 1 damage per second right now, different sources of bleed can have different duration
 
 ## S10 — Poison — IMPLEMENTATION BLOCKER
 
@@ -1502,7 +1502,7 @@ Poison must deal 25 total damage over 10 seconds. Choose tick cadence, rounding,
 
 **Recommendation:** five ticks of 5 damage, refresh duration without adding another 25-damage stack, lethal, and not removed by Bandage.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## S11 — Slow — IMPLEMENTATION BLOCKER
 
@@ -1510,7 +1510,7 @@ Should spider slow and Cling Resin slow use one effect ID? How do duration-based
 
 **Recommendation:** separate `spider_slow` and `resin_slow` providers, combine multiplicatively, and clamp to a controllable minimum.
 
-**Answer:**
+**Answer:** those two are now different effects, like i have specified earlier
 
 ## S12 — Incapacitation and control locks — IMPLEMENTATION BLOCKER
 
@@ -1518,7 +1518,7 @@ What exactly does incapacitation block: movement input, jumping, item actions, i
 
 **Recommendation:** use a timed control-lock reason, preserve physics/force, detach only when the attack explicitly launches, do not save transient incapacitation.
 
-**Answer:**
+**Answer:** follow the recommendation. but it should detach the player when the control locks
 
 ## S13 — Spider tracking mark and target override — IMPLEMENTATION BLOCKER
 
@@ -1526,7 +1526,7 @@ Define mark duration, refresh/stack rule, eligible targets, HUD/VFX, save behavi
 
 **Recommendation:** one refreshable persistent mark; active relevant flyers receive/query a shared high-priority target override without direct spider-to-flyer references.
 
-**Answer:**
+**Answer:** follow the recommendation. it should act like a sound detection mechanism but only for the big flyer. make the values adjustable
 
 ## S14 — Dazzle, healing, suppression, Driftseed, and Curse effects — IMPLEMENTATION BLOCKER
 
@@ -1534,7 +1534,7 @@ For each remaining effect, specify whether it is a status or presentation-only s
 
 **Recommendation:** healing refreshes one effect, dazzle begins presentation-only, suppression and Driftseed are persistent timed statuses, and separate Layer 1 effect IDs expose clear tuning/UI.
 
-**Answer:**
+**Answer:** dazzle, driftseed, curse, suppression, and healing is a status effect. dazzle temporarily deactivates enemy sight detector
 
 ---
 
@@ -1554,7 +1554,7 @@ Confirm required combinations: frog theft/recovery, bird knockback near a fall, 
 
 **Recommendation:** mark each `required`, `allowed`, or `out of scope`; every required scenario gets one automated or manual acceptance case.
 
-**Answer:**
+**Answer:** i have specified each interaction in the questionnare, refer to that
 
 ## T3 — Debug and test environments — IMPLEMENTATION BLOCKER
 
@@ -1562,7 +1562,7 @@ Should implementation add one shared Layer 1 test arena with spawn/grant/effect/
 
 **Recommendation:** one shared arena plus small isolated scene checks; reuse current debug menu and foundation smoke runner.
 
-**Answer:**
+**Answer:** follow the recommendation. also the debug menu should anchor its position at top right instead.
 
 ## T4 — Performance limits — BEFORE PLAYTEST
 
@@ -1570,7 +1570,7 @@ What target FPS and representative maximum counts should pass on this VM for act
 
 **Recommendation:** target stable 60 FPS; define a stress case slightly above intended encounter density without premature architecture changes.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## T5 — Save/transition acceptance — IMPLEMENTATION BLOCKER
 
@@ -1578,7 +1578,7 @@ Which states must be tested across Save & Menu, Continue, layer transition, deat
 
 **Recommendation:** require round-trip tests for lasting ownership/state and explicit absence tests for transient attacks/clouds/projectiles.
 
-**Answer:**
+**Answer:** follow the recommendation. i have specified most of those, only ask me the ones that causes conflicts 
 
 ## T6 — Documentation outputs and filenames — GDD BLOCKER
 
@@ -1586,7 +1586,7 @@ After answers, may the next documentation pass create `gdd_en.md`, `gdd_id.md`, 
 
 **Recommendation:** use those six focused files and link them from `docs/README.md`; do not create one unmaintainable implementation monolith.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## T7 — “Almost finished” handoff — IMPLEMENTATION BLOCKER
 
@@ -1594,7 +1594,7 @@ Confirm the programming handoff point: complete behavior, placeholder presentati
 
 **Recommendation:** approve this exact boundary and list any feature intentionally allowed to remain incomplete.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## T8 — Final review and programming greenlight — IMPLEMENTATION BLOCKER
 
@@ -1602,4 +1602,7 @@ Who reviews the English GDD, Indonesian translation, and four implementation doc
 
 **Recommendation:** you approve all six documents, then provide a separate programming greenlight. Documentation approval alone does not authorise code.
 
-**Answer:**
+**Answer:** follow the recommendation. but for the sake of speed, im giving the greenlight right after you are done with whatever the state the documents are. just remember to update them later.
+
+for the sake of speed of development and time, i have decided to skip a lot of gdd focused questions. for the gdd questions i havent answered i want you to compile them and put them in another question document. for now i need you to work with the information thats available, if something important i havent answered, make it clear in the gdd instead of making up random things.
+i may also miss some implementation questions, if there is any do ask me directly.
