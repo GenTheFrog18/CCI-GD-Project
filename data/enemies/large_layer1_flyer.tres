@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://data/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/large_flyer.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+enemy_id = &"large_layer1_flyer"
+scene = ExtResource("2")
+species_id = &"large_layer1_flyer"
+tags = Array[StringName]([&"flying", &"big_roamer", &"layer_global_actor"])
+max_health = 500.0
+move_speed = 115.0
+damage = 75.0
+detection_range = 520.0
+layer = 1

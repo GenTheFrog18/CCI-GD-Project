@@ -51,6 +51,8 @@ func launch_velocity(context: ItemContext) -> Vector2:
 		offset = Vector2.RIGHT
 	var strength := clampf(offset.length() / maxf(maximum_cursor_distance, 1.0), 0.0, 1.0)
 	var base_speed := lerpf(minimum_speed, maximum_speed, strength)
+	if context.actor != null and context.actor.has_method("get_throw_range_multiplier"):
+		base_speed *= float(context.actor.get_throw_range_multiplier())
 	var weight := maxi(context.definition.weight if context.definition != null else 1, 1)
 	return offset.normalized() * base_speed / sqrt(float(weight))
 

@@ -13,6 +13,7 @@ var money := STARTING_MONEY
 var whistle_tier: StringName = &"red"
 var delivery := 0
 var known_items: Array[StringName] = []
+var item_use_counts: Dictionary = {}
 var progression_flags: Dictionary = {}
 var world_manifest: Dictionary = {}
 var current_layer_id: StringName = &"surface"
@@ -110,12 +111,25 @@ func capture_meta() -> Dictionary:
 	var known: Array[String] = []
 	for id in known_items:
 		known.append(String(id))
-	return {"known_items": known}
+	return {"known_items": known, "item_use_counts": item_use_counts.duplicate(true)}
 
 func restore_meta(data: Dictionary) -> void:
 	known_items.clear()
 	for id in data.get("known_items", []):
 		known_items.append(StringName(id))
+	item_use_counts = data.get("item_use_counts", {}).duplicate(true)
+
+func record_signature_use(item_id: StringName) -> bool:
+	var definition := ContentCatalog.get_item(item_id)
+	if definition == null or not definition.discoverable or item_id in known_items:
+		return false
+	var key := String(item_id)
+	item_use_counts[key] = int(item_use_counts.get(key, 0)) + 1
+	if int(item_use_counts[key]) < maxi(definition.discovery_threshold, 1):
+		return false
+	known_items.append(item_id)
+	SaveManager.save_meta()
+	return true
 
 func _setup_input_map() -> void:
 	_add_keys(&"move_left", [KEY_A, KEY_LEFT])

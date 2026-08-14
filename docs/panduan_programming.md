@@ -312,7 +312,10 @@ Jangan menambah procedural geometry, constraint solver, atau streaming per-secti
 | Item transaction/preview | `game/items/player_item_controller.gd` | `game/player/player_item_preview.gd` |
 | Weighted throw | `game/items/behaviors/default_throw_behavior.gd` | `game/items/world/thrown_item.gd` |
 | Multitool thrust | `game/items/behaviors/multitool_behavior.gd` | `game/items/actions/held_thrust.tscn` |
-| Sight/hearing | `core/sensing/sight_sensor.gd`, `core/sensing/sound_listener.gd` | integrated pada `game/enemies/test/test_amphibian.tscn` |
+| Sight/hearing | `core/sensing/sight_sensor.gd`, `core/sensing/sound_listener.gd` | production enemy pada `game/enemies/layer1/` |
+| Effect/status | `core/status/status_controller.gd` | `data/effects/`, `game/items/world/world_effect_area.gd` |
+| Ascension Curse | `game/player/curse_tracker.gd` | child runtime milik Player, UI/debug pada `ui/foundation_hud.gd` |
+| Layer 1 enemy | `game/enemies/layer1/` | `data/enemies/`, placer pada `game/world/placers/` |
 | Rope placement/persistence | `game/items/behaviors/rope_behavior.gd` | `data/items/rope.tres`, `game/items/world/placed_rope.tscn` |
 | Integrated graybox | `game/world/foundation_test_room.tscn` | pilih Debug Run lalu Foundation Test Room |
 
@@ -374,6 +377,7 @@ Perintah wajib sebelum merge:
 ```bash
 /usr/bin/Godot --headless --path . --editor --quit
 /usr/bin/Godot --headless --path . tests/foundation_smoke.tscn
+/usr/bin/Godot --headless --path . tests/content_smoke.tscn
 ```
 
 Jangan menambah test framework sampai assertion runner sederhana tidak lagi cukup.

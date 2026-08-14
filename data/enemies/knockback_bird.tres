@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://data/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/knockback_bird.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+enemy_id = &"knockback_bird"
+scene = ExtResource("2")
+species_id = &"knockback_bird"
+tags = Array[StringName]([&"small_enemy", &"flying"])
+max_health = 15.0
+move_speed = 70.0
+layer = 1

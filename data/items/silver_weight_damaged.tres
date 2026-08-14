@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
+[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" path="res://game/items/behaviors/prepared_relic_behavior.gd" id="2"]
+[ext_resource type="Script" path="res://game/items/behaviors/silver_weight_behavior.gd" id="3"]
+[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="4"]
+[sub_resource type="Resource" id="Primary"]
+script = ExtResource("2")
+kind = "silver_weight"
+duration = 0.0
+throw_speed = 190.0
+movement_multiplier = 0.45
+[sub_resource type="Resource" id="Secondary"]
+script = ExtResource("3")
+minimum_speed = 100.0
+maximum_speed = 300.0
+[resource]
+script = ExtResource("1")
+item_id = &"silver_weight_damaged"
+display_name = "Damaged Silver Weight"
+unknown_description = "A cracked, impossibly dense silver relic."
+known_description = "One more meaningful impact will destroy it."
+category = &"relic"
+world_scene = ExtResource("4")
+weight = 12
+max_stack = 1
+surface_sale_value = 75
+delivery_value = 56
+sellable = true
+primary_behavior = SubResource("Primary")
+secondary_behavior = SubResource("Secondary")

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
+[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" path="res://game/items/behaviors/consumable_behavior.gd" id="2"]
+[ext_resource type="Script" path="res://game/items/behaviors/default_throw_behavior.gd" id="3"]
+[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="4"]
+[sub_resource type="Resource" id="Primary"]
+script = ExtResource("2")
+kind = "info_book"
+[sub_resource type="Resource" id="Secondary"]
+script = ExtResource("3")
+[resource]
+script = ExtResource("1")
+item_id = &"info_book"
+display_name = "Info Book"
+unknown_description = "A field guide with many blank entries."
+known_description = "Reveals every currently discoverable relic description."
+category = &"supply"
+world_scene = ExtResource("4")
+weight = 1
+max_stack = 4
+purchase_price = 100
+primary_behavior = SubResource("Primary")
+secondary_behavior = SubResource("Secondary")

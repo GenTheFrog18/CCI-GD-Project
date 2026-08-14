@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://d2nyjdso2ylpo"]
+[gd_scene load_steps=21 format=3 uid="uid://d2nyjdso2ylpo"]
 
 [ext_resource type="Script" uid="uid://csuwc1l8vngs8" path="res://game/world/world_layer.gd" id="1"]
 [ext_resource type="Script" uid="uid://qe67kbamixq5" path="res://game/world/world_slot.gd" id="2"]
@@ -14,12 +14,20 @@
 [ext_resource type="PackedScene" uid="uid://b2oofq3j2kbjp" path="res://game/world/sections/layer2/east/slot_01_b.tscn" id="10_flxug"]
 [ext_resource type="PackedScene" uid="uid://dxnnxcpkkpkfn" path="res://game/world/sections/layer2/east/slot_02_b.tscn" id="12_d0nei"]
 [ext_resource type="PackedScene" uid="uid://bdfr8wek2r3pg" path="res://game/world/sections/layer2/east/slot_03_b.tscn" id="14_yvn67"]
+[ext_resource type="Script" path="res://game/world/large_flyer_arrival.gd" id="15_arrival"]
+[ext_resource type="Script" path="res://game/world/curse_safe_zone.gd" id="16_safe"]
 
 [sub_resource type="RectangleShape2D" id="OuterWall"]
 size = Vector2(20, 2400)
 
 [sub_resource type="RectangleShape2D" id="MiddleWall"]
 size = Vector2(20, 1920)
+
+[sub_resource type="RectangleShape2D" id="ArrivalArea"]
+size = Vector2(420, 260)
+
+[sub_resource type="RectangleShape2D" id="SafeArea"]
+size = Vector2(520, 320)
 
 [node name="Layer2" type="Node2D" unique_id=1688547811 node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn")]
 script = ExtResource("1")
@@ -86,6 +94,27 @@ variations = Array[PackedScene]([ExtResource("8"), ExtResource("14_yvn67")])
 fallback_scene = ExtResource("8")
 
 [node name="RuntimeRoot" type="Node2D" parent="." unique_id=295218385]
+
+[node name="LargeFlyerArrival" type="Area2D" parent="."]
+position = Vector2(2280, 1190)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("15_arrival")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LargeFlyerArrival"]
+shape = SubResource("ArrivalArea")
+
+[node name="Spawn" type="Marker2D" parent="LargeFlyerArrival"]
+position = Vector2(-180, -220)
+
+[node name="ShopCurseSafeZone" type="Area2D" parent="."]
+position = Vector2(2280, 1190)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("16_safe")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShopCurseSafeZone"]
+shape = SubResource("SafeArea")
 
 [node name="WestSpawn" type="Marker2D" parent="." unique_id=1403995785]
 position = Vector2(640, 0)

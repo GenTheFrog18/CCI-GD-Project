@@ -43,5 +43,5 @@ func _spawn_drop(drop_item_id: StringName, drop_id: String, velocity: Vector2) -
 		return
 	var drop := THROWN_ITEM_SCENE.instantiate() as ThrownItem
 	drop.persistent_id = drop_id
-	drop.configure(definition, {}, null, global_position + Vector2(0.0, -12.0), velocity)
+	drop.configure(definition, {"origin": "map"}, null, global_position + Vector2(0.0, -12.0), velocity)
 	parent.add_child(drop)

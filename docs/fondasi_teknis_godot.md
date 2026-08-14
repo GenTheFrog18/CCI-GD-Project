@@ -88,10 +88,10 @@ Semua action item pada build jam dipicu dengan satu kali press. Tidak ada hold/r
 - Default secondary behavior ordinary item/artifact adalah throw.
 - Item dapat menonaktifkan atau mengganti secondary behavior melalui definition.
 - Multitool mengganti throw dengan secondary action yang belum didesain. Untuk sekarang action tersebut disabled dan memberi feedback singkat.
-- Supply seperti Bandage/Rope/Pill dapat mengganti secondary behavior setelah playtest tanpa mengubah Inventory atau Player.
+- Bandage, Info Book, dan Numbing Pill memakai generic throw sebagai secondary; Rope mempertahankan placement/throw contract yang sudah ada.
 - Drop dari inventory adalah context action terpisah.
 - Throw dengan cursor sangat dekat menghasilkan lemparan pendek yang berfungsi seperti drop, tetapi tetap melewati throw behavior.
-- Mengaktifkan item dan melemparkannya adalah dua action terpisah. Item yang memerlukan aktivasi menyimpan active state pada instance.
+- Mengaktifkan item dan melemparkannya adalah dua action terpisah. Prepared node sementara memiliki active state; state itu tidak disimpan ke shared Resource atau Continue.
 
 Contract behavior:
 
@@ -347,7 +347,7 @@ Meta save menyimpan version, known item IDs, dan setting lintas run. Living-run 
 - uang, delivery, whistle tier, dan free-Multitool-replacement flag
 - shop stock, gate state, rope, source/enemy state, dan dialogue trigger
 
-Projectile, cloud, active attack frame, dan stun singkat tidak disimpan. Autosave tidak mengambil snapshot item persisten saat masih terbang: item dikembalikan ke last safe owner/state untuk save, sedangkan projectile sementara diabaikan. Implementasi wajib mencegah item ada sekaligus di inventory dan dunia.
+Projectile, cloud, active attack frame, dan stun singkat tidak disimpan. `ThrownItem` nyata menyimpan posisi, rotasi, velocity, durability/ID, dan status freeze sehingga lemparan bergerak kembali jatuh setelah Continue. Prepared item dibatalkan sesuai aturan item sebelum Save & Menu; temporary effect dibersihkan. Implementasi wajib mencegah item ada sekaligus di inventory dan dunia.
 
 ## 9. Aturan item yang dikunci
 
@@ -356,24 +356,22 @@ Projectile, cloud, active attack frame, dan stun singkat tidak disimpan. Autosav
 - Satu unit hanya dapat digunakan sekali.
 - Primary action mengaktifkan Rattlepod selama 5 detik.
 - Audio clattering bermain terus selama aktif.
-- Setiap satu detik (lima kali total), Rattlepod mengirim sound/targeting event.
+- Setiap 0,5 detik (sepuluh kali total; interval/count exported), Rattlepod mengirim sound/targeting event.
 - Aktivasi memisahkan satu unit dari stack menjadi active instance. Pulse berasal dari posisi holder selama dibawa dan dari posisi pod setelah dilempar.
-- Rattlepod aktif tetap dapat dilempar; ini adalah penggunaan utama. Mengganti hotbar tidak menghentikan timer.
+- Rattlepod aktif tetap dapat dilempar; ini adalah penggunaan utama. Membuka inventory/shop atau mengganti hotbar menjatuhkan active pod ke world dan timer tetap berjalan.
 - Jika tidak dilempar, ia tetap berbunyi pada player lalu menghilang saat timer selesai.
 - Jika dilempar sebelum aktivasi, ia hanya menjadi object fisik seperti small rock, tidak membuat sound targeting effect, dan menjadi pickup kembali setelah berhenti.
 - Pod yang sudah diaktifkan menghilang setelah efek selesai, baik masih dibawa maupun sudah dilempar.
 - Rattlepod tidak memberi damage khusus; impact fisik kecil tetap memakai pipeline biasa.
 - Radius dan priority diexport untuk playtest.
 
-### Lantern Snail
+### Lantern Snail dan Lantern Crystal
 
-- World snail pertama mempunyai 2 HP.
-- Primary Multitool hit mengurangi 1 HP dan mengubah first-time snail menjadi inventory item.
-- Health world awal tidak perlu disimpan sebagai angka pada item; inventory state menandai bahwa snail pernah di-harvest.
-- Deploy/use berikutnya membuat world snail dengan 1 HP.
-- Multitool hit berikutnya membunuh snail; snail tidak dapat di-harvest kedua kali.
-- Inventory/world conversion bukan death drop.
-- Agitation dan scream cooldown disimpan; AI transient state di-reset.
+- Lantern Snail adalah neutral hazard 2 HP yang merayap pada floor/wall/ceiling dekat authored spawn.
+- Proximity, sound kecil, damage, dan impact keras dapat memicu warned scream. Scream memancarkan high-priority sound dan memberi distance-scaled dazzle hanya melalui line of sight.
+- Kematian dari sumber damage valid menjatuhkan tepat satu persistent `lantern_crystal`; snail hidup tidak dapat dibawa.
+- Lantern Crystal memberi cahaya saat dipilih. Primary mengaktifkannya di posisi player; secondary melempar object fisik yang aktif pada impact.
+- Health/status persisten disimpan. Patrol, scream wind-up, target, dan cooldown transient di-reset saat Continue.
 
 ### Item lain
 
@@ -381,8 +379,8 @@ Projectile, cloud, active attack frame, dan stun singkat tidak disimpan. Autosav
 - Numbing Pill kedua menambah 5 menit, bukan refresh.
 - Silver Weight memakai durability-based sale value dan dapat multi-hit.
 - Bandage healing tidak dibatalkan damage.
-- Driftseed valid untuk player dan boss gatekeeper; target lain tidak valid sampai desain berubah.
-- Supply secondary action belum dikunci dan harus bisa diganti melalui ItemDefinition tanpa mengubah Player/Inventory.
+- Driftseed primary valid pada player. Lemparan valid pada `small_enemy`, `gatekeeper`, atau `flying`; miss tetap recoverable. Flying target kehilangan flight speed, bukan menerima ordinary slow.
+- Primary/secondary tetap dipilih melalui `ItemDefinition`; Player/Inventory tidak mempunyai branch item ID.
 
 ## 10. Economy dan progression
 
@@ -447,8 +445,8 @@ Semua poin di atas adalah content data/behavior. Mereka tidak mengubah flow rewa
 - Shop transaction atomic dan delivery memakai per-item value.
 - Gatekeeper reward memberikan Moon Whistle dan powerful relic tepat satu kali; Continue tidak menggandakan reward.
 - Entrance Layer 3 memicu ending tanpa membuat playable Layer 3 atau memberikan Moon Whistle kedua.
-- Rattlepod dapat diaktifkan, mengirim lima event, dan dilempar saat aktif; lemparan tidak aktif tidak memicu sound effect.
-- Snail hanya dapat di-harvest sekali sepanjang instance lifecycle.
+- Rattlepod dapat diaktifkan, mengirim sepuluh event pada default 2 Hz, dijatuhkan saat UI/slot change, dan dilempar saat aktif; lemparan tidak aktif tidak memicu targeting sound.
+- Lantern Snail merayap di surface, melakukan warned LOS dazzle/lure, dan menjatuhkan satu Lantern Crystal saat mati.
 - Tap/full jump, coyote time, jump buffer, dan air steering tidak membuat double jump serta tetap melewati graybox unencumbered.
 - Multitool memproses satu utility target atau semua damage target yang overlap tepat sekali saat shape visual aktif; tidak ada hit dari cursor atau selama recovery.
 - Interaction rectangle memilih target terdekat ke cursor, menolak obstruction, dan camera screen-space tetap stabil serta mengikuti bounds saat UI zoom aktif.

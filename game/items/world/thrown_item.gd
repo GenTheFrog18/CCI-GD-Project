@@ -37,6 +37,7 @@ func _ready() -> void:
 	if persistent_id.is_empty():
 		persistent_id = GameSession.next_runtime_id(&"thrown", GameSession.current_layer_id)
 	add_to_group(&"persistent_objects")
+	add_to_group(&"loose_items")
 	_apply_visual()
 
 func _physics_process(delta: float) -> void:
@@ -61,12 +62,11 @@ func _on_body_entered(body: Node) -> void:
 	impact.mass = item_mass
 	impact.velocity = linear_velocity
 	impact.force = linear_velocity.normalized() * item_mass * minf(linear_velocity.length(), 300.0)
-	if body.has_method("apply_damage"):
-		body.apply_damage(impact.to_damage_info())
-	if body.has_method("apply_force"):
-		body.apply_force(impact.force)
-	if definition != null and definition.behavior != null:
-		definition.behavior.on_impact(self, impact)
+	impact.apply_to(body)
+	if definition != null:
+		var behavior := definition.secondary_behavior if definition.secondary_behavior != null else definition.behavior
+		if behavior != null:
+			behavior.on_impact(self, impact)
 
 func get_interaction_prompt(_actor: Node) -> String:
 	return "Pick up %s" % (definition.display_name if definition != null else "item")
@@ -79,6 +79,14 @@ func interact(actor: Node) -> bool:
 		queue_free()
 		return true
 	return false
+
+func take_as_stack() -> ItemStack:
+	if definition == null:
+		return ItemStack.new()
+	var result := ItemStack.new(definition.item_id, 1, instance_state)
+	SaveManager.mark_destroyed(persistent_id)
+	queue_free()
+	return result
 
 func capture_state() -> Dictionary:
 	return {

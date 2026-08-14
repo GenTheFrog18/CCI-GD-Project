@@ -3,6 +3,8 @@ extends CharacterBody2D
 
 signal inventory_toggled(open: bool)
 signal prompt_changed(text: String)
+signal whistle_slot_changed(item_id: StringName)
+signal threat_warning_requested(source: Node2D, duration: float)
 
 @export var move_speed := 120.0
 @export var acceleration := 900.0
@@ -52,15 +54,25 @@ var _nearby_ropes: Array[PlacedRope] = []
 var _climbing_rope: PlacedRope
 var _rope_lateral_offset := 0.0
 var _rope_attach_blocked := false
+var physical_whistle_id: StringName = &"whistle_red"
+var _bird_hit_times: Array[float] = []
+var curse_tracker: CurseTracker
 
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
 	add_to_group(&"detection_producers")
-	status.tick_damage_requested.connect(func(amount: float): apply_damage(DamageInfo.new(amount)))
+	add_to_group(&"effect_receivers")
+	add_to_group(&"player")
+	status.tick_damage_requested.connect(_on_status_tick)
+	status.tick_healing_requested.connect(heal)
+	status.status_changed.connect(_on_status_changed)
+	curse_tracker = CurseTracker.new()
+	add_child(curse_tracker)
+	curse_tracker.setup(self)
 	health.died.connect(_on_died)
 	_set_facing(facing_direction)
 	if ContentCatalog.get_item(&"multitool") != null and item_controller.inventory.get_active_stack().is_empty():
-		item_controller.inventory.try_add_item(&"multitool")
+		item_controller.inventory.try_add_item(&"multitool", 1, {"origin": "starting"})
 
 func _physics_process(delta: float) -> void:
 	if not is_alive():
@@ -100,7 +112,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y += gravity * fall_multiplier * status.get_multiplier(&"gravity") * delta
 		_last_air_speed = maxf(_last_air_speed, velocity.y)
 	if _jump_buffer_remaining > 0.0 and _coyote_remaining > 0.0 and can_control and movement_strength > 0.0:
-		velocity.y = jump_velocity * movement_strength
+		velocity.y = jump_velocity * movement_strength * status.get_multiplier(&"jump_strength")
 		_jump_buffer_remaining = 0.0
 		_coyote_remaining = 0.0
 		_emit_sound(&"jump", 3, jump_sound_radius)
@@ -186,6 +198,8 @@ func _emit_sound(type: StringName, priority: int, radius: float) -> void:
 func set_inventory_open(open: bool) -> void:
 	if inventory_open == open:
 		return
+	if open and is_instance_valid(item_controller.prepared_item):
+		item_controller.cancel_prepared(&"inventory")
 	inventory_open = open
 	camera.ui_active = open
 	inventory_toggled.emit(inventory_open)
@@ -194,7 +208,50 @@ func toggle_inventory() -> void:
 	set_inventory_open(not inventory_open)
 
 func try_pickup_item(item_id: StringName, quantity: int, state: Dictionary) -> bool:
-	return item_controller.inventory.try_add_item(item_id, quantity, state)
+	var definition := ContentCatalog.get_item(item_id)
+	if definition != null and definition.category == &"whistle":
+		if quantity != 1 or not physical_whistle_id.is_empty():
+			return false
+		physical_whistle_id = item_id
+		whistle_slot_changed.emit(physical_whistle_id)
+		return true
+	var item_state := state.duplicate(true)
+	if not item_state.has("origin"):
+		item_state.origin = "map"
+	return item_controller.inventory.try_add_item(item_id, quantity, item_state)
+
+func take_item_for_theft() -> ItemStack:
+	return item_controller.inventory.take_for_theft()
+
+func confiscate_map_items() -> Array[ItemStack]:
+	return item_controller.inventory.remove_origin(&"map")
+
+func use_whistle() -> bool:
+	if physical_whistle_id.is_empty() or inventory_open or locks.is_locked():
+		return false
+	_emit_sound(&"whistle", 10, 600.0)
+	return true
+
+func take_physical_whistle() -> ItemStack:
+	if physical_whistle_id.is_empty():
+		return ItemStack.new()
+	var result := ItemStack.new(physical_whistle_id, 1, {"origin": "progression"})
+	physical_whistle_id = &""
+	whistle_slot_changed.emit(physical_whistle_id)
+	return result
+
+func warn_attack(source: Node2D, duration := 0.6) -> void:
+	threat_warning_requested.emit(source, duration)
+
+func register_bird_hit(window_seconds := 2.0, threshold := 2, threshold_damage := 10.0) -> bool:
+	var now := Time.get_ticks_msec() / 1000.0
+	_bird_hit_times = _bird_hit_times.filter(func(stamp: float): return now - stamp <= window_seconds)
+	_bird_hit_times.append(now)
+	if _bird_hit_times.size() < threshold:
+		return false
+	_bird_hit_times.clear()
+	apply_damage(DamageInfo.new(threshold_damage))
+	return true
 
 func drop_inventory_slot(container: StringName, index: int) -> bool:
 	var stack := item_controller.inventory.take_one(container, index)
@@ -218,13 +275,35 @@ func apply_force(force: Vector2) -> void:
 	if is_alive():
 		if not force.is_zero_approx():
 			_detach_rope(true)
-		_knockback += force
+		_knockback += force * status.get_multiplier(&"knockback_received")
 
 func is_alive() -> bool:
 	return not health.is_dead
 
 func apply_status(effect_id: StringName, data: Dictionary = {}) -> bool:
 	return status.apply_status(effect_id, data)
+
+func heal(amount: float) -> float:
+	var cap_stacks := status.get_stack_count(&"curse_layer_2_health_cap")
+	var cap := health.max_health * (1.0 - 0.1 * cap_stacks)
+	return health.heal(amount, status.get_multiplier(&"healing_received"), cap)
+
+func get_throw_range_multiplier() -> float:
+	return status.get_multiplier(&"throw_range")
+
+func _on_status_tick(amount: float) -> void:
+	var info := DamageInfo.new(amount)
+	info.bypass_invulnerability = true
+	info.causes_hit_reaction = false
+	info.tags = [&"status_tick"]
+	apply_damage(info)
+
+func _on_status_changed() -> void:
+	if status.has_status(&"incapacitated"):
+		locks.lock(&"status_incapacitated")
+		_detach_rope(true)
+	else:
+		locks.unlock(&"status_incapacitated")
 
 func set_last_safe_position(value: Vector2) -> void:
 	last_safe_position = value
@@ -235,6 +314,7 @@ func recover_from_out_of_bounds() -> void:
 	health.set_health(health.max_health if GameSession.debug_unlimited_health else 1.0)
 	velocity = Vector2.ZERO
 	_knockback = Vector2.ZERO
+	curse_tracker.reset_reference(true)
 
 func set_camera_bounds(bounds: Rect2) -> void:
 	camera.set_world_bounds(bounds)
@@ -247,6 +327,8 @@ func capture_state() -> Dictionary:
 		"health": health.capture_state(),
 		"inventory": item_controller.inventory.capture_state(),
 		"status": status.capture_state(),
+		"physical_whistle_id": String(physical_whistle_id),
+		"curse": curse_tracker.capture_state(),
 	}
 
 func restore_state(data: Dictionary) -> void:
@@ -264,6 +346,9 @@ func restore_state(data: Dictionary) -> void:
 	health.restore_state(data.get("health", {}))
 	item_controller.inventory.restore_state(data.get("inventory", {}))
 	status.restore_state(data.get("status", {}))
+	physical_whistle_id = StringName(data.get("physical_whistle_id", "whistle_red"))
+	whistle_slot_changed.emit(physical_whistle_id)
+	curse_tracker.restore_state(data.get("curse", {}))
 	velocity = Vector2.ZERO
 	_coyote_remaining = 0.0
 	_jump_buffer_remaining = 0.0
@@ -356,3 +441,7 @@ func _set_facing(direction: float) -> void:
 	$AnimatedSprite2D.flip_h = facing_direction < 0.0
 	$HeldItemAnchor.position.x = absf($HeldItemAnchor.position.x) * facing_direction
 	$HeldItemAnchor/HeldItemIcon.flip_h = facing_direction < 0.0
+
+func _draw() -> void:
+	if GameSession.debug_gameplay_draw and curse_tracker != null:
+		draw_line(Vector2(-1000.0, curse_tracker.reference_y - global_position.y), Vector2(1000.0, curse_tracker.reference_y - global_position.y), Color(0.8, 0.2, 0.8, 0.8), 2.0)

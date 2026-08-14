@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://data/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/cave_spider.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+enemy_id = &"cave_spider"
+scene = ExtResource("2")
+species_id = &"cave_spider"
+tags = Array[StringName]([&"small_enemy"])
+max_health = 22.0
+move_speed = 52.0
+layer = 1

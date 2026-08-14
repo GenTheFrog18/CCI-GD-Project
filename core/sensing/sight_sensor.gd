@@ -34,6 +34,9 @@ func _process(delta: float) -> void:
 	scan()
 
 func scan() -> Node2D:
+	var owner_status := _owner_status()
+	if owner_status is StatusController and owner_status.get_multiplier(&"sight_enabled") <= 0.0:
+		return null
 	var best: Node2D
 	var best_distance := INF
 	for candidate in get_tree().get_nodes_in_group(&"detection_producers"):
@@ -58,6 +61,9 @@ func scan() -> Node2D:
 func can_see(target: Node2D) -> bool:
 	if target == null:
 		return false
+	var owner_status := _owner_status()
+	if owner_status is StatusController and owner_status.get_multiplier(&"sight_enabled") <= 0.0:
+		return false
 	var offset := target.global_position - global_position
 	var distance := offset.length()
 	var sight_range := aggravated_range if aggravated else normal_range
@@ -76,6 +82,14 @@ func can_see(target: Node2D) -> bool:
 	var hit := get_world_2d().direct_space_state.intersect_ray(query)
 	last_ray_blocked = not hit.is_empty() and hit.get("collider") != target
 	return not last_ray_blocked
+
+func _owner_status() -> StatusController:
+	var actor := get_parent()
+	var value = actor.get("status") if actor != null else null
+	if value is StatusController:
+		return value
+	var support := actor.get_node_or_null("EnemySupport") as EnemySupport if actor != null else null
+	return support.status if support != null else null
 
 func _draw() -> void:
 	if not GameSession.debug_gameplay_draw:

@@ -21,10 +21,11 @@ func apply_damage(info: DamageInfo, receiver_species_id: StringName = &"") -> bo
 		return false
 	if not receiver_species_id.is_empty() and receiver_species_id == info.source_species_id:
 		return false
-	if Time.get_ticks_msec() < _invulnerable_until:
+	if not info.bypass_invulnerability and Time.get_ticks_msec() < _invulnerable_until:
 		return false
 	health = maxf(0.0, health - info.amount)
-	_invulnerable_until = Time.get_ticks_msec() + int(invulnerability_seconds * 1000.0)
+	if not info.bypass_invulnerability:
+		_invulnerable_until = Time.get_ticks_msec() + int(invulnerability_seconds * 1000.0)
 	damaged.emit(info)
 	health_changed.emit(health, max_health)
 	if health == 0.0 and killable:
@@ -36,7 +37,10 @@ func heal(amount: float, multiplier := 1.0, health_cap := INF) -> float:
 	if is_dead or amount <= 0.0:
 		return 0.0
 	var before := health
-	health = minf(health + amount * multiplier, minf(max_health, health_cap))
+	var cap := minf(max_health, health_cap)
+	if health >= cap:
+		return 0.0
+	health = minf(health + amount * multiplier, cap)
 	if health != before:
 		health_changed.emit(health, max_health)
 	return health - before

@@ -32,3 +32,5 @@ sellable = false
 persistent_when_dropped = true
 retrievable = true
 behavior = SubResource("RopeBehavior")
+primary_behavior = SubResource("RopeBehavior")
+secondary_behavior = SubResource("ThrowBehavior")

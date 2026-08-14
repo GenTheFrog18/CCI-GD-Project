@@ -114,6 +114,18 @@ func restore_registered_objects(layer_id: StringName = GameSession.current_layer
 		root.add_child(node)
 		node.restore_state(state)
 
+func transfer_first_scene(scene_path: String, target_layer_id: StringName, position: Vector2) -> String:
+	for raw_id in loaded_persistent_state:
+		var id := String(raw_id)
+		var state: Dictionary = loaded_persistent_state[raw_id]
+		if destroyed_ids.has(id) or String(state.get("_scene_path", "")) != scene_path:
+			continue
+		state["_layer_id"] = String(target_layer_id)
+		state["position"] = [position.x, position.y]
+		loaded_persistent_state[raw_id] = state
+		return id
+	return ""
+
 func mark_destroyed(persistent_id: String) -> void:
 	if not persistent_id.is_empty():
 		destroyed_ids[persistent_id] = true

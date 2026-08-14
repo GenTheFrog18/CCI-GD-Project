@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=4 format=3]
+[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" path="res://game/items/behaviors/deployable_behavior.gd" id="2"]
+[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
+[sub_resource type="Resource" id="Behavior"]
+script = ExtResource("2")
+kind = "crystal"
+duration = 4.0
+primary_radius = 180.0
+impact_radius = 180.0
+sound_priority = 9
+sound_radius = 500.0
+base_damage = 1.0
+[resource]
+script = ExtResource("1")
+item_id = &"lantern_crystal"
+display_name = "Lantern Crystal"
+unknown_description = "A luminous shell crystal."
+known_description = "Flashes visible actors and emits a powerful lure signal."
+category = &"relic"
+world_scene = ExtResource("3")
+weight = 2
+max_stack = 8
+surface_sale_value = 50
+delivery_value = 38
+discovery_threshold = 1
+sellable = true
+discoverable = true
+primary_behavior = SubResource("Behavior")
+secondary_behavior = SubResource("Behavior")

@@ -103,6 +103,40 @@ func take_one(from_container: StringName, index: int) -> ItemStack:
 	changed.emit()
 	return result
 
+func take_for_theft() -> ItemStack:
+	var order: Array[Array] = []
+	order.append([&"hotbar", active_hotbar_index])
+	for index in HOTBAR_SIZE:
+		if index != active_hotbar_index:
+			order.append([&"hotbar", index])
+	for index in BACKPACK_SIZE:
+		order.append([&"backpack", index])
+	for entry in order:
+		var container := _container(entry[0])
+		var index := int(entry[1])
+		if container[index].is_empty() or container[index].item_id == &"multitool":
+			continue
+		return take_one(entry[0], index)
+	for entry in order:
+		var container := _container(entry[0])
+		var index := int(entry[1])
+		if not container[index].is_empty() and container[index].item_id == &"multitool":
+			return take_one(entry[0], index)
+	return ItemStack.new()
+
+func remove_origin(origin: StringName) -> Array[ItemStack]:
+	var removed: Array[ItemStack] = []
+	for container in [hotbar, backpack]:
+		for index in container.size():
+			var slot := container[index] as ItemStack
+			if slot.is_empty() or StringName(slot.state.get("origin", "legacy")) != origin:
+				continue
+			removed.append(slot.copy())
+			container[index] = ItemStack.new()
+	if not removed.is_empty():
+		changed.emit()
+	return removed
+
 func capture_state() -> Dictionary:
 	return {
 		"hotbar": hotbar.map(func(slot: ItemStack): return slot.capture_state()),

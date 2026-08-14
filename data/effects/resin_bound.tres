@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EffectDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://data/definitions/effect_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+effect_id = &"resin_bound"
+display_name = "Resin Bound"
+duration = 9999.0
+stack_rule = 1
+max_stacks = 16
+modifiers = {&"move_speed": 0.5, &"jump_strength": 0.1, &"knockback_received": 0.5}

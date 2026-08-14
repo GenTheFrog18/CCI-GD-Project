@@ -9,6 +9,7 @@ extends Area2D
 
 func _ready() -> void:
 	add_to_group(&"interactables")
+	add_to_group(&"loose_items")
 	_apply_visual()
 	if persistent_id.is_empty():
 		persistent_id = GameSession.next_runtime_id(&"item", GameSession.current_layer_id)
@@ -27,6 +28,16 @@ func interact(actor: Node) -> bool:
 		queue_free()
 		return true
 	return false
+
+func take_as_stack() -> ItemStack:
+	if quantity <= 0:
+		return ItemStack.new()
+	var result := ItemStack.new(item_id, 1, instance_state)
+	quantity -= 1
+	if quantity == 0:
+		SaveManager.mark_destroyed(persistent_id)
+		queue_free()
+	return result
 
 func capture_state() -> Dictionary:
 	return {

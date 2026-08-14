@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3]
+[ext_resource type="Script" path="res://game/enemies/layer1/senior_diver.gd" id="1"]
+[ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
+[ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="3"]
+[sub_resource type="RectangleShape2D" id="Shape"]
+size = Vector2(24, 36)
+[node name="SeniorDiver" type="CharacterBody2D"]
+collision_layer = 68
+collision_mask = 1
+script = ExtResource("1")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -18)
+shape = SubResource("Shape")
+[node name="Visual" type="Polygon2D" parent="."]
+position = Vector2(0, -18)
+polygon = PackedVector2Array(-10, 18, -11, -10, 0, -18, 11, -10, 10, 18)
+color = Color(0.25, 0.45, 0.7, 1)
+[node name="EnemySupport" type="Node" parent="."]
+script = ExtResource("2")
+species_id = &"senior_diver"
+max_health = 250.0
+tags = Array[StringName]([&"gatekeeper"])
+[node name="SightSensor" type="Node2D" parent="."]
+script = ExtResource("3")
+normal_range = 240.0
+[node name="LostItemReturn" type="Marker2D" parent="."]
+position = Vector2(-40, 0)

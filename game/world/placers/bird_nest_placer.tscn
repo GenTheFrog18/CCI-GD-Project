@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="Script" path="res://game/world/deterministic_placer.gd" id="1"]
+[ext_resource type="Script" path="res://game/world/world_spawn_entry.gd" id="2"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/knockback_bird.tscn" id="3"]
+[sub_resource type="Resource" id="BirdEntry"]
+script = ExtResource("2")
+content_id = &"knockback_bird"
+scene = ExtResource("3")
+[node name="BirdNestPlacer" type="Marker2D"]
+script = ExtResource("1")
+entries = Array[ExtResource("2")]([SubResource("BirdEntry")])
+minimum_quantity = 1
+maximum_quantity = 3
+patrol_bounds = Rect2(-160, -100, 320, 200)
+[node name="SpawnPoint1" type="Marker2D" parent="."]
+[node name="SpawnPoint2" type="Marker2D" parent="."]
+position = Vector2(-24, -12)
+[node name="SpawnPoint3" type="Marker2D" parent="."]
+position = Vector2(24, -12)

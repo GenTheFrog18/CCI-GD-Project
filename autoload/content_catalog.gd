@@ -42,8 +42,12 @@ func _register_resource(resource: Resource, path: String, errors: PackedStringAr
 			errors.append("%s: %s" % [path, validation_error])
 	elif resource is EnemyDefinition:
 		_register(enemies, resource.enemy_id, resource, path, errors)
+		for validation_error in resource.validate():
+			errors.append("%s: %s" % [path, validation_error])
 	elif resource is EffectDefinition:
 		_register(effects, resource.effect_id, resource, path, errors)
+		for validation_error in resource.validate():
+			errors.append("%s: %s" % [path, validation_error])
 	elif resource is ShopDefinition:
 		_register(shops, resource.shop_id, resource, path, errors)
 	elif resource is DialogueSequence:

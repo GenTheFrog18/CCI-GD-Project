@@ -10,6 +10,13 @@ Gunakan urutan berikut ketika dokumen bertentangan:
 6. `pertanyaan_klarifikasi_fondasi.md` — decision history fondasi yang sudah dijawab.
 7. `reference/` — arsip roadmap/spec lama; tidak mengalahkan keputusan terbaru.
 
+Dokumen content terbaru:
+
+- `gdd_en.md` — GDD jam-build yang otoritatif.
+- `gdd_id.md` — mirror GDD dalam bahasa Indonesia.
+- `pertanyaan_lanjutan_gdd.md` — pertanyaan naratif yang tidak memblokir programming.
+- `implementation/` — kontrak enemy, item, effect, dan Ascension Curse.
+
 Panduan praktis pemula: `tutorial_menambah_item_dengan_gui_godot.md` menjelaskan workflow item melalui GUI Godot 4.7.1.
 
 Jangan memperbaiki konflik dengan memilih dokumen yang paling sesuai dengan code yang sedang dibuat. Laporkan konflik kepada lead dan perbarui sumber kebenaran terlebih dahulu.

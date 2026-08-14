@@ -18,6 +18,9 @@ extends Resource
 @export var persistent_when_dropped := true
 @export var retrievable := true
 @export var behavior: ItemBehavior
+@export var primary_behavior: ItemBehavior
+@export var secondary_behavior: ItemBehavior
+@export var discoverable := false
 
 func validate() -> PackedStringArray:
 	var errors := PackedStringArray()
@@ -29,6 +32,6 @@ func validate() -> PackedStringArray:
 		errors.append("%s max_stack must be positive" % item_id)
 	if weight < 0:
 		errors.append("%s weight cannot be negative" % item_id)
-	if behavior == null:
-		errors.append("%s behavior is missing" % item_id)
+	if behavior == null and primary_behavior == null and secondary_behavior == null:
+		errors.append("%s has no item behavior" % item_id)
 	return errors

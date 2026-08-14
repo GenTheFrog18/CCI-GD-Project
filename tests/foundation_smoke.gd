@@ -712,6 +712,8 @@ func _test_world_authoring_foundation() -> void:
 	var breakable := drop_root.get_child(0) as BreakableLoot
 	assert(breakable != null and breakable.item_id == &"multitool")
 	assert(breakable.apply_damage(DamageInfo.new(1.0)))
+	assert(not breakable.is_queued_for_deletion())
+	assert(breakable.apply_damage(DamageInfo.new(1.0)))
 	var dropped_ids: Dictionary = {}
 	for child in drop_root.get_children():
 		if child is ThrownItem:

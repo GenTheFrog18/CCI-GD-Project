@@ -16,11 +16,14 @@ func try_buy(inventory: InventoryModel, item_id: StringName, quantity := 1) -> b
 	if item == null:
 		return false
 	var cost := roundi(item.purchase_price * definition.price_multiplier) * quantity
-	if GameSession.money < cost or not inventory.can_add_item(item_id, quantity):
+	if GameSession.money < cost:
 		return false
 	if definition.limited_stock and int(stock.get(item_id, 0)) < quantity:
 		return false
-	if not inventory.try_add_item(item_id, quantity):
+	var purchase_state := {"origin": "purchased"}
+	if not inventory.can_add_item(item_id, quantity, purchase_state):
+		return false
+	if not inventory.try_add_item(item_id, quantity, purchase_state):
 		return false
 	if not GameSession.try_spend(cost):
 		push_error("Shop prevalidation failed after inventory commit")

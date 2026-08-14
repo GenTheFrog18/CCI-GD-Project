@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
+[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" path="res://game/items/behaviors/prepared_relic_behavior.gd" id="2"]
+[ext_resource type="Script" path="res://game/items/behaviors/default_throw_behavior.gd" id="3"]
+[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="4"]
+[sub_resource type="Resource" id="Primary"]
+script = ExtResource("2")
+kind = "rattlepod"
+duration = 5.2
+pulse_interval = 0.5
+pulse_count = 10
+pulse_radius = 400.0
+pulse_priority = 8
+[sub_resource type="Resource" id="Secondary"]
+script = ExtResource("3")
+base_damage = 1.0
+[resource]
+script = ExtResource("1")
+item_id = &"rattlepod"
+display_name = "Rattlepod"
+unknown_description = "A dry pod full of hard seeds."
+known_description = "Creates ten powerful sound pulses over five seconds."
+category = &"relic"
+world_scene = ExtResource("4")
+weight = 1
+max_stack = 8
+surface_sale_value = 30
+delivery_value = 23
+discovery_threshold = 1
+sellable = true
+discoverable = true
+primary_behavior = SubResource("Primary")
+secondary_behavior = SubResource("Secondary")

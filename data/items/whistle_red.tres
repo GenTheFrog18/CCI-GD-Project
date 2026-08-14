@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" path="res://core/items/item_behavior.gd" id="2"]
+[sub_resource type="Resource" id="Behavior"]
+script = ExtResource("2")
+[resource]
+script = ExtResource("1")
+item_id = &"whistle_red"
+display_name = "Red Whistle"
+unknown_description = "A red delver's whistle."
+known_description = "Emits a very high-priority sound when used."
+category = &"whistle"
+max_stack = 1
+behavior = SubResource("Behavior")

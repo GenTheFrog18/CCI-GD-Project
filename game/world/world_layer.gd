@@ -104,7 +104,10 @@ func update_activation(world_position: Vector2) -> PackedStringArray:
 	for slot_id in spawned_by_slot:
 		for node in spawned_by_slot[slot_id]:
 			if is_instance_valid(node):
-				node.process_mode = Node.PROCESS_MODE_INHERIT if active.has(slot_id) else Node.PROCESS_MODE_DISABLED
+				if node.is_in_group(&"layer_global_actor"):
+					node.process_mode = Node.PROCESS_MODE_INHERIT
+				else:
+					node.process_mode = Node.PROCESS_MODE_INHERIT if active.has(slot_id) else Node.PROCESS_MODE_DISABLED
 	return active_slot_ids.duplicate()
 
 func spawn_position(route: StringName, spawn_id: StringName = &"") -> Vector2:

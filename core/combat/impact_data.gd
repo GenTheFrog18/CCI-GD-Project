@@ -16,6 +16,7 @@ var status_effects: Array[Dictionary] = []
 var agitation: Dictionary = {}
 var terrain_response := TerrainResponse.STOP
 var max_hits := 1
+var receiver: Node
 
 func damage_amount() -> float:
 	var speed_ratio := velocity.length() / maxf(reference_speed, 1.0)
@@ -23,3 +24,22 @@ func damage_amount() -> float:
 
 func to_damage_info() -> DamageInfo:
 	return DamageInfo.new(damage_amount(), source_actor, source_species_id, force)
+
+func apply_to(receiver: Node) -> Dictionary:
+	self.receiver = receiver
+	var result := {"damage": false, "force": false, "statuses": 0, "agitation": false}
+	if receiver == null:
+		return result
+	if receiver.has_method("apply_damage") and base_damage > 0.0:
+		result.damage = bool(receiver.apply_damage(to_damage_info()))
+	if receiver.has_method("apply_force") and not force.is_zero_approx():
+		receiver.apply_force(force)
+		result.force = true
+	if receiver.has_method("apply_status"):
+		for effect in status_effects:
+			if receiver.apply_status(StringName(effect.get("effect_id", "")), effect):
+				result.statuses += 1
+	if receiver.has_method("receive_agitation") and not agitation.is_empty():
+		receiver.receive_agitation(agitation)
+		result.agitation = true
+	return result

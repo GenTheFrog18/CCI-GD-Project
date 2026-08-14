@@ -153,6 +153,7 @@ func _load_active_layer(is_transition: bool, target_spawn_id: StringName = &"") 
 	if is_transition or SaveManager.loaded_persistent_state.is_empty():
 		player.global_position = active_layer.spawn_position(GameSession.current_route_id, target_spawn_id)
 		player.set_last_safe_position(player.global_position)
+		player.curse_tracker.reset_reference(true)
 	hud = FoundationHUD.new()
 	add_child(hud)
 	hud.set_player(player)
@@ -212,6 +213,14 @@ func _on_debug_action(action: StringName) -> void:
 			_debug_teleport(&"layer_2", &"east", Vector2(1920.0, 2260.0))
 		&"teleport_surface":
 			_debug_teleport(&"surface", &"west", Vector2(150.0, 320.0))
+		&"curse_reset":
+			player.curse_tracker.reset_reference(false)
+		&"curse_clear":
+			for id in player.status.active.keys(): player.status.remove_status(id)
+		&"curse_heal":
+			player.apply_status(&"healing", {"duration": 10.0})
+		&"curse_apply":
+			player.curse_tracker.apply_current_layer_curse()
 
 func _teleport_next_slot() -> void:
 	if active_layer == null or player == null:
@@ -233,6 +242,7 @@ func _debug_teleport(layer_id: StringName, route_id: StringName, position: Vecto
 	if player != null:
 		player.global_position = position
 		player.set_last_safe_position(position)
+		player.curse_tracker.reset_reference(true)
 
 func _update_debug_draw() -> void:
 	if _debug_draw != null:

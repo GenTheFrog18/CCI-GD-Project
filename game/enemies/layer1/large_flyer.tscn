@@ -1,0 +1,30 @@
+[gd_scene load_steps=7 format=3]
+[ext_resource type="Script" uid="uid://c85vstk16et5p" path="res://game/enemies/layer1/large_flyer.gd" id="1"]
+[ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
+[ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="3"]
+[ext_resource type="Script" path="res://core/sensing/sound_listener.gd" id="4"]
+[sub_resource type="RectangleShape2D" id="Shape"]
+size = Vector2(52, 28)
+[node name="LargeFlyer" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 513
+script = ExtResource("1")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Shape")
+[node name="Visual" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-28, 0, -12, -15, 0, -7, 12, -15, 28, 0, 10, 13, -10, 13)
+color = Color(0.55, 0.2, 0.2, 1)
+[node name="EnemySupport" type="Node" parent="."]
+script = ExtResource("2")
+species_id = &"large_layer1_flyer"
+max_health = 500.0
+tags = Array[StringName]([&"flying", &"big_roamer", &"layer_global_actor"])
+fall_immune = true
+[node name="SightSensor" type="Node2D" parent="."]
+script = ExtResource("3")
+normal_range = 520.0
+normal_angle_degrees = 150.0
+aggravated_range = 650.0
+[node name="SoundListener" type="Node2D" parent="."]
+script = ExtResource("4")
+minimum_priority = 8

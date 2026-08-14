@@ -22,4 +22,5 @@ polygon = PackedVector2Array(-20, 12, -16, -12, -5, -18, 13, -14, 20, 8, 10, 16,
 
 [node name="HealthComponent" type="Node" parent="." unique_id=724531296]
 script = ExtResource("2")
-max_health = 1.0
+max_health = 2.0
+invulnerability_seconds = 0.0

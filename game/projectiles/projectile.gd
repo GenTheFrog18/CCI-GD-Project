@@ -29,12 +29,6 @@ func _handle_collision(body: Node) -> void:
 	_hit_ids[id] = true
 	impact.velocity = velocity
 	impact.force = velocity.normalized() * impact.mass * minf(velocity.length(), 300.0)
-	if body.has_method("apply_damage"):
-		body.apply_damage(impact.to_damage_info())
-	if body.has_method("apply_force"):
-		body.apply_force(impact.force)
-	for effect in impact.status_effects:
-		if body.has_method("apply_status"):
-			body.apply_status(StringName(effect.get("effect_id", "")), effect)
+	impact.apply_to(body)
 	if _hit_ids.size() >= impact.max_hits:
 		queue_free()

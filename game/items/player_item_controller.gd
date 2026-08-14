@@ -1,6 +1,8 @@
 class_name PlayerItemController
 extends Node
 
+const PLACEHOLDER_LIGHT_TEXTURE := preload("res://game/items/world/placeholder_light_texture.tres")
+
 signal feedback_requested(message: String)
 signal prepared_item_changed(item: Node2D)
 
@@ -10,15 +12,31 @@ signal prepared_item_changed(item: Node2D)
 var inventory := InventoryModel.new()
 var prepared_item: Node2D
 var _active_item_id: StringName
+var _committing := false
+var held_light: PointLight2D
 
 func _ready() -> void:
+	held_light = PointLight2D.new()
+	held_light.texture = PLACEHOLDER_LIGHT_TEXTURE
+	held_light.energy = 0.7
+	held_light.visible = false
+	held_light.add_to_group(&"light_sources")
+	if held_item_anchor != null:
+		held_item_anchor.add_child(held_light)
+	else:
+		held_light.free()
+		held_light = null
 	inventory.changed.connect(_on_inventory_changed)
 	_on_inventory_changed()
 
-func cancel_prepared() -> void:
-	if is_instance_valid(prepared_item):
-		prepared_item.queue_free()
+func cancel_prepared(reason: StringName = &"cancel") -> void:
+	var item := prepared_item
 	prepared_item = null
+	if is_instance_valid(item):
+		if item.has_method("cancel_preparation"):
+			item.cancel_preparation(self, reason)
+		else:
+			item.queue_free()
 	prepared_item_changed.emit(null)
 	_refresh_held_icon()
 
@@ -35,9 +53,10 @@ func get_preview(actor: Node2D, world: Node, cursor: Vector2, target: Node = nul
 	if stack.is_empty():
 		return {}
 	var definition := ContentCatalog.get_item(stack.item_id)
-	if definition == null or definition.behavior == null:
+	if definition == null:
 		return {}
-	return definition.behavior.get_preview(_make_context(actor, world, cursor, target, definition, stack), stack.state)
+	var behavior := definition.secondary_behavior if definition.secondary_behavior != null else definition.behavior
+	return behavior.get_preview(_make_context(actor, world, cursor, target, definition, stack), stack.state) if behavior != null else {}
 
 func primary(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> bool:
 	if prepared_item != null:
@@ -78,6 +97,8 @@ func _on_prepared_exited(node: Node) -> void:
 		_refresh_held_icon()
 
 func _on_inventory_changed() -> void:
+	if _committing:
+		return
 	var stack := inventory.get_active_stack()
 	var current_id := stack.item_id if not stack.is_empty() else &""
 	if current_id != _active_item_id and is_instance_valid(prepared_item):
@@ -91,6 +112,8 @@ func _refresh_held_icon() -> void:
 	var definition := ContentCatalog.get_item(_active_item_id)
 	held_item_icon.texture = definition.icon if definition != null else null
 	held_item_icon.visible = held_item_icon.texture != null and not is_instance_valid(prepared_item)
+	if held_light != null:
+		held_light.visible = _active_item_id == &"lantern_crystal"
 
 func _execute(is_secondary: bool, actor: Node2D, world: Node, cursor: Vector2, target: Node) -> bool:
 	var stack := inventory.get_active_stack()
@@ -98,10 +121,14 @@ func _execute(is_secondary: bool, actor: Node2D, world: Node, cursor: Vector2, t
 		feedback_requested.emit("Empty hotbar slot")
 		return false
 	var definition := ContentCatalog.get_item(stack.item_id)
-	if definition == null or definition.behavior == null:
+	if definition == null:
 		return false
 	var context := _make_context(actor, world, cursor, target, definition, stack)
-	var behavior := definition.behavior
+	var behavior := definition.secondary_behavior if is_secondary else definition.primary_behavior
+	if behavior == null:
+		behavior = definition.behavior
+	if behavior == null:
+		return false
 	var allowed := behavior.can_secondary(context, stack.state) if is_secondary else behavior.can_primary(context, stack.state)
 	if not allowed:
 		feedback_requested.emit("Action unavailable")
@@ -127,7 +154,9 @@ func _commit_result(result: ItemActionResult, world: Node, actor: Node2D = null)
 		if result != null and not result.message.is_empty():
 			feedback_requested.emit(result.message)
 		return false
+	_committing = true
 	if result.prepared_node != null and not try_prepare(result.prepared_node):
+		_committing = false
 		result.prepared_node.queue_free()
 		return false
 	if result.world_node != null:
@@ -138,6 +167,7 @@ func _commit_result(result: ItemActionResult, world: Node, actor: Node2D = null)
 		if result.prepared_node != null:
 			prepared_item = null
 			result.prepared_node.queue_free()
+		_committing = false
 		return false
 	if not result.next_state.is_empty() and not inventory.get_active_stack().is_empty():
 		inventory.update_active_state(result.next_state)
@@ -151,4 +181,12 @@ func _commit_result(result: ItemActionResult, world: Node, actor: Node2D = null)
 			result.sound_priority,
 			actor
 		))
+	_committing = false
+	var stack := inventory.get_active_stack()
+	_active_item_id = stack.item_id if not stack.is_empty() else &""
+	_refresh_held_icon()
 	return true
+
+func prepare_for_save() -> void:
+	if is_instance_valid(prepared_item):
+		cancel_prepared(&"save")
