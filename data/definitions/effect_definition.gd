@@ -12,6 +12,7 @@ enum StackRule { REFRESH, STACK, REPLACE, IGNORE }
 @export var tick_damage := 0.0
 @export var tick_healing := 0.0
 @export var persists := false
+@export var show_timer := true
 @export var modifiers: Dictionary = {}
 @export var valid_actor_tags: Array[StringName] = []
 @export var icon: Texture2D

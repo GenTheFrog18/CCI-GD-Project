@@ -6,4 +6,4 @@ effect_id = &"driftseed"
 display_name = "Driftseed"
 duration = 30.0
 persists = true
-modifiers = {&"gravity": 0.35, &"knockback_received": 1.5, &"flight_speed": 0.6}
+modifiers = {&"gravity": 0.25, &"knockback_received": 1.5, &"flight_speed": 0.6}

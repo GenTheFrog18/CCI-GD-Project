@@ -4,7 +4,7 @@
 script = ExtResource("1")
 effect_id = &"healing"
 display_name = "Healing"
-duration = 10.0
+duration = 25.0
 tick_interval = 1.0
-tick_healing = 5.0
+tick_healing = 2.0
 persists = true

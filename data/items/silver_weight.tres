@@ -9,6 +9,7 @@ kind = "silver_weight"
 duration = 0.0
 throw_speed = 190.0
 movement_multiplier = 0.45
+jump_multiplier = 0.35
 [sub_resource type="Resource" id="Secondary"]
 script = ExtResource("3")
 minimum_speed = 100.0

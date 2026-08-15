@@ -7,4 +7,5 @@ display_name = "Resin Bound"
 duration = 9999.0
 stack_rule = 1
 max_stacks = 16
-modifiers = {&"move_speed": 0.5, &"jump_strength": 0.1, &"knockback_received": 0.5}
+show_timer = false
+modifiers = {&"move_speed": 0.25, &"jump_strength": 0.1, &"knockback_received": 0.5}

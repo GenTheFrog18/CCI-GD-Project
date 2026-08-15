@@ -16,6 +16,7 @@ signal threat_warning_requested(source: Node2D, duration: float)
 @export var coyote_time := 0.12
 @export var jump_buffer_time := 0.12
 @export var gravity := 900.0
+@export var driftseed_fall_speed_cap := 140.0
 @export var carry_capacity := 12
 @export var maximum_weight_gravity_multiplier := 1.5
 @export var fall_damage_speed := 420.0
@@ -109,10 +110,13 @@ func _physics_process(delta: float) -> void:
 
 	if not was_on_floor:
 		var fall_multiplier := lerpf(1.0, maximum_weight_gravity_multiplier, encumbrance) if velocity.y >= 0.0 else 1.0
-		velocity.y += gravity * fall_multiplier * status.get_multiplier(&"gravity") * delta
+		var status_gravity := status.get_multiplier(&"gravity") if velocity.y >= 0.0 else 1.0
+		velocity.y += gravity * fall_multiplier * status_gravity * delta
+		if velocity.y > 0.0 and status.has_status(&"driftseed"):
+			velocity.y = minf(velocity.y, driftseed_fall_speed_cap)
 		_last_air_speed = maxf(_last_air_speed, velocity.y)
 	if _jump_buffer_remaining > 0.0 and _coyote_remaining > 0.0 and can_control and movement_strength > 0.0:
-		velocity.y = jump_velocity * movement_strength * status.get_multiplier(&"jump_strength")
+		velocity.y = jump_velocity * movement_strength * status.get_multiplier(&"jump_strength") * item_controller.get_jump_multiplier()
 		_jump_buffer_remaining = 0.0
 		_coyote_remaining = 0.0
 		_emit_sound(&"jump", 3, jump_sound_radius)
@@ -173,7 +177,7 @@ func _update_animation() -> void:
 		$AnimatedSprite2D.play(&"walk")
 	else:
 		$AnimatedSprite2D.play(&"idle")
-	if velocity.x != 0.0 and not is_instance_valid(item_controller.prepared_item):
+	if velocity.x != 0.0:
 		_set_facing(signf(velocity.x))
 
 func _update_walking_sound(horizontal_distance: float) -> void:
@@ -367,6 +371,11 @@ func _on_died(_source: Node) -> void:
 	_detach_rope()
 	locks.lock(&"death")
 	item_controller.cancel_prepared()
+	velocity = Vector2.ZERO
+	_knockback = Vector2.ZERO
+	$AnimatedSprite2D.animation = &"idle"
+	$AnimatedSprite2D.frame = 0
+	$AnimatedSprite2D.stop()
 
 func register_climbable(rope: PlacedRope) -> void:
 	if rope != null and rope not in _nearby_ropes:
@@ -422,7 +431,7 @@ func _physics_climb(delta: float, can_control: bool) -> void:
 func _jump_from_rope() -> void:
 	var horizontal := Input.get_axis(&"move_left", &"move_right")
 	_detach_rope(true)
-	velocity = Vector2(horizontal * rope_jump_horizontal_speed, jump_velocity * (1.0 - get_encumbrance_ratio()))
+	velocity = Vector2(horizontal * rope_jump_horizontal_speed, jump_velocity * (1.0 - get_encumbrance_ratio()) * item_controller.get_jump_multiplier())
 	_coyote_remaining = 0.0
 	_jump_buffer_remaining = 0.0
 	_emit_sound(&"jump", 3, jump_sound_radius)

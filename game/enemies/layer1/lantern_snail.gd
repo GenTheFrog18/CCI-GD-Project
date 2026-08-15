@@ -64,8 +64,10 @@ func receive_agitation(_data: Dictionary = {}) -> void:
 
 func _scream() -> void:
 	var flash := WorldEffectArea.new()
-	flash.configure(&"crystal", &"dazzled", 4.0, scream_radius, self, scream_priority, scream_radius * 2.0)
-	get_parent().add_child(flash)
+	var shape := CircleShape2D.new()
+	shape.radius = scream_radius
+	flash.configure(&"crystal", &"dazzled", 4.0, shape, self, scream_priority, scream_radius * 2.0)
+	get_parent().call_deferred(&"add_child", flash)
 	flash.global_position = global_position
 	state = State.MOVE
 	_cooldown = scream_cooldown

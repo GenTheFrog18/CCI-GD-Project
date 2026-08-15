@@ -29,6 +29,7 @@ var threat_label: Label
 var _selected_container: StringName
 var _selected_index := -1
 var _performance_elapsed := 0.0
+var _status_elapsed := 0.0
 var _threat_source: Node2D
 var _threat_remaining := 0.0
 var effect_overlay: ColorRect
@@ -43,6 +44,10 @@ func _process(delta: float) -> void:
 	crosshair.position = get_viewport().get_mouse_position()
 	_update_location()
 	_update_threat(delta)
+	_status_elapsed += delta
+	if _status_elapsed >= 0.1:
+		_status_elapsed = 0.0
+		_refresh_status()
 	if not debug_panel.visible:
 		_performance_elapsed = 0.0
 		return
@@ -422,7 +427,10 @@ func _refresh_status() -> void:
 	for id: StringName in player.status.active:
 		var definition := ContentCatalog.get_effect(id)
 		var stacks := player.status.get_stack_count(id)
-		lines.append("%s%s" % [definition.display_name if definition != null else String(id), " x%d" % stacks if stacks > 1 else ""])
+		var name := definition.display_name if definition != null else String(id)
+		var stack_text := " x%d" % stacks if stacks > 1 else ""
+		var timer_text := " %ds" % ceili(player.status.get_remaining(id)) if definition == null or definition.show_timer else " — active"
+		lines.append("%s%s%s" % [name, stack_text, timer_text])
 	status_label.text = "\n".join(lines)
 	if player.status.has_status(&"dazzled"):
 		effect_overlay.color = Color(1, 1, 1, 0.35)

@@ -14,12 +14,13 @@ var prepared_item: Node2D
 var _active_item_id: StringName
 var _committing := false
 var held_light: PointLight2D
+var _warming_light := true
 
 func _ready() -> void:
 	held_light = PointLight2D.new()
 	held_light.texture = PLACEHOLDER_LIGHT_TEXTURE
-	held_light.energy = 0.7
-	held_light.visible = false
+	held_light.energy = 0.001
+	held_light.visible = true
 	held_light.add_to_group(&"light_sources")
 	if held_item_anchor != null:
 		held_item_anchor.add_child(held_light)
@@ -28,6 +29,14 @@ func _ready() -> void:
 		held_light = null
 	inventory.changed.connect(_on_inventory_changed)
 	_on_inventory_changed()
+	_finish_light_warmup()
+
+func _finish_light_warmup() -> void:
+	await get_tree().process_frame
+	_warming_light = false
+	if held_light != null:
+		held_light.energy = 0.7
+	_refresh_held_icon()
 
 func cancel_prepared(reason: StringName = &"cancel") -> void:
 	var item := prepared_item
@@ -46,6 +55,12 @@ func get_movement_multiplier() -> float:
 	var value = prepared_item.get("movement_multiplier")
 	return float(value) if value != null else 1.0
 
+func get_jump_multiplier() -> float:
+	if not is_instance_valid(prepared_item):
+		return 1.0
+	var value = prepared_item.get("jump_multiplier")
+	return float(value) if value != null else 1.0
+
 func get_preview(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> Dictionary:
 	if is_instance_valid(prepared_item):
 		return {}
@@ -60,6 +75,9 @@ func get_preview(actor: Node2D, world: Node, cursor: Vector2, target: Node = nul
 
 func primary(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> bool:
 	if prepared_item != null:
+		if prepared_item.has_method("can_deactivate") and prepared_item.can_deactivate():
+			cancel_prepared(&"toggle")
+			return true
 		feedback_requested.emit("Item already prepared")
 		return false
 	return _execute(false, actor, world, cursor, target)
@@ -113,7 +131,7 @@ func _refresh_held_icon() -> void:
 	held_item_icon.texture = definition.icon if definition != null else null
 	held_item_icon.visible = held_item_icon.texture != null and not is_instance_valid(prepared_item)
 	if held_light != null:
-		held_light.visible = _active_item_id == &"lantern_crystal"
+		held_light.visible = _warming_light or _active_item_id == &"lantern_crystal"
 
 func _execute(is_secondary: bool, actor: Node2D, world: Node, cursor: Vector2, target: Node) -> bool:
 	var stack := inventory.get_active_stack()

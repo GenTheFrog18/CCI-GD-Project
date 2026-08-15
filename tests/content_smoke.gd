@@ -18,7 +18,8 @@ func _ready() -> void:
 	_test_catalog()
 	_test_enemy_scenes()
 	_test_effects_and_curse()
-	_test_item_impacts()
+	_test_player_item_regressions()
+	await _test_item_impacts()
 	_test_flyer_transfer()
 	await get_tree().process_frame
 	if failures.is_empty():
@@ -94,6 +95,32 @@ func _test_effects_and_curse() -> void:
 	player.free()
 	GameSession.current_layer_id = old_layer
 
+func _test_player_item_regressions() -> void:
+	var world := Node2D.new()
+	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	add_child(world)
+	world.add_child(player)
+	player.apply_status(&"driftseed", {"duration": 30.0})
+	player.velocity.y = -100.0
+	player._physics_process(0.1)
+	_check(is_equal_approx(player.velocity.y, -10.0), "Driftseed must not increase jump height")
+	player.velocity.y = 200.0
+	player._physics_process(0.1)
+	_check(player.velocity.y <= player.driftseed_fall_speed_cap, "Driftseed must cap falling speed")
+	player.health.set_health(10.0)
+	player.apply_status(&"healing", {"duration": 25.0})
+	player.status._process(25.0)
+	_check(is_equal_approx(player.health.health, 60.0), "Bandage healing remains 50 total health")
+	_check(player.item_controller.inventory.try_add_item(&"silver_weight"), "Silver Weight enters inventory")
+	player.item_controller.inventory.select_hotbar(1)
+	_check(player.item_controller.primary(player, world, Vector2.RIGHT * 40.0), "Silver Weight activates")
+	_check(is_equal_approx(player.item_controller.get_movement_multiplier(), 0.45) and is_equal_approx(player.item_controller.get_jump_multiplier(), 0.35), "Silver Weight exposes movement and jump tuning")
+	_check(player.item_controller.primary(player, world, Vector2.RIGHT * 40.0), "Silver Weight toggles off")
+	_check(not is_instance_valid(player.item_controller.prepared_item) and player.item_controller.inventory.get_active_stack().item_id == &"silver_weight", "Silver Weight returns after toggle")
+	var resin := ContentCatalog.get_item(&"cling_resin").primary_behavior as DeployableBehavior
+	_check(resin.primary_shape is CircleShape2D and resin.impact_shape is CircleShape2D, "item effect shapes are editable resources")
+	world.free()
+
 func _test_item_impacts() -> void:
 	var probe := ReceiverProbe.new()
 	probe.add_to_group(&"small_enemy")
@@ -107,9 +134,33 @@ func _test_item_impacts() -> void:
 	(ContentCatalog.get_item(&"silver_weight").secondary_behavior as SilverWeightBehavior).on_impact(thrown, impact)
 	_check(probe.damage >= 9999.0, "Silver Weight kills small enemies")
 	_check(thrown.definition.item_id == &"silver_weight_damaged", "Silver Weight changes to damaged item")
+	var frog := preload("res://game/enemies/layer1/tongue_amphibian.tscn").instantiate() as TongueAmphibian
+	add_child(frog)
+	frog.carried = ItemStack.new(&"throwable_rock")
+	var enemy_weight := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	enemy_weight.definition = ContentCatalog.get_item(&"silver_weight")
+	enemy_weight.persistent_id = "content_smoke_enemy_weight"
+	add_child(enemy_weight)
+	var enemy_impact := ImpactData.new()
+	enemy_impact.receiver = frog
+	enemy_impact.source_actor = probe
+	(ContentCatalog.get_item(&"silver_weight").secondary_behavior as SilverWeightBehavior).on_impact(enemy_weight, enemy_impact)
+	_check(frog.support.health.is_dead, "Silver Weight safely kills a real small enemy")
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var expired_source := Node2D.new()
+	add_child(expired_source)
+	var safe_drop := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	safe_drop.configure(ContentCatalog.get_item(&"throwable_rock"), {}, expired_source, Vector2.ZERO, Vector2.ZERO)
+	add_child(safe_drop)
+	expired_source.free()
+	safe_drop._on_body_entered(probe)
+	safe_drop.free()
 	probe.free()
 	thrown.free()
+	if is_instance_valid(enemy_weight): enemy_weight.free()
 	SaveManager.destroyed_ids.erase("content_smoke_weight")
+	SaveManager.destroyed_ids.erase("content_smoke_enemy_weight")
 
 func _test_flyer_transfer() -> void:
 	var old_state := SaveManager.loaded_persistent_state.duplicate(true)

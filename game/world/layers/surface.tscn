@@ -3,7 +3,9 @@
 [ext_resource type="Script" uid="uid://csuwc1l8vngs8" path="res://game/world/world_layer.gd" id="1"]
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://game/shops/test_shop_terminal.tscn" id="3_7hsqt"]
-[ext_resource type="PackedScene" path="res://game/enemies/test/test_amphibian.tscn" id="4_ckure"]
+[ext_resource type="PackedScene" uid="uid://cflctunfjqval" path="res://game/enemies/test/test_amphibian.tscn" id="4_ckure"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/knockback_bird.tscn" id="5_nghe8"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/thorn_bloom.tscn" id="6_fc1rd"]
 
 [sub_resource type="RectangleShape2D" id="GroundShape"]
 size = Vector2(640, 40)
@@ -83,3 +85,14 @@ persistent_id = "surface_test_amphibian_02"
 [node name="TestAmphibian3" parent="." unique_id=810822037 instance=ExtResource("4_ckure")]
 position = Vector2(554, 312)
 persistent_id = "surface_test_amphibian_03"
+
+[node name="KnockbackBird" parent="." unique_id=1350972358 instance=ExtResource("5_nghe8")]
+position = Vector2(484, 125)
+persistent_id = "surface_knockback_bird_01"
+
+[node name="KnockbackBird2" parent="." unique_id=1252371887 instance=ExtResource("5_nghe8")]
+position = Vector2(502, 139)
+persistent_id = "surface_knockback_bird_02"
+
+[node name="ThornBloom" parent="." unique_id=1282810798 instance=ExtResource("6_fc1rd")]
+position = Vector2(373, 321)

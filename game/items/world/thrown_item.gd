@@ -52,11 +52,11 @@ func _physics_process(delta: float) -> void:
 		_still_time = 0.0
 
 func _on_body_entered(body: Node) -> void:
-	if body == source_actor or _hit_ids.has(body.get_instance_id()):
+	if is_queued_for_deletion() or body == source_actor or _hit_ids.has(body.get_instance_id()):
 		return
 	_hit_ids[body.get_instance_id()] = true
 	var impact := ImpactData.new()
-	impact.source_actor = source_actor
+	impact.source_actor = source_actor if is_instance_valid(source_actor) else null
 	impact.source_species_id = source_species_id
 	impact.base_damage = base_damage
 	impact.mass = item_mass

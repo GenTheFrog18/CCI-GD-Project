@@ -1,13 +1,17 @@
-[gd_resource type="Resource" script_class="ItemDefinition" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=6 format=3]
 [ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
 [ext_resource type="Script" path="res://game/items/behaviors/deployable_behavior.gd" id="2"]
 [ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
+[sub_resource type="CircleShape2D" id="PrimaryShape"]
+radius = 48.0
+[sub_resource type="CircleShape2D" id="ImpactShape"]
+radius = 72.0
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
 kind = "hushcap"
 duration = 12.0
-primary_radius = 48.0
-impact_radius = 72.0
+primary_shape = SubResource("PrimaryShape")
+impact_shape = SubResource("ImpactShape")
 [resource]
 script = ExtResource("1")
 item_id = &"hushcap"

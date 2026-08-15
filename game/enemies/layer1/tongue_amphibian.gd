@@ -117,7 +117,7 @@ func _drop_carried(position: Vector2) -> void:
 	if definition != null:
 		var drop := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
 		drop.configure(definition, carried.state, self, position, Vector2(0, -40))
-		get_parent().add_child(drop)
+		get_parent().call_deferred(&"add_child", drop)
 	carried = ItemStack.new()
 
 func handle_world_out_of_bounds() -> void:

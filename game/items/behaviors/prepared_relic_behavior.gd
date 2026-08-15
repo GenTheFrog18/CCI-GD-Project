@@ -10,6 +10,8 @@ extends ItemBehavior
 @export var throw_damage := 0.0
 @export var throw_speed := 260.0
 @export var movement_multiplier := 1.0
+@export var jump_multiplier := 1.0
+@export var effect_shape: Shape2D
 
 func can_primary(context: ItemContext, _state: Dictionary) -> bool:
 	return context.actor != null and context.definition != null
@@ -20,7 +22,8 @@ func primary(context: ItemContext, state: Dictionary) -> ItemActionResult:
 		"duration": duration, "pulse_interval": pulse_interval, "pulse_count": pulse_count,
 		"pulse_radius": pulse_radius, "pulse_priority": pulse_priority,
 		"throw_damage": throw_damage, "throw_speed": throw_speed,
-		"movement_multiplier": movement_multiplier,
+		"movement_multiplier": movement_multiplier, "jump_multiplier": jump_multiplier,
+		"effect_shape": effect_shape,
 	})
 	var result := ItemActionResult.completed(1)
 	result.prepared_node = prepared

@@ -17,7 +17,7 @@ Gameplay and inventory advance timers. Pause, menu, loading, and inactive proces
 | `incapacitated` | replace | no | gameplay lock and Rope detach |
 | `tracking_mark` | refresh | yes | high-priority request visible only to large flyer |
 | `dazzled` | refresh | yes | player overlay; enemy sight disabled |
-| `healing` | refresh | yes | Bandage healing through shared heal API |
+| `healing` | refresh | yes | adjustable Bandage healing; provisional 2 HP/s for 25 s |
 | `curse_suppression` | additive to 999 s | yes | consumes Curse thresholds |
 | `driftseed` | refresh | yes | lower gravity/descent, higher knockback; lower flight speed |
 | `curse_layer_1` | refresh/reroll | yes | movement, healing, throw, colour penalties for 20 s |
