@@ -416,7 +416,10 @@ func _test_ui_input_and_debug() -> void:
 	interact_event.action = &"interact"
 	interact_event.pressed = true
 	hud.dialogue_box._input(interact_event)
+	assert(hud.dialogue_box._index == 0 and not hud.dialogue_box._typing)
+	hud.dialogue_box._input(interact_event)
 	assert(hud.dialogue_box._index == 1)
+	hud.dialogue_box._input(interact_event)
 	hud.dialogue_box._input(interact_event)
 	assert(not hud.dialogue_box.visible)
 	var original_run_path := SaveManager.run_path

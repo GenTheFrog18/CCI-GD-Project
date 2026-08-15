@@ -74,8 +74,8 @@ func set_player(value: PlayerController) -> void:
 	_refresh_whistle(player.physical_whistle_id)
 	_refresh_status()
 
-func show_dialogue(sequence: DialogueSequence) -> void:
-	dialogue_box.show_sequence(sequence)
+func show_dialogue(sequence: DialogueSequence, actor: Node = null) -> void:
+	dialogue_box.show_sequence(sequence, actor)
 
 func _input(event: InputEvent) -> void:
 	if player == null:

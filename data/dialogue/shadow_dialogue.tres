@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="DialogueSequence" load_steps=9 format=3 uid="uid://cahbk2a2shbno"]
+
+[ext_resource type="Script" path="res://data/definitions/dialogue_line.gd" id="1_oej3r"]
+[ext_resource type="Script" path="res://data/definitions/dialogue_sequence.gd" id="2_20lkb"]
+[ext_resource type="Texture2D" uid="uid://dxksabwymww8v" path="res://assets/art/characters/npc/portrait/Portrait.png" id="2_gll11"]
+[ext_resource type="Texture2D" uid="uid://cbibwtoe3fo0w" path="res://assets/art/characters/player/Portrait_Frown.png" id="3_vcabc"]
+
+[sub_resource type="Resource" id="Resource_mfh8f"]
+script = ExtResource("1_oej3r")
+speaker_id = &"shadow"
+speaker_name = "Shadow"
+text = "..."
+portrait = ExtResource("2_gll11")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_tdfu4"]
+script = ExtResource("1_oej3r")
+speaker_id = &"shadow"
+speaker_name = "Shadow"
+text = "Can you see this place too?"
+portrait = ExtResource("2_gll11")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_31mnv"]
+script = ExtResource("1_oej3r")
+speaker_id = &"player"
+speaker_name = "Player"
+text = "This place?"
+portrait = ExtResource("3_vcabc")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_fsqkk"]
+script = ExtResource("1_oej3r")
+speaker_id = &"shadow"
+speaker_name = "Shadow"
+text = "Not everyone can see what lies beneath the surface."
+portrait = ExtResource("2_gll11")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[resource]
+script = ExtResource("2_20lkb")
+sequence_id = &"shadow_intro"
+entries = Array[ExtResource("1_oej3r")]([SubResource("Resource_mfh8f"), SubResource("Resource_tdfu4"), SubResource("Resource_31mnv"), SubResource("Resource_fsqkk")])
+locks_gameplay = true
