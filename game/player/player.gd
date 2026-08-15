@@ -130,7 +130,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if inventory_open or locks.is_locked():
 		return
 	var target := interaction_sensor.best_target(self, get_global_mouse_position())
+
 	if event.is_action_pressed(&"interact") and target != null:
+		print("INTERACTION TARGET: ", target)
+		print("TARGET SCRIPT: ", target.get_script())
+		print("TARGET CLASS: ", target.get_class())
 		target.interact(self)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"primary_action"):

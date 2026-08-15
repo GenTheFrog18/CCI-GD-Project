@@ -144,8 +144,8 @@ func _build_ui() -> void:
 		button.gui_input.connect(_slot_gui_input.bind(index))
 		grid.add_child(button)
 		inventory_buttons.append(button)
-	dialogue_box = DialogueBox.new()
-	dialogue_box.position = Vector2(60, 245)
+	var dialogue_scene := preload("res://game/ui/dialogue/dialogue_box.tscn")
+	dialogue_box = dialogue_scene.instantiate() as DialogueBox
 	add_child(dialogue_box)
 	pause_panel = _make_panel("Paused", Vector2(240, 135))
 	pause_panel.visible = false

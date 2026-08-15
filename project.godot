@@ -12,7 +12,7 @@ config_version=5
 
 config/name="CCI GD Project"
 run/main_scene="res://ui/main_menu.tscn"
-config/features=PackedStringArray("4.7")
+config/features=PackedStringArray("4.5")
 
 [audio]
 
@@ -37,6 +37,10 @@ window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="viewport"
 window/stretch/scale_mode="integer"
+
+[dotnet]
+
+project/assembly_name="CCI GD Project"
 
 [input]
 
