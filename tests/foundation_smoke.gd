@@ -355,6 +355,7 @@ func _test_ui_input_and_debug() -> void:
 	add_child(hud)
 	hud.set_player(player)
 	assert(hud.hotbar_labels[0].text.contains("Multitool"))
+	assert(not hud.health_label.visible and not hud.money_label.visible and not hud.weight_label.visible and not hud.location_label.visible)
 	player.health.set_health(0.4)
 	assert(hud.health_label.text == "HP 1/100")
 	player.apply_status(&"healing", {"duration": 12.2})
@@ -383,7 +384,11 @@ func _test_ui_input_and_debug() -> void:
 	assert(get_tree().paused)
 	hud._input(pause_event)
 	assert(not get_tree().paused)
-	hud.debug_panel.visible = true
+	var debug_event := InputEventAction.new()
+	debug_event.action = &"debug_toggle"
+	debug_event.pressed = true
+	hud._input(debug_event)
+	assert(hud.debug_panel.visible and hud.health_label.visible and hud.money_label.visible and hud.weight_label.visible and hud.location_label.visible)
 	hud._update_performance()
 	hud._process(0.0)
 	assert(not hud.performance_label.text.is_empty() and hud.crosshair != null)

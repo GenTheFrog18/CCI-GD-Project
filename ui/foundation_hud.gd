@@ -46,6 +46,7 @@ var health_flames: Array[TextureRect] = []
 var hotbar_icons: Array[TextureRect] = []
 var hotbar_arrow: TextureRect
 var inventory_book: AnimatedSprite2D
+var debug_text_nodes: Array[CanvasItem] = []
 
 func _ready() -> void:
 	layer = 20
@@ -112,6 +113,7 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"debug_toggle"):
 		debug_panel.visible = not debug_panel.visible
+		_set_debug_text_visible(debug_panel.visible)
 		if debug_panel.visible:
 			_update_performance()
 		get_viewport().set_input_as_handled()
@@ -124,14 +126,17 @@ func _build_ui() -> void:
 	health_label = Label.new()
 	health_label.custom_minimum_size.x = 110
 	top.add_child(health_label)
+	debug_text_nodes.append(health_label)
 	status_label = Label.new()
 	status_label.position = Vector2(10, 30)
 	status_label.size = Vector2(180, 120)
 	add_child(status_label)
 	money_label = Label.new()
 	top.add_child(money_label)
+	debug_text_nodes.append(money_label)
 	weight_label = Label.new()
 	top.add_child(weight_label)
+	debug_text_nodes.append(weight_label)
 	location_label = Label.new()
 	location_label.anchor_left = 1.0
 	location_label.anchor_right = 1.0
@@ -141,6 +146,7 @@ func _build_ui() -> void:
 	location_label.offset_bottom = 42.0
 	location_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	add_child(location_label)
+	debug_text_nodes.append(location_label)
 	prompt_label = Label.new()
 	prompt_label.position = Vector2(230, 320)
 	prompt_label.size = Vector2(180, 28)
@@ -163,7 +169,15 @@ func _build_ui() -> void:
 	effect_overlay.z_index = -1
 	add_child(effect_overlay)
 	var hotbar := HBoxContainer.new()
-	hotbar.position = Vector2(10, 292)
+	hotbar.anchor_left = 1.0
+	hotbar.anchor_top = 1.0
+	hotbar.anchor_right = 1.0
+	hotbar.anchor_bottom = 1.0
+	hotbar.offset_left = -116.0
+	hotbar.offset_top = -48.0
+	hotbar.offset_right = -8.0
+	hotbar.offset_bottom = -16.0
+	hotbar.add_theme_constant_override(&"separation", 4)
 	add_child(hotbar)
 	for index in 2:
 		var slot := TextureRect.new()
@@ -185,10 +199,15 @@ func _build_ui() -> void:
 	hotbar_arrow = TextureRect.new()
 	hotbar_arrow.texture = HOTBAR_ARROW
 	hotbar_arrow.size = Vector2(16, 16)
-	hotbar_arrow.position = Vector2(18, 276)
+	hotbar_arrow.anchor_left = 1.0
+	hotbar_arrow.anchor_top = 1.0
+	hotbar_arrow.anchor_right = 1.0
+	hotbar_arrow.anchor_bottom = 1.0
+	hotbar_arrow.offset_top = -64.0
+	hotbar_arrow.offset_bottom = -48.0
 	add_child(hotbar_arrow)
 	whistle_button = Button.new()
-	whistle_button.text = "Whistle"
+	whistle_button.custom_minimum_size = Vector2(32, 32)
 	whistle_button.pressed.connect(func(): player.use_whistle() if player != null else false)
 	hotbar.add_child(whistle_button)
 	inventory_panel = PanelContainer.new()
@@ -381,6 +400,7 @@ func _build_ui() -> void:
 	world_log_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	world_log_label.custom_minimum_size.x = 515
 	log_scroll.add_child(world_log_label)
+	_set_debug_text_visible(false)
 	_build_crosshair()
 
 func _build_health_flames() -> void:
@@ -517,15 +537,21 @@ func _refresh_inventory() -> void:
 		else:
 			hotbar_icons[index].texture = null
 		hotbar_labels[index].text = "%s%d: %s" % ["▶ " if index == player.item_controller.inventory.active_hotbar_index else "", index + 1, item_name]
-	hotbar_arrow.position.x = 18.0 + player.item_controller.inventory.active_hotbar_index * 36.0
+	hotbar_arrow.offset_left = -108.0 + player.item_controller.inventory.active_hotbar_index * 36.0
+	hotbar_arrow.offset_right = hotbar_arrow.offset_left + 16.0
 	weight_label.text = "Weight %d/%d" % [player.item_controller.inventory.get_total_weight(), player.carry_capacity]
 
 func _refresh_whistle(item_id: StringName) -> void:
 	if whistle_button == null:
 		return
 	var definition := ContentCatalog.get_item(item_id)
-	whistle_button.text = "Whistle: %s" % (definition.display_name if definition != null else "—")
+	whistle_button.icon = definition.icon if definition != null else null
+	whistle_button.tooltip_text = "Use %s" % (definition.display_name if definition != null else "whistle")
 	whistle_button.disabled = item_id.is_empty()
+
+func _set_debug_text_visible(visible: bool) -> void:
+	for node in debug_text_nodes:
+		node.visible = visible
 
 func _show_threat(source: Node2D, duration: float) -> void:
 	_threat_source = source
