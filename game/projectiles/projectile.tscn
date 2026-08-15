@@ -16,3 +16,6 @@ shape = SubResource("Shape")
 [node name="Visual" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-4, -4, 4, -4, 4, 4, -4, 4)
 color = Color(1, 0.35, 0.2, 1)
+
+[node name="Icon" type="Sprite2D" parent="."]
+visible = false

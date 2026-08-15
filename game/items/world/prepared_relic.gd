@@ -2,6 +2,8 @@ class_name PreparedRelic
 extends RigidBody2D
 
 const PLACEHOLDER_LIGHT_TEXTURE := preload("res://game/items/world/placeholder_light_texture.tres")
+const SUN_ACTIVE := preload("res://assets/art/items/sun_sphere_active.png")
+const SUN_EXPIRING := preload("res://assets/art/items/sun_sphere_expiring.png")
 
 var movement_multiplier := 1.0
 var jump_multiplier := 1.0
@@ -23,6 +25,7 @@ var _launched := false
 var _collision: CollisionShape2D
 var _light: PointLight2D
 var _elapsed := 0.0
+var _visual: Sprite2D
 
 func configure(item: ItemDefinition, state: Dictionary, actor: Node2D, relic_kind: StringName, settings: Dictionary = {}) -> void:
 	definition = item
@@ -54,10 +57,9 @@ func _ready() -> void:
 	shape_node.disabled = true
 	_collision = shape_node
 	add_child(shape_node)
-	var visual := Polygon2D.new()
-	visual.polygon = PackedVector2Array([Vector2(0, -6), Vector2(6, 4), Vector2(-6, 4)])
-	visual.color = Color(1.0, 0.75, 0.2) if kind == &"sun_sphere" else Color(0.7, 0.9, 0.35)
-	add_child(visual)
+	_visual = Sprite2D.new()
+	_visual.texture = SUN_ACTIVE if kind == &"sun_sphere" else definition.icon
+	add_child(_visual)
 	if kind == &"sun_sphere":
 		add_to_group(&"light_sources")
 		_light = PointLight2D.new()
@@ -70,6 +72,8 @@ func _process(delta: float) -> void:
 	_elapsed += delta
 	if duration > 0.0:
 		duration -= delta
+		if kind == &"sun_sphere" and duration <= 3.0:
+			_visual.texture = SUN_EXPIRING
 		if _light != null:
 			_light.energy = 0.8 * minf(clampf(_elapsed / 0.25, 0.0, 1.0), clampf(duration, 0.0, 1.0))
 		if duration <= 0.0:

@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=6 format=3]
 [ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
 [ext_resource type="Script" path="res://game/items/behaviors/prepared_relic_behavior.gd" id="2"]
 [ext_resource type="Script" path="res://game/items/behaviors/silver_weight_behavior.gd" id="3"]
 [ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="4"]
+[ext_resource type="Texture2D" path="res://assets/art/items/silver_weight.png" id="5"]
 [sub_resource type="Resource" id="Primary"]
 script = ExtResource("2")
 kind = "silver_weight"
@@ -21,6 +22,7 @@ display_name = "Silver Weight"
 unknown_description = "An impossibly dense silver relic."
 known_description = "Makes its holder heavy; impacts kill small creatures and heavily damage the large flyer."
 category = &"relic"
+icon = ExtResource("5")
 world_scene = ExtResource("4")
 weight = 12
 max_stack = 1

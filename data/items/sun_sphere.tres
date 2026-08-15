@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="ItemDefinition" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=7 format=3]
 [ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
 [ext_resource type="Script" path="res://game/items/behaviors/prepared_relic_behavior.gd" id="2"]
 [ext_resource type="Script" path="res://game/items/behaviors/deployable_behavior.gd" id="3"]
 [ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="4"]
+[ext_resource type="Texture2D" path="res://assets/art/items/sun_sphere.png" id="5"]
 [sub_resource type="CircleShape2D" id="LightShape"]
 radius = 80.0
 [sub_resource type="Resource" id="Primary"]
@@ -23,6 +24,7 @@ display_name = "Sun Sphere"
 unknown_description = "A warm dormant sphere."
 known_description = "Produces temporary light in hand or after impact."
 category = &"relic"
+icon = ExtResource("5")
 world_scene = ExtResource("4")
 weight = 2
 max_stack = 8

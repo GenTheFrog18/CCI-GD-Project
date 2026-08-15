@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=6 format=3]
 [ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
 [ext_resource type="Script" path="res://game/items/behaviors/consumable_behavior.gd" id="2"]
 [ext_resource type="Script" path="res://game/items/behaviors/status_throw_behavior.gd" id="3"]
 [ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="4"]
+[ext_resource type="Texture2D" path="res://assets/art/items/driftseed.png" id="5"]
 [sub_resource type="Resource" id="Primary"]
 script = ExtResource("2")
 kind = "driftseed"
@@ -18,6 +19,7 @@ display_name = "Driftseed"
 unknown_description = "A seed lighter than its own husk."
 known_description = "Slows falling but increases knockback; thrown seeds also slow small and flying creatures."
 category = &"relic"
+icon = ExtResource("5")
 world_scene = ExtResource("4")
 weight = 1
 max_stack = 8

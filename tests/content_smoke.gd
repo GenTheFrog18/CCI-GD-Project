@@ -34,6 +34,8 @@ func _test_catalog() -> void:
 		_check(ContentCatalog.get_enemy(id) != null, "enemy missing: %s" % id)
 	for id in [&"bandage", &"info_book", &"numbing_pill", &"sun_sphere", &"lantern_crystal", &"rattlepod", &"hushcap", &"cling_resin", &"driftseed", &"silver_weight"]:
 		_check(ContentCatalog.get_item(id) != null, "item missing: %s" % id)
+	for id in [&"sun_sphere", &"lantern_crystal", &"rattlepod", &"hushcap", &"cling_resin", &"driftseed", &"silver_weight"]:
+		_check(ContentCatalog.get_item(id).icon != null, "finished item art missing: %s" % id)
 	for id in [&"bleed", &"poison", &"resin_bound", &"tracking_mark", &"curse_layer_1", &"curse_layer_2_penalty", &"curse_layer_2_health_cap"]:
 		_check(ContentCatalog.get_effect(id) != null, "effect missing: %s" % id)
 
@@ -41,6 +43,10 @@ func _test_enemy_scenes() -> void:
 	var direct_flyer := LargeLayer1Flyer.new()
 	_check(direct_flyer.has_method("restore_state"), "large flyer script class compiles")
 	direct_flyer.free()
+	var spider := preload("res://game/enemies/layer1/cave_spider.tscn").instantiate() as CaveSpider
+	add_child(spider)
+	_check(spider.sprite.sprite_frames.has_animation(&"walk") and spider.sprite.sprite_frames.has_animation(&"shoot"), "Cave Spider finished animations missing")
+	spider.free()
 	for id: StringName in ContentCatalog.enemies:
 		var definition := ContentCatalog.get_enemy(id)
 		var enemy := definition.scene.instantiate() as CollisionObject2D

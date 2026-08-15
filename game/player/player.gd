@@ -58,6 +58,7 @@ var _rope_attach_blocked := false
 var physical_whistle_id: StringName = &"whistle_red"
 var _bird_hit_times: Array[float] = []
 var curse_tracker: CurseTracker
+var _action_animation := false
 
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
@@ -71,6 +72,7 @@ func _ready() -> void:
 	add_child(curse_tracker)
 	curse_tracker.setup(self)
 	health.died.connect(_on_died)
+	$AnimatedSprite2D.animation_finished.connect(func(): _action_animation = false)
 	_set_facing(facing_direction)
 	if ContentCatalog.get_item(&"multitool") != null and item_controller.inventory.get_active_stack().is_empty():
 		item_controller.inventory.try_add_item(&"multitool", 1, {"origin": "starting"})
@@ -151,10 +153,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"primary_action"):
 		_face_toward(get_global_mouse_position())
-		item_controller.primary(self, get_parent(), get_global_mouse_position(), target)
+		var active_id := item_controller.inventory.get_active_stack().item_id
+		if item_controller.primary(self, get_parent(), get_global_mouse_position(), target) and active_id == &"multitool":
+			_play_action_animation(&"attack")
 	elif event.is_action_pressed(&"secondary_action"):
 		_face_toward(get_global_mouse_position())
-		item_controller.secondary(self, get_parent(), get_global_mouse_position(), target)
+		if item_controller.secondary(self, get_parent(), get_global_mouse_position(), target):
+			_play_action_animation(&"throw")
 
 func get_encumbrance_ratio() -> float:
 	if carry_capacity <= 0:
@@ -171,6 +176,8 @@ func _horizontal_rate(axis: float, grounded: bool) -> float:
 	return air_acceleration if axis != 0.0 else air_deceleration
 
 func _update_animation() -> void:
+	if _action_animation:
+		return
 	if not is_on_floor():
 		$AnimatedSprite2D.play(&"jump" if velocity.y < 0.0 else &"fall")
 	elif absf(velocity.x) > 1.0:
@@ -179,6 +186,10 @@ func _update_animation() -> void:
 		$AnimatedSprite2D.play(&"idle")
 	if velocity.x != 0.0:
 		_set_facing(signf(velocity.x))
+
+func _play_action_animation(animation: StringName) -> void:
+	_action_animation = true
+	$AnimatedSprite2D.play(animation)
 
 func _update_walking_sound(horizontal_distance: float) -> void:
 	if not is_on_floor() or absf(horizontal_distance) <= 0.001:

@@ -6,10 +6,14 @@ extends CharacterBody2D
 var impact := ImpactData.new()
 var _hit_ids: Dictionary = {}
 
-func configure(data: ImpactData, initial_velocity: Vector2) -> void:
+func configure(data: ImpactData, initial_velocity: Vector2, visual_texture: Texture2D = null) -> void:
 	impact = data
 	velocity = initial_velocity
 	impact.velocity = initial_velocity
+	if visual_texture != null:
+		$Icon.texture = visual_texture
+		$Icon.visible = true
+		$Visual.visible = false
 
 func _physics_process(delta: float) -> void:
 	lifetime -= delta

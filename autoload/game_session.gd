@@ -24,6 +24,8 @@ var debug_unlimited_health := false
 var debug_gameplay_draw := false
 var runtime_id_counter := 0
 var world_generation_log: Array[Dictionary] = []
+var master_volume := 1.0
+var fullscreen := false
 
 func _ready() -> void:
 	_setup_input_map()
@@ -111,13 +113,20 @@ func capture_meta() -> Dictionary:
 	var known: Array[String] = []
 	for id in known_items:
 		known.append(String(id))
-	return {"known_items": known, "item_use_counts": item_use_counts.duplicate(true)}
+	return {"known_items": known, "item_use_counts": item_use_counts.duplicate(true), "master_volume": master_volume, "fullscreen": fullscreen}
 
 func restore_meta(data: Dictionary) -> void:
 	known_items.clear()
 	for id in data.get("known_items", []):
 		known_items.append(StringName(id))
 	item_use_counts = data.get("item_use_counts", {}).duplicate(true)
+	master_volume = clampf(float(data.get("master_volume", 1.0)), 0.0, 1.0)
+	fullscreen = bool(data.get("fullscreen", false))
+	apply_settings()
+
+func apply_settings() -> void:
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(&"Master"), linear_to_db(master_volume))
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
 
 func record_signature_use(item_id: StringName) -> bool:
 	var definition := ContentCatalog.get_item(item_id)

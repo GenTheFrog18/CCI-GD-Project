@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=3 uid="uid://dq7wfm672giiw"]
+[gd_scene load_steps=52 format=3 uid="uid://dq7wfm672giiw"]
 
 [ext_resource type="Script" uid="uid://cvdepqc6862xe" path="res://game/player/player.gd" id="1"]
 [ext_resource type="Script" uid="uid://rax7v1pyqa5l" path="res://core/combat/health_component.gd" id="2"]
@@ -9,7 +9,8 @@
 [ext_resource type="Script" uid="uid://dbhllx6vqyta7" path="res://core/interaction/interaction_sensor.gd" id="5"]
 [ext_resource type="Texture2D" uid="uid://bmr3or2mhu3o6" path="res://assets/art/characters/player/CCI-walk.png" id="5_n270p"]
 [ext_resource type="Texture2D" uid="uid://dkhtw40r35nru" path="res://assets/art/characters/player/CCI-throw.png" id="5_uv2nh"]
-[ext_resource type="Texture2D" uid="uid://3hsn2tdnc5id" path="res://assets/art/characters/player/idle.png" id="6_uv2nh"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/player/CCI-attack.png" id="6_attack"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/player/CCI-idle.png" id="6_uv2nh"]
 [ext_resource type="Script" uid="uid://cw04hr0tcjxom" path="res://game/player/player_camera.gd" id="7_camera"]
 [ext_resource type="Script" uid="uid://dtp8poa044sqh" path="res://game/player/player_item_preview.gd" id="8_preview"]
 
@@ -109,6 +110,18 @@ region = Rect2(128, 0, 128, 128)
 atlas = ExtResource("5_uv2nh")
 region = Rect2(256, 0, 128, 128)
 
+[sub_resource type="AtlasTexture" id="Attack0"]
+atlas = ExtResource("6_attack")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="Attack1"]
+atlas = ExtResource("6_attack")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="Attack2"]
+atlas = ExtResource("6_attack")
+region = Rect2(256, 0, 128, 128)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_cgi3i"]
 atlas = ExtResource("5_n270p")
 region = Rect2(0, 0, 128, 128)
@@ -151,6 +164,20 @@ region = Rect2(1152, 0, 128, 128)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_uoqeo"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Attack0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Attack1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Attack2")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 8.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_gh012")
@@ -236,7 +263,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_qfwia")
 }],
-"loop": true,
+"loop": false,
 "name": &"throw",
 "speed": 5.0
 }, {
@@ -288,7 +315,7 @@ shape = SubResource("PlayerShape")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -16)
 sprite_frames = SubResource("SpriteFrames_uoqeo")
-animation = &"throw"
+animation = &"idle"
 
 [node name="Visual" type="Polygon2D" parent="."]
 visible = false

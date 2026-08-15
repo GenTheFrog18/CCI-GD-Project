@@ -1,6 +1,15 @@
 class_name FoundationHUD
 extends CanvasLayer
 
+const FIRE_FULL := preload("res://assets/art/ui/hud/fire-hp-bar.png")
+const FIRE_LOW := preload("res://assets/art/ui/hud/fire-low-hp-bar.png")
+const FIRE_DEAD := preload("res://assets/art/ui/hud/fire-dead-hp-bar.png")
+const HOTBAR_MAIN := preload("res://assets/art/ui/hud/hotbar-main.png")
+const HOTBAR_SECONDARY := preload("res://assets/art/ui/hud/hotbar-sec.png")
+const HOTBAR_ARROW := preload("res://assets/art/ui/hud/arrow-hotbar.png")
+const BOOK_SHEET := preload("res://assets/art/ui/inventory/book-inventory-sprite.png")
+const SETTINGS_PANE := preload("res://assets/art/ui/settings/settings-pane-final.png")
+
 signal world_debug_action_requested(action: StringName)
 
 var player: PlayerController
@@ -33,6 +42,10 @@ var _status_elapsed := 0.0
 var _threat_source: Node2D
 var _threat_remaining := 0.0
 var effect_overlay: ColorRect
+var health_flames: Array[TextureRect] = []
+var hotbar_icons: Array[TextureRect] = []
+var hotbar_arrow: TextureRect
+var inventory_book: AnimatedSprite2D
 
 func _ready() -> void:
 	layer = 20
@@ -104,8 +117,9 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _build_ui() -> void:
+	_build_health_flames()
 	var top := HBoxContainer.new()
-	top.position = Vector2(10, 8)
+	top.position = Vector2(10, 25)
 	add_child(top)
 	health_label = Label.new()
 	health_label.custom_minimum_size.x = 110
@@ -152,10 +166,27 @@ func _build_ui() -> void:
 	hotbar.position = Vector2(10, 292)
 	add_child(hotbar)
 	for index in 2:
+		var slot := TextureRect.new()
+		slot.texture = HOTBAR_MAIN if index == 0 else HOTBAR_SECONDARY
+		slot.custom_minimum_size = Vector2(32, 32)
+		slot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		hotbar.add_child(slot)
+		var icon := TextureRect.new()
+		icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, 4)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		slot.add_child(icon)
+		hotbar_icons.append(icon)
 		var label := Label.new()
-		label.custom_minimum_size = Vector2(125, 28)
+		label.visible = false
 		hotbar.add_child(label)
 		hotbar_labels.append(label)
+	hotbar_arrow = TextureRect.new()
+	hotbar_arrow.texture = HOTBAR_ARROW
+	hotbar_arrow.size = Vector2(16, 16)
+	hotbar_arrow.position = Vector2(18, 276)
+	add_child(hotbar_arrow)
 	whistle_button = Button.new()
 	whistle_button.text = "Whistle"
 	whistle_button.pressed.connect(func(): player.use_whistle() if player != null else false)
@@ -164,7 +195,11 @@ func _build_ui() -> void:
 	inventory_panel.position = Vector2(180, 105)
 	inventory_panel.custom_minimum_size = Vector2(280, 130)
 	inventory_panel.visible = false
+	var transparent := StyleBoxFlat.new()
+	transparent.bg_color = Color(0.02, 0.015, 0.02, 0.78)
+	inventory_panel.add_theme_stylebox_override(&"panel", transparent)
 	add_child(inventory_panel)
+	_build_inventory_book()
 	var inventory_column := VBoxContainer.new()
 	inventory_panel.add_child(inventory_column)
 	var title := Label.new()
@@ -174,16 +209,27 @@ func _build_ui() -> void:
 	grid.columns = 5
 	inventory_column.add_child(grid)
 	for index in 7:
-		var button := Button.new()
+		var button := InventorySlot.new()
+		button.hud = self
+		button.flat_index = index
 		button.custom_minimum_size = Vector2(50, 42)
 		button.pressed.connect(_slot_pressed.bind(index))
 		button.gui_input.connect(_slot_gui_input.bind(index))
 		grid.add_child(button)
 		inventory_buttons.append(button)
+	var locked := Button.new()
+	locked.text = "Locked"
+	locked.disabled = true
+	locked.custom_minimum_size = Vector2(50, 42)
+	locked.tooltip_text = "Reserved book slot"
+	grid.add_child(locked)
 	dialogue_box = DialogueBox.new()
 	dialogue_box.position = Vector2(60, 245)
 	add_child(dialogue_box)
-	pause_panel = _make_panel("Paused", Vector2(240, 135))
+	pause_panel = _make_panel("Paused", Vector2(225, 45))
+	var pause_style := StyleBoxTexture.new()
+	pause_style.texture = SETTINGS_PANE
+	pause_panel.add_theme_stylebox_override(&"panel", pause_style)
 	pause_panel.visible = false
 	var seed_label := Label.new()
 	seed_label.text = "Seed: %d" % GameSession.run_seed
@@ -200,6 +246,27 @@ func _build_ui() -> void:
 	menu.text = "Save & Menu"
 	menu.pressed.connect(func(): player.item_controller.prepare_for_save(); SaveManager.save_run(); get_tree().paused = false; SceneRouter.go_to("res://ui/main_menu.tscn"))
 	pause_panel.get_child(0).add_child(menu)
+	var volume := HSlider.new()
+	volume.min_value = 0.0
+	volume.max_value = 1.0
+	volume.step = 0.05
+	volume.value = GameSession.master_volume
+	volume.tooltip_text = "Master volume"
+	volume.value_changed.connect(func(value: float): GameSession.master_volume = value; GameSession.apply_settings(); SaveManager.save_meta())
+	pause_panel.get_child(0).add_child(volume)
+	var fullscreen := CheckButton.new()
+	fullscreen.text = "Fullscreen"
+	fullscreen.button_pressed = GameSession.fullscreen
+	fullscreen.toggled.connect(func(enabled: bool): GameSession.fullscreen = enabled; GameSession.apply_settings(); SaveManager.save_meta())
+	pause_panel.get_child(0).add_child(fullscreen)
+	var how_to := Button.new()
+	how_to.text = "How to Play"
+	how_to.pressed.connect(_show_how_to)
+	pause_panel.get_child(0).add_child(how_to)
+	var credits := Button.new()
+	credits.text = "Credits"
+	credits.pressed.connect(_show_credits)
+	pause_panel.get_child(0).add_child(credits)
 	if GameSession.debug_enabled:
 		var world_log := Button.new()
 		world_log.text = "World Gen Log"
@@ -316,6 +383,37 @@ func _build_ui() -> void:
 	log_scroll.add_child(world_log_label)
 	_build_crosshair()
 
+func _build_health_flames() -> void:
+	var row := HBoxContainer.new()
+	row.position = Vector2(8, 6)
+	row.add_theme_constant_override(&"separation", 0)
+	add_child(row)
+	for index in 10:
+		var flame := TextureRect.new()
+		flame.texture = FIRE_FULL
+		flame.custom_minimum_size = Vector2(16, 16)
+		flame.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		row.add_child(flame)
+		health_flames.append(flame)
+
+func _build_inventory_book() -> void:
+	var frames := SpriteFrames.new()
+	frames.add_animation(&"open")
+	frames.set_animation_speed(&"open", 24.0)
+	frames.set_animation_loop(&"open", false)
+	for index in 16:
+		var frame := AtlasTexture.new()
+		frame.atlas = BOOK_SHEET
+		frame.region = Rect2(index * 240, 0, 240, 160)
+		frames.add_frame(&"open", frame)
+	inventory_book = AnimatedSprite2D.new()
+	inventory_book.sprite_frames = frames
+	inventory_book.position = Vector2(320, 180)
+	inventory_book.scale = Vector2(1.4, 1.4)
+	inventory_book.visible = false
+	inventory_book.z_index = -1
+	add_child(inventory_book)
+
 func _build_crosshair() -> void:
 	crosshair = Node2D.new()
 	crosshair.z_index = 100
@@ -341,6 +439,12 @@ func _make_panel(title_text: String, at: Vector2) -> PanelContainer:
 	var panel := PanelContainer.new()
 	panel.position = at
 	panel.custom_minimum_size = Vector2(165, 80)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.035, 0.027, 0.04, 0.92)
+	style.border_color = Color(0.65, 0.52, 0.32)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(4)
+	panel.add_theme_stylebox_override(&"panel", style)
 	add_child(panel)
 	var column := VBoxContainer.new()
 	panel.add_child(column)
@@ -360,6 +464,13 @@ func _slot_pressed(flat_index: int) -> void:
 		_selected_index = -1
 	_refresh_inventory()
 
+func swap_inventory_slots(from_flat: int, to_flat: int) -> void:
+	var from_container: StringName = &"hotbar" if from_flat < 2 else &"backpack"
+	var to_container: StringName = &"hotbar" if to_flat < 2 else &"backpack"
+	player.item_controller.inventory.swap_slots(from_container, from_flat if from_flat < 2 else from_flat - 2, to_container, to_flat if to_flat < 2 else to_flat - 2)
+	_selected_index = -1
+	_refresh_inventory()
+
 func _slot_gui_input(event: InputEvent, flat_index: int) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		var container: StringName = &"hotbar" if flat_index < 2 else &"backpack"
@@ -370,6 +481,8 @@ func _slot_gui_input(event: InputEvent, flat_index: int) -> void:
 
 func _on_inventory_toggled(open: bool) -> void:
 	inventory_panel.visible = open
+	inventory_book.visible = open
+	if open: inventory_book.play(&"open")
 	if not open:
 		_selected_index = -1
 	_refresh_inventory()
@@ -385,7 +498,12 @@ func _refresh_inventory() -> void:
 		var label := "—"
 		if not stack.is_empty():
 			var definition := ContentCatalog.get_item(stack.item_id)
-			label = "%s\nx%d" % [definition.display_name if definition != null else stack.item_id, stack.quantity]
+			label = "x%d" % stack.quantity
+			inventory_buttons[index].icon = definition.icon if definition != null else null
+			inventory_buttons[index].tooltip_text = (definition.display_name + "\n" + (definition.known_description if stack.item_id in GameSession.known_items else definition.unknown_description)) if definition != null else String(stack.item_id)
+		else:
+			inventory_buttons[index].icon = null
+			inventory_buttons[index].tooltip_text = "Empty slot"
 		if index < 2 and index == player.item_controller.inventory.active_hotbar_index:
 			label = "[%s]" % label
 		inventory_buttons[index].text = label
@@ -395,7 +513,11 @@ func _refresh_inventory() -> void:
 		if not stack.is_empty():
 			var definition := ContentCatalog.get_item(stack.item_id)
 			item_name = "%s x%d" % [definition.display_name if definition != null else stack.item_id, stack.quantity]
+			hotbar_icons[index].texture = definition.icon if definition != null else null
+		else:
+			hotbar_icons[index].texture = null
 		hotbar_labels[index].text = "%s%d: %s" % ["▶ " if index == player.item_controller.inventory.active_hotbar_index else "", index + 1, item_name]
+	hotbar_arrow.position.x = 18.0 + player.item_controller.inventory.active_hotbar_index * 36.0
 	weight_label.text = "Weight %d/%d" % [player.item_controller.inventory.get_total_weight(), player.carry_capacity]
 
 func _refresh_whistle(item_id: StringName) -> void:
@@ -443,6 +565,23 @@ func _refresh_status() -> void:
 
 func _set_health_text(current: float, maximum: float) -> void:
 	health_label.text = "HP ∞" if GameSession.debug_unlimited_health else "HP %d/%d" % [ceili(current), ceili(maximum)]
+	for index in health_flames.size():
+		var threshold := maximum * float(index + 1) / float(health_flames.size())
+		health_flames[index].texture = FIRE_FULL if current >= threshold else (FIRE_LOW if current > threshold - maximum / health_flames.size() else FIRE_DEAD)
+
+func _show_how_to() -> void:
+	_show_info("How to Play", "A/D: move   Space: jump   E: interact\n1/2: select   LMB: use   RMB: throw\nTab: inventory   Esc: pause   W/S: climb")
+
+func _show_credits() -> void:
+	_show_info("Credits", "Team Gorillaz Games\nPerfect DOS VGA 437 — Zeh Fernando (SIL OFL 1.1)")
+
+func _show_info(title: String, body: String) -> void:
+	var dialog := AcceptDialog.new()
+	dialog.title = title
+	dialog.dialog_text = body
+	dialog.confirmed.connect(dialog.queue_free)
+	add_child(dialog)
+	dialog.popup_centered(Vector2i(390, 210))
 
 func _set_unlimited_health(enabled: bool) -> void:
 	GameSession.debug_unlimited_health = enabled

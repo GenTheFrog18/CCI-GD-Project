@@ -14,6 +14,7 @@ enum State { IDLE, MOVE, ATTACK }
 @onready var support: EnemySupport = $EnemySupport
 @onready var sight: SightSensor = $SightSensor
 @onready var sound: SoundListener = $SoundListener
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 var state := State.IDLE
 var _origin := Vector2.ZERO
 var _target: PlayerController
@@ -36,6 +37,7 @@ func _physics_process(delta: float) -> void:
 		_origin = global_position + light.global_position.direction_to(global_position) * 120.0
 	if state == State.ATTACK:
 		velocity = Vector2.ZERO
+		sprite.play(&"shoot")
 		if _timer <= 0.0: _fire()
 	elif _target != null and global_position.distance_to(_target.global_position) <= attack_range and sight.can_see(_target):
 		state = State.ATTACK
@@ -44,11 +46,13 @@ func _physics_process(delta: float) -> void:
 		_target.warn_attack(self, telegraph_seconds)
 	else:
 		state = State.MOVE
+		sprite.play(&"walk")
 		var tangent := Vector2(-gravity_direction.y, gravity_direction.x)
 		var destination := _target.global_position if _target != null else _origin
 		velocity = tangent * signf(tangent.dot(destination - global_position)) * move_speed * support.status.get_multiplier(&"move_speed")
 		velocity += gravity_direction.normalized() * 80.0
 	move_and_slide()
+	if not is_zero_approx(velocity.x): sprite.flip_h = velocity.x < 0.0
 	sight.facing = velocity.normalized()
 
 func _nearest_light() -> Node2D:
@@ -82,7 +86,7 @@ func _fire() -> void:
 		{"effect_id": &"poison", "duration": 10.0},
 		{"effect_id": &"tracking_mark", "duration": 20.0},
 	]
-	projectile.configure(impact, global_position.direction_to(_aim) * projectile_speed)
+	projectile.configure(impact, global_position.direction_to(_aim) * projectile_speed, preload("res://assets/art/enemies/cave_spider/projectile.png"))
 	get_parent().add_child(projectile)
 	projectile.global_position = global_position
 	state = State.IDLE
