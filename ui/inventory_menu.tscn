@@ -1,23 +1,27 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3 uid="uid://bqeut6f1a4xks"]
 
-[ext_resource type="Script" path="res://ui/inventory_menu.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/backpack.png" id="2_backpack"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/book-inventory-final.png" id="3_book"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/book-inventory-grid.png" id="4_grid"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/button-close.png" id="5_close"]
-[ext_resource type="Script" path="res://ui/inventory_slot.gd" id="6_slot"]
+[ext_resource type="Script" uid="uid://clijcqc0ui3af" path="res://ui/inventory_menu.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://btvgyjl8jdbfd" path="res://assets/art/ui/inventory/backpack.png" id="2_backpack"]
+[ext_resource type="Texture2D" uid="uid://q05axb4va8qw" path="res://assets/art/ui/inventory/book-inventory-final.png" id="3_book"]
+[ext_resource type="Texture2D" uid="uid://c7cbrlyfj6wb5" path="res://assets/art/ui/inventory/book-inventory-grid.png" id="4_grid"]
+[ext_resource type="Texture2D" uid="uid://bdv7r0xhl5u6v" path="res://assets/art/ui/inventory/button-close.png" id="5_close"]
+[ext_resource type="Script" uid="uid://c3vtxtk7pbyea" path="res://ui/inventory_slot.gd" id="6_slot"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/hotbar_main.png" id="7_hotbar_main"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/hotbar_secondary.png" id="8_hotbar_secondary"]
+[ext_resource type="PackedScene" path="res://ui/inventory_submenu.tscn" id="9_submenu"]
 
-[node name="InventoryMenu" type="Control"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_xonaa"]
+
+[node name="InventoryMenu" type="Control" unique_id=1892608905]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 script = ExtResource("1_script")
 
-[node name="Dim" type="ColorRect" parent="."]
+[node name="Dim" type="ColorRect" parent="." unique_id=49120836]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,32 +31,35 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.68)
 
-[node name="Backpack" type="TextureRect" parent="."]
+[node name="Backpack" type="TextureRect" parent="." unique_id=1142983789]
 layout_mode = 0
-offset_left = 80.0
-offset_top = 70.0
-offset_right = 560.0
-offset_bottom = 310.0
+offset_left = -54.0
+offset_top = -12.0
+offset_right = 686.0
+offset_bottom = 362.0
 mouse_filter = 2
 texture = ExtResource("2_backpack")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="BookOpening" type="AnimatedSprite2D" parent="."]
+[node name="BookOpening" type="AnimatedSprite2D" parent="." unique_id=1833832000]
+z_index = 1
 position = Vector2(320, 180)
 scale = Vector2(1.5, 1.5)
-z_index = 1
+sprite_frames = SubResource("SpriteFrames_xonaa")
+frame_progress = 1.0
+speed_scale = 2.0
 
-[node name="BookContent" type="Control" parent="."]
-layout_mode = 0
+[node name="BookContent" type="Control" parent="." unique_id=619646060]
+z_index = 2
+anchors_preset = 0
 offset_left = 140.0
 offset_top = 60.0
 offset_right = 380.0
 offset_bottom = 220.0
 scale = Vector2(1.5, 1.5)
-z_index = 2
 
-[node name="Book" type="TextureRect" parent="BookContent"]
+[node name="Book" type="TextureRect" parent="BookContent" unique_id=217828873]
 layout_mode = 0
 offset_right = 240.0
 offset_bottom = 160.0
@@ -60,78 +67,75 @@ mouse_filter = 2
 texture = ExtResource("3_book")
 expand_mode = 1
 
-[node name="InventoryTitle" type="Label" parent="BookContent"]
+[node name="InventoryTitle" type="Label" parent="BookContent" unique_id=1494281286]
+visible = false
 layout_mode = 0
 offset_left = 35.0
 offset_top = 18.0
 offset_right = 105.0
 offset_bottom = 34.0
-mouse_filter = 2
 text = "Inventory"
 horizontal_alignment = 1
 
-[node name="HotbarTitle" type="Label" parent="BookContent"]
+[node name="HotbarTitle" type="Label" parent="BookContent" unique_id=1193395308]
+visible = false
 layout_mode = 0
 offset_left = 145.0
 offset_top = 18.0
 offset_right = 205.0
 offset_bottom = 34.0
-mouse_filter = 2
 text = "Hotbar"
 horizontal_alignment = 1
 
-[node name="Weight" type="Label" parent="BookContent"]
+[node name="Weight" type="Label" parent="BookContent" unique_id=452134816]
 layout_mode = 0
 offset_left = 25.0
 offset_top = 116.0
 offset_right = 106.0
 offset_bottom = 130.0
-mouse_filter = 2
-text = "Backpack: 0g of 0g"
 theme_override_font_sizes/font_size = 7
+text = "Backpack: 0g of 0g"
 
-[node name="ItemName" type="Label" parent="BookContent"]
+[node name="ItemName" type="Label" parent="BookContent" unique_id=1122166294]
 layout_mode = 0
 offset_left = 25.0
 offset_top = 132.0
 offset_right = 105.0
 offset_bottom = 143.0
-mouse_filter = 2
-text = "Select an item"
 theme_override_font_sizes/font_size = 8
+text = "Select an item"
 
-[node name="ItemDescription" type="Label" parent="BookContent"]
+[node name="ItemDescription" type="Label" parent="BookContent" unique_id=1541039444]
 layout_mode = 0
 offset_left = 25.0
 offset_top = 144.0
 offset_right = 107.0
 offset_bottom = 157.0
-mouse_filter = 2
-autowrap_mode = 2
 theme_override_font_sizes/font_size = 6
+autowrap_mode = 2
 
-[node name="Close" type="TextureButton" parent="BookContent"]
+[node name="Close" type="TextureButton" parent="BookContent" unique_id=1599208567]
 layout_mode = 0
-offset_left = 208.0
-offset_top = -10.0
-offset_right = 240.0
-offset_bottom = 22.0
+offset_left = 206.66667
+offset_top = 8.666668
+offset_right = 238.66667
+offset_bottom = 40.666668
 focus_mode = 0
 mouse_default_cursor_shape = 2
-ignore_texture_size = true
 texture_normal = ExtResource("5_close")
+ignore_texture_size = true
 
-[node name="BackpackSlots" type="Control" parent="BookContent"]
-layout_mode = 0
+[node name="BackpackSlots" type="Control" parent="BookContent" unique_id=442546866]
+anchors_preset = 0
 
-[node name="Slot0" type="Control" parent="BookContent/BackpackSlots"]
-layout_mode = 0
+[node name="Slot0" type="Control" parent="BookContent/BackpackSlots" unique_id=481227687]
+anchors_preset = 0
 offset_left = 26.0
 offset_top = 43.0
 offset_right = 52.0
 offset_bottom = 69.0
 
-[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot0"]
+[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot0" unique_id=383471487]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -143,7 +147,7 @@ texture = ExtResource("4_grid")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot0"]
+[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot0" unique_id=870028274]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -155,7 +159,7 @@ flat = true
 expand_icon = true
 script = ExtResource("6_slot")
 
-[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot0/Button"]
+[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot0/Button" unique_id=23849646]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -166,17 +170,16 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 2
 theme_override_font_sizes/font_size = 6
 
-[node name="Slot1" type="Control" parent="BookContent/BackpackSlots"]
-layout_mode = 0
+[node name="Slot1" type="Control" parent="BookContent/BackpackSlots" unique_id=293451438]
+anchors_preset = 0
 offset_left = 55.0
 offset_top = 43.0
 offset_right = 81.0
 offset_bottom = 69.0
 
-[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot1"]
+[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot1" unique_id=34045699]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -188,7 +191,7 @@ texture = ExtResource("4_grid")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot1"]
+[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot1" unique_id=1327573988]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -200,7 +203,7 @@ flat = true
 expand_icon = true
 script = ExtResource("6_slot")
 
-[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot1/Button"]
+[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot1/Button" unique_id=1622336111]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -211,17 +214,16 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 2
 theme_override_font_sizes/font_size = 6
 
-[node name="Slot2" type="Control" parent="BookContent/BackpackSlots"]
-layout_mode = 0
+[node name="Slot2" type="Control" parent="BookContent/BackpackSlots" unique_id=1262576214]
+anchors_preset = 0
 offset_left = 84.0
 offset_top = 43.0
 offset_right = 110.0
 offset_bottom = 69.0
 
-[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot2"]
+[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot2" unique_id=818494310]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -233,7 +235,7 @@ texture = ExtResource("4_grid")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot2"]
+[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot2" unique_id=1117213925]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -245,7 +247,7 @@ flat = true
 expand_icon = true
 script = ExtResource("6_slot")
 
-[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot2/Button"]
+[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot2/Button" unique_id=1344502011]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -256,17 +258,16 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 2
 theme_override_font_sizes/font_size = 6
 
-[node name="Slot3" type="Control" parent="BookContent/BackpackSlots"]
-layout_mode = 0
+[node name="Slot3" type="Control" parent="BookContent/BackpackSlots" unique_id=969281324]
+anchors_preset = 0
 offset_left = 41.0
 offset_top = 75.0
 offset_right = 67.0
 offset_bottom = 101.0
 
-[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot3"]
+[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot3" unique_id=2105259461]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -278,7 +279,7 @@ texture = ExtResource("4_grid")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot3"]
+[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot3" unique_id=779938112]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -290,7 +291,7 @@ flat = true
 expand_icon = true
 script = ExtResource("6_slot")
 
-[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot3/Button"]
+[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot3/Button" unique_id=1477162427]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -301,17 +302,16 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 2
 theme_override_font_sizes/font_size = 6
 
-[node name="Slot4" type="Control" parent="BookContent/BackpackSlots"]
-layout_mode = 0
+[node name="Slot4" type="Control" parent="BookContent/BackpackSlots" unique_id=2079199372]
+anchors_preset = 0
 offset_left = 70.0
 offset_top = 75.0
 offset_right = 96.0
 offset_bottom = 101.0
 
-[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot4"]
+[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot4" unique_id=805563513]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -323,7 +323,7 @@ texture = ExtResource("4_grid")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot4"]
+[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot4" unique_id=1083632360]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -335,7 +335,7 @@ flat = true
 expand_icon = true
 script = ExtResource("6_slot")
 
-[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot4/Button"]
+[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot4/Button" unique_id=1958060658]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -346,21 +346,20 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 2
 theme_override_font_sizes/font_size = 6
 
-[node name="HotbarSlots" type="Control" parent="BookContent"]
-layout_mode = 0
+[node name="HotbarSlots" type="Control" parent="BookContent" unique_id=1506183293]
+anchors_preset = 0
 
-[node name="Slot0" type="Control" parent="BookContent/HotbarSlots"]
-layout_mode = 0
+[node name="Slot0" type="Control" parent="BookContent/HotbarSlots" unique_id=1616515216]
+anchors_preset = 0
 offset_left = 145.0
 offset_top = 46.0
 offset_right = 177.0
 offset_bottom = 78.0
 rotation = -0.14
 
-[node name="Frame" type="TextureRect" parent="BookContent/HotbarSlots/Slot0"]
+[node name="Frame" type="TextureRect" parent="BookContent/HotbarSlots/Slot0" unique_id=1170118903]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -368,10 +367,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("4_grid")
+texture = ExtResource("7_hotbar_main")
 expand_mode = 1
+stretch_mode = 5
 
-[node name="Button" type="Button" parent="BookContent/HotbarSlots/Slot0"]
+[node name="Button" type="Button" parent="BookContent/HotbarSlots/Slot0" unique_id=87846578]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -383,7 +383,7 @@ flat = true
 expand_icon = true
 script = ExtResource("6_slot")
 
-[node name="Quantity" type="Label" parent="BookContent/HotbarSlots/Slot0/Button"]
+[node name="Quantity" type="Label" parent="BookContent/HotbarSlots/Slot0/Button" unique_id=1502692697]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -394,18 +394,17 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 2
 theme_override_font_sizes/font_size = 6
 
-[node name="Slot1" type="Control" parent="BookContent/HotbarSlots"]
-layout_mode = 0
+[node name="Slot1" type="Control" parent="BookContent/HotbarSlots" unique_id=1865263998]
+anchors_preset = 0
 offset_left = 181.0
 offset_top = 42.0
 offset_right = 213.0
 offset_bottom = 74.0
 rotation = 0.14
 
-[node name="Frame" type="TextureRect" parent="BookContent/HotbarSlots/Slot1"]
+[node name="Frame" type="TextureRect" parent="BookContent/HotbarSlots/Slot1" unique_id=165111859]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -413,10 +412,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("4_grid")
+texture = ExtResource("8_hotbar_secondary")
 expand_mode = 1
+stretch_mode = 5
 
-[node name="Button" type="Button" parent="BookContent/HotbarSlots/Slot1"]
+[node name="Button" type="Button" parent="BookContent/HotbarSlots/Slot1" unique_id=779353675]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -428,7 +428,7 @@ flat = true
 expand_icon = true
 script = ExtResource("6_slot")
 
-[node name="Quantity" type="Label" parent="BookContent/HotbarSlots/Slot1/Button"]
+[node name="Quantity" type="Label" parent="BookContent/HotbarSlots/Slot1/Button" unique_id=11757344]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -439,30 +439,42 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 2
 theme_override_font_sizes/font_size = 6
 
-[node name="Whistle" type="TextureButton" parent="BookContent"]
+[node name="Whistle" type="TextureButton" parent="BookContent" unique_id=1302103364]
 layout_mode = 0
 offset_left = 166.0
 offset_top = 100.0
 offset_right = 198.0
 offset_bottom = 132.0
 focus_mode = 0
-ignore_texture_size = true
 texture_normal = ExtResource("4_grid")
+ignore_texture_size = true
 
-[node name="Icon" type="TextureRect" parent="BookContent/Whistle"]
+[node name="Icon" type="TextureRect" parent="BookContent/Whistle" unique_id=653911380]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = -4.0
-offset_bottom = -4.0
+offset_left = 5.9999995
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="SubmenuButton" type="Button" parent="BookContent"]
+layout_mode = 0
+offset_left = 185.0
+offset_top = 143.0
+offset_right = 230.0
+offset_bottom = 157.0
+focus_mode = 0
+flat = true
+text = "More..."
+theme_override_font_sizes/font_size = 7
+
+[node name="Submenu" parent="BookContent" instance=ExtResource("9_submenu")]

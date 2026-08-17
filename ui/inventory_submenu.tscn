@@ -1,0 +1,36 @@
+[gd_scene format=3]
+
+[node name="Submenu" type="Control"]
+visible = false
+layout_mode = 0
+offset_left = 132.0
+offset_top = 76.0
+offset_right = 224.0
+offset_bottom = 138.0
+mouse_filter = 0
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Panel/Content"]
+layout_mode = 2
+text = "Placeholder"
+horizontal_alignment = 1
+
+[node name="Body" type="Label" parent="Panel/Content"]
+layout_mode = 2
+text = "Add submenu content here."
+autowrap_mode = 2
+
+[node name="Close" type="Button" parent="Panel/Content"]
+layout_mode = 2
+focus_mode = 0
+text = "Close"

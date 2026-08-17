@@ -27,17 +27,19 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_book_frames()
 	for path in [
+		"BookContent/HotbarSlots/Slot0/Button",
+		"BookContent/HotbarSlots/Slot1/Button",
 		"BookContent/BackpackSlots/Slot0/Button",
 		"BookContent/BackpackSlots/Slot1/Button",
 		"BookContent/BackpackSlots/Slot2/Button",
 		"BookContent/BackpackSlots/Slot3/Button",
 		"BookContent/BackpackSlots/Slot4/Button",
-		"BookContent/HotbarSlots/Slot0/Button",
-		"BookContent/HotbarSlots/Slot1/Button",
 	]:
 		slot_buttons.append(get_node(path) as InventorySlot)
 	_backpack_rest_position = backpack.position
 	close_button.pressed.connect(close_requested.emit)
+	($BookContent/SubmenuButton as Button).pressed.connect(func(): $BookContent/Submenu.visible = not $BookContent/Submenu.visible)
+	($BookContent/Submenu/Panel/Content/Close as Button).pressed.connect(func(): $BookContent/Submenu.hide())
 	hide()
 
 func open_menu() -> void:
@@ -54,7 +56,7 @@ func open_menu() -> void:
 	tween.tween_property(dim, "color:a", 0.68, backpack_enter_seconds)
 	tween.tween_property(backpack, "position", _backpack_rest_position, backpack_enter_seconds).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_property(backpack, "modulate:a", 1.0, backpack_enter_seconds)
-	_finish_opening_after_delay(_open_token)
+	_finish_opening_after_animation(_open_token)
 
 func close_menu() -> void:
 	_open_token += 1
@@ -81,8 +83,8 @@ func set_whistle(icon: Texture2D, tooltip: String) -> void:
 	whistle_icon.texture = icon
 	$BookContent/Whistle.tooltip_text = tooltip
 
-func _finish_opening_after_delay(token: int) -> void:
-	await get_tree().create_timer(book_open_seconds).timeout
+func _finish_opening_after_animation(token: int) -> void:
+	await book_opening.animation_finished
 	if token != _open_token or not visible:
 		return
 	book_opening.hide()

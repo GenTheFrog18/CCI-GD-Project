@@ -112,7 +112,7 @@ Damage, force, status, agitation, sight obstruction, sound, dan target override 
 
 ## 12. UI dan Feedback
 
-HUD utama: health, hotbar, whistle fisik, nama status, uang, berat, prompt, autosave, dan threat marker. Inventory terbuka sebagai buku animasi: lima slot backpack di halaman kiri, dua hotbar dan whistle di halaman kanan, detail item terpilih, dan dunia tetap terlihat gelap di belakangnya. Damage memakai flash merah/putih; status tampil di bawah health; overlay tidak menutup HUD; warning attack memakai `!` dan segitiga; F3 berada di kanan atas.
+HUD utama: health, hotbar, whistle fisik, nama status, uang, berat, prompt, autosave, dan threat marker. Inventory terbuka sebagai buku animasi: lima slot backpack di halaman kiri, dua slot hotbar khusus dan whistle di halaman kanan, detail item terpilih, tautan submenu yang dapat dikonfigurasi di kanan bawah, dan dunia tetap terlihat gelap di belakangnya. Damage memakai flash merah/putih; status tampil di bawah health; overlay tidak menutup HUD; warning attack memakai `!` dan segitiga; F3 berada di kanan atas.
 
 ## 13. Art, Animasi, Audio, Aksesibilitas
 

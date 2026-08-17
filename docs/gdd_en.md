@@ -116,7 +116,7 @@ Effects include bleed, poison, spider slow, resin binding, incapacitation, track
 
 ## 12. UI and Feedback
 
-Main HUD: health, hotbar, physical whistle, active status names, money, weight, prompt, autosave feedback, and threat marker. Inventory opens as an animated book: five backpack slots on the left page, two hotbar slots and whistle on the right, selected-item details, and a darkened live world behind it.
+Main HUD: health, hotbar, physical whistle, active status names, money, weight, prompt, autosave feedback, and threat marker. Inventory opens as an animated book: five backpack slots on the left page, two dedicated hotbar slots and whistle on the right, selected-item details, a configurable lower-right submenu link, and a darkened live world behind it.
 
 - Damage: brief red/white sprite flash.
 - Status: readable names below health.
