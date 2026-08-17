@@ -1,0 +1,48 @@
+[gd_scene load_steps=4 format=3 uid="uid://bx2iffqx782x"]
+
+[ext_resource type="Script" uid="uid://bi6fd4imk8an5" path="res://game/story/prologue/prologue.gd" id="1_7doua"]
+[ext_resource type="PackedScene" uid="uid://c3vogrpin7vk" path="res://game/ui/dialogue/dialogue_box.tscn" id="1_xdqyx"]
+[ext_resource type="Resource" uid="uid://4kud1ncu5fq0" path="res://data/dialogue/prologue_dialogue.tres" id="2_0npns"]
+
+[node name="Prologue" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_7doua")
+dialogue_data = ExtResource("2_0npns")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.14117648, 0.12941177, 0.22745098, 1)
+
+[node name="Visual" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DialogueBox" parent="." instance=ExtResource("1_xdqyx")]
+layout_mode = 0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+
+[node name="PrologueOverlay" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="Fade" type="ColorRect" parent="PrologueOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
