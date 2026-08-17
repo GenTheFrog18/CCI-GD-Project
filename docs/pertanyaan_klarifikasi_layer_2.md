@@ -42,7 +42,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes. Use this order: answered questionnaire → new Layer 2 specifications → current GDD/implementation documents → archived references.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## A2 — Alarm Grazer contradiction — P0
 
@@ -52,7 +52,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Remove Alarm Grazer from the four-day implementation and delete its interaction requirements from the final implementation documents.
 
-**Answer:**
+**Answer:** alarm grazer is removed concept
 
 ## A3 — Glasswings scope — P0
 
@@ -62,7 +62,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Exclude them entirely until every required enemy and relic has a runnable placeholder implementation.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## A4 — Layer 1 Large Flyer transfer — P0
 
@@ -72,7 +72,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Disable the gameplay transfer. Do not add a scripted background appearance during the four-day scope.
 
-**Answer:**
+**Answer:** layer 1 flyer will still be able to transfer into layer 2
 
 ## A5 — Required delivery roster — P0
 
@@ -82,7 +82,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Required target: all nine concepts. Emergency cut order: optional polish → advanced coordination → Carrion circling sophistication → Glasswings. Do not cut Resonance Core, Bolt Shock, Bulwark, or the basic Sky Hunter encounter because they define progression and the final route.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## A6 — Stable names and IDs — P0
 
@@ -105,7 +105,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Freeze these IDs now. Display names may be changed later without changing IDs.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## A7 — “Implemented first” completion boundary — P0
 
@@ -115,7 +115,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes. Require the functional integration boundary above; postpone final presentation assets and manual tuning.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## A8 — Provisional numeric values — P2
 
@@ -125,7 +125,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes. Only behaviour-changing choices should block implementation; all balance numbers remain editable.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -139,7 +139,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Set all four to maximum stack one.
 
-**Answer:**
+**Answer:** follow the recommendation, but still make it adjustable
 
 ## B2 — Acquisition sources — P0
 
@@ -149,7 +149,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Place Umbrella and Lacerator through deterministic Layer 2 loot placers, allocate exactly one Resonance Core per run, and make Bolt Shock quest-only plus debug-grantable.
 
-**Answer:**
+**Answer:** follow the recommendation, all of these item can only have 1 per game
 
 ## B3 — Weight and economy data — P1
 
@@ -159,7 +159,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Keep all values editable. Make Umbrella and Lacerator sellable, Bolt Shock sellable only if empty or explicitly allowed, and Resonance Core unsellable until the quest is complete.
 
-**Answer:**
+**Answer:** follow the recommendation, bolt shock is sellable
 
 ## B4 — Dropping, pits, and recovery — P0
 
@@ -169,7 +169,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Umbrella and Lacerator may be lost normally. Resonance Core and an awarded Bolt Shock should return to a protected quest-recovery marker or become replaceable if lost out of bounds.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B5 — Theft and confiscation — P1
 
@@ -179,7 +179,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Ordinary relics follow normal theft/origin rules. Unique quest/reward items may be carried by enemies but must have protected recovery and must not be permanently confiscated.
 
-**Answer:**
+**Answer:** all of them can be confiscated and stolen
 
 ## B6 — Secondary throw rule — P0
 
@@ -189,7 +189,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes. Throw the same instance state. Throwing never reloads, repairs, or duplicates it.
 
-**Answer:**
+**Answer:** none of these items can be thrown except for resonance core. their primary use is activate/reload, secondary use is shoot
 
 ## B7 — Save boundary for temporary combat state — P0
 
@@ -199,7 +199,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Persist item state and deployed real hazards; clear short combat actions/projectiles and restore actors into neutral recovery states.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B8 — Discovery descriptions — P1
 
@@ -209,7 +209,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Use those four signature events with discovery threshold one. Invalid activation or a missed attack reveals nothing.
 
-**Answer:**
+**Answer:** they're counted by primary use action.
 
 ---
 
@@ -223,7 +223,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Use press-to-toggle for the jam build. It reuses the prepared-item pattern and avoids redesigning input lifecycle for one item.
 
-**Answer:**
+**Answer:**  follow the recommendation, use press to toggle active or inactive. secondary use is the same as primary use
 
 ## C2 — Aim direction and rotation limit — P0
 
@@ -233,7 +233,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Allow cursor-facing 360-degree blocking with a configurable arc, but keep the player sprite facing left/right independently.
 
-**Answer:**
+**Answer:** allow cursor facing 360 degrees, and player sprite follows left/right according to direction
 
 ## C3 — Exact blockable attacks — P0
 
@@ -243,7 +243,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Fully block small projectiles and their statuses from the front; reduce creature-contact damage while transferring force; only partially reduce Bulwark damage and always force-close.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## C4 — Damage and status resolution — P0
 
@@ -253,7 +253,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** If stability was above zero before impact, resolve that hit as blocked, then subtract stability and force-close. Block associated statuses only when the hit was blocked.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## C5 — Force transfer — P1
 
@@ -263,7 +263,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Always transfer configured force through normal player force rules. Strong force may detach Rope. Stability controls forced close, not force absorption.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## C6 — Stability regeneration and anti-exploit rules — P0
 
@@ -273,7 +273,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Closed-only regeneration; switching cannot cancel forced recovery; save stability and remaining forced-close time on the instance.
 
-**Answer:**
+**Answer:** follow the recommendation, closing it instantly regenerates stability, but opening and closing it takes time
 
 ## C7 — Movement, jump, Rope, and airborne use — P0
 
@@ -283,7 +283,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Allow airborne use; allow use on Rope but reduce climb speed; reduce movement/jump while open; close automatically on incapacitation, death, or forced recovery.
 
-**Answer:**
+**Answer:** follow the recommendation, make all of that adjustable
 
 ## C8 — Sight occlusion — P2
 
@@ -293,7 +293,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Do not make it a sight blocker during the jam.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -307,7 +307,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Each ball has four accepted damaging contacts. Launcher ammunition is a separate limited count.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D2 — Ammunition and reload source — P0
 
@@ -317,7 +317,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Start with four inherent shots, no separate ammo item, and no field reload. A shop may restore it later only if time permits.
 
-**Answer:**
+**Answer:** follow the recommendation, make ammo count adjustable
 
 ## D3 — Ball lifetime, pickup, and depleted state — P0
 
@@ -327,7 +327,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Balls are not pickups. They persist while armed, then disappear after a short depletion animation/delay.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D4 — Owner and friendly-hit rules — P0
 
@@ -337,7 +337,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Ignore the source player; allow accepted cross-species enemy hits; rejected hits do not consume contacts or apply Bleed.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D5 — Repeated contact rule — P1
 
@@ -347,7 +347,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Require exit/re-entry, with a small per-target cooldown as a defensive safeguard.
 
-**Answer:**
+**Answer:** do not require exit/re-entry, but each enemy will have an adjustable iframe from the ball damage
 
 ## D6 — Damage and Bleed — P1
 
@@ -357,7 +357,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Use existing refreshable Bleed; make direct damage and duration exported; never add parallel Lacerator-only bleeding.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D7 — Attack interruption strength — P1
 
@@ -367,7 +367,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Allow interruption of ordinary wind-ups when configured strength meets resistance. Do not interrupt committed Bulwark charges or committed Sky Hunter passes.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D8 — Maximum deployed balls and save/load — P1
 
@@ -377,7 +377,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Persist armed balls, cap active balls per owner to the launcher's ammunition capacity, and remove depleted balls promptly.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -391,7 +391,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Place the Core in an optional dangerous branch before the final gauntlet. The player retrieves it, returns to the shop, then uses the reward on the final route.
 
-**Answer:**
+**Answer:** follow the recommendation, placement will be determined by level designer
 
 ## E2 — Unique deterministic allocation — P0
 
@@ -401,7 +401,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes: exactly one guaranteed allocation, stable across save/load.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## E3 — Inventory movement and passive resonance — P0
 
@@ -411,7 +411,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Inventory movement stays silent. Only physical world impacts after dropping/throwing, or explicit received-impact events, emit resonance.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## E4 — Sound mapping — P1
 
@@ -421,7 +421,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Use three thresholds for jam readability. Cap the strongest impact below or equal to the Whistle, with all values editable.
 
-**Answer:**
+**Answer:** follow the recommendation, all of that should be adjustable
 
 ## E5 — Physical collision effects — P0
 
@@ -431,7 +431,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Let valid impacts move it and emit sound. The Core itself deals no direct damage, but may transfer normal weight-derived force.
 
-**Answer:**
+**Answer:** follow the recommendation, but core can deal direct damage like silver weight, though it deals less adjustable damage, and does not break
 
 ## E6 — Quest handover confirmation — P1
 
@@ -441,7 +441,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Use a confirmation dialogue: “Give Resonance Core?”
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## E7 — Loss, sale, and recovery — P0
 
@@ -451,7 +451,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Make it unsellable before handover and return out-of-bounds Core instances to a protected recovery marker. Leaving it elsewhere is allowed and saved normally.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -465,7 +465,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes. Moon progression and the physical Bolt Shock item are separate rewards and separate saved states.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F2 — Maximum uses and recharge — P0
 
@@ -475,7 +475,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Start with three uses. No recharge or replacement during the jam unless loss recovery is required.
 
-**Answer:**
+**Answer:** it has 7 uses, no charge or replacement.
 
 ## F3 — Rod trajectory and recovery — P0
 
@@ -485,7 +485,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Use a fast, slightly gravity-affected projectile. Any successful launch consumes one use; missed rods are not recoverable.
 
-**Answer:**
+**Answer:** follow the recommendation, but its not affected by gravity
 
 ## F4 — Valid targets — P0
 
@@ -495,7 +495,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Valid targets are living effect-receiving enemies/creatures, including gatekeepers. Breakables/Core receive only ordinary impact and do not consume an electrocuted status.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F5 — Suppression memory policy — P0
 
@@ -505,7 +505,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Clear target, sensory memory, and outgoing group alert. Resume neutral/recovery and reacquire normally after expiration.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F6 — Attack interruption and resistances — P0
 
@@ -515,7 +515,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Cancel all wind-ups. Stop a Bulwark into a valid stunned/recovery state with reduced duration. A struck Sky Hunter enters controlled falling/disabled movement and recovers without affecting flockmates.
 
-**Answer:**
+**Answer:** follow the recommendation, all flying enemies hit will stop flying and be affected by gravity, making them susceptible to fall damage
 
 ## F7 — Reapplication, stacking, and Continue — P0
 
@@ -525,7 +525,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Refresh one effect; do not stack DOT/stun. Persist remaining electrocuted duration only if the shared status save can restore it safely; otherwise clear on load and restore a neutral recovery state.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## F8 — Empty Bolt Shock — P1
 
@@ -535,7 +535,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Keep one `bolt_shock` ID with per-instance remaining uses. Empty primary gives feedback; throwing remains allowed.
 
-**Answer:**
+**Answer:** the way to use a bolt shock & lacerator: intial state is unarmed, then it can be loaded using primary use, it fires using secondary use. it cannot be thrown even when empty or when not loaded, can be dropped from inventory. can be sold
 
 ---
 
@@ -549,7 +549,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Approve the proposed tags. Give Bulwark and Sky Hunters explicit Silver Weight damage instead of instant death.
 
-**Answer:**
+**Answer:** no, silver weight mechanism should not be instant death, but very big damage so that some small enemies die instatnly when hit, damage should be adjustable, and that every enemy can be hit by it
 
 ## G2 — Detector suppression coverage — P0
 
@@ -559,7 +559,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes. One shared suppressed state gates all acquisition and alert paths.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G3 — Shared attack interruption — P0
 
@@ -569,7 +569,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes. Wind-ups are interruptible; committed attacks opt into resistance or rejection.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G4 — Sound versus new Disturbance system — P0
 
@@ -579,7 +579,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Extend/reuse the existing sound event. Hounds read intensity/category; ordinary listeners continue using priority/type.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G5 — Layer 2 shop safety boundary — P0
 
@@ -589,7 +589,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Use an authored boundary that prevents hostile entry, targeting across the boundary, damaging projectiles/hitboxes crossing inward, and active charges crossing. Enemies may wait outside but must return home after a timeout.
 
-**Answer:**
+**Answer:** follow the recommendation, projectiles/hitbox can pass through
 
 ## G6 — Friendly fire and associated statuses — P0
 
@@ -599,7 +599,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Reject damage and attached statuses together. Allow explicitly non-damaging world effects such as Driftseed or Dazzled according to eligibility.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G7 — Persistent electrocuted state — P1
 
@@ -609,7 +609,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Save low electrical DOT remaining time only if convenient; clear movement stun and detector suppression on load into a neutral recovery state.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G8 — Enemy drops and rewards — P1
 
@@ -619,7 +619,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** No bespoke drops in the first pass unless already designed. Use existing loot placers for relic acquisition; add drops only after behaviour works.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G9 — Existing placer reuse — P0
 
@@ -629,7 +629,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Reuse the existing placer. Add only the minimum group/anchor data the actual enemies require.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## G10 — Curse fairness responsibility — P1
 
@@ -639,7 +639,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Do not pause AI. Use telegraphs longer than the 0.5-second stop, attack-token spacing, safe cover, and player multi-hit grace.
 
-**Answer:**
+**Answer:** nothing should change, the stop is meant to be dangerous
 
 ---
 
@@ -653,7 +653,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** For the jam, move along an authored straight or short waypoint path with collision checks; rotate/flip at the destination. No procedural climbing/navigation.
 
-**Answer:**
+**Answer:** it moves like a frog, it jumps. there is no branch, only floor as the tree. it should also not perch, not hang on ceiling.
 
 ## H2 — Group ownership — P0
 
@@ -673,7 +673,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Unlimited transient projectiles with cooldown; no drop chance in the first pass.
 
-**Answer:**
+**Answer:** follow the recommendation, projectile disappears after hit
 
 ## H4 — Close-range behaviour — P1
 
@@ -683,7 +683,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** No new melee attack. Use a short evasive hop/movement followed by a defensive recovery delay.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -697,7 +697,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Use short sight plus very small contact/proximity confirmation. Hushcap blocks sight but not near-contact confirmation.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## I2 — Player movement disturbance rules — P0
 
@@ -707,7 +707,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Reuse grounded walking events at low intensity; jump/landing and impacts are stronger; Rope climbing is quiet; Rope jump-off and item impacts emit normal events; inventory UI itself emits nothing.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## I3 — Event replacement policy — P1
 
@@ -717,7 +717,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Replace only when the new score exceeds the stored score by a margin; age reduces old scores; add a short retarget cooldown.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## I4 — Pair behaviour — P2
 
@@ -727,7 +727,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** One per encounter for the initial implementation.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -741,7 +741,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Status sensing works within a configurable radius but provides only a last-known position. The Stalker still needs a reachable route and close sight to attack.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## J2 — Eligible prey — P0
 
@@ -751,7 +751,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes. Only score actors with a valid reachable route; disabled/grounded Hunters may become prey.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## J3 — Bite Bleed — P1
 
@@ -761,7 +761,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Start with direct damage only. Keep `bite_applies_bleed` exported and enable only after playtesting.
 
-**Answer:**
+**Answer:** bite inflicts bleed
 
 ## J4 — Healthy-player aggression — P0
 
@@ -771,7 +771,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Shadow or avoid at medium range; attack a healthy player only at short range, when cornered, or when no safer prey exists for a configurable time.
 
-**Answer:**
+**Answer:** when no valid target exists, it becomes neutral, only attacking when attacked. its normal state is roaming
 
 ---
 
@@ -785,7 +785,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Confirm all listed interactions. Apply damage only to damageable actors/breakables; apply force to compatible physics objects.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## K2 — Same-species Bulwark displacement — P1
 
@@ -795,7 +795,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Reject both damage and major displacement for the first pass to prevent Bulwarks shoving each other out of authored lanes.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## K3 — Heavy-object stop rule — P0
 
@@ -805,7 +805,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Use one exported mass/impact threshold. Silver Weight and Resonance Core qualify by default. Transfer force to the object, then enter collision recovery.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## K4 — Relic response hierarchy — P0
 
@@ -815,7 +815,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Confirm exactly this hierarchy.
 
-**Answer:**
+**Answer:** follow the recommendation, make umbrella damage reduction, and resin deceleration adjustable
 
 ---
 
@@ -829,7 +829,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Introduce it through an authored trigger after the first Layer 2 safe/onboarding area, then keep surviving members active across exposed regions. Never enter the shop safe zone.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## L2 — Starting group pressure — P2
 
@@ -839,7 +839,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Start at three/one; export all values.
 
-**Answer:**
+**Answer:** follow the recommendation, this will be determined by level designer
 
 ## L3 — Off-screen relocation — P0
 
@@ -849,7 +849,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Allow relocation only when outside the camera plus a configurable margin and unseen for several seconds. Preserve health/status/member ID.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## L4 — Silver Weight and disabled flight — P0
 
@@ -859,7 +859,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Heavy damage, not instant kill. Driftseed slows flight without falling; Bolt Shock causes controlled falling/grounded disable, then recovery takeoff.
 
-**Answer:**
+**Answer:** follow the recommendation, follow according the rules i have specified
 
 ## L5 — Full-flock defeat reward — P1
 
@@ -869,7 +869,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** No required progression reward. Permanent removal is the reward; optional money/relic drops can wait.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -883,7 +883,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Define one shop authority character who studies resonance and rewards proof/retrieval with recognized Moon rank plus a stored defensive relic. A temporary role name is acceptable.
 
-**Answer:**
+**Answer:** layer 2 gatekeeper is the quest giver
 
 ## M2 — Optional quest and route access — P0
 
@@ -893,7 +893,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Confirm. The optional quest changes safety/options, not gate access.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ## M3 — Quest-state stages — P0
 
@@ -903,7 +903,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Use the minimum flags needed for requested/completed/rewarded; allow early discovery and immediate handover after first conversation.
 
-**Answer:**
+**Answer:**the quest is not a saved state, the player can find the item, and give it to the gatekeeper even if no interaction has been done. the item itself is the check, and reward is given at the dialogue confirmation
 
 ## M4 — Full-inventory reward fallback — P0
 
@@ -913,7 +913,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Spawn one persistent protected pickup at a fixed marker inside the shop safe zone and save its awarded state immediately.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## M5 — Layer 3 completion check — P0
 
@@ -923,7 +923,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes.
 
-**Answer:**
+**Answer:** yes
 
 ## M6 — Optional ending acknowledgement — GDD
 
@@ -933,7 +933,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** One ending sequence with one optional acknowledgement line.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## M7 — Representative Layer 2 route — P1
 
@@ -943,7 +943,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Approve one concise route after answering E1/M2; implementation tests should follow it.
 
-**Answer:**
+**Answer:** player go through the layewr 2 entrance, then go down to the inverted canopy, walk to the edge, shop if from east side, forest if from the west side. find the core if want to, return to get reward, and return to gauntlet to layer 3. or if they have enough items, can use simpler relics to go straight to the layer 3 gate
 
 ## M8 — Four-day presentation route — P1
 
@@ -953,7 +953,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Choose one known seed after maps contain the new placers. Add clearly labelled F3 grants/teleports rather than changing normal drop rates.
 
-**Answer:**
+**Answer:** for presentation there is no set seed, the current mechanic should handle the random seed
 
 ---
 
@@ -967,7 +967,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes. Permanent terrain is never damaged or status-affected; item/projectile-to-item interactions occur only where a shared physics/impact contract supports them.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## N2 — Required Layer 2 ecosystem chains — P1
 
@@ -977,7 +977,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Treat all as required except fine-grained Primate Core investigation, which may remain allowed.
 
-**Answer:**
+**Answer:** follow the recommendation, stalker can make an enemy as an active target to hunt
 
 ## N3 — Interaction priority conflicts — P1
 
@@ -987,7 +987,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Confirm the priority order stated in the question.
 
-**Answer:**
+**Answer:** primate is sight first, hound is sound, stalker is wound effect primarily since its sight and sound is very poor, and hunters ignore new sound until recovery unless they're affected/blocked by other relics
 
 ## N4 — Placeholder presentation requirements — P1
 
@@ -997,7 +997,7 @@ This questionnaire was prepared from:
 
 **Recommendation:** Yes. Mechanical readability is required; decorative polish is not.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ---
 
@@ -1137,7 +1137,7 @@ These questions were previously left unanswered. They are collected here so noth
 
 **Recommendation:** Yes. P0 answers lock behaviour; unanswered P1/P2 use recommendations and exported tuning; unanswered GDD remains visibly TBD.
 
-**Answer:**
+**Answer:** follow the recommendation, if there is any conflict you should clarify and ask
 
 ## P2 — Explicit implementation greenlight boundary — P0
 
@@ -1147,4 +1147,4 @@ These questions were previously left unanswered. They are collected here so noth
 
 **Recommendation:** Yes, provided contradictions in P0 answers are resolved first.
 
-**Answer:**
+**Answer:** follow the recommendation

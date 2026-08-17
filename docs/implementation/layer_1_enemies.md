@@ -24,11 +24,11 @@ Final visual animation names are only `idle`, `move`, and `attack`; internal tel
 
 ## Cave Spider
 
-`small_enemy`. Roams authored surfaces; low-priority sound is primary, short sight scans every 0.5 s. Approach on current surface, fire with visible aim, then use ground movement while locked. Projectile applies damage, spider slow, poison, and tracking mark together. Strong Rattlepod/Snail sound and light cause fleeing. Silver Weight kills it.
+`small_enemy`. Roams authored surfaces; low-priority sound is primary, short sight scans every 0.5 s. Approach on current surface, fire with visible aim, then use ground movement while locked. Projectile applies damage, spider slow, poison, and tracking mark together. Strong Rattlepod/Snail sound and light cause fleeing. Silver Weight normally kills it through its adjustable 200 damage.
 
 ## Large Flyer
 
-`flying`, `big_roamer`, `layer_global_actor`. One living instance, adjustable 500 health, no ordinary slow/knockback. Select authored POI every 15 s; require four seconds continuous sight. Spider mark outranks Snail/Rattlepod requests; explicit priority, newest tie, fallback on invalid. Transparent authored blockers stop movement but not sight. Lost target searches then roams. Committed dive deals adjustable 75 damage. Accept poison, distraction, Driftseed, and 200 Silver Weight damage. Cross Layer 1 sections. If alive, transfer at Layer 2 shop marker with health/status; reset transient AI and reacquire.
+`flying`, `big_roamer`, `layer_global_actor`. One living instance, adjustable 500 health, no ordinary slow/knockback. Select authored POI every 15 s; require four seconds continuous sight. Spider mark outranks Snail/Rattlepod requests; explicit priority, newest tie, fallback on invalid. Transparent authored blockers stop movement but not sight. Lost target searches then roams. Committed dive deals adjustable 75 damage. Accept poison, distraction, Driftseed, and 200 Silver Weight damage. Bolt Shock disables flight, applies gravity, and permits fall damage. Cross Layer 1 sections. If alive, transfer at the Layer 2 shop marker with health/status and coexist with the Sky Hunter Flock; reset transient AI and reacquire.
 
 ## Senior Diver
 

@@ -5,6 +5,8 @@
 **Document purpose:** Implementation contract for the four Layer 2 relics
 **Status:** Working specification; exported tuning values must remain adjustable
 
+> **Answered-questionnaire authority (2026-08-17):** The implementation uses a press-toggle Plate Umbrella; non-throwable Umbrella/Lacerator/Bolt Shock; primary-to-load and secondary-to-fire launchers; a throwable Resonance Core whose first qualifying impact discovers it; four adjustable Lacerator shots; seven non-rechargeable Bolt Shock uses; and context changes that unload launchers without consuming ammunition. Any older conflicting statement below is superseded.
+
 ---
 
 ## 1. Shared implementation requirements

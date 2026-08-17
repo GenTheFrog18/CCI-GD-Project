@@ -36,7 +36,7 @@ func _test_catalog() -> void:
 		_check(ContentCatalog.get_item(id) != null, "item missing: %s" % id)
 	for id in [&"sun_sphere", &"lantern_crystal", &"rattlepod", &"hushcap", &"cling_resin", &"driftseed", &"silver_weight"]:
 		_check(ContentCatalog.get_item(id).icon != null, "finished item art missing: %s" % id)
-	for id in [&"bleed", &"poison", &"resin_bound", &"tracking_mark", &"curse_layer_1", &"curse_layer_2_penalty", &"curse_layer_2_health_cap"]:
+	for id in [&"bleed", &"poison", &"resin_bound", &"tracking_mark", &"curse_layer_1", &"curse_layer_2_penalty", &"curse_layer_2_health_cap", &"detector_suppressed", &"electro_stunned", &"electrocuted"]:
 		_check(ContentCatalog.get_effect(id) != null, "effect missing: %s" % id)
 
 func _test_enemy_scenes() -> void:
@@ -138,7 +138,7 @@ func _test_item_impacts() -> void:
 	var impact := ImpactData.new()
 	impact.receiver = probe
 	(ContentCatalog.get_item(&"silver_weight").secondary_behavior as SilverWeightBehavior).on_impact(thrown, impact)
-	_check(probe.damage >= 9999.0, "Silver Weight kills small enemies")
+	_check(is_equal_approx(probe.damage, 200.0), "Silver Weight deals global adjustable heavy damage")
 	_check(thrown.definition.item_id == &"silver_weight_damaged", "Silver Weight changes to damaged item")
 	var frog := preload("res://game/enemies/layer1/tongue_amphibian.tscn").instantiate() as TongueAmphibian
 	add_child(frog)

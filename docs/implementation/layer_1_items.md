@@ -29,7 +29,7 @@
 
 Active Rattlepod drops on inventory/shop/slot change/Save & Menu and is not restored. Temporary light/cloud/resin clears on Continue. Driftseed and actor statuses save duration. `silver_weight` and `silver_weight_damaged` are separate maximum-stack-one IDs.
 
-Use shared damage, force, status, sound, sight, agitation, and target contracts. Flying actors ignore ordinary/resin slow but accept Driftseed. Silver Weight kills `small_enemy` and deals adjustable 200 damage to the large flyer.
+Use shared damage, force, status, sound, sight, agitation, and target contracts. Flying actors ignore ordinary/resin slow but accept Driftseed. Silver Weight deals adjustable 200 heavy damage to every damageable actor; low-health enemies die from damage rather than a tag-based instant-kill rule.
 
 Item-created effect areas expose separate primary and impact `Shape2D` resources in each item definition. Edit those shapes through the Godot Inspector; no script change is required.
 

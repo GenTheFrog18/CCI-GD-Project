@@ -43,6 +43,8 @@ func scan() -> Node2D:
 		if candidate is not Node2D or candidate == get_parent() or not candidate.is_inside_tree():
 			continue
 		var target := candidate as Node2D
+		if target.has_method("is_combat_protected") and target.is_combat_protected():
+			continue
 		var distance := global_position.distance_to(target.global_position)
 		if distance < best_distance and can_see(target):
 			best = target

@@ -5,6 +5,8 @@
 **Document purpose:** Implementation contract for the complete Layer 2 enemy roster
 **Status:** Working specification; numerical values marked as provisional must remain adjustable in the Inspector
 
+> **Answered-questionnaire authority (2026-08-17):** Alarm Grazer is removed; Glasswings remain excluded; the living Layer 1 Large Flyer still transfers into Layer 2; Canopy Primates are grounded frog-like jumpers with no perch, branch, or ceiling behavior; each Primate placer owns one independent group; Silver Weight deals adjustable heavy damage rather than tag-based instant death; and the Layer 2 Curse does not pause enemy attacks. Any older conflicting statement below is superseded.
+
 ---
 
 ## 1. Final Layer 2 roster

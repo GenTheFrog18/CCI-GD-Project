@@ -7,9 +7,14 @@ extends Node
 @export var tags: Array[StringName] = []
 @export var fall_damage := 100.0
 @export var fall_immune := false
+@export var register_persistence := true
+@export var interrupt_resistance := 0.0
+@export var electric_stun_duration_multiplier := 1.0
+@export var detector_suppression_duration_multiplier := 1.0
 
 var health: HealthComponent
 var status: StatusController
+var _flight_fall_speed := 0.0
 
 func _ready() -> void:
 	var definition := ContentCatalog.get_enemy(species_id)
@@ -23,7 +28,8 @@ func _ready() -> void:
 	add_child(status)
 	var actor := get_parent()
 	if actor != null:
-		actor.add_to_group(&"persistent_objects")
+		if register_persistence:
+			actor.add_to_group(&"persistent_objects")
 		actor.add_to_group(&"effect_receivers")
 		for tag in tags:
 			actor.add_to_group(tag)
@@ -42,6 +48,33 @@ func apply_status(effect_id: StringName, data: Dictionary = {}) -> bool:
 	if get_parent().is_in_group(&"flying") and effect_id in [&"spider_slow", &"resin_bound"]:
 		return false
 	return status.apply_status(effect_id, data)
+
+func detectors_enabled() -> bool:
+	return not status.has_status(&"detector_suppressed")
+
+func apply_detector_suppression(duration: float) -> bool:
+	return status.apply_status(&"detector_suppressed", {"duration": duration * detector_suppression_duration_multiplier})
+
+func request_interrupt(strength: float, reason: StringName = &"impact") -> bool:
+	if strength < interrupt_resistance:
+		return false
+	var actor := get_parent()
+	return bool(actor.interrupt_action(reason)) if actor != null and actor.has_method("interrupt_action") else false
+
+func process_disabled_flight(actor: CharacterBody2D, delta: float, gravity := 900.0) -> bool:
+	if actor == null or not actor.is_in_group(&"flying") or not status.has_status(&"electro_stunned"):
+		_flight_fall_speed = 0.0
+		return false
+	actor.velocity.x = move_toward(actor.velocity.x, 0.0, gravity * delta)
+	actor.velocity.y += gravity * delta
+	_flight_fall_speed = maxf(_flight_fall_speed, actor.velocity.y)
+	actor.move_and_slide()
+	if actor.is_on_floor() and _flight_fall_speed > 0.0:
+		var info := DamageInfo.new(fall_damage)
+		info.tags = [&"fall"]
+		health.apply_damage(info, species_id)
+		_flight_fall_speed = 0.0
+	return true
 
 func capture_state() -> Dictionary:
 	var actor := get_parent() as Node2D

@@ -29,6 +29,10 @@ func _ready() -> void:
 	support.health.damaged.connect(_on_damaged)
 
 func _physics_process(delta: float) -> void:
+	if support.process_disabled_flight(self, delta):
+		_target = null
+		state = State.MOVE
+		return
 	_timer = maxf(0.0, _timer - delta)
 	if _target != null and _nest.distance_to(_target.global_position) <= nest_trigger_radius:
 		if state == State.ATTACK:

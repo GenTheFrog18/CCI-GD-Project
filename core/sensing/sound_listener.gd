@@ -36,6 +36,12 @@ func hear_sound(event: SoundEvent) -> void:
 	var listener := get_parent() as Node2D
 	if event == null or listener == null or event.priority < minimum_priority or event.sound_type in ignored_sound_types:
 		return
+	var owner_status := _owner_status()
+	if owner_status != null and owner_status.get_multiplier(&"sound_enabled") <= 0.0:
+		clear_target()
+		return
+	if is_instance_valid(event.source) and event.source.has_method("is_combat_protected") and event.source.is_combat_protected():
+		return
 	if listener.global_position.distance_to(event.position) > event.radius:
 		return
 	var same_direct_source := direct_target and current_event != null and event.source == current_event.source
@@ -75,6 +81,14 @@ func _register_event(event: SoundEvent) -> void:
 func _source_event_count(source: Node) -> int:
 	var source_id := source.get_instance_id() if is_instance_valid(source) else 0
 	return (_accepted_times.get(source_id, []) as Array).size()
+
+func _owner_status() -> StatusController:
+	var actor := get_parent()
+	var value = actor.get("status") if actor != null else null
+	if value is StatusController:
+		return value
+	var support := actor.get_node_or_null("EnemySupport") as EnemySupport if actor != null else null
+	return support.status if support != null else null
 
 func _draw() -> void:
 	if GameSession.debug_gameplay_draw and current_event != null:

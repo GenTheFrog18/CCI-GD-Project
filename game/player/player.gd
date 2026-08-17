@@ -59,6 +59,7 @@ var physical_whistle_id: StringName = &"whistle_red"
 var _bird_hit_times: Array[float] = []
 var curse_tracker: CurseTracker
 var _action_animation := false
+var _combat_safe_zone_count := 0
 
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
@@ -285,6 +286,23 @@ func apply_damage(info: DamageInfo) -> bool:
 	if GameSession.debug_unlimited_health:
 		return false
 	return health.apply_damage(info, species_id)
+
+func resolve_impact(impact: ImpactData) -> Dictionary:
+	if is_combat_protected() and not impact.source_species_id.is_empty() and impact.source_species_id != species_id:
+		return {"handled": true, "damage": false, "force": false, "statuses": 0, "agitation": false, "protected": true}
+	var prepared := item_controller.prepared_item
+	if is_instance_valid(prepared) and prepared.has_method("resolve_impact"):
+		return prepared.resolve_impact(impact)
+	return {}
+
+func enter_combat_safe_zone() -> void:
+	_combat_safe_zone_count += 1
+
+func exit_combat_safe_zone() -> void:
+	_combat_safe_zone_count = maxi(0, _combat_safe_zone_count - 1)
+
+func is_combat_protected() -> bool:
+	return _combat_safe_zone_count > 0
 
 func apply_force(force: Vector2) -> void:
 	if is_alive():

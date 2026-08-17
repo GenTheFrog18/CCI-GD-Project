@@ -36,6 +36,10 @@ func _ready() -> void:
 	_choose_poi()
 
 func _physics_process(delta: float) -> void:
+	if support.process_disabled_flight(self, delta):
+		_target = null
+		state = State.MOVE
+		return
 	_timer = maxf(0.0, _timer - delta)
 	_poi_time -= delta
 	_search_remaining = maxf(0.0, _search_remaining - delta)
