@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cg0rftia3u5cx" path="res://assets/art/ui/hud/hotbar-main.png" id="3_hotbar_main"]
 [ext_resource type="Texture2D" uid="uid://bwigrufnm2q2u" path="res://assets/art/ui/hud/hotbar-sec.png" id="4_hotbar_secondary"]
 [ext_resource type="Texture2D" uid="uid://be070jd1tjb7c" path="res://assets/art/ui/hud/arrow-hotbar.png" id="5_arrow"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/book-inventory-grid.png" id="6_whistle_slot"]
 
 [node name="FoundationHUD" type="CanvasLayer" unique_id=1283634119]
 layer = 20
@@ -26,6 +27,14 @@ offset_top = 6.0
 offset_right = 168.0
 offset_bottom = 22.0
 theme_override_constants/separation = 0
+
+[node name="HealthValueTooltip" type="Label" parent="." unique_id=639503766]
+visible = false
+offset_left = 8.0
+offset_top = 24.0
+offset_right = 120.0
+offset_bottom = 44.0
+mouse_filter = 2
 
 [node name="Flame0" type="TextureRect" parent="HealthFlames" unique_id=1690845849]
 custom_minimum_size = Vector2(16, 16)
@@ -147,7 +156,7 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -141.64502
+offset_left = -151.0
 offset_top = -56.575012
 offset_right = -16.0
 offset_bottom = -8.0
@@ -155,9 +164,13 @@ grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/separation = 4
 
-[node name="Whistle" type="Button" parent="Hotbar" unique_id=1078415435]
+[node name="Whistle" type="TextureButton" parent="Hotbar" unique_id=1078415435]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
+focus_mode = 0
+ignore_texture_size = true
+stretch_mode = 5
+texture_normal = ExtResource("6_whistle_slot")
 
 [node name="Slot0" type="TextureRect" parent="Hotbar" unique_id=1071106652]
 custom_minimum_size = Vector2(32, 30.39)
@@ -171,10 +184,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = -4.0
-offset_bottom = -4.0
+offset_left = 11.0
+offset_top = 13.0
+offset_right = -13.0
+offset_bottom = -12.424988
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -203,10 +216,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 6.6450195
-offset_top = 8.575012
-offset_right = -7.3549805
-offset_bottom = -8.424988
+offset_left = 10.64502
+offset_top = 10.575012
+offset_right = -13.0
+offset_bottom = -14.424988
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2

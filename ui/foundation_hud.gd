@@ -22,7 +22,8 @@ var feedback_label: Label
 var inventory_panel: PanelContainer
 var inventory_buttons: Array[Button] = []
 var hotbar_labels: Array[Label] = []
-var whistle_button: Button
+var whistle_button: BaseButton
+var health_value_tooltip: Label
 var debug_panel: PanelContainer
 var pause_panel: SettingsPopup
 var death_panel: PanelContainer
@@ -134,6 +135,9 @@ func _build_ui() -> void:
 	for flame in $HealthFlames.get_children(): health_flames.append(flame as TextureRect)
 	$HealthFlames.mouse_filter = Control.MOUSE_FILTER_STOP
 	for flame in health_flames: flame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	health_value_tooltip = $HealthValueTooltip
+	$HealthFlames.mouse_entered.connect(func(): health_value_tooltip.show())
+	$HealthFlames.mouse_exited.connect(func(): health_value_tooltip.hide())
 	health_label = $TopStats/Health
 	status_label = $Status
 	money_label = $TopStats/Money
@@ -157,7 +161,6 @@ func _build_ui() -> void:
 	hotbar_arrow.hide()
 	whistle_button = $Hotbar/Whistle
 	whistle_button.custom_minimum_size = Vector2.ONE * hotbar_slot_size
-	whistle_button.expand_icon = true
 	whistle_button.pressed.connect(func(): player.use_whistle() if player != null else false)
 	for display_index in hotbar_slots.size():
 		var slot := hotbar_slots[display_index]
@@ -480,7 +483,6 @@ func _refresh_whistle(item_id: StringName) -> void:
 	if whistle_button == null:
 		return
 	var definition := ContentCatalog.get_item(item_id)
-	whistle_button.icon = definition.icon if definition != null else null
 	whistle_button.tooltip_text = "Use %s" % (definition.display_name if definition != null else "whistle")
 	whistle_button.disabled = item_id.is_empty()
 
@@ -527,6 +529,7 @@ func _refresh_status() -> void:
 func _set_health_text(current: float, maximum: float) -> void:
 	health_label.text = "HP ∞" if GameSession.debug_unlimited_health else "HP %d/%d" % [ceili(current), ceili(maximum)]
 	$HealthFlames.tooltip_text = health_label.text
+	health_value_tooltip.text = health_label.text
 	for index in health_flames.size():
 		var threshold := maximum * float(index + 1) / float(health_flames.size())
 		health_flames[index].texture = FIRE_FULL if current >= threshold else (FIRE_LOW if current > threshold - maximum / health_flames.size() else FIRE_DEAD)
