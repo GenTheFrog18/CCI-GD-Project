@@ -17,6 +17,7 @@ func _ready() -> void:
 	_check(ContentCatalog.rebuild().is_empty(), "content catalog validates")
 	_test_catalog()
 	_test_enemy_scenes()
+	_test_layer2_enemies()
 	_test_effects_and_curse()
 	_test_player_item_regressions()
 	await _test_item_impacts()
@@ -31,7 +32,7 @@ func _ready() -> void:
 		get_tree().quit(1)
 
 func _test_catalog() -> void:
-	for id in [&"tongue_amphibian", &"knockback_bird", &"thorn_bloom", &"lantern_snail", &"cave_spider", &"large_layer1_flyer", &"senior_diver"]:
+	for id in [&"tongue_amphibian", &"knockback_bird", &"thorn_bloom", &"lantern_snail", &"cave_spider", &"large_layer1_flyer", &"senior_diver", &"canopy_primate", &"tremor_hound", &"carrion_stalker", &"bulwark_beast", &"sky_hunter"]:
 		_check(ContentCatalog.get_enemy(id) != null, "enemy missing: %s" % id)
 	for id in [&"bandage", &"info_book", &"numbing_pill", &"sun_sphere", &"lantern_crystal", &"rattlepod", &"hushcap", &"cling_resin", &"driftseed", &"silver_weight"]:
 		_check(ContentCatalog.get_item(id) != null, "item missing: %s" % id)
@@ -80,6 +81,48 @@ func _test_enemy_scenes() -> void:
 	_check(is_equal_approx(frog.support.health.health, health_before - 25.0), "poison applies five enemy damage ticks")
 	frog.free()
 	target.free()
+
+func _test_layer2_enemies() -> void:
+	var coordinator := AttackGroupCoordinator.new()
+	add_child(coordinator)
+	var first := Node.new()
+	var second := Node.new()
+	add_child(first)
+	add_child(second)
+	_check(coordinator.request_attack(first) and not coordinator.request_attack(second), "attack coordinator limits simultaneous attackers")
+	coordinator.release_attack(first)
+
+	var hound := preload("res://game/enemies/layer2/tremor_hound.tscn").instantiate() as TremorHound
+	add_child(hound)
+	var disturbance := SoundEvent.new(Vector2(75, 20), 200.0, &"impact", 8, null, 20.0)
+	hound._on_sound(disturbance, false)
+	_check(hound.state == TremorHound.State.INVESTIGATE and hound._investigation == disturbance.position, "Hound investigates recorded sound position")
+
+	var stalker := preload("res://game/enemies/layer2/carrion_stalker.tscn").instantiate() as CarrionStalker
+	add_child(stalker)
+	var attacker := Node2D.new()
+	add_child(attacker)
+	stalker._on_damaged(DamageInfo.new(1.0, attacker, &"tester"))
+	_check(stalker.state == CarrionStalker.State.SHADOW and stalker._target == attacker, "neutral Stalker retaliates when attacked")
+
+	var bulwark := preload("res://game/enemies/layer2/bulwark_beast.tscn").instantiate() as BulwarkBeast
+	add_child(bulwark)
+	bulwark.state = BulwarkBeast.State.CHARGE
+	_check(not bulwark.interrupt_action(&"impact") and bulwark.interrupt_action(&"electric"), "Bulwark charge only accepts electric interruption")
+
+	var flock := preload("res://game/enemies/layer2/sky_hunter_flock.tscn").instantiate() as SkyHunterFlock
+	add_child(flock)
+	var saved := flock.capture_state()
+	_check((saved.get("members", {}) as Dictionary).size() == flock.starting_member_count and flock.is_in_group(&"persistent_objects"), "Sky Hunter flock owns stable persistent members")
+
+	flock.free()
+	bulwark.free()
+	attacker.free()
+	stalker.free()
+	hound.free()
+	second.free()
+	first.free()
+	coordinator.free()
 
 func _test_effects_and_curse() -> void:
 	var old_layer := GameSession.current_layer_id

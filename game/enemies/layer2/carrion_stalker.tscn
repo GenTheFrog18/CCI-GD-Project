@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://game/enemies/layer2/carrion_stalker.gd" id="1"]
+[ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
+
+[sub_resource type="RectangleShape2D" id="Shape"]
+size = Vector2(28, 24)
+
+[node name="CarrionStalker" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 513
+script = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -12)
+shape = SubResource("Shape")
+
+[node name="Visual" type="Polygon2D" parent="."]
+position = Vector2(0, -12)
+polygon = PackedVector2Array(-14, 11, -11, -9, 0, -12, 14, -3, 10, 11)
+color = Color(0.48, 0.15, 0.28, 1)
+
+[node name="EnemySupport" type="Node" parent="."]
+script = ExtResource("2")
+species_id = &"carrion_stalker"
+tags = Array[StringName]([&"enemy", &"small_enemy", &"grounded", &"wounded_hunter", &"layer_2"])

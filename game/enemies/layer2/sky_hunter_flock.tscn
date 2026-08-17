@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/enemies/layer2/sky_hunter_flock.gd" id="1"]
+
+[node name="SkyHunterFlock" type="Node2D"]
+script = ExtResource("1")

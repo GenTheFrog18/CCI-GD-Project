@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://data/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer2/bulwark_beast.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+enemy_id = &"bulwark_beast"
+scene = ExtResource("2")
+species_id = &"bulwark_beast"
+tags = Array[StringName]([&"enemy", &"heavy_enemy", &"grounded", &"charger", &"layer_2"])
+max_health = 180.0
+move_speed = 300.0
+damage = 50.0
+knockback = 420.0
+detection_range = 260.0
+layer = 2

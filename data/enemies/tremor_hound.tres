@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://data/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer2/tremor_hound.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+enemy_id = &"tremor_hound"
+scene = ExtResource("2")
+species_id = &"tremor_hound"
+tags = Array[StringName]([&"enemy", &"small_enemy", &"grounded", &"sound_hunter", &"layer_2"])
+max_health = 32.0
+move_speed = 76.0
+damage = 15.0
+knockback = 210.0
+detection_range = 300.0
+layer = 2

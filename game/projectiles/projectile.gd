@@ -2,6 +2,7 @@ class_name Projectile
 extends CharacterBody2D
 
 @export var lifetime := 6.0
+@export var gravity_scale := 0.0
 
 var impact := ImpactData.new()
 var _hit_ids: Dictionary = {}
@@ -20,6 +21,8 @@ func _physics_process(delta: float) -> void:
 	if lifetime <= 0.0:
 		queue_free()
 		return
+	if gravity_scale != 0.0:
+		velocity.y += float(ProjectSettings.get_setting("physics/2d/default_gravity", 980.0)) * gravity_scale * delta
 	var collision := move_and_collide(velocity * delta)
 	if collision != null:
 		_handle_collision(collision.get_collider())
