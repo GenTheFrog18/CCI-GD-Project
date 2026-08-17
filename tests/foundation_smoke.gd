@@ -386,6 +386,7 @@ func _test_ui_input_and_debug() -> void:
 	assert(hud.hotbar_labels[0].text.contains("Multitool"))
 	assert(hud.get_node("Hotbar").get_child(0) == hud.whistle_button)
 	assert(hud.whistle_button is TextureButton and hud.whistle_button.focus_mode == Control.FOCUS_NONE)
+	assert(hud.whistle_icon.texture != null)
 	for display_index in hud.hotbar_slots.size():
 		var click_target := hud.hotbar_slots[display_index].get_node("ClickTarget") as Button
 		click_target.pressed.emit()

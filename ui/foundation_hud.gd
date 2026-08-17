@@ -23,6 +23,7 @@ var inventory_panel: PanelContainer
 var inventory_buttons: Array[Button] = []
 var hotbar_labels: Array[Label] = []
 var whistle_button: BaseButton
+var whistle_icon: TextureRect
 var health_value_tooltip: Label
 var debug_panel: PanelContainer
 var pause_panel: SettingsPopup
@@ -160,6 +161,7 @@ func _build_ui() -> void:
 	hotbar_arrow = $Arrow
 	hotbar_arrow.hide()
 	whistle_button = $Hotbar/Whistle
+	whistle_icon = $Hotbar/Whistle/Icon
 	whistle_button.custom_minimum_size = Vector2.ONE * hotbar_slot_size
 	whistle_button.pressed.connect(func(): player.use_whistle() if player != null else false)
 	for display_index in hotbar_slots.size():
@@ -483,6 +485,7 @@ func _refresh_whistle(item_id: StringName) -> void:
 	if whistle_button == null:
 		return
 	var definition := ContentCatalog.get_item(item_id)
+	whistle_icon.texture = definition.icon if definition != null else null
 	whistle_button.tooltip_text = "Use %s" % (definition.display_name if definition != null else "whistle")
 	whistle_button.disabled = item_id.is_empty()
 
