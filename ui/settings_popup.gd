@@ -10,6 +10,8 @@ signal main_action_requested
 var include_resume := false
 var main_action_text := "Close"
 var _tween: Tween
+var _card_top := 0.0
+var _card_bottom := 0.0
 
 @onready var dimmer: ColorRect = $Dimmer
 @onready var card: Control = $Card
@@ -37,6 +39,8 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	z_index = 10
 	visible = false
+	_card_top = card.offset_top
+	_card_bottom = card.offset_bottom
 	entry_resume.pressed.connect(func(): resume_requested.emit())
 	entry_sound.pressed.connect(func(): _show_page(sound_page, volume))
 	entry_screen.pressed.connect(func(): _show_page(screen_page, fullscreen))
@@ -57,13 +61,15 @@ func show_popup() -> void:
 	visible = true
 	dimmer.color.a = 0.0
 	card.modulate.a = 0.0
-	card.position = Vector2(-180.0, -100.0 + popup_slide_pixels)
+	card.offset_top = _card_top + popup_slide_pixels
+	card.offset_bottom = _card_bottom + popup_slide_pixels
 	if _tween != null:
 		_tween.kill()
 	_tween = create_tween().set_parallel()
 	_tween.tween_property(dimmer, "color:a", 0.55, popup_animation_seconds)
 	_tween.tween_property(card, "modulate:a", 1.0, popup_animation_seconds)
-	_tween.tween_property(card, "position:y", -100.0, popup_animation_seconds).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_tween.tween_property(card, "offset_top", _card_top, popup_animation_seconds).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_tween.tween_property(card, "offset_bottom", _card_bottom, popup_animation_seconds).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func close_popup() -> void:
 	if _tween != null:
