@@ -2,10 +2,9 @@
 
 [ext_resource type="Script" uid="uid://csuwc1l8vngs8" path="res://game/world/world_layer.gd" id="1"]
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
-[ext_resource type="PackedScene" uid="uid://cmahh3afjs5t1" path="res://game/npc's/shadow/shadow_npc.tscn" id="2_ckure"]
+[ext_resource type="PackedScene" uid="uid://cmahh3afjs5t1" path="res://game/npcs/shadow/shadow_npc.tscn" id="2_ckure"]
 [ext_resource type="Texture2D" uid="uid://bjcfu7hs2yhob" path="res://assets/art/world/surface/0.png" id="2_rpsi8"]
 [ext_resource type="PackedScene" path="res://game/shops/test_shop_terminal.tscn" id="3_7hsqt"]
-[ext_resource type="PackedScene" uid="uid://c3vogrpin7vk" path="res://game/ui/dialogue/dialogue_box.tscn" id="3_nghe8"]
 [ext_resource type="PackedScene" uid="uid://cflctunfjqval" path="res://game/enemies/test/test_amphibian.tscn" id="4_ckure"]
 [ext_resource type="Texture2D" uid="uid://cypfq770cleh6" path="res://assets/art/world/surface/FantasyOverflow_tileset_16x16.png" id="4_fc1rd"]
 [ext_resource type="Texture2D" uid="uid://ceetadl02glc7" path="res://assets/art/world/surface/FantasyOverflow_tileset_16x16 (2).png" id="5_78j1j"]
@@ -5029,11 +5028,6 @@ centered = false
 
 [node name="ShadowNpc" parent="RuntimeRoot/NPCContainer" instance=ExtResource("2_ckure")]
 position = Vector2(601, 305)
-
-[node name="UI" type="CanvasLayer" parent="RuntimeRoot"]
-
-[node name="DialogueBox" parent="RuntimeRoot/UI" instance=ExtResource("3_nghe8")]
-visible = false
 
 [node name="WestSpawn" type="Marker2D" parent="."]
 position = Vector2(150, 320)

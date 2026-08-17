@@ -1,44 +1,39 @@
-[gd_resource type="Resource" script_class="DialogueData" load_steps=9 format=3 uid="uid://cahbk2a2shbno"]
+[gd_resource type="Resource" script_class="DialogueSequence" load_steps=8 format=3 uid="uid://cahbk2a2shbno"]
 
-[ext_resource type="Script" uid="uid://c561kj13kn4li" path="res://data/dialogue/dialogue_line.gd" id="1_oej3r"]
-[ext_resource type="Script" uid="uid://dujtthnk0na86" path="res://data/dialogue/dialogue_data.gd" id="2_20lkb"]
-[ext_resource type="Texture2D" uid="uid://dxksabwymww8v" path="res://assets/art/characters/npc/portrait/Portrait.png" id="2_gll11"]
-[ext_resource type="Texture2D" uid="uid://d0p2emigwb3c7" path="res://assets/art/characters/player/Portrait_Flat.png" id="3_gll11"]
+[ext_resource type="Script" path="res://data/definitions/dialogue_line.gd" id="1"]
+[ext_resource type="Script" path="res://data/definitions/dialogue_sequence.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/npc/portrait/Portrait.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/player/Portrait_Flat.png" id="4"]
 
 [sub_resource type="Resource" id="Resource_mfh8f"]
-script = ExtResource("1_oej3r")
+script = ExtResource("1")
 speaker_id = &"thewanderer"
 speaker_name = "The Wanderer"
 text = "..."
-portrait = ExtResource("2_gll11")
-metadata/_custom_type_script = "uid://c561kj13kn4li"
+portrait = ExtResource("3")
 
 [sub_resource type="Resource" id="Resource_tdfu4"]
-script = ExtResource("1_oej3r")
+script = ExtResource("1")
 speaker_id = &"thewanderer"
 speaker_name = "The Wanderer"
 text = "Kamu juga bisa melihat tempat ini?"
-portrait = ExtResource("2_gll11")
-metadata/_custom_type_script = "uid://c561kj13kn4li"
+portrait = ExtResource("3")
 
 [sub_resource type="Resource" id="Resource_31mnv"]
-script = ExtResource("1_oej3r")
+script = ExtResource("1")
 speaker_id = &"player"
 speaker_name = "Elenara"
 text = "Tempat ini?"
-portrait = ExtResource("3_gll11")
-metadata/_custom_type_script = "uid://c561kj13kn4li"
+portrait = ExtResource("4")
 
 [sub_resource type="Resource" id="Resource_fsqkk"]
-script = ExtResource("1_oej3r")
+script = ExtResource("1")
 speaker_id = &"thewanderer"
 speaker_name = "The Wanderer"
 text = "Tidak semua orang bisa melihat apa yang ada di balik permukaan."
-portrait = ExtResource("2_gll11")
-metadata/_custom_type_script = "uid://c561kj13kn4li"
+portrait = ExtResource("3")
 
 [resource]
-script = ExtResource("2_20lkb")
-dialogue_id = &"shadow_intro"
-lines = Array[ExtResource("1_oej3r")]([SubResource("Resource_mfh8f"), SubResource("Resource_tdfu4"), SubResource("Resource_31mnv"), SubResource("Resource_fsqkk")])
-metadata/_custom_type_script = "uid://dujtthnk0na86"
+script = ExtResource("2")
+sequence_id = &"shadow_intro"
+entries = Array[ExtResource("1")]([SubResource("Resource_mfh8f"), SubResource("Resource_tdfu4"), SubResource("Resource_31mnv"), SubResource("Resource_fsqkk")])

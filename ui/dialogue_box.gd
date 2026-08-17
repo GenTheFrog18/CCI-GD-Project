@@ -2,6 +2,11 @@ class_name DialogueBox
 extends PanelContainer
 
 @export var typing_speed := 0.03
+@export var typing_sfx_every_characters := 3
+
+signal dialogue_finished
+
+const TYPING_SFX := preload("res://assets/audio/dialogue/dialogue_blip.wav")
 
 var _sequence: DialogueSequence
 var _index := 0
@@ -13,6 +18,9 @@ var _portrait: TextureRect
 var _speaker_label: Label
 var _text_label: Label
 var _continue_label: Label
+var _typing_sfx: AudioStreamPlayer
+var _sfx_visible_characters := 0
+var _sfx_character_count := 0
 
 func _ready() -> void:
 	add_to_group(&"dialogue_box")
@@ -38,6 +46,9 @@ func _ready() -> void:
 	_continue_label.text = "[E]"
 	_continue_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	column.add_child(_continue_label)
+	_typing_sfx = AudioStreamPlayer.new()
+	_typing_sfx.stream = TYPING_SFX
+	add_child(_typing_sfx)
 
 func show_sequence(sequence: DialogueSequence, player: Node = null) -> void:
 	if sequence == null or (sequence.lines.is_empty() and sequence.entries.is_empty()):
@@ -56,7 +67,9 @@ func _process(delta: float) -> void:
 	if not _typing:
 		return
 	_visible_characters += delta / maxf(typing_speed, 0.001)
-	_text_label.visible_characters = int(_visible_characters)
+	var visible_characters := mini(int(_visible_characters), _full_text.length())
+	_play_typing_sfx(visible_characters)
+	_text_label.visible_characters = visible_characters
 	if _text_label.visible_characters >= _full_text.length():
 		_finish_typing()
 
@@ -94,6 +107,8 @@ func _show_line() -> void:
 	_text_label.text = _full_text
 	_text_label.visible_characters = 0
 	_visible_characters = 0.0
+	_sfx_visible_characters = 0
+	_sfx_character_count = 0
 	_typing = true
 	_continue_label.visible = false
 
@@ -106,6 +121,7 @@ func _line_count() -> int:
 	return _sequence.entries.size() if not _sequence.entries.is_empty() else _sequence.lines.size()
 
 func close() -> void:
+	var was_open := _sequence != null
 	visible = false
 	set_process(false)
 	_typing = false
@@ -113,6 +129,19 @@ func close() -> void:
 		_player.locks.unlock(&"dialogue")
 	_player = null
 	_sequence = null
+	if was_open:
+		dialogue_finished.emit()
+
+func _play_typing_sfx(visible_characters: int) -> void:
+	if visible_characters <= _sfx_visible_characters:
+		return
+	for character_index in range(_sfx_visible_characters, visible_characters):
+		if not _full_text[character_index].strip_edges().is_empty():
+			_sfx_character_count += 1
+			if _sfx_character_count >= maxi(typing_sfx_every_characters, 1):
+				_typing_sfx.play()
+				_sfx_character_count = 0
+	_sfx_visible_characters = visible_characters
 
 func _exit_tree() -> void:
 	close()

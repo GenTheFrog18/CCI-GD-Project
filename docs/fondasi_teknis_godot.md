@@ -414,6 +414,8 @@ Istilah “boss” pada pembicaraan desain saat ini merujuk kepada gatekeeper/qu
 - Dotted parabolic line sepanjang default 48 px menunjukkan arah dan kekuatan throw; visual guide tidak melakukan collision prediction.
 - HUD minimum: health, money, dua hotbar, whistle, status, prompt, delivery, dan autosave feedback.
 - Dialogue memakai control-lock token dan selalu melepasnya saat selesai, skip, scene change, atau error.
+- Dialogue content memakai `DialogueSequence` dan `DialogueLine` di `data/definitions/`; prologue New Run dan NPC Surface memakai runtime `ui/dialogue_box.gd`. Jangan menambahkan dialogue framework kedua pada scene map.
+- New Run memainkan `prologue_intro`, lalu masuk `world_run` pada Surface. Continue langsung membuka save di `world_run`.
 - Player art memakai 32×32 px. Item art 16×16 diperbolehkan pada scene yang sama. Icon inventory dapat memakai source yang sama sementara.
 - Resize melalui `Sprite2D.scale` diperbolehkan. Utamakan integer scale seperti `2×`; non-integer scale boleh untuk placeholder tetapi dapat membuat pixel tidak rata.
 - Actor/world item memakai pivot bottom-centre. Collision dimiliki programmer, bukan mengikuti ukuran sprite otomatis.

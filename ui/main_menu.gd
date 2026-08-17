@@ -120,7 +120,7 @@ func _show_new_run_confirmation() -> void:
 func _start_new() -> void:
 	GameSession.start_new_run(int(seed_input.value), debug_checkbox.button_pressed)
 	SaveManager.loaded_persistent_state.clear()
-	SceneRouter.go_to("res://game/world/world_run.tscn")
+	SceneRouter.go_to("res://game/story/prologue/prologue.tscn")
 
 func _continue_run() -> void:
 	if not SaveManager.load_run().is_empty(): SceneRouter.go_to("res://game/world/world_run.tscn")

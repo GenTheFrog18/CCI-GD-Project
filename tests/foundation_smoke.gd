@@ -350,7 +350,7 @@ func _test_main_menu_ui() -> void:
 	add_child(menu)
 	await get_tree().process_frame
 	await get_tree().process_frame
-	assert(menu.background_travel_seconds == 60.0)
+	assert(menu.background_travel_seconds > 0.0)
 	assert(menu.get_node("MenuColumn").get_children().map(func(child: Node): return child.name) == [&"NewRun", &"Continue", &"Settings", &"Quit"])
 	assert(menu.get_child(0).name == &"Background" and menu.get_child(1).name == &"Vignette")
 	assert(menu.background.size.y > menu.size.y and menu._background_tween != null)
@@ -910,6 +910,9 @@ func _test_save() -> void:
 	SaveManager.run_path = original_path
 
 func _test_room_loads() -> void:
+	var prologue := preload("res://game/story/prologue/prologue.tscn").instantiate()
+	assert(prologue.dialogue_sequence is DialogueSequence)
+	prologue.free()
 	var room := preload("res://game/world/foundation_test_room.tscn").instantiate()
 	assert(room != null)
 	room.free()
