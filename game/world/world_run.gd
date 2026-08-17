@@ -213,6 +213,8 @@ func _on_debug_action(action: StringName) -> void:
 			_debug_teleport(&"layer_2", &"east", Vector2(1920.0, 2260.0))
 		&"teleport_surface":
 			_debug_teleport(&"surface", &"west", Vector2(150.0, 320.0))
+		&"spawn_layer2_enemies":
+			_debug_spawn_layer2_enemies()
 		&"curse_reset":
 			player.curse_tracker.reset_reference(false)
 		&"curse_clear":
@@ -243,6 +245,21 @@ func _debug_teleport(layer_id: StringName, route_id: StringName, position: Vecto
 		player.global_position = position
 		player.set_last_safe_position(position)
 		player.curse_tracker.reset_reference(true)
+
+func _debug_spawn_layer2_enemies() -> void:
+	if active_layer == null or player == null:
+		return
+	var ids := [&"canopy_primate", &"tremor_hound", &"carrion_stalker", &"bulwark_beast"]
+	for index in ids.size():
+		var definition := ContentCatalog.get_enemy(ids[index])
+		if definition == null or definition.scene == null:
+			continue
+		var enemy := definition.scene.instantiate() as Node2D
+		enemy.set("persistent_id", GameSession.next_runtime_id(ids[index], GameSession.current_layer_id))
+		if enemy is CanopyPrimate:
+			enemy.spawn_group_id = &"debug_primate_group"
+		enemy.position = active_layer.runtime_root.to_local(player.global_position + Vector2((index - 1.5) * 90.0, -48.0))
+		active_layer.runtime_root.add_child(enemy)
 
 func _update_debug_draw() -> void:
 	if _debug_draw != null:

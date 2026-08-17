@@ -7,7 +7,10 @@ extends Area2D
 @export var persistent_id := ""
 @export var interaction_priority := 20
 
+var _spawn_position := Vector2.ZERO
+
 func _ready() -> void:
+	_spawn_position = global_position
 	add_to_group(&"interactables")
 	add_to_group(&"loose_items")
 	_apply_visual()
@@ -53,6 +56,7 @@ func restore_state(data: Dictionary) -> void:
 	instance_state = data.get("instance_state", {}).duplicate(true)
 	var saved_position: Array = data.get("position", [0.0, 0.0])
 	global_position = Vector2(float(saved_position[0]), float(saved_position[1]))
+	_spawn_position = global_position
 	_apply_visual()
 
 func _apply_visual() -> void:
@@ -71,6 +75,8 @@ func handle_world_out_of_bounds() -> void:
 		var marker := get_tree().get_first_node_in_group(&"quest_item_recovery_marker") as Node2D
 		if marker != null:
 			global_position = marker.global_position
-			return
+		else:
+			global_position = _spawn_position
+		return
 	SaveManager.mark_destroyed(persistent_id)
 	queue_free()

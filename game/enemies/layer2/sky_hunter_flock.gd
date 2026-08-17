@@ -15,10 +15,19 @@ var _dead_member_ids: Array[String] = []
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
 	add_to_group(&"layer_global_actor")
+	add_to_group(&"sky_hunter_flock")
 	_coordinator = AttackGroupCoordinator.find_or_create(self, &"sky_hunter_flock", maximum_simultaneous_attackers, minimum_group_attack_spacing)
 	if _living_members().is_empty():
 		for index in starting_member_count:
 			_spawn_member("sky_hunter_%d" % index, global_position + Vector2((index - (starting_member_count - 1) * 0.5) * spawn_spacing, -20.0))
+	process_mode = Node.PROCESS_MODE_INHERIT if bool(GameSession.progression_flags.get("layer_2_sky_hunter_active", false)) else Node.PROCESS_MODE_DISABLED
+
+func activate_near(player_position: Vector2) -> void:
+	GameSession.progression_flags["layer_2_sky_hunter_active"] = true
+	var route_x := 1920.0 if player_position.x >= 1280.0 else 640.0
+	if absf(global_position.x - route_x) > 800.0:
+		global_position.x = route_x
+	process_mode = Node.PROCESS_MODE_INHERIT
 
 func _spawn_member(id: String, position: Vector2, state_data: Dictionary = {}) -> SkyHunter:
 	if id in _dead_member_ids:

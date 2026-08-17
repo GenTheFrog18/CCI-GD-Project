@@ -338,7 +338,7 @@ func _build_ui() -> void:
 		button.text = spec[0]
 		button.pressed.connect(spec[1])
 		debug_column.add_child(button)
-	for item_id in [&"bandage", &"info_book", &"numbing_pill", &"sun_sphere", &"lantern_crystal", &"rattlepod", &"hushcap", &"cling_resin", &"driftseed", &"silver_weight"]:
+	for item_id in [&"bandage", &"info_book", &"numbing_pill", &"sun_sphere", &"lantern_crystal", &"rattlepod", &"hushcap", &"cling_resin", &"driftseed", &"silver_weight", &"plate_umbrella", &"lacerator", &"resonance_core", &"bolt_shock"]:
 		var definition := ContentCatalog.get_item(item_id)
 		var button := Button.new()
 		button.text = "Give %s" % (definition.display_name if definition != null else String(item_id))
@@ -348,6 +348,10 @@ func _build_ui() -> void:
 	blue_whistle.text = "Grant Blue Whistle"
 	blue_whistle.pressed.connect(_debug_grant_blue_whistle)
 	debug_column.add_child(blue_whistle)
+	var moon_whistle := Button.new()
+	moon_whistle.text = "Grant Moon Whistle"
+	moon_whistle.pressed.connect(_debug_grant_moon_whistle)
+	debug_column.add_child(moon_whistle)
 	unlimited_health_toggle = CheckButton.new()
 	unlimited_health_toggle.text = "Unlimited Health"
 	unlimited_health_toggle.button_pressed = GameSession.debug_unlimited_health
@@ -364,6 +368,7 @@ func _build_ui() -> void:
 		["Teleport Layer 2 Shop", &"teleport_shop"],
 		["Teleport Layer 3 Entrance", &"teleport_ending"],
 		["Teleport Surface", &"teleport_surface"],
+		["Spawn Layer 2 Enemies", &"spawn_layer2_enemies"],
 		["Validate World", &"validate_world"],
 		["Dump Manifest", &"dump_manifest"],
 		["Reset Curse Height", &"curse_reset"],
@@ -704,6 +709,12 @@ func _debug_give_item(item_id: StringName) -> void:
 func _debug_grant_blue_whistle() -> void:
 	GameSession.whistle_tier = &"blue"
 	player.physical_whistle_id = &"whistle_blue"
+	player.whistle_slot_changed.emit(player.physical_whistle_id)
+
+func _debug_grant_moon_whistle() -> void:
+	GameSession.whistle_tier = &"moon"
+	GameSession.whistle_changed.emit(GameSession.whistle_tier)
+	player.physical_whistle_id = &"whistle_moon"
 	player.whistle_slot_changed.emit(player.physical_whistle_id)
 
 func _debug_emit_sound() -> void:

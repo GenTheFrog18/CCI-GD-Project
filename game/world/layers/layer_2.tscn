@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://d2nyjdso2ylpo"]
+[gd_scene load_steps=28 format=3 uid="uid://d2nyjdso2ylpo"]
 
 [ext_resource type="Script" uid="uid://csuwc1l8vngs8" path="res://game/world/world_layer.gd" id="1"]
 [ext_resource type="Script" uid="uid://qe67kbamixq5" path="res://game/world/world_slot.gd" id="2"]
@@ -16,6 +16,10 @@
 [ext_resource type="PackedScene" uid="uid://bdfr8wek2r3pg" path="res://game/world/sections/layer2/east/slot_03_b.tscn" id="14_yvn67"]
 [ext_resource type="Script" path="res://game/world/large_flyer_arrival.gd" id="15_arrival"]
 [ext_resource type="Script" path="res://game/world/curse_safe_zone.gd" id="16_safe"]
+[ext_resource type="Script" path="res://game/world/combat_safe_zone.gd" id="17_combat_safe"]
+[ext_resource type="PackedScene" path="res://game/world/layer2_gatekeeper.tscn" id="18_gatekeeper"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer2/sky_hunter_flock.tscn" id="19_flock"]
+[ext_resource type="Script" path="res://game/world/flock_activation_zone.gd" id="20_flock_activation"]
 
 [sub_resource type="RectangleShape2D" id="OuterWall"]
 size = Vector2(20, 2400)
@@ -28,6 +32,15 @@ size = Vector2(420, 260)
 
 [sub_resource type="RectangleShape2D" id="SafeArea"]
 size = Vector2(520, 320)
+
+[sub_resource type="RectangleShape2D" id="SafeHorizontalWall"]
+size = Vector2(520, 12)
+
+[sub_resource type="RectangleShape2D" id="SafeVerticalWall"]
+size = Vector2(12, 320)
+
+[sub_resource type="RectangleShape2D" id="FlockActivationArea"]
+size = Vector2(2560, 80)
 
 [node name="Layer2" type="Node2D" unique_id=1688547811 node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn")]
 script = ExtResource("1")
@@ -115,6 +128,51 @@ script = ExtResource("16_safe")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ShopCurseSafeZone"]
 shape = SubResource("SafeArea")
+
+[node name="ShopCombatSafeZone" type="Area2D" parent="."]
+position = Vector2(2280, 1190)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("17_combat_safe")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShopCombatSafeZone"]
+shape = SubResource("SafeArea")
+
+[node name="ShopEnemyBoundary" type="StaticBody2D" parent="."]
+position = Vector2(2280, 1190)
+collision_layer = 512
+collision_mask = 0
+
+[node name="Top" type="CollisionShape2D" parent="ShopEnemyBoundary"]
+position = Vector2(0, -160)
+shape = SubResource("SafeHorizontalWall")
+
+[node name="Bottom" type="CollisionShape2D" parent="ShopEnemyBoundary"]
+position = Vector2(0, 160)
+shape = SubResource("SafeHorizontalWall")
+
+[node name="Left" type="CollisionShape2D" parent="ShopEnemyBoundary"]
+position = Vector2(-260, 0)
+shape = SubResource("SafeVerticalWall")
+
+[node name="Right" type="CollisionShape2D" parent="ShopEnemyBoundary"]
+position = Vector2(260, 0)
+shape = SubResource("SafeVerticalWall")
+
+[node name="Layer2Gatekeeper" parent="." instance=ExtResource("18_gatekeeper")]
+position = Vector2(2240, 1190)
+
+[node name="SkyHunterFlock" parent="." instance=ExtResource("19_flock")]
+position = Vector2(640, 700)
+
+[node name="FlockActivationZone" type="Area2D" parent="."]
+position = Vector2(1280, 400)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("20_flock_activation")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FlockActivationZone"]
+shape = SubResource("FlockActivationArea")
 
 [node name="WestSpawn" type="Marker2D" parent="." unique_id=1403995785]
 position = Vector2(640, 0)

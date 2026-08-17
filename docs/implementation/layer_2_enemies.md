@@ -29,9 +29,9 @@ Select an enemy scene root to tune movement, patrol range, telegraph, attack spe
 
 For level placement:
 
-- Place ordinary enemy scenes through `EnemyPlacer`; one Hound per first-pass placer is recommended.
-- Give all Primates produced by one placer the same non-empty `spawn_group_id`, and use a different ID for another placer.
-- Place the flock owner once as a Layer 2 global actor, not one Sky Hunter per ordinary placer.
+- Place ordinary enemy scenes through `game/world/placers/layer2_enemy_placer.tscn`; one Hound per first-pass placer is recommended.
+- The placer automatically gives every spawned Primate its placer `persistent_id` as the group ID unless the optional `spawn_group_id` override is set.
+- The flock owner is already allocated once in `layer_2.tscn`; do not place individual Sky Hunters through ordinary placers.
 - Leave readable horizontal ground around Hounds and Stalkers and a clear avoidance lane around a Bulwark.
 
 ## Save boundary
@@ -42,4 +42,4 @@ Ordinary enemies save through `EnemySupport`: alive/dead, health, persistent sta
 
 `tests/content_smoke.gd` validates catalog registration, runtime tags, coordinator limits, Hound sound position memory, Stalker retaliation, Bulwark interruption rules, and flock ownership.
 
-Alarm Grazer and Glasswings remain removed. Final art/audio, authored navigation helpers, drop rewards, and balance fine-tuning remain intentionally deferred. Layer integration, placer group injection, and the shop safe boundary are handled in the following world-integration checkpoint.
+Alarm Grazer and Glasswings remain removed. Final art/audio, authored navigation helpers, drop rewards, and balance fine-tuning remain intentionally deferred. Layer integration, placer group injection, activation, and the shop safe boundary are implemented and documented in `layer_2_world_integration.md`.

@@ -706,6 +706,11 @@ func _test_determinism() -> void:
 	placer.free()
 
 func _test_world_authoring_foundation() -> void:
+	var layer2 := preload("res://game/world/layers/layer_2.tscn").instantiate() as WorldLayer
+	assert(layer2.get_node("ShopCombatSafeZone") is CombatSafeZone)
+	assert((layer2.get_node("ShopEnemyBoundary") as StaticBody2D).collision_layer == 512)
+	assert(layer2.get_node("Layer2Gatekeeper") is Layer2Gatekeeper and layer2.get_node("SkyHunterFlock") is SkyHunterFlock)
+	layer2.free()
 	var section := preload("res://game/world/test/section_a.tscn").instantiate() as WorldSection
 	add_child(section)
 	section.respawn_anchor.position = Vector2(100.0, 300.0)
@@ -719,6 +724,23 @@ func _test_world_authoring_foundation() -> void:
 	assert(enemy_placer.validate().is_empty())
 	assert(enemy_placer.resolve(10).size() == 1)
 	enemy_placer.free()
+	var layer2_placer := preload("res://game/world/placers/layer2_enemy_placer.tscn").instantiate() as DeterministicPlacer
+	layer2_placer.persistent_id = &"smoke_layer2_group"
+	layer2_placer.entries = [layer2_placer.entries[0]]
+	add_child(layer2_placer)
+	assert(layer2_placer.validate().is_empty() and layer2_placer.resolve(10).size() == 1)
+	var layer2_spawn_root := Node2D.new()
+	add_child(layer2_spawn_root)
+	layer2_placer.spawn_resolved(layer2_spawn_root)
+	var primate := layer2_spawn_root.get_child(0) as CanopyPrimate
+	assert(primate != null and primate.spawn_group_id == &"smoke_layer2_group")
+	layer2_spawn_root.free()
+	layer2_placer.free()
+	for path in ["res://game/world/placers/plate_umbrella_placer.tscn", "res://game/world/placers/lacerator_placer.tscn", "res://game/world/placers/resonance_core_placer.tscn"]:
+		var relic_placer := (load(path) as PackedScene).instantiate() as DeterministicPlacer
+		relic_placer.persistent_id = StringName("smoke_%s" % relic_placer.name)
+		assert(relic_placer.required_allocation and not relic_placer.allocation_group.is_empty() and relic_placer.validate().is_empty())
+		relic_placer.free()
 	var loot_placer := preload("res://game/world/placers/loot_placer.tscn").instantiate() as DeterministicPlacer
 	loot_placer.persistent_id = &"smoke_loot_placer"
 	add_child(loot_placer)

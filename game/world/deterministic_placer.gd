@@ -9,6 +9,7 @@ extends Marker2D
 @export_storage var spawn_points: Array[Marker2D] = []
 @export var allocation_group: StringName
 @export var required_allocation := false
+@export var spawn_group_id: StringName
 @export var facing := 1.0
 @export var patrol_bounds := Rect2()
 
@@ -68,6 +69,7 @@ func spawn_resolved(parent: Node) -> void:
 			continue
 		var node := entry.scene.instantiate()
 		_set_property_if_present(node, &"persistent_id", String(result.get("persistent_id", "")))
+		_set_property_if_present(node, &"spawn_group_id", spawn_group_id if not spawn_group_id.is_empty() else persistent_id)
 		_set_property_if_present(node, &"item_id", entry.content_id)
 		_set_property_if_present(node, &"spawn_position", points[point_index].global_position)
 		_set_property_if_present(node, &"patrol_bounds", patrol_bounds)

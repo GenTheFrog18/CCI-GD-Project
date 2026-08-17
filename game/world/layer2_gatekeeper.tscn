@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/world/layer2_gatekeeper.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="Shape"]
+size = Vector2(28, 44)
+
+[node name="Layer2Gatekeeper" type="Area2D"]
+collision_layer = 64
+collision_mask = 2
+script = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -22)
+shape = SubResource("Shape")
+
+[node name="Visual" type="Polygon2D" parent="."]
+position = Vector2(0, -22)
+polygon = PackedVector2Array(-14, 22, -13, -14, 0, -22, 13, -14, 14, 22)
+color = Color(0.32, 0.56, 0.62, 1)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -55.0
+offset_top = -72.0
+offset_right = 55.0
+offset_bottom = -50.0
+text = "GATEKEEPER"
+horizontal_alignment = 1
+
+[node name="RewardMarker" type="Marker2D" parent="."]
+position = Vector2(42, 0)

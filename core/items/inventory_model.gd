@@ -64,6 +64,21 @@ func can_add_item(item_id: StringName, quantity := 1, state: Dictionary = {}) ->
 	var definition := ContentCatalog.get_item(item_id)
 	return definition != null and quantity > 0 and _free_capacity(definition, state) >= quantity
 
+func has_item(item_id: StringName) -> bool:
+	for container in [hotbar, backpack]:
+		for slot in container:
+			if not slot.is_empty() and slot.item_id == item_id:
+				return true
+	return false
+
+func take_item(item_id: StringName) -> ItemStack:
+	for container_name in [&"hotbar", &"backpack"]:
+		var container := _container(container_name)
+		for index in container.size():
+			if not container[index].is_empty() and container[index].item_id == item_id:
+				return take_one(container_name, index)
+	return ItemStack.new()
+
 func remove_active(quantity := 1) -> bool:
 	var slot := get_active_stack()
 	if quantity <= 0 or slot.quantity < quantity:

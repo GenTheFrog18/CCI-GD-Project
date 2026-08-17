@@ -18,6 +18,7 @@ func _ready() -> void:
 	_test_catalog()
 	_test_enemy_scenes()
 	_test_layer2_enemies()
+	_test_layer2_quest()
 	_test_effects_and_curse()
 	_test_player_item_regressions()
 	await _test_item_impacts()
@@ -110,10 +111,17 @@ func _test_layer2_enemies() -> void:
 	bulwark.state = BulwarkBeast.State.CHARGE
 	_check(not bulwark.interrupt_action(&"impact") and bulwark.interrupt_action(&"electric"), "Bulwark charge only accepts electric interruption")
 
+	var had_flock_flag := GameSession.progression_flags.has("layer_2_sky_hunter_active")
+	var old_flock_flag = GameSession.progression_flags.get("layer_2_sky_hunter_active")
+	GameSession.progression_flags.erase("layer_2_sky_hunter_active")
 	var flock := preload("res://game/enemies/layer2/sky_hunter_flock.tscn").instantiate() as SkyHunterFlock
 	add_child(flock)
 	var saved := flock.capture_state()
-	_check((saved.get("members", {}) as Dictionary).size() == flock.starting_member_count and flock.is_in_group(&"persistent_objects"), "Sky Hunter flock owns stable persistent members")
+	_check((saved.get("members", {}) as Dictionary).size() == flock.starting_member_count and flock.is_in_group(&"persistent_objects") and flock.process_mode == Node.PROCESS_MODE_DISABLED, "Sky Hunter flock owns stable inactive members")
+	flock.activate_near(Vector2(1900, 400))
+	_check(flock.process_mode == Node.PROCESS_MODE_INHERIT and flock.global_position.x == 1920.0, "flock activation selects the current route")
+	if had_flock_flag: GameSession.progression_flags["layer_2_sky_hunter_active"] = old_flock_flag
+	else: GameSession.progression_flags.erase("layer_2_sky_hunter_active")
 
 	flock.free()
 	bulwark.free()
@@ -123,6 +131,46 @@ func _test_layer2_enemies() -> void:
 	second.free()
 	first.free()
 	coordinator.free()
+
+func _test_layer2_quest() -> void:
+	var old_flags := GameSession.progression_flags.duplicate(true)
+	var old_tier := GameSession.whistle_tier
+	var old_path := SaveManager.run_path
+	var old_persistent := SaveManager.loaded_persistent_state.duplicate(true)
+	var old_destroyed := SaveManager.destroyed_ids.duplicate(true)
+	SaveManager.run_path = "user://content_smoke_layer2_quest.json"
+	SaveManager.loaded_persistent_state.clear()
+	SaveManager.destroyed_ids.clear()
+	GameSession.progression_flags.erase(Layer2Gatekeeper.REWARD_FLAG)
+
+	var world := Node2D.new()
+	add_child(world)
+	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	world.add_child(player)
+	var gatekeeper := preload("res://game/world/layer2_gatekeeper.tscn").instantiate() as Layer2Gatekeeper
+	world.add_child(gatekeeper)
+	_check(player.item_controller.inventory.try_add_item(&"resonance_core", 1, {"origin": "map"}), "Core enters inventory for handover")
+	_check(gatekeeper.interact(player) and not bool(GameSession.progression_flags.get(Layer2Gatekeeper.REWARD_FLAG, false)), "Core handover asks for confirmation")
+	_check(gatekeeper.interact(player), "Core handover confirms")
+	_check(bool(GameSession.progression_flags.get(Layer2Gatekeeper.REWARD_FLAG, false)) and GameSession.whistle_tier == &"moon" and player.physical_whistle_id == &"whistle_moon", "Core handover awards Moon progression")
+	_check(not player.item_controller.inventory.has_item(&"resonance_core") and player.item_controller.inventory.has_item(&"bolt_shock"), "Core handover exchanges exactly one Core for Bolt Shock")
+	var state := player.item_controller.inventory.take_item(&"bolt_shock")
+	_check(int(state.state.get("remaining_uses", -1)) == 7, "quest Bolt Shock starts with seven uses")
+	player.item_controller.inventory.try_add_item(&"bolt_shock", 1, state.state)
+	gatekeeper.interact(player)
+	var bolt_count := 0
+	for container in [player.item_controller.inventory.hotbar, player.item_controller.inventory.backpack]:
+		for stack in container:
+			if stack.item_id == &"bolt_shock": bolt_count += stack.quantity
+	_check(bolt_count == 1, "repeated gatekeeper interaction cannot duplicate reward")
+
+	world.free()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveManager.run_path))
+	SaveManager.run_path = old_path
+	SaveManager.loaded_persistent_state = old_persistent
+	SaveManager.destroyed_ids = old_destroyed
+	GameSession.progression_flags = old_flags
+	GameSession.whistle_tier = old_tier
 
 func _test_effects_and_curse() -> void:
 	var old_layer := GameSession.current_layer_id
@@ -302,8 +350,19 @@ func _test_layer2_relics() -> void:
 	core_impact.velocity = Vector2.RIGHT * 300.0
 	(core.secondary_behavior as ResonanceCoreBehavior).on_impact(thrown, core_impact)
 	_check(&"resonance_core" in GameSession.known_items, "Core discovers on qualifying impact")
+	thrown.global_position = Vector2(99999, 99999)
+	thrown.handle_world_out_of_bounds()
+	_check(thrown.global_position == Vector2.ZERO and thrown.freeze, "protected thrown relic returns to its spawn without a recovery marker")
+	var protected_pickup := preload("res://game/items/world/world_item.tscn").instantiate() as WorldItem
+	protected_pickup.item_id = &"resonance_core"
+	protected_pickup.position = Vector2(50, 60)
+	world.add_child(protected_pickup)
+	protected_pickup.global_position = Vector2(99999, 99999)
+	protected_pickup.handle_world_out_of_bounds()
+	_check(protected_pickup.global_position == Vector2(50, 60), "protected pickup returns to its spawn without a recovery marker")
 	GameSession.known_items.assign(previous_known)
 	thrown.queue_free()
+	protected_pickup.queue_free()
 	attacker.queue_free()
 	world.queue_free()
 

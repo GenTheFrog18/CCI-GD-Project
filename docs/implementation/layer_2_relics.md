@@ -18,6 +18,7 @@ Final art, audio, and balance are intentionally deferred. Placeholder presentati
 - `ResonanceCoreBehavior` reuses normal thrown-item weight, pickup, preview, persistence, and collision behavior while adding tiered resonance.
 - `ItemDefinition.recover_out_of_bounds` returns Core and Bolt pickups to `quest_item_recovery_marker`; other relics use ordinary loss rules.
 - Durable state keys are `stability`, `recovery_remaining`, `remaining_ammo`, and `remaining_uses`. `loaded` is always false outside a prepared action.
+- `Layer2Gatekeeper` uses a two-interaction confirmation before taking exactly one Core. It immediately saves the idempotent `layer_2_core_rewarded` flag, Moon rank/physical Moon Whistle, and one seven-use Bolt Shock. A failed inventory insertion creates the protected persistent pickup `layer_2_bolt_shock_reward` at the shop marker.
 
 ## Provisional values
 

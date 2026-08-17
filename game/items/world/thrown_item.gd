@@ -115,6 +115,7 @@ func restore_state(data: Dictionary) -> void:
 	instance_state = data.get("instance_state", {}).duplicate(true)
 	var position_data: Array = data.get("position", [0.0, 0.0])
 	global_position = Vector2(float(position_data[0]), float(position_data[1]))
+	_spawn_position = global_position
 	rotation = float(data.get("rotation", 0.0))
 	var velocity_data: Array = data.get("linear_velocity", [0.0, 0.0])
 	linear_velocity = Vector2(float(velocity_data[0]), float(velocity_data[1]))
@@ -140,10 +141,12 @@ func handle_world_out_of_bounds() -> void:
 		var marker := get_tree().get_first_node_in_group(&"quest_item_recovery_marker") as Node2D
 		if marker != null:
 			global_position = marker.global_position
-			linear_velocity = Vector2.ZERO
-			angular_velocity = 0.0
-			freeze = true
-			add_to_group(&"interactables")
-			return
+		else:
+			global_position = _spawn_position
+		linear_velocity = Vector2.ZERO
+		angular_velocity = 0.0
+		freeze = true
+		add_to_group(&"interactables")
+		return
 	SaveManager.mark_destroyed(persistent_id)
 	queue_free()
