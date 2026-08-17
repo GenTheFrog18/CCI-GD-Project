@@ -46,6 +46,7 @@ func _ready() -> void:
 	_test_projectile_hit_history()
 	await _test_multitool_range()
 	_test_turret_projectile()
+	await _test_main_menu_ui()
 	_test_ui_input_and_debug()
 	_test_sound()
 	await _test_sight_and_sound_components()
@@ -343,6 +344,20 @@ func _test_turret_projectile() -> void:
 	turret._process(0.1)
 	assert(turret._telegraph_remaining == 0.0)
 	world.free()
+
+func _test_main_menu_ui() -> void:
+	var menu := preload("res://ui/main_menu.tscn").instantiate() as Control
+	add_child(menu)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	assert(menu.background_travel_seconds == 60.0)
+	assert(menu.get_node("MenuColumn").get_children().map(func(child: Node): return child.name) == [&"NewRun", &"Continue", &"Settings", &"Quit"])
+	assert(menu.get_child(0).name == &"Background" and menu.get_child(1).name == &"Vignette")
+	assert(menu.background.size.y > menu.size.y and menu._background_tween != null)
+	assert(ProjectSettings.get_setting("gui/theme/custom") == "res://ui/game_theme.tres")
+	var game_theme := load("res://ui/game_theme.tres") as Theme
+	assert(game_theme.default_font.resource_path.ends_with("Perfect DOS VGA 437.ttf"))
+	menu.free()
 
 func _test_ui_input_and_debug() -> void:
 	var original_debug_enabled := GameSession.debug_enabled

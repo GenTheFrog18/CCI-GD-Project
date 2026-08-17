@@ -1,38 +1,59 @@
 extends Control
 
-const BACKPLATE := preload("res://assets/art/ui/main_menu/backplate.png")
 const BUTTON_NORMAL := preload("res://assets/art/ui/main_menu/button-long.png")
 const BUTTON_DISABLED := preload("res://assets/art/ui/main_menu/button-long-disabled.png")
+const CONTINUE_LABEL := preload("res://assets/art/ui/main_menu/continue.png")
+const CONTINUE_DISABLED_LABEL := preload("res://assets/art/ui/main_menu/continue_disabled.png")
 const SETTINGS_PANE := preload("res://assets/art/ui/settings/settings-pane-final.png")
+
+@export_range(1.0, 600.0, 1.0) var background_travel_seconds := 60.0
+
+@onready var background: TextureRect = $Background
+@onready var new_run_button: Button = $MenuColumn/NewRun
+@onready var continue_button: Button = $MenuColumn/Continue
+@onready var continue_label: TextureRect = $MenuColumn/Continue/Label
+@onready var settings_button: Button = $MenuColumn/Settings
+@onready var quit_button: Button = $MenuColumn/Quit
 
 var debug_panel: VBoxContainer
 var seed_input: SpinBox
 var settings_panel: PanelContainer
 var debug_checkbox: CheckBox
+var _background_tween: Tween
 
 func _ready() -> void:
-	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	GameSession.apply_settings()
-	var background := TextureRect.new()
-	background.texture = BACKPLATE
-	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(background)
-	var column := VBoxContainer.new()
-	column.position = Vector2(248, 168)
-	column.size = Vector2(144, 170)
-	column.add_theme_constant_override(&"separation", 8)
-	add_child(column)
-	var continue_button := _button("Continue", _continue_run)
+	new_run_button.pressed.connect(_confirm_new)
+	continue_button.pressed.connect(_continue_run)
+	settings_button.pressed.connect(_show_settings)
+	quit_button.pressed.connect(get_tree().quit)
 	continue_button.disabled = not SaveManager.has_valid_run()
-	column.add_child(continue_button)
-	column.add_child(_button("New Run", _confirm_new))
-	column.add_child(_button("Settings", _show_settings))
-	column.add_child(_button("Quit", get_tree().quit))
+	continue_label.texture = CONTINUE_DISABLED_LABEL if continue_button.disabled else CONTINUE_LABEL
+	new_run_button.tooltip_text = "Start a new run"
+	continue_button.tooltip_text = "Continue the saved run"
+	settings_button.tooltip_text = "Open settings"
+	quit_button.tooltip_text = "Quit the game"
 	_build_settings()
 	_build_debug()
+	resized.connect(_restart_background_animation)
+	call_deferred(&"_restart_background_animation")
+
+func _restart_background_animation() -> void:
+	if background == null or background.texture == null or size.x <= 0.0 or size.y <= 0.0:
+		return
+	if _background_tween != null:
+		_background_tween.kill()
+	var texture_size := background.texture.get_size()
+	var scale_factor := maxf(size.x / texture_size.x, size.y / texture_size.y)
+	background.size = texture_size * scale_factor
+	background.position = Vector2((size.x - background.size.x) * 0.5, 0.0)
+	var bottom_y := size.y - background.size.y
+	if bottom_y >= -0.5:
+		return
+	_background_tween = create_tween().set_loops()
+	_background_tween.tween_property(background, "position:y", bottom_y, background_travel_seconds).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_background_tween.tween_property(background, "position:y", 0.0, background_travel_seconds).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _button(text: String, callback: Callable) -> Button:
 	var button := Button.new()
