@@ -385,16 +385,16 @@ func _test_ui_input_and_debug() -> void:
 	hud.set_player(player)
 	assert(hud.hotbar_labels[0].text.contains("Multitool"))
 	assert(hud.get_node("Hotbar").get_child(0) == hud.whistle_button)
-	var left_hotbar_click := hud.hotbar_slots[0].get_node("ClickTarget") as Button
-	left_hotbar_click.pressed.emit()
-	assert(player.item_controller.inventory.active_hotbar_index == 1)
-	var right_hotbar_click := hud.hotbar_slots[1].get_node("ClickTarget") as Button
-	right_hotbar_click.pressed.emit()
-	assert(player.item_controller.inventory.active_hotbar_index == 0)
+	for display_index in hud.hotbar_slots.size():
+		var click_target := hud.hotbar_slots[display_index].get_node("ClickTarget") as Button
+		click_target.pressed.emit()
+		assert(player.item_controller.inventory.active_hotbar_index == hud.hotbar_indices[display_index])
 	assert(not hud.health_label.visible and not hud.money_label.visible and not hud.weight_label.visible and not hud.location_label.visible)
 	player.health.set_health(0.4)
 	assert(hud.health_label.text == "HP 1/100")
 	assert(hud.get_node("HealthFlames").tooltip_text == "HP 1/100")
+	hud._finish_hotbar_layout()
+	assert(hud.hotbar_arrow.visible)
 	player.apply_status(&"healing", {"duration": 12.2})
 	hud._process(0.1)
 	assert(hud.status_label.text.contains("Healing 13s"))

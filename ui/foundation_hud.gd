@@ -45,7 +45,9 @@ var effect_overlay: ColorRect
 var health_flames: Array[TextureRect] = []
 var hotbar_icons: Array[TextureRect] = []
 var hotbar_slots: Array[Control] = []
+var hotbar_indices: Array[int] = []
 var hotbar_arrow: TextureRect
+var _hotbar_layout_ready := false
 var inventory_book: AnimatedSprite2D
 var debug_text_nodes: Array[CanvasItem] = []
 
@@ -91,6 +93,7 @@ func set_player(value: PlayerController) -> void:
 	_set_health_text(player.health.health, player.health.max_health)
 	money_label.text = "%dg" % GameSession.money
 	_refresh_inventory()
+	call_deferred("_finish_hotbar_layout")
 	_refresh_whistle(player.physical_whistle_id)
 	_refresh_status()
 
@@ -141,14 +144,17 @@ func _build_ui() -> void:
 	threat_label = $Threat
 	effect_overlay = $EffectOverlay
 	hotbar_slots.clear()
+	hotbar_indices.clear()
 	for child in $Hotbar.get_children():
 		if child is TextureRect:
 			hotbar_slots.append(child)
+			hotbar_indices.append(int(String(child.name).trim_prefix("Slot")))
 	hotbar_icons = []
 	for slot in hotbar_slots:
 		hotbar_icons.append(slot.get_node("Icon") as TextureRect)
 	hotbar_labels = [$HotbarLabel0, $HotbarLabel1]
 	hotbar_arrow = $Arrow
+	hotbar_arrow.hide()
 	whistle_button = $Hotbar/Whistle
 	whistle_button.custom_minimum_size = Vector2.ONE * hotbar_slot_size
 	whistle_button.expand_icon = true
@@ -158,7 +164,7 @@ func _build_ui() -> void:
 		slot.custom_minimum_size = Vector2.ONE * hotbar_slot_size
 		slot.pivot_offset = Vector2.ONE * hotbar_slot_size * 0.5
 		var click_target := slot.get_node("ClickTarget") as Button
-		click_target.pressed.connect(_select_hotbar.bind(1 - display_index))
+		click_target.pressed.connect(_select_hotbar.bind(hotbar_indices[display_index]))
 	debug_text_nodes.append(health_label)
 	debug_text_nodes.append(money_label)
 	debug_text_nodes.append(weight_label)
@@ -445,7 +451,7 @@ func _refresh_inventory() -> void:
 			label = "[%s]" % label
 		inventory_buttons[index].text = label
 	for display_index in hotbar_slots.size():
-		var index := 1 - display_index
+		var index := hotbar_indices[display_index]
 		var stack := player.item_controller.inventory.hotbar[index]
 		var item_name := "—"
 		if not stack.is_empty():
@@ -455,11 +461,20 @@ func _refresh_inventory() -> void:
 		else:
 			hotbar_icons[display_index].texture = null
 		hotbar_labels[index].text = "%s%d: %s" % ["▶ " if index == player.item_controller.inventory.active_hotbar_index else "", index + 1, item_name]
-	var active_display := 1 - player.item_controller.inventory.active_hotbar_index
+	var active_display := hotbar_indices.find(player.item_controller.inventory.active_hotbar_index)
+	if active_display < 0:
+		return
 	var active_slot := hotbar_slots[active_display]
+	if not _hotbar_layout_ready:
+		return
 	hotbar_arrow.global_position = active_slot.global_position + Vector2((active_slot.size.x - hotbar_arrow.size.x) * 0.5, -hotbar_arrow.size.y)
+	hotbar_arrow.show()
 	for display_index in hotbar_slots.size(): _animate_hotbar_slot(hotbar_slots[display_index], display_index == active_display)
 	weight_label.text = "Weight %d/%d" % [player.item_controller.inventory.get_total_weight(), player.carry_capacity]
+
+func _finish_hotbar_layout() -> void:
+	_hotbar_layout_ready = true
+	_refresh_inventory()
 
 func _refresh_whistle(item_id: StringName) -> void:
 	if whistle_button == null:
