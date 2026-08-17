@@ -84,7 +84,7 @@ func _show_main_page() -> void:
 	info_page.visible = false
 	entry_resume.visible = include_resume
 	entry_main_action.visible = include_resume
-	entry_main_action.text = main_action_text
+	entry_main_action.tooltip_text = main_action_text
 	call_deferred("_focus_first_entry")
 
 func _focus_first_entry() -> void:

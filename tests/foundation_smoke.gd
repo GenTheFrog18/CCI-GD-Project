@@ -412,6 +412,8 @@ func _test_ui_input_and_debug() -> void:
 	hud._input(pause_event)
 	assert(get_tree().paused)
 	assert(hud.pause_panel.visible and hud.pause_panel.include_resume)
+	var pause_quit_label := hud.pause_panel.get_node("Card/MenuPage/MenuColumn/EntryMainAction/Label") as TextureRect
+	assert(pause_quit_label.texture.resource_path.ends_with("main_menu/quit.png"))
 	hud._input(pause_event)
 	assert(not get_tree().paused)
 	var debug_event := InputEventAction.new()

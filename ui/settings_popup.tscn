@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://gcyc5068q3c5" path="res://assets/art/ui/settings/how_to_play.png" id="8_how_to"]
 [ext_resource type="Texture2D" uid="uid://cwl7f5o4qjyn4" path="res://assets/art/ui/settings/credits.png" id="9_credits"]
 [ext_resource type="Texture2D" uid="uid://bayc8pamw0x18" path="res://assets/art/ui/settings/button-close.png" id="10_close"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/quit.png" id="11_quit"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleFocus"]
 
@@ -96,7 +97,7 @@ offset_bottom = 180.0
 theme_override_constants/separation = 1
 
 [node name="EntryResume" type="Button" parent="Card/MenuPage/MenuColumn" unique_id=34854484]
-custom_minimum_size = Vector2(224, 20)
+custom_minimum_size = Vector2(222, 20)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/focus = SubResource("StyleFocus")
@@ -107,6 +108,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 48.0
+offset_right = -49.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -126,6 +129,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 47.0
+offset_right = -49.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -145,6 +150,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 49.0
+offset_right = -49.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -164,6 +171,9 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 41.0
+offset_right = -36.0
+offset_bottom = 3.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -183,6 +193,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 41.0
+offset_right = -47.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -197,6 +209,18 @@ mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 16
 theme_override_styles/focus = SubResource("StyleFocus")
 flat = true
+
+[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntryMainAction"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("11_quit")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="SoundPage" type="Control" parent="Card" unique_id=613141099]
 visible = false
