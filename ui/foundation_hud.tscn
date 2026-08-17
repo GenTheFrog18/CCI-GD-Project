@@ -1,16 +1,17 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://d3o6v8awj7dcx"]
 
-[ext_resource type="Script" path="res://ui/foundation_hud.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/hud/fire-hp-bar.png" id="2_fire"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/hud/hotbar-main.png" id="3_hotbar_main"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/hud/hotbar-sec.png" id="4_hotbar_secondary"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/hud/arrow-hotbar.png" id="5_arrow"]
+[ext_resource type="Script" uid="uid://batjqfqeaqv5c" path="res://ui/foundation_hud.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cwopfscng8y6s" path="res://assets/art/ui/hud/fire-hp-bar.png" id="2_fire"]
+[ext_resource type="Texture2D" uid="uid://cg0rftia3u5cx" path="res://assets/art/ui/hud/hotbar-main.png" id="3_hotbar_main"]
+[ext_resource type="Texture2D" uid="uid://bwigrufnm2q2u" path="res://assets/art/ui/hud/hotbar-sec.png" id="4_hotbar_secondary"]
+[ext_resource type="Texture2D" uid="uid://be070jd1tjb7c" path="res://assets/art/ui/hud/arrow-hotbar.png" id="5_arrow"]
 
-[node name="FoundationHUD" type="CanvasLayer"]
+[node name="FoundationHUD" type="CanvasLayer" unique_id=1283634119]
 layer = 20
 script = ExtResource("1_script")
 
-[node name="EffectOverlay" type="ColorRect" parent="."]
+[node name="EffectOverlay" type="ColorRect" parent="." unique_id=1022902151]
+z_index = -1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -18,72 +19,97 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
-z_index = -1
 
-[node name="HealthFlames" type="HBoxContainer" parent="."]
+[node name="HealthFlames" type="HBoxContainer" parent="." unique_id=1544862439]
 offset_left = 8.0
 offset_top = 6.0
 offset_right = 168.0
 offset_bottom = 22.0
 theme_override_constants/separation = 0
 
-[node name="Flame0" type="TextureRect" parent="HealthFlames"]
+[node name="Flame0" type="TextureRect" parent="HealthFlames" unique_id=1690845849]
 custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("2_fire")
-expand_mode = 1
-[node name="Flame1" type="TextureRect" parent="HealthFlames"]
-custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("2_fire")
-expand_mode = 1
-[node name="Flame2" type="TextureRect" parent="HealthFlames"]
-custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("2_fire")
-expand_mode = 1
-[node name="Flame3" type="TextureRect" parent="HealthFlames"]
-custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("2_fire")
-expand_mode = 1
-[node name="Flame4" type="TextureRect" parent="HealthFlames"]
-custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("2_fire")
-expand_mode = 1
-[node name="Flame5" type="TextureRect" parent="HealthFlames"]
-custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("2_fire")
-expand_mode = 1
-[node name="Flame6" type="TextureRect" parent="HealthFlames"]
-custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("2_fire")
-expand_mode = 1
-[node name="Flame7" type="TextureRect" parent="HealthFlames"]
-custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("2_fire")
-expand_mode = 1
-[node name="Flame8" type="TextureRect" parent="HealthFlames"]
-custom_minimum_size = Vector2(16, 16)
-texture = ExtResource("2_fire")
-expand_mode = 1
-[node name="Flame9" type="TextureRect" parent="HealthFlames"]
-custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="TopStats" type="HBoxContainer" parent="."]
+[node name="Flame1" type="TextureRect" parent="HealthFlames" unique_id=1537985758]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="Flame2" type="TextureRect" parent="HealthFlames" unique_id=2118135846]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="Flame3" type="TextureRect" parent="HealthFlames" unique_id=1517297453]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="Flame4" type="TextureRect" parent="HealthFlames" unique_id=1656623866]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="Flame5" type="TextureRect" parent="HealthFlames" unique_id=940815608]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="Flame6" type="TextureRect" parent="HealthFlames" unique_id=1315023126]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="Flame7" type="TextureRect" parent="HealthFlames" unique_id=1125915950]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="Flame8" type="TextureRect" parent="HealthFlames" unique_id=200918226]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="Flame9" type="TextureRect" parent="HealthFlames" unique_id=443332818]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="TopStats" type="HBoxContainer" parent="." unique_id=661148503]
 offset_left = 10.0
 offset_top = 25.0
 offset_right = 300.0
 offset_bottom = 45.0
-[node name="Health" type="Label" parent="TopStats"]
-custom_minimum_size = Vector2(110, 0)
-[node name="Money" type="Label" parent="TopStats"]
-[node name="Weight" type="Label" parent="TopStats"]
 
-[node name="Status" type="Label" parent="."]
+[node name="Health" type="Label" parent="TopStats" unique_id=2088355254]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+
+[node name="Money" type="Label" parent="TopStats" unique_id=1025985944]
+layout_mode = 2
+
+[node name="Weight" type="Label" parent="TopStats" unique_id=446964377]
+layout_mode = 2
+
+[node name="Status" type="Label" parent="." unique_id=822630617]
 offset_left = 10.0
 offset_top = 30.0
 offset_right = 190.0
 offset_bottom = 150.0
-[node name="Location" type="Label" parent="."]
+
+[node name="Location" type="Label" parent="." unique_id=1691316578]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -92,27 +118,30 @@ offset_top = 8.0
 offset_right = -10.0
 offset_bottom = 42.0
 horizontal_alignment = 2
-[node name="Prompt" type="Label" parent="."]
+
+[node name="Prompt" type="Label" parent="." unique_id=1712942356]
 offset_left = 230.0
 offset_top = 320.0
 offset_right = 410.0
 offset_bottom = 348.0
 horizontal_alignment = 1
-[node name="Feedback" type="Label" parent="."]
+
+[node name="Feedback" type="Label" parent="." unique_id=1871174459]
 offset_left = 220.0
 offset_top = 40.0
 offset_right = 420.0
 offset_bottom = 65.0
 horizontal_alignment = 1
-[node name="Threat" type="Label" parent="."]
+
+[node name="Threat" type="Label" parent="." unique_id=1899423316]
+visible = false
 offset_left = 300.0
 offset_top = 110.0
 offset_right = 360.0
 offset_bottom = 140.0
 theme_override_font_sizes/font_size = 24
-visible = false
 
-[node name="Hotbar" type="HBoxContainer" parent="."]
+[node name="Hotbar" type="HBoxContainer" parent="." unique_id=1574343723]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -125,11 +154,15 @@ offset_bottom = -16.0
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/separation = 4
-[node name="Slot0" type="TextureRect" parent="Hotbar"]
+
+[node name="Slot0" type="TextureRect" parent="Hotbar" unique_id=1071106652]
 custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
 texture = ExtResource("3_hotbar_main")
 expand_mode = 1
-[node name="Icon" type="TextureRect" parent="Hotbar/Slot0"]
+
+[node name="Icon" type="TextureRect" parent="Hotbar/Slot0" unique_id=743429069]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -140,11 +173,26 @@ offset_bottom = -4.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-[node name="Slot1" type="TextureRect" parent="Hotbar"]
+
+[node name="ClickTarget" type="Button" parent="Hotbar/Slot0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+focus_mode = 0
+flat = true
+
+[node name="Slot1" type="TextureRect" parent="Hotbar" unique_id=620230987]
 custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
 texture = ExtResource("4_hotbar_secondary")
 expand_mode = 1
-[node name="Icon" type="TextureRect" parent="Hotbar/Slot1"]
+
+[node name="Icon" type="TextureRect" parent="Hotbar/Slot1" unique_id=292453074]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -155,9 +203,23 @@ offset_bottom = -4.0
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-[node name="Whistle" type="Button" parent="Hotbar"]
+
+[node name="ClickTarget" type="Button" parent="Hotbar/Slot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+focus_mode = 0
+flat = true
+
+[node name="Whistle" type="Button" parent="Hotbar" unique_id=1078415435]
 custom_minimum_size = Vector2(32, 32)
-[node name="Arrow" type="TextureRect" parent="."]
+layout_mode = 2
+
+[node name="Arrow" type="TextureRect" parent="." unique_id=1742264783]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -171,7 +233,9 @@ grow_horizontal = 0
 grow_vertical = 0
 texture = ExtResource("5_arrow")
 expand_mode = 1
-[node name="HotbarLabel0" type="Label" parent="."]
+
+[node name="HotbarLabel0" type="Label" parent="." unique_id=436242177]
 visible = false
-[node name="HotbarLabel1" type="Label" parent="."]
+
+[node name="HotbarLabel1" type="Label" parent="." unique_id=54967119]
 visible = false

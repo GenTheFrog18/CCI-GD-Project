@@ -44,9 +44,14 @@ var _threat_remaining := 0.0
 var effect_overlay: ColorRect
 var health_flames: Array[TextureRect] = []
 var hotbar_icons: Array[TextureRect] = []
+var hotbar_slots: Array[Control] = []
 var hotbar_arrow: TextureRect
 var inventory_book: AnimatedSprite2D
 var debug_text_nodes: Array[CanvasItem] = []
+
+@export_range(1.0, 2.0, 0.01) var selected_hotbar_scale := 1.25
+@export_range(1.0, 2.0, 0.01) var hotbar_bounce_scale := 1.35
+@export_range(0.01, 1.0, 0.01) var hotbar_animation_seconds := 0.18
 
 func _ready() -> void:
 	layer = 20
@@ -123,6 +128,8 @@ func _input(event: InputEvent) -> void:
 func _build_ui() -> void:
 	health_flames.clear()
 	for flame in $HealthFlames.get_children(): health_flames.append(flame as TextureRect)
+	$HealthFlames.mouse_filter = Control.MOUSE_FILTER_STOP
+	for flame in health_flames: flame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	health_label = $TopStats/Health
 	status_label = $Status
 	money_label = $TopStats/Money
@@ -132,11 +139,18 @@ func _build_ui() -> void:
 	feedback_label = $Feedback
 	threat_label = $Threat
 	effect_overlay = $EffectOverlay
+	hotbar_slots = [$Hotbar/Slot0, $Hotbar/Slot1]
 	hotbar_icons = [$Hotbar/Slot0/Icon, $Hotbar/Slot1/Icon]
 	hotbar_labels = [$HotbarLabel0, $HotbarLabel1]
 	hotbar_arrow = $Arrow
 	whistle_button = $Hotbar/Whistle
+	$Hotbar.move_child(whistle_button, 0)
 	whistle_button.pressed.connect(func(): player.use_whistle() if player != null else false)
+	for display_index in hotbar_slots.size():
+		var slot := hotbar_slots[display_index]
+		slot.pivot_offset = Vector2(16.0, 16.0)
+		var click_target := slot.get_node("ClickTarget") as Button
+		click_target.pressed.connect(_select_hotbar.bind(1 - display_index))
 	debug_text_nodes.append(health_label)
 	debug_text_nodes.append(money_label)
 	debug_text_nodes.append(weight_label)
@@ -422,18 +436,21 @@ func _refresh_inventory() -> void:
 		if index < 2 and index == player.item_controller.inventory.active_hotbar_index:
 			label = "[%s]" % label
 		inventory_buttons[index].text = label
-	for index in hotbar_labels.size():
+	for display_index in hotbar_slots.size():
+		var index := 1 - display_index
 		var stack := player.item_controller.inventory.hotbar[index]
 		var item_name := "—"
 		if not stack.is_empty():
 			var definition := ContentCatalog.get_item(stack.item_id)
 			item_name = "%s x%d" % [definition.display_name if definition != null else stack.item_id, stack.quantity]
-			hotbar_icons[index].texture = definition.icon if definition != null else null
+			hotbar_icons[display_index].texture = definition.icon if definition != null else null
 		else:
-			hotbar_icons[index].texture = null
+			hotbar_icons[display_index].texture = null
 		hotbar_labels[index].text = "%s%d: %s" % ["▶ " if index == player.item_controller.inventory.active_hotbar_index else "", index + 1, item_name]
-	hotbar_arrow.offset_left = -108.0 + player.item_controller.inventory.active_hotbar_index * 36.0
-	hotbar_arrow.offset_right = hotbar_arrow.offset_left + 16.0
+	var active_display := 1 - player.item_controller.inventory.active_hotbar_index
+	var active_slot := hotbar_slots[active_display]
+	hotbar_arrow.global_position = active_slot.global_position + Vector2(8.0, -16.0)
+	for display_index in hotbar_slots.size(): _animate_hotbar_slot(hotbar_slots[display_index], display_index == active_display)
 	weight_label.text = "Weight %d/%d" % [player.item_controller.inventory.get_total_weight(), player.carry_capacity]
 
 func _refresh_whistle(item_id: StringName) -> void:
@@ -486,9 +503,25 @@ func _refresh_status() -> void:
 
 func _set_health_text(current: float, maximum: float) -> void:
 	health_label.text = "HP ∞" if GameSession.debug_unlimited_health else "HP %d/%d" % [ceili(current), ceili(maximum)]
+	$HealthFlames.tooltip_text = health_label.text
 	for index in health_flames.size():
 		var threshold := maximum * float(index + 1) / float(health_flames.size())
 		health_flames[index].texture = FIRE_FULL if current >= threshold else (FIRE_LOW if current > threshold - maximum / health_flames.size() else FIRE_DEAD)
+
+func _select_hotbar(index: int) -> void:
+	if player != null:
+		player.item_controller.inventory.select_hotbar(index)
+
+func _animate_hotbar_slot(slot: Control, selected: bool) -> void:
+	var tween := slot.get_meta("hotbar_tween") as Tween if slot.has_meta("hotbar_tween") else null
+	if tween != null: tween.kill()
+	tween = create_tween()
+	slot.set_meta("hotbar_tween", tween)
+	if not selected:
+		tween.tween_property(slot, "scale", Vector2.ONE, hotbar_animation_seconds * 0.5)
+		return
+	tween.tween_property(slot, "scale", Vector2.ONE * hotbar_bounce_scale, hotbar_animation_seconds * 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(slot, "scale", Vector2.ONE * selected_hotbar_scale, hotbar_animation_seconds * 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _set_unlimited_health(enabled: bool) -> void:
 	GameSession.debug_unlimited_health = enabled
