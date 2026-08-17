@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://game/enemies/test/test_amphibian.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://game/enemies/test/projectile_turret.tscn" id="5"]
-[ext_resource type="Script" path="res://ui/foundation_hud.gd" id="6"]
+[ext_resource type="PackedScene" path="res://ui/foundation_hud.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://game/shops/test_shop_terminal.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://game/world/sources/breakable_loot.tscn" id="8"]
 
@@ -89,5 +89,4 @@ position = Vector2(570, 320)
 [node name="TestShopTerminal" parent="." instance=ExtResource("7")]
 position = Vector2(280, 320)
 
-[node name="FoundationHUD" type="CanvasLayer" parent="."]
-script = ExtResource("6")
+[node name="FoundationHUD" parent="." instance=ExtResource("6")]

@@ -121,97 +121,26 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _build_ui() -> void:
-	_build_health_flames()
-	var top := HBoxContainer.new()
-	top.position = Vector2(10, 25)
-	add_child(top)
-	health_label = Label.new()
-	health_label.custom_minimum_size.x = 110
-	top.add_child(health_label)
-	debug_text_nodes.append(health_label)
-	status_label = Label.new()
-	status_label.position = Vector2(10, 30)
-	status_label.size = Vector2(180, 120)
-	add_child(status_label)
-	money_label = Label.new()
-	top.add_child(money_label)
-	debug_text_nodes.append(money_label)
-	weight_label = Label.new()
-	top.add_child(weight_label)
-	debug_text_nodes.append(weight_label)
-	location_label = Label.new()
-	location_label.anchor_left = 1.0
-	location_label.anchor_right = 1.0
-	location_label.offset_left = -300.0
-	location_label.offset_top = 8.0
-	location_label.offset_right = -10.0
-	location_label.offset_bottom = 42.0
-	location_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	add_child(location_label)
-	debug_text_nodes.append(location_label)
-	prompt_label = Label.new()
-	prompt_label.position = Vector2(230, 320)
-	prompt_label.size = Vector2(180, 28)
-	prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	add_child(prompt_label)
-	feedback_label = Label.new()
-	feedback_label.position = Vector2(220, 40)
-	feedback_label.size = Vector2(200, 25)
-	feedback_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	add_child(feedback_label)
-	threat_label = Label.new()
-	threat_label.position = Vector2(300, 110)
-	threat_label.add_theme_font_size_override("font_size", 24)
-	threat_label.visible = false
-	add_child(threat_label)
-	effect_overlay = ColorRect.new()
-	effect_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	effect_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	effect_overlay.color = Color.TRANSPARENT
-	effect_overlay.z_index = -1
-	add_child(effect_overlay)
-	var hotbar := HBoxContainer.new()
-	hotbar.anchor_left = 1.0
-	hotbar.anchor_top = 1.0
-	hotbar.anchor_right = 1.0
-	hotbar.anchor_bottom = 1.0
-	hotbar.offset_left = -116.0
-	hotbar.offset_top = -48.0
-	hotbar.offset_right = -8.0
-	hotbar.offset_bottom = -16.0
-	hotbar.add_theme_constant_override(&"separation", 4)
-	add_child(hotbar)
-	for index in 2:
-		var slot := TextureRect.new()
-		slot.texture = HOTBAR_MAIN if index == 0 else HOTBAR_SECONDARY
-		slot.custom_minimum_size = Vector2(32, 32)
-		slot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		hotbar.add_child(slot)
-		var icon := TextureRect.new()
-		icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, 4)
-		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.add_child(icon)
-		hotbar_icons.append(icon)
-		var label := Label.new()
-		label.visible = false
-		hotbar.add_child(label)
-		hotbar_labels.append(label)
-	hotbar_arrow = TextureRect.new()
-	hotbar_arrow.texture = HOTBAR_ARROW
-	hotbar_arrow.size = Vector2(16, 16)
-	hotbar_arrow.anchor_left = 1.0
-	hotbar_arrow.anchor_top = 1.0
-	hotbar_arrow.anchor_right = 1.0
-	hotbar_arrow.anchor_bottom = 1.0
-	hotbar_arrow.offset_top = -64.0
-	hotbar_arrow.offset_bottom = -48.0
-	add_child(hotbar_arrow)
-	whistle_button = Button.new()
-	whistle_button.custom_minimum_size = Vector2(32, 32)
+	health_flames.clear()
+	for flame in $HealthFlames.get_children(): health_flames.append(flame as TextureRect)
+	health_label = $TopStats/Health
+	status_label = $Status
+	money_label = $TopStats/Money
+	weight_label = $TopStats/Weight
+	location_label = $Location
+	prompt_label = $Prompt
+	feedback_label = $Feedback
+	threat_label = $Threat
+	effect_overlay = $EffectOverlay
+	hotbar_icons = [$Hotbar/Slot0/Icon, $Hotbar/Slot1/Icon]
+	hotbar_labels = [$HotbarLabel0, $HotbarLabel1]
+	hotbar_arrow = $Arrow
+	whistle_button = $Hotbar/Whistle
 	whistle_button.pressed.connect(func(): player.use_whistle() if player != null else false)
-	hotbar.add_child(whistle_button)
+	debug_text_nodes.append(health_label)
+	debug_text_nodes.append(money_label)
+	debug_text_nodes.append(weight_label)
+	debug_text_nodes.append(location_label)
 	inventory_panel = PanelContainer.new()
 	inventory_panel.position = Vector2(180, 105)
 	inventory_panel.custom_minimum_size = Vector2(280, 130)

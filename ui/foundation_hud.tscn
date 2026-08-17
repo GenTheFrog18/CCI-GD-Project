@@ -1,0 +1,177 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://ui/foundation_hud.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/hud/fire-hp-bar.png" id="2_fire"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/hud/hotbar-main.png" id="3_hotbar_main"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/hud/hotbar-sec.png" id="4_hotbar_secondary"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/hud/arrow-hotbar.png" id="5_arrow"]
+
+[node name="FoundationHUD" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_script")
+
+[node name="EffectOverlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+z_index = -1
+
+[node name="HealthFlames" type="HBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 6.0
+offset_right = 168.0
+offset_bottom = 22.0
+theme_override_constants/separation = 0
+
+[node name="Flame0" type="TextureRect" parent="HealthFlames"]
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("2_fire")
+expand_mode = 1
+[node name="Flame1" type="TextureRect" parent="HealthFlames"]
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("2_fire")
+expand_mode = 1
+[node name="Flame2" type="TextureRect" parent="HealthFlames"]
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("2_fire")
+expand_mode = 1
+[node name="Flame3" type="TextureRect" parent="HealthFlames"]
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("2_fire")
+expand_mode = 1
+[node name="Flame4" type="TextureRect" parent="HealthFlames"]
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("2_fire")
+expand_mode = 1
+[node name="Flame5" type="TextureRect" parent="HealthFlames"]
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("2_fire")
+expand_mode = 1
+[node name="Flame6" type="TextureRect" parent="HealthFlames"]
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("2_fire")
+expand_mode = 1
+[node name="Flame7" type="TextureRect" parent="HealthFlames"]
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("2_fire")
+expand_mode = 1
+[node name="Flame8" type="TextureRect" parent="HealthFlames"]
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("2_fire")
+expand_mode = 1
+[node name="Flame9" type="TextureRect" parent="HealthFlames"]
+custom_minimum_size = Vector2(16, 16)
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="TopStats" type="HBoxContainer" parent="."]
+offset_left = 10.0
+offset_top = 25.0
+offset_right = 300.0
+offset_bottom = 45.0
+[node name="Health" type="Label" parent="TopStats"]
+custom_minimum_size = Vector2(110, 0)
+[node name="Money" type="Label" parent="TopStats"]
+[node name="Weight" type="Label" parent="TopStats"]
+
+[node name="Status" type="Label" parent="."]
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 190.0
+offset_bottom = 150.0
+[node name="Location" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = 42.0
+horizontal_alignment = 2
+[node name="Prompt" type="Label" parent="."]
+offset_left = 230.0
+offset_top = 320.0
+offset_right = 410.0
+offset_bottom = 348.0
+horizontal_alignment = 1
+[node name="Feedback" type="Label" parent="."]
+offset_left = 220.0
+offset_top = 40.0
+offset_right = 420.0
+offset_bottom = 65.0
+horizontal_alignment = 1
+[node name="Threat" type="Label" parent="."]
+offset_left = 300.0
+offset_top = 110.0
+offset_right = 360.0
+offset_bottom = 140.0
+theme_override_font_sizes/font_size = 24
+visible = false
+
+[node name="Hotbar" type="HBoxContainer" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -116.0
+offset_top = -48.0
+offset_right = -8.0
+offset_bottom = -16.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 4
+[node name="Slot0" type="TextureRect" parent="Hotbar"]
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("3_hotbar_main")
+expand_mode = 1
+[node name="Icon" type="TextureRect" parent="Hotbar/Slot0"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="Slot1" type="TextureRect" parent="Hotbar"]
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("4_hotbar_secondary")
+expand_mode = 1
+[node name="Icon" type="TextureRect" parent="Hotbar/Slot1"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+[node name="Whistle" type="Button" parent="Hotbar"]
+custom_minimum_size = Vector2(32, 32)
+[node name="Arrow" type="TextureRect" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -108.0
+offset_top = -64.0
+offset_right = -92.0
+offset_bottom = -48.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = ExtResource("5_arrow")
+expand_mode = 1
+[node name="HotbarLabel0" type="Label" parent="."]
+visible = false
+[node name="HotbarLabel1" type="Label" parent="."]
+visible = false

@@ -379,7 +379,7 @@ func _test_ui_input_and_debug() -> void:
 	GameSession.debug_enabled = false
 	GameSession.debug_unlimited_health = false
 	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
-	var hud := FoundationHUD.new()
+	var hud := preload("res://ui/foundation_hud.tscn").instantiate() as FoundationHUD
 	add_child(player)
 	add_child(hud)
 	hud.set_player(player)

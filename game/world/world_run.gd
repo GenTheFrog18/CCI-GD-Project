@@ -2,6 +2,7 @@ class_name WorldRun
 extends Node2D
 
 const PLAYER_SCENE := preload("res://game/player/player.tscn")
+const HUD_SCENE := preload("res://ui/foundation_hud.tscn")
 
 @export var surface_scene: PackedScene
 @export var layer_1_scene: PackedScene
@@ -154,7 +155,7 @@ func _load_active_layer(is_transition: bool, target_spawn_id: StringName = &"") 
 		player.global_position = active_layer.spawn_position(GameSession.current_route_id, target_spawn_id)
 		player.set_last_safe_position(player.global_position)
 		player.curse_tracker.reset_reference(true)
-	hud = FoundationHUD.new()
+	hud = HUD_SCENE.instantiate() as FoundationHUD
 	add_child(hud)
 	hud.set_player(player)
 	hud.world_debug_action_requested.connect(_on_debug_action)
