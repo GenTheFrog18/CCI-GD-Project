@@ -1,0 +1,468 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://ui/inventory_menu.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/backpack.png" id="2_backpack"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/book-inventory-final.png" id="3_book"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/book-inventory-grid.png" id="4_grid"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/button-close.png" id="5_close"]
+[ext_resource type="Script" path="res://ui/inventory_slot.gd" id="6_slot"]
+
+[node name="InventoryMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_script")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.68)
+
+[node name="Backpack" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 70.0
+offset_right = 560.0
+offset_bottom = 310.0
+mouse_filter = 2
+texture = ExtResource("2_backpack")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BookOpening" type="AnimatedSprite2D" parent="."]
+position = Vector2(320, 180)
+scale = Vector2(1.5, 1.5)
+z_index = 1
+
+[node name="BookContent" type="Control" parent="."]
+layout_mode = 0
+offset_left = 140.0
+offset_top = 60.0
+offset_right = 380.0
+offset_bottom = 220.0
+scale = Vector2(1.5, 1.5)
+z_index = 2
+
+[node name="Book" type="TextureRect" parent="BookContent"]
+layout_mode = 0
+offset_right = 240.0
+offset_bottom = 160.0
+mouse_filter = 2
+texture = ExtResource("3_book")
+expand_mode = 1
+
+[node name="InventoryTitle" type="Label" parent="BookContent"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 18.0
+offset_right = 105.0
+offset_bottom = 34.0
+mouse_filter = 2
+text = "Inventory"
+horizontal_alignment = 1
+
+[node name="HotbarTitle" type="Label" parent="BookContent"]
+layout_mode = 0
+offset_left = 145.0
+offset_top = 18.0
+offset_right = 205.0
+offset_bottom = 34.0
+mouse_filter = 2
+text = "Hotbar"
+horizontal_alignment = 1
+
+[node name="Weight" type="Label" parent="BookContent"]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 116.0
+offset_right = 106.0
+offset_bottom = 130.0
+mouse_filter = 2
+text = "Backpack: 0g of 0g"
+theme_override_font_sizes/font_size = 7
+
+[node name="ItemName" type="Label" parent="BookContent"]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 132.0
+offset_right = 105.0
+offset_bottom = 143.0
+mouse_filter = 2
+text = "Select an item"
+theme_override_font_sizes/font_size = 8
+
+[node name="ItemDescription" type="Label" parent="BookContent"]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 144.0
+offset_right = 107.0
+offset_bottom = 157.0
+mouse_filter = 2
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 6
+
+[node name="Close" type="TextureButton" parent="BookContent"]
+layout_mode = 0
+offset_left = 208.0
+offset_top = -10.0
+offset_right = 240.0
+offset_bottom = 22.0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+ignore_texture_size = true
+texture_normal = ExtResource("5_close")
+
+[node name="BackpackSlots" type="Control" parent="BookContent"]
+layout_mode = 0
+
+[node name="Slot0" type="Control" parent="BookContent/BackpackSlots"]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 43.0
+offset_right = 52.0
+offset_bottom = 69.0
+
+[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_grid")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
+expand_icon = true
+script = ExtResource("6_slot")
+
+[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot0/Button"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 6
+
+[node name="Slot1" type="Control" parent="BookContent/BackpackSlots"]
+layout_mode = 0
+offset_left = 55.0
+offset_top = 43.0
+offset_right = 81.0
+offset_bottom = 69.0
+
+[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_grid")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
+expand_icon = true
+script = ExtResource("6_slot")
+
+[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot1/Button"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 6
+
+[node name="Slot2" type="Control" parent="BookContent/BackpackSlots"]
+layout_mode = 0
+offset_left = 84.0
+offset_top = 43.0
+offset_right = 110.0
+offset_bottom = 69.0
+
+[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_grid")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
+expand_icon = true
+script = ExtResource("6_slot")
+
+[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot2/Button"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 6
+
+[node name="Slot3" type="Control" parent="BookContent/BackpackSlots"]
+layout_mode = 0
+offset_left = 41.0
+offset_top = 75.0
+offset_right = 67.0
+offset_bottom = 101.0
+
+[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_grid")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
+expand_icon = true
+script = ExtResource("6_slot")
+
+[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot3/Button"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 6
+
+[node name="Slot4" type="Control" parent="BookContent/BackpackSlots"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 75.0
+offset_right = 96.0
+offset_bottom = 101.0
+
+[node name="Frame" type="TextureRect" parent="BookContent/BackpackSlots/Slot4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_grid")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button" type="Button" parent="BookContent/BackpackSlots/Slot4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
+expand_icon = true
+script = ExtResource("6_slot")
+
+[node name="Quantity" type="Label" parent="BookContent/BackpackSlots/Slot4/Button"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 6
+
+[node name="HotbarSlots" type="Control" parent="BookContent"]
+layout_mode = 0
+
+[node name="Slot0" type="Control" parent="BookContent/HotbarSlots"]
+layout_mode = 0
+offset_left = 145.0
+offset_top = 46.0
+offset_right = 177.0
+offset_bottom = 78.0
+rotation = -0.14
+
+[node name="Frame" type="TextureRect" parent="BookContent/HotbarSlots/Slot0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_grid")
+expand_mode = 1
+
+[node name="Button" type="Button" parent="BookContent/HotbarSlots/Slot0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
+expand_icon = true
+script = ExtResource("6_slot")
+
+[node name="Quantity" type="Label" parent="BookContent/HotbarSlots/Slot0/Button"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 6
+
+[node name="Slot1" type="Control" parent="BookContent/HotbarSlots"]
+layout_mode = 0
+offset_left = 181.0
+offset_top = 42.0
+offset_right = 213.0
+offset_bottom = 74.0
+rotation = 0.14
+
+[node name="Frame" type="TextureRect" parent="BookContent/HotbarSlots/Slot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_grid")
+expand_mode = 1
+
+[node name="Button" type="Button" parent="BookContent/HotbarSlots/Slot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
+expand_icon = true
+script = ExtResource("6_slot")
+
+[node name="Quantity" type="Label" parent="BookContent/HotbarSlots/Slot1/Button"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 6
+
+[node name="Whistle" type="TextureButton" parent="BookContent"]
+layout_mode = 0
+offset_left = 166.0
+offset_top = 100.0
+offset_right = 198.0
+offset_bottom = 132.0
+focus_mode = 0
+ignore_texture_size = true
+texture_normal = ExtResource("4_grid")
+
+[node name="Icon" type="TextureRect" parent="BookContent/Whistle"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5

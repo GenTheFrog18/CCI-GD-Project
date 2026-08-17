@@ -407,13 +407,18 @@ func _test_ui_input_and_debug() -> void:
 	player.status.remove_status(&"healing")
 	player.status.remove_status(&"resin_bound")
 	player.set_inventory_open(true)
-	hud.inventory_buttons[0].grab_focus()
+	assert(hud.inventory_menu.visible and hud.inventory_menu.slot_buttons.size() == 7)
 	hud._slot_pressed(0)
+	assert(hud.inventory_menu.item_name.text == "Multitool")
 	var inventory_event := InputEventAction.new()
 	inventory_event.action = &"inventory"
 	inventory_event.pressed = true
 	hud._input(inventory_event)
-	assert(not player.inventory_open and hud._selected_index == -1)
+	assert(not player.inventory_open and not hud.inventory_menu.visible and hud._selected_index == -1)
+	player.set_inventory_open(true)
+	assert(is_equal_approx(hud.inventory_menu.book_open_seconds, 0.5))
+	hud.inventory_menu.close_button.pressed.emit()
+	assert(not player.inventory_open and not hud.inventory_menu.visible)
 	player.set_inventory_open(true)
 	var pause_event := InputEventAction.new()
 	pause_event.action = &"pause"

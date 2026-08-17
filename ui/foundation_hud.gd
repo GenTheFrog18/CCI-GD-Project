@@ -7,8 +7,8 @@ const FIRE_DEAD := preload("res://assets/art/ui/hud/fire-dead-hp-bar.png")
 const HOTBAR_MAIN := preload("res://assets/art/ui/hud/hotbar-main.png")
 const HOTBAR_SECONDARY := preload("res://assets/art/ui/hud/hotbar-sec.png")
 const HOTBAR_ARROW := preload("res://assets/art/ui/hud/arrow-hotbar.png")
-const BOOK_SHEET := preload("res://assets/art/ui/inventory/book-inventory-sprite.png")
 const SETTINGS_POPUP_SCENE := preload("res://ui/settings_popup.tscn")
+const INVENTORY_MENU_SCENE := preload("res://ui/inventory_menu.tscn")
 
 signal world_debug_action_requested(action: StringName)
 
@@ -19,7 +19,7 @@ var money_label: Label
 var weight_label: Label
 var prompt_label: Label
 var feedback_label: Label
-var inventory_panel: PanelContainer
+var inventory_menu: InventoryMenu
 var inventory_buttons: Array[Button] = []
 var hotbar_labels: Array[Label] = []
 var whistle_button: BaseButton
@@ -50,7 +50,6 @@ var hotbar_slots: Array[Control] = []
 var hotbar_indices: Array[int] = []
 var hotbar_arrow: TextureRect
 var _hotbar_layout_ready := false
-var inventory_book: AnimatedSprite2D
 var debug_text_nodes: Array[CanvasItem] = []
 
 @export_range(1.0, 2.0, 0.01) var selected_hotbar_scale := 1.25
@@ -174,38 +173,17 @@ func _build_ui() -> void:
 	debug_text_nodes.append(money_label)
 	debug_text_nodes.append(weight_label)
 	debug_text_nodes.append(location_label)
-	inventory_panel = PanelContainer.new()
-	inventory_panel.position = Vector2(180, 105)
-	inventory_panel.custom_minimum_size = Vector2(280, 130)
-	inventory_panel.visible = false
-	var transparent := StyleBoxFlat.new()
-	transparent.bg_color = Color(0.02, 0.015, 0.02, 0.78)
-	inventory_panel.add_theme_stylebox_override(&"panel", transparent)
-	add_child(inventory_panel)
-	_build_inventory_book()
-	var inventory_column := VBoxContainer.new()
-	inventory_panel.add_child(inventory_column)
-	var title := Label.new()
-	title.text = "Hotbar / Backpack — click to swap, RMB to drop"
-	inventory_column.add_child(title)
-	var grid := GridContainer.new()
-	grid.columns = 5
-	inventory_column.add_child(grid)
-	for index in 7:
-		var button := InventorySlot.new()
+	inventory_menu = INVENTORY_MENU_SCENE.instantiate() as InventoryMenu
+	add_child(inventory_menu)
+	inventory_menu.close_requested.connect(func(): player.set_inventory_open(false) if player != null else false)
+	for index in inventory_menu.slot_buttons.size():
+		var button := inventory_menu.slot_buttons[index]
 		button.hud = self
 		button.flat_index = index
-		button.custom_minimum_size = Vector2(50, 42)
 		button.pressed.connect(_slot_pressed.bind(index))
 		button.gui_input.connect(_slot_gui_input.bind(index))
-		grid.add_child(button)
 		inventory_buttons.append(button)
-	var locked := Button.new()
-	locked.text = "Locked"
-	locked.disabled = true
-	locked.custom_minimum_size = Vector2(50, 42)
-	locked.tooltip_text = "Reserved book slot"
-	grid.add_child(locked)
+	(inventory_menu.get_node("BookContent/Whistle") as TextureButton).pressed.connect(func(): player.use_whistle() if player != null else false)
 	dialogue_box = DialogueBox.new()
 	dialogue_box.position = Vector2(60, 245)
 	add_child(dialogue_box)
@@ -344,24 +322,6 @@ func _build_health_flames() -> void:
 		row.add_child(flame)
 		health_flames.append(flame)
 
-func _build_inventory_book() -> void:
-	var frames := SpriteFrames.new()
-	frames.add_animation(&"open")
-	frames.set_animation_speed(&"open", 24.0)
-	frames.set_animation_loop(&"open", false)
-	for index in 16:
-		var frame := AtlasTexture.new()
-		frame.atlas = BOOK_SHEET
-		frame.region = Rect2(index * 240, 0, 240, 160)
-		frames.add_frame(&"open", frame)
-	inventory_book = AnimatedSprite2D.new()
-	inventory_book.sprite_frames = frames
-	inventory_book.position = Vector2(320, 180)
-	inventory_book.scale = Vector2(1.4, 1.4)
-	inventory_book.visible = false
-	inventory_book.z_index = -1
-	add_child(inventory_book)
-
 func _build_crosshair() -> void:
 	crosshair = Node2D.new()
 	crosshair.z_index = 100
@@ -428,9 +388,10 @@ func _slot_gui_input(event: InputEvent, flat_index: int) -> void:
 		_refresh_inventory()
 
 func _on_inventory_toggled(open: bool) -> void:
-	inventory_panel.visible = open
-	inventory_book.visible = open
-	if open: inventory_book.play(&"open")
+	if open:
+		inventory_menu.open_menu()
+	else:
+		inventory_menu.close_menu()
 	if not open:
 		_selected_index = -1
 	_refresh_inventory()
@@ -443,18 +404,28 @@ func _refresh_inventory() -> void:
 	slots.append_array(player.item_controller.inventory.backpack)
 	for index in inventory_buttons.size():
 		var stack := slots[index]
-		var label := "—"
+		var tooltip := "Empty slot"
+		var icon: Texture2D
+		var quantity := 0
 		if not stack.is_empty():
 			var definition := ContentCatalog.get_item(stack.item_id)
-			label = "x%d" % stack.quantity
-			inventory_buttons[index].icon = definition.icon if definition != null else null
-			inventory_buttons[index].tooltip_text = (definition.display_name + "\n" + (definition.known_description if stack.item_id in GameSession.known_items else definition.unknown_description)) if definition != null else String(stack.item_id)
-		else:
-			inventory_buttons[index].icon = null
-			inventory_buttons[index].tooltip_text = "Empty slot"
-		if index < 2 and index == player.item_controller.inventory.active_hotbar_index:
-			label = "[%s]" % label
-		inventory_buttons[index].text = label
+			icon = definition.icon if definition != null else null
+			quantity = stack.quantity
+			tooltip = (definition.display_name + "\n" + (definition.known_description if stack.item_id in GameSession.known_items else definition.unknown_description)) if definition != null else String(stack.item_id)
+		var selected_flat := -1
+		if _selected_index >= 0:
+			selected_flat = _selected_index if _selected_container == &"hotbar" else _selected_index + 2
+		inventory_menu.set_slot(index, icon, quantity, tooltip, index == selected_flat)
+	if _selected_index >= 0:
+		var selected_stack := slots[_selected_index if _selected_container == &"hotbar" else _selected_index + 2]
+		var selected_definition := ContentCatalog.get_item(selected_stack.item_id)
+		inventory_menu.set_details(
+			selected_definition.display_name if selected_definition != null else "Select an item",
+			(selected_definition.known_description if selected_stack.item_id in GameSession.known_items else selected_definition.unknown_description) if selected_definition != null else "",
+			"Backpack: %dg of %dg" % [player.item_controller.inventory.get_total_weight(), player.carry_capacity],
+		)
+	else:
+		inventory_menu.set_details("Select an item", "", "Backpack: %dg of %dg" % [player.item_controller.inventory.get_total_weight(), player.carry_capacity])
 	for display_index in hotbar_slots.size():
 		var index := hotbar_indices[display_index]
 		var stack := player.item_controller.inventory.hotbar[index]
@@ -488,6 +459,8 @@ func _refresh_whistle(item_id: StringName) -> void:
 	whistle_icon.texture = definition.icon if definition != null else null
 	whistle_button.tooltip_text = "Use %s" % (definition.display_name if definition != null else "whistle")
 	whistle_button.disabled = item_id.is_empty()
+	if inventory_menu != null:
+		inventory_menu.set_whistle(definition.icon if definition != null else null, whistle_button.tooltip_text)
 
 func _set_debug_text_visible(visible: bool) -> void:
 	for node in debug_text_nodes:
