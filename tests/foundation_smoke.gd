@@ -357,6 +357,14 @@ func _test_main_menu_ui() -> void:
 	assert(ProjectSettings.get_setting("gui/theme/custom") == "res://ui/game_theme.tres")
 	var game_theme := load("res://ui/game_theme.tres") as Theme
 	assert(game_theme.default_font.resource_path.ends_with("Perfect DOS VGA 437.ttf"))
+	menu._show_settings()
+	await get_tree().process_frame
+	assert(menu.settings_popup.visible and not menu.settings_popup.include_resume)
+	assert(menu.settings_popup._content.find_child("EntryResume", true, false) == null)
+	assert(menu.settings_popup._content.find_child("EntryClose", true, false) != null)
+	menu._show_new_run_confirmation()
+	assert(menu.get_node_or_null("NewRunConfirmation") != null)
+	assert(menu.find_children("*", "ConfirmationDialog", true, false).is_empty())
 	menu.free()
 
 func _test_ui_input_and_debug() -> void:
@@ -397,6 +405,7 @@ func _test_ui_input_and_debug() -> void:
 	assert(not player.inventory_open and not get_tree().paused)
 	hud._input(pause_event)
 	assert(get_tree().paused)
+	assert(hud.pause_panel.visible and hud.pause_panel.include_resume)
 	hud._input(pause_event)
 	assert(not get_tree().paused)
 	var debug_event := InputEventAction.new()

@@ -8,7 +8,6 @@ const HOTBAR_MAIN := preload("res://assets/art/ui/hud/hotbar-main.png")
 const HOTBAR_SECONDARY := preload("res://assets/art/ui/hud/hotbar-sec.png")
 const HOTBAR_ARROW := preload("res://assets/art/ui/hud/arrow-hotbar.png")
 const BOOK_SHEET := preload("res://assets/art/ui/inventory/book-inventory-sprite.png")
-const SETTINGS_PANE := preload("res://assets/art/ui/settings/settings-pane-final.png")
 
 signal world_debug_action_requested(action: StringName)
 
@@ -24,7 +23,7 @@ var inventory_buttons: Array[Button] = []
 var hotbar_labels: Array[Label] = []
 var whistle_button: Button
 var debug_panel: PanelContainer
-var pause_panel: PanelContainer
+var pause_panel: SettingsPopup
 var death_panel: PanelContainer
 var dialogue_box: DialogueBox
 var crosshair: Node2D
@@ -107,9 +106,11 @@ func _input(event: InputEvent) -> void:
 			world_log_panel.visible = false
 		elif player.inventory_open:
 			player.set_inventory_open(false)
+		elif pause_panel.visible:
+			_resume_pause_menu()
 		else:
-			get_tree().paused = not get_tree().paused
-			pause_panel.visible = get_tree().paused
+			get_tree().paused = true
+			pause_panel.show_popup()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"debug_toggle"):
 		debug_panel.visible = not debug_panel.visible
@@ -245,52 +246,11 @@ func _build_ui() -> void:
 	dialogue_box = DialogueBox.new()
 	dialogue_box.position = Vector2(60, 245)
 	add_child(dialogue_box)
-	pause_panel = _make_panel("Paused", Vector2(225, 45))
-	var pause_style := StyleBoxTexture.new()
-	pause_style.texture = SETTINGS_PANE
-	pause_panel.add_theme_stylebox_override(&"panel", pause_style)
-	pause_panel.visible = false
-	var seed_label := Label.new()
-	seed_label.text = "Seed: %d" % GameSession.run_seed
-	pause_panel.get_child(0).add_child(seed_label)
-	var resume := Button.new()
-	resume.text = "Resume"
-	resume.pressed.connect(func(): get_tree().paused = false; pause_panel.visible = false)
-	pause_panel.get_child(0).add_child(resume)
-	var new_run := Button.new()
-	new_run.text = "New Run"
-	new_run.pressed.connect(start_new_run)
-	pause_panel.get_child(0).add_child(new_run)
-	var menu := Button.new()
-	menu.text = "Save & Menu"
-	menu.pressed.connect(func(): player.item_controller.prepare_for_save(); SaveManager.save_run(); get_tree().paused = false; SceneRouter.go_to("res://ui/main_menu.tscn"))
-	pause_panel.get_child(0).add_child(menu)
-	var volume := HSlider.new()
-	volume.min_value = 0.0
-	volume.max_value = 1.0
-	volume.step = 0.05
-	volume.value = GameSession.master_volume
-	volume.tooltip_text = "Master volume"
-	volume.value_changed.connect(func(value: float): GameSession.master_volume = value; GameSession.apply_settings(); SaveManager.save_meta())
-	pause_panel.get_child(0).add_child(volume)
-	var fullscreen := CheckButton.new()
-	fullscreen.text = "Fullscreen"
-	fullscreen.button_pressed = GameSession.fullscreen
-	fullscreen.toggled.connect(func(enabled: bool): GameSession.fullscreen = enabled; GameSession.apply_settings(); SaveManager.save_meta())
-	pause_panel.get_child(0).add_child(fullscreen)
-	var how_to := Button.new()
-	how_to.text = "How to Play"
-	how_to.pressed.connect(_show_how_to)
-	pause_panel.get_child(0).add_child(how_to)
-	var credits := Button.new()
-	credits.text = "Credits"
-	credits.pressed.connect(_show_credits)
-	pause_panel.get_child(0).add_child(credits)
-	if GameSession.debug_enabled:
-		var world_log := Button.new()
-		world_log.text = "World Gen Log"
-		world_log.pressed.connect(func(): world_log_panel.visible = not world_log_panel.visible)
-		pause_panel.get_child(0).add_child(world_log)
+	pause_panel = SettingsPopup.new()
+	pause_panel.configure(true, "Save & Menu")
+	pause_panel.resume_requested.connect(_resume_pause_menu)
+	pause_panel.main_action_requested.connect(_save_and_return_to_menu)
+	add_child(pause_panel)
 	death_panel = _make_panel("You Died", Vector2(240, 125))
 	death_panel.visible = false
 	var retry := Button.new()
@@ -600,20 +560,6 @@ func _set_health_text(current: float, maximum: float) -> void:
 		var threshold := maximum * float(index + 1) / float(health_flames.size())
 		health_flames[index].texture = FIRE_FULL if current >= threshold else (FIRE_LOW if current > threshold - maximum / health_flames.size() else FIRE_DEAD)
 
-func _show_how_to() -> void:
-	_show_info("How to Play", "A/D: move   Space: jump   E: interact\n1/2: select   LMB: use   RMB: throw\nTab: inventory   Esc: pause   W/S: climb")
-
-func _show_credits() -> void:
-	_show_info("Credits", "Team Gorillaz Games\nPerfect DOS VGA 437 — Zeh Fernando (SIL OFL 1.1)")
-
-func _show_info(title: String, body: String) -> void:
-	var dialog := AcceptDialog.new()
-	dialog.title = title
-	dialog.dialog_text = body
-	dialog.confirmed.connect(dialog.queue_free)
-	add_child(dialog)
-	dialog.popup_centered(Vector2i(390, 210))
-
 func _set_unlimited_health(enabled: bool) -> void:
 	GameSession.debug_unlimited_health = enabled
 	if enabled and player != null and player.is_alive():
@@ -642,6 +588,16 @@ func _on_player_died(_source: Node) -> void:
 	pause_panel.visible = false
 	death_panel.visible = true
 	get_tree().paused = false
+
+func _resume_pause_menu() -> void:
+	pause_panel.close_popup()
+	get_tree().paused = false
+
+func _save_and_return_to_menu() -> void:
+	player.item_controller.prepare_for_save()
+	SaveManager.save_run()
+	get_tree().paused = false
+	SceneRouter.go_to("res://ui/main_menu.tscn")
 
 func start_new_run() -> void:
 	get_tree().paused = false
