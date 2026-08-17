@@ -6,6 +6,8 @@ signal main_action_requested
 
 @export_range(0.01, 2.0, 0.01) var popup_animation_seconds := 0.15
 @export_range(0.0, 64.0, 1.0) var popup_slide_pixels := 12.0
+@export_range(0.0, 32.0, 1.0) var indicator_gap := 3.0
+@export_range(-32.0, 32.0, 1.0) var indicator_vertical_offset := 2.0
 
 var include_resume := false
 var main_action_text := "Close"
@@ -15,6 +17,7 @@ var _card_bottom := 0.0
 
 @onready var dimmer: ColorRect = $Dimmer
 @onready var card: Control = $Card
+@onready var close_button: TextureButton = $Card/CloseButton
 @onready var menu_page: Control = $Card/MenuPage
 @onready var indicator: TextureRect = $Card/MenuPage/Indicator
 @onready var entry_resume: Button = $Card/MenuPage/MenuColumn/EntryResume
@@ -50,9 +53,7 @@ func _ready() -> void:
 	for entry in [entry_resume, entry_sound, entry_screen, entry_how_to, entry_credits, entry_main_action]:
 		entry.focus_entered.connect(_move_indicator.bind(entry))
 		entry.mouse_entered.connect(entry.grab_focus)
-	$Card/SoundPage/Back.pressed.connect(_show_main_page)
-	$Card/ScreenPage/Back.pressed.connect(_show_main_page)
-	$Card/InfoPage/Back.pressed.connect(_show_main_page)
+	close_button.pressed.connect(_close_or_resume)
 	volume.value_changed.connect(func(value: float): GameSession.master_volume = value; GameSession.apply_settings(); SaveManager.save_meta())
 	fullscreen.toggled.connect(func(enabled: bool): GameSession.fullscreen = enabled; GameSession.apply_settings(); SaveManager.save_meta())
 
@@ -106,7 +107,7 @@ func _show_info(title: String, body: String) -> void:
 	info_page.visible = true
 	info_title.text = title
 	info_body.text = body
-	$Card/InfoPage/Back.grab_focus()
+	close_button.grab_focus()
 
 func _run_main_action() -> void:
 	if include_resume:
@@ -115,12 +116,26 @@ func _run_main_action() -> void:
 		close_popup()
 
 func _move_indicator(entry: Control) -> void:
-	indicator.global_position = entry.global_position + Vector2(-18.0, 2.0)
+	indicator.global_position = Vector2(_label_left(entry) - indicator.size.x - indicator_gap, entry.global_position.y + indicator_vertical_offset)
+
+func _label_left(entry: Control) -> float:
+	var image_label := entry.get_node_or_null("Label") as TextureRect
+	if image_label != null and image_label.texture != null:
+		var texture_size := image_label.texture.get_size()
+		var scale_factor := minf(image_label.size.x / texture_size.x, image_label.size.y / texture_size.y)
+		return image_label.global_position.x + (image_label.size.x - texture_size.x * scale_factor) * 0.5
+	var font := entry.get_theme_font(&"font")
+	var font_size := entry.get_theme_font_size(&"font_size")
+	var text_width := font.get_string_size((entry as Button).text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, font_size).x
+	return entry.global_position.x + (entry.size.x - text_width) * 0.5
+
+func _close_or_resume() -> void:
+	if include_resume:
+		resume_requested.emit()
+	else:
+		close_popup()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed(&"ui_cancel"):
-		if include_resume:
-			resume_requested.emit()
-		else:
-			close_popup()
+		_close_or_resume()
 		get_viewport().set_input_as_handled()

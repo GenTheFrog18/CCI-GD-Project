@@ -1,40 +1,38 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene format=3 uid="uid://c6b05ub5ap100"]
 
-[ext_resource type="Script" path="res://ui/settings_popup.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/settings/settings-pane-final.png" id="2_pane"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/settings/settings.png" id="3_title"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/settings/indicator.png" id="4_indicator"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/settings/resume.png" id="5_resume"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/settings/sound.png" id="6_sound"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/settings/screen.png" id="7_screen"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/settings/how_to_play.png" id="8_how_to"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/settings/credits.png" id="9_credits"]
+[ext_resource type="Script" uid="uid://cxa8mx2y15dof" path="res://ui/settings_popup.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cggu85i780g2c" path="res://assets/art/ui/settings/settings-pane-final.png" id="2_pane"]
+[ext_resource type="Texture2D" uid="uid://ylyv3nur1jhj" path="res://assets/art/ui/settings/settings.png" id="3_title"]
+[ext_resource type="Texture2D" uid="uid://byn58ibmm1o8k" path="res://assets/art/ui/settings/indicator.png" id="4_indicator"]
+[ext_resource type="Texture2D" uid="uid://e8k52uk6lgxu" path="res://assets/art/ui/settings/resume.png" id="5_resume"]
+[ext_resource type="Texture2D" uid="uid://dqxtyfs62x02x" path="res://assets/art/ui/settings/sound.png" id="6_sound"]
+[ext_resource type="Texture2D" uid="uid://bdxd173p6h3gi" path="res://assets/art/ui/settings/screen.png" id="7_screen"]
+[ext_resource type="Texture2D" uid="uid://gcyc5068q3c5" path="res://assets/art/ui/settings/how_to_play.png" id="8_how_to"]
+[ext_resource type="Texture2D" uid="uid://cwl7f5o4qjyn4" path="res://assets/art/ui/settings/credits.png" id="9_credits"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/settings/button-close.png" id="10_close"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleFocus"]
 
-[node name="SettingsPopup" type="Control"]
+[node name="SettingsPopup" type="Control" unique_id=1490333040]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 script = ExtResource("1_script")
 
-[node name="Dimmer" type="ColorRect" parent="."]
+[node name="Dimmer" type="ColorRect" parent="." unique_id=532311758]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 color = Color(0, 0, 0, 0.55)
 
-[node name="Card" type="Control" parent="."]
-layout_mode = 0
-anchors_preset = 8
+[node name="Card" type="Control" parent="." unique_id=716623983]
+anchors_preset = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -45,9 +43,8 @@ offset_right = 180.0
 offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="Parchment" type="TextureRect" parent="Card"]
+[node name="Parchment" type="TextureRect" parent="Card" unique_id=100429441]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -59,16 +56,26 @@ texture = ExtResource("2_pane")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="MenuPage" type="Control" parent="Card"]
+[node name="CloseButton" type="TextureButton" parent="Card"]
+layout_mode = 0
+offset_left = 306.0
+offset_top = 10.0
+offset_right = 338.0
+offset_bottom = 42.0
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("10_close")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="MenuPage" type="Control" parent="Card" unique_id=688750258]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="Title" type="TextureRect" parent="Card/MenuPage"]
+[node name="Title" type="TextureRect" parent="Card/MenuPage" unique_id=92715705]
 layout_mode = 0
 offset_left = 105.0
 offset_top = 10.0
@@ -79,7 +86,7 @@ texture = ExtResource("3_title")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Indicator" type="TextureRect" parent="Card/MenuPage"]
+[node name="Indicator" type="TextureRect" parent="Card/MenuPage" unique_id=2090810271]
 layout_mode = 0
 offset_left = 50.0
 offset_top = 50.0
@@ -90,7 +97,7 @@ texture = ExtResource("4_indicator")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="MenuColumn" type="VBoxContainer" parent="Card/MenuPage"]
+[node name="MenuColumn" type="VBoxContainer" parent="Card/MenuPage" unique_id=643456026]
 layout_mode = 0
 offset_left = 68.0
 offset_top = 48.0
@@ -98,14 +105,14 @@ offset_right = 292.0
 offset_bottom = 180.0
 theme_override_constants/separation = 1
 
-[node name="EntryResume" type="Button" parent="Card/MenuPage/MenuColumn"]
+[node name="EntryResume" type="Button" parent="Card/MenuPage/MenuColumn" unique_id=34854484]
 custom_minimum_size = Vector2(224, 20)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/focus = SubResource("StyleFocus")
 flat = true
 
-[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntryResume"]
+[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntryResume" unique_id=1130890951]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -117,14 +124,14 @@ texture = ExtResource("5_resume")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="EntrySound" type="Button" parent="Card/MenuPage/MenuColumn"]
+[node name="EntrySound" type="Button" parent="Card/MenuPage/MenuColumn" unique_id=677328900]
 custom_minimum_size = Vector2(224, 20)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/focus = SubResource("StyleFocus")
 flat = true
 
-[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntrySound"]
+[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntrySound" unique_id=1004616724]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -136,14 +143,14 @@ texture = ExtResource("6_sound")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="EntryScreen" type="Button" parent="Card/MenuPage/MenuColumn"]
+[node name="EntryScreen" type="Button" parent="Card/MenuPage/MenuColumn" unique_id=2065473143]
 custom_minimum_size = Vector2(224, 20)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/focus = SubResource("StyleFocus")
 flat = true
 
-[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntryScreen"]
+[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntryScreen" unique_id=1372181862]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -155,14 +162,14 @@ texture = ExtResource("7_screen")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="EntryHowToPlay" type="Button" parent="Card/MenuPage/MenuColumn"]
+[node name="EntryHowToPlay" type="Button" parent="Card/MenuPage/MenuColumn" unique_id=669319496]
 custom_minimum_size = Vector2(224, 20)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/focus = SubResource("StyleFocus")
 flat = true
 
-[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntryHowToPlay"]
+[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntryHowToPlay" unique_id=886730822]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -174,14 +181,14 @@ texture = ExtResource("8_how_to")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="EntryCredits" type="Button" parent="Card/MenuPage/MenuColumn"]
+[node name="EntryCredits" type="Button" parent="Card/MenuPage/MenuColumn" unique_id=1918632159]
 custom_minimum_size = Vector2(224, 20)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/focus = SubResource("StyleFocus")
 flat = true
 
-[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntryCredits"]
+[node name="Label" type="TextureRect" parent="Card/MenuPage/MenuColumn/EntryCredits" unique_id=413227804]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -193,7 +200,7 @@ texture = ExtResource("9_credits")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="EntryMainAction" type="Button" parent="Card/MenuPage/MenuColumn"]
+[node name="EntryMainAction" type="Button" parent="Card/MenuPage/MenuColumn" unique_id=1669413387]
 custom_minimum_size = Vector2(224, 20)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -201,7 +208,7 @@ theme_override_font_sizes/font_size = 16
 theme_override_styles/focus = SubResource("StyleFocus")
 flat = true
 
-[node name="SoundPage" type="Control" parent="Card"]
+[node name="SoundPage" type="Control" parent="Card" unique_id=613141099]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -210,7 +217,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="Card/SoundPage"]
+[node name="Title" type="Label" parent="Card/SoundPage" unique_id=360892290]
 layout_mode = 0
 offset_left = 48.0
 offset_top = 13.0
@@ -221,7 +228,7 @@ text = "Sound"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VolumeLabel" type="Label" parent="Card/SoundPage"]
+[node name="VolumeLabel" type="Label" parent="Card/SoundPage" unique_id=1585487247]
 layout_mode = 0
 offset_left = 72.0
 offset_top = 65.0
@@ -230,7 +237,7 @@ offset_bottom = 85.0
 text = "Master Volume"
 horizontal_alignment = 1
 
-[node name="Volume" type="HSlider" parent="Card/SoundPage"]
+[node name="Volume" type="HSlider" parent="Card/SoundPage" unique_id=1714619141]
 layout_mode = 0
 offset_left = 78.0
 offset_top = 91.0
@@ -238,18 +245,7 @@ offset_right = 282.0
 offset_bottom = 111.0
 step = 0.05
 
-[node name="Back" type="Button" parent="Card/SoundPage"]
-layout_mode = 0
-offset_left = 104.0
-offset_top = 158.0
-offset_right = 256.0
-offset_bottom = 180.0
-theme_override_font_sizes/font_size = 16
-theme_override_styles/focus = SubResource("StyleFocus")
-text = "Back"
-flat = true
-
-[node name="ScreenPage" type="Control" parent="Card"]
+[node name="ScreenPage" type="Control" parent="Card" unique_id=1675754219]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -258,7 +254,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="Card/ScreenPage"]
+[node name="Title" type="Label" parent="Card/ScreenPage" unique_id=359886573]
 layout_mode = 0
 offset_left = 48.0
 offset_top = 13.0
@@ -269,7 +265,7 @@ text = "Screen"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Fullscreen" type="CheckButton" parent="Card/ScreenPage"]
+[node name="Fullscreen" type="CheckButton" parent="Card/ScreenPage" unique_id=642336969]
 layout_mode = 0
 offset_left = 103.0
 offset_top = 78.0
@@ -277,18 +273,7 @@ offset_right = 257.0
 offset_bottom = 104.0
 text = "Fullscreen"
 
-[node name="Back" type="Button" parent="Card/ScreenPage"]
-layout_mode = 0
-offset_left = 104.0
-offset_top = 158.0
-offset_right = 256.0
-offset_bottom = 180.0
-theme_override_font_sizes/font_size = 16
-theme_override_styles/focus = SubResource("StyleFocus")
-text = "Back"
-flat = true
-
-[node name="InfoPage" type="Control" parent="Card"]
+[node name="InfoPage" type="Control" parent="Card" unique_id=1754326285]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -297,7 +282,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="Card/InfoPage"]
+[node name="Title" type="Label" parent="Card/InfoPage" unique_id=1578863328]
 layout_mode = 0
 offset_left = 48.0
 offset_top = 13.0
@@ -307,24 +292,13 @@ theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Body" type="Label" parent="Card/InfoPage"]
+[node name="Body" type="Label" parent="Card/InfoPage" unique_id=1828645149]
 layout_mode = 0
 offset_left = 55.0
 offset_top = 51.0
 offset_right = 305.0
 offset_bottom = 149.0
 theme_override_font_sizes/font_size = 11
-autowrap_mode = 3
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="Back" type="Button" parent="Card/InfoPage"]
-layout_mode = 0
-offset_left = 104.0
-offset_top = 158.0
-offset_right = 256.0
-offset_bottom = 180.0
-theme_override_font_sizes/font_size = 16
-theme_override_styles/focus = SubResource("StyleFocus")
-text = "Back"
-flat = true
+autowrap_mode = 3

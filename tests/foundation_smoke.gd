@@ -363,6 +363,8 @@ func _test_main_menu_ui() -> void:
 	assert(absf(menu.settings_popup.card.get_global_rect().get_center().x - menu.get_global_rect().get_center().x) < 0.1)
 	assert(not menu.settings_popup.get_node("Card/MenuPage/MenuColumn/EntryResume").visible)
 	assert(menu.settings_popup.get_node("Card/MenuPage/MenuColumn/EntryMainAction").text == "Close")
+	assert(menu.settings_popup.get_node("Card/CloseButton") is TextureButton)
+	assert(menu.settings_popup.find_child("Back", true, false) == null)
 	menu._show_new_run_confirmation()
 	assert(menu.confirmation_popup.visible)
 	assert(absf(menu.confirmation_popup.card.get_global_rect().get_center().x - menu.get_global_rect().get_center().x) < 32.0)
