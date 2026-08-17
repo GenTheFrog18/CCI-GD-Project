@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" path="res://game/items/behaviors/resonance_core_behavior.gd" id="2"]
+[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
+[ext_resource type="Texture2D" path="res://assets/art/items/rock.png" id="4"]
+
+[sub_resource type="Resource" id="ThrowBehavior"]
+script = ExtResource("2")
+minimum_speed = 60.0
+maximum_speed = 360.0
+maximum_cursor_distance = 240.0
+base_damage = 100.0
+preview_length = 80.0
+
+[resource]
+script = ExtResource("1")
+item_id = &"resonance_core"
+display_name = "Resonance Core"
+unknown_description = "A massive relic that hums under impact."
+known_description = "Heavy impacts damage targets and emit powerful disturbances."
+category = &"quest_relic"
+icon = ExtResource("4")
+world_scene = ExtResource("3")
+weight = 18
+max_stack = 1
+sellable = false
+recover_out_of_bounds = true
+discoverable = true
+discovery_threshold = 1
+secondary_behavior = SubResource("ThrowBehavior")

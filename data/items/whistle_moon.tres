@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" path="res://core/items/item_behavior.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/art/items/whistles/whistle_moon.png" id="3"]
+
+[sub_resource type="Resource" id="Behavior"]
+script = ExtResource("2")
+
+[resource]
+script = ExtResource("1")
+item_id = &"whistle_moon"
+display_name = "Moon Whistle"
+unknown_description = "A Moon Whistle awarded for a Layer 2 relic."
+known_description = "Proves earned Moon rank and emits a very high-priority sound."
+category = &"whistle"
+icon = ExtResource("3")
+max_stack = 1
+behavior = SubResource("Behavior")

@@ -61,6 +61,12 @@ func get_jump_multiplier() -> float:
 	var value = prepared_item.get("jump_multiplier")
 	return float(value) if value != null else 1.0
 
+func get_climb_multiplier() -> float:
+	if not is_instance_valid(prepared_item):
+		return 1.0
+	var value = prepared_item.get("climb_multiplier")
+	return float(value) if value != null else 1.0
+
 func get_preview(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> Dictionary:
 	if is_instance_valid(prepared_item):
 		return {}
@@ -75,6 +81,8 @@ func get_preview(actor: Node2D, world: Node, cursor: Vector2, target: Node = nul
 
 func primary(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> bool:
 	if prepared_item != null:
+		if prepared_item.has_method("primary_action"):
+			return bool(prepared_item.primary_action(self))
 		if prepared_item.has_method("can_deactivate") and prepared_item.can_deactivate():
 			cancel_prepared(&"toggle")
 			return true
@@ -84,6 +92,8 @@ func primary(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -
 
 func secondary(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> bool:
 	if prepared_item != null:
+		if prepared_item.has_method("secondary_action"):
+			return bool(prepared_item.secondary_action(self, world, cursor))
 		if not prepared_item.has_method("throw_toward"):
 			return false
 		var item := prepared_item

@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" path="res://game/items/behaviors/layer2_relic_behavior.gd" id="2"]
+[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
+[ext_resource type="Texture2D" path="res://assets/art/items/multitool.png" id="4"]
+
+[sub_resource type="Resource" id="Behavior"]
+script = ExtResource("2")
+kind = "bolt_shock"
+capacity = 7
+launch_speed = 500.0
+direct_damage = 10.0
+rod_stun_duration = 3.0
+rod_suppression_duration = 5.0
+rod_shock_duration = 6.0
+
+[resource]
+script = ExtResource("1")
+item_id = &"bolt_shock"
+display_name = "Bolt Shock"
+unknown_description = "A seven-rod electrical relic."
+known_description = "Load and fire a rod that stuns, blinds sensors, and grounds flyers."
+category = &"quest_reward"
+icon = ExtResource("4")
+world_scene = ExtResource("3")
+weight = 5
+max_stack = 1
+surface_sale_value = 200
+delivery_value = 150
+sellable = true
+recover_out_of_bounds = true
+discoverable = true
+discovery_threshold = 1
+primary_behavior = SubResource("Behavior")
+secondary_behavior = SubResource("Behavior")

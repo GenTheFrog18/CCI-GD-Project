@@ -66,5 +66,11 @@ func _apply_visual() -> void:
 		fallback.visible = icon == null or icon.texture == null
 
 func handle_world_out_of_bounds() -> void:
+	var definition := ContentCatalog.get_item(item_id)
+	if definition != null and definition.recover_out_of_bounds:
+		var marker := get_tree().get_first_node_in_group(&"quest_item_recovery_marker") as Node2D
+		if marker != null:
+			global_position = marker.global_position
+			return
 	SaveManager.mark_destroyed(persistent_id)
 	queue_free()

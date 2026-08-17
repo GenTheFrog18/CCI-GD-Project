@@ -68,6 +68,15 @@ func _on_body_entered(body: Node) -> void:
 		if behavior != null:
 			behavior.on_impact(self, impact)
 
+func receive_impact(impact: ImpactData) -> void:
+	if freeze:
+		freeze = false
+		remove_from_group(&"interactables")
+	if definition != null:
+		var behavior := definition.secondary_behavior if definition.secondary_behavior != null else definition.behavior
+		if behavior != null:
+			behavior.on_received_impact(self, impact)
+
 func get_interaction_prompt(_actor: Node) -> String:
 	return "Pick up %s" % (definition.display_name if definition != null else "item")
 
@@ -127,5 +136,14 @@ func _apply_visual() -> void:
 		fallback.visible = icon == null or icon.texture == null
 
 func handle_world_out_of_bounds() -> void:
+	if definition != null and definition.recover_out_of_bounds:
+		var marker := get_tree().get_first_node_in_group(&"quest_item_recovery_marker") as Node2D
+		if marker != null:
+			global_position = marker.global_position
+			linear_velocity = Vector2.ZERO
+			angular_velocity = 0.0
+			freeze = true
+			add_to_group(&"interactables")
+			return
 	SaveManager.mark_destroyed(persistent_id)
 	queue_free()

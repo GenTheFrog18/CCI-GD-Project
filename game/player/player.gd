@@ -451,7 +451,7 @@ func _physics_climb(delta: float, can_control: bool) -> void:
 	if (vertical < 0.0 and global_position.y <= chain_top) or (vertical > 0.0 and global_position.y >= chain_bottom):
 		vertical = 0.0
 	var target_x := _climbing_rope.global_position.x + _rope_lateral_offset
-	velocity = Vector2(clampf((target_x - global_position.x) / maxf(delta, 0.001), -rope_snap_speed, rope_snap_speed), vertical * rope_climb_speed)
+	velocity = Vector2(clampf((target_x - global_position.x) / maxf(delta, 0.001), -rope_snap_speed, rope_snap_speed), vertical * rope_climb_speed * item_controller.get_climb_multiplier())
 	move_and_slide()
 	global_position.y = clampf(global_position.y, chain_top, chain_bottom)
 	_update_animation()

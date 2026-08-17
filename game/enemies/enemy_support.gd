@@ -55,6 +55,13 @@ func detectors_enabled() -> bool:
 func apply_detector_suppression(duration: float) -> bool:
 	return status.apply_status(&"detector_suppressed", {"duration": duration * detector_suppression_duration_multiplier})
 
+func apply_electric_effects(stun_duration: float, suppression_duration: float, shock_duration: float) -> bool:
+	var applied := status.apply_status(&"electrocuted", {"duration": shock_duration})
+	status.apply_status(&"electro_stunned", {"duration": stun_duration * electric_stun_duration_multiplier})
+	apply_detector_suppression(suppression_duration)
+	request_interrupt(INF, &"electric")
+	return applied
+
 func request_interrupt(strength: float, reason: StringName = &"impact") -> bool:
 	if strength < interrupt_resistance:
 		return false

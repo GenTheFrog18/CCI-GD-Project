@@ -43,6 +43,8 @@ func apply_to(receiver: Node) -> Dictionary:
 	if requires_damage_acceptance:
 		result.damage = bool(receiver.apply_damage(to_damage_info()))
 	var accepted := not requires_damage_acceptance or bool(result.damage)
+	if accepted and receiver.has_method("receive_impact"):
+		receiver.receive_impact(self)
 	if accepted and receiver.has_method("apply_force") and not force.is_zero_approx():
 		receiver.apply_force(force)
 		result.force = true

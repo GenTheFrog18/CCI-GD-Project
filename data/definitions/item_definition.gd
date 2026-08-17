@@ -17,6 +17,7 @@ extends Resource
 @export var sellable := false
 @export var persistent_when_dropped := true
 @export var retrievable := true
+@export var recover_out_of_bounds := false
 @export var behavior: ItemBehavior
 @export var primary_behavior: ItemBehavior
 @export var secondary_behavior: ItemBehavior

@@ -21,3 +21,6 @@ func on_thrown(_thrown_item: Node2D, _context: ItemContext, _state: Dictionary) 
 
 func on_impact(_thrown_item: Node2D, _impact: ImpactData) -> ItemActionResult:
 	return ItemActionResult.completed()
+
+func on_received_impact(_thrown_item: Node2D, _impact: ImpactData) -> void:
+	pass

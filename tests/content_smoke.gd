@@ -20,6 +20,7 @@ func _ready() -> void:
 	_test_effects_and_curse()
 	_test_player_item_regressions()
 	await _test_item_impacts()
+	await _test_layer2_relics()
 	_test_flyer_transfer()
 	await get_tree().process_frame
 	if failures.is_empty():
@@ -34,6 +35,8 @@ func _test_catalog() -> void:
 		_check(ContentCatalog.get_enemy(id) != null, "enemy missing: %s" % id)
 	for id in [&"bandage", &"info_book", &"numbing_pill", &"sun_sphere", &"lantern_crystal", &"rattlepod", &"hushcap", &"cling_resin", &"driftseed", &"silver_weight"]:
 		_check(ContentCatalog.get_item(id) != null, "item missing: %s" % id)
+	for id in [&"plate_umbrella", &"lacerator", &"resonance_core", &"bolt_shock", &"whistle_moon"]:
+		_check(ContentCatalog.get_item(id) != null, "Layer 2 item missing: %s" % id)
 	for id in [&"sun_sphere", &"lantern_crystal", &"rattlepod", &"hushcap", &"cling_resin", &"driftseed", &"silver_weight"]:
 		_check(ContentCatalog.get_item(id).icon != null, "finished item art missing: %s" % id)
 	for id in [&"bleed", &"poison", &"resin_bound", &"tracking_mark", &"curse_layer_1", &"curse_layer_2_penalty", &"curse_layer_2_health_cap", &"detector_suppressed", &"electro_stunned", &"electrocuted"]:
@@ -185,6 +188,81 @@ func _test_flyer_transfer() -> void:
 	root.free()
 	SaveManager.loaded_persistent_state = old_state
 	SaveManager.destroyed_ids = old_destroyed
+
+func _test_layer2_relics() -> void:
+	var world := Node2D.new()
+	add_child(world)
+	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	world.add_child(player)
+	_check(player.item_controller.inventory.try_add_item(&"plate_umbrella"), "Umbrella enters inventory")
+	player.item_controller.inventory.select_hotbar(1)
+	_check(player.item_controller.primary(player, world, Vector2.RIGHT * 100.0), "Umbrella prepares")
+	var umbrella := player.item_controller.prepared_item as PreparedLayer2Relic
+	umbrella.umbrella_state = PreparedLayer2Relic.UmbrellaState.OPEN
+	umbrella.aim_direction = Vector2.RIGHT
+	var attacker := Node2D.new()
+	world.add_child(attacker)
+	attacker.global_position = player.global_position + Vector2.RIGHT * 40.0
+	var impact := ImpactData.new()
+	impact.source_actor = attacker
+	impact.source_species_id = &"enemy"
+	impact.base_damage = 10.0
+	impact.velocity = Vector2.LEFT * 200.0
+	impact.force = Vector2.LEFT * 50.0
+	impact.attack_kind = &"projectile"
+	var health_before := player.health.health
+	_check(bool(player.resolve_impact(impact).get("blocked", false)) and player.health.health == health_before, "Umbrella blocks frontal projectile damage")
+	player.item_controller.cancel_prepared(&"inventory")
+	world.remove_child(player)
+	player.free()
+
+	player = preload("res://game/player/player.tscn").instantiate() as PlayerController
+	world.add_child(player)
+	_check(player.item_controller.inventory.try_add_item(&"lacerator"), "Lacerator enters inventory")
+	player.item_controller.inventory.select_hotbar(1)
+	_check(player.item_controller.primary(player, world, Vector2.RIGHT * 100.0), "Lacerator loads")
+	_check(player.item_controller.secondary(player, world, Vector2.RIGHT * 100.0), "Lacerator fires")
+	var lacerator_state := player.item_controller.inventory.get_active_stack().state
+	_check(int(lacerator_state.get("remaining_ammo", -1)) == 3, "Lacerator spends one successful shot")
+	_check(player.item_controller.primary(player, world, Vector2.RIGHT * 100.0), "Lacerator reloads")
+	player.item_controller.cancel_prepared(&"inventory")
+	_check(int(player.item_controller.inventory.get_active_stack().state.get("remaining_ammo", -1)) == 3, "Context unload preserves Lacerator ammunition")
+	for child in world.get_children():
+		if child is LaceratorBall:
+			var saved: Dictionary = child.capture_state()
+			_check(int(saved.remaining_hits) == 4, "Lacerator ball saves remaining contacts")
+			child.queue_free()
+	world.remove_child(player)
+	player.free()
+
+	player = preload("res://game/player/player.tscn").instantiate() as PlayerController
+	world.add_child(player)
+	_check(player.item_controller.inventory.try_add_item(&"bolt_shock"), "Bolt Shock enters inventory")
+	player.item_controller.inventory.select_hotbar(1)
+	_check(player.item_controller.primary(player, world, Vector2.RIGHT * 100.0), "Bolt Shock loads")
+	_check(player.item_controller.secondary(player, world, Vector2.RIGHT * 100.0), "Bolt Shock fires")
+	_check(int(player.item_controller.inventory.get_active_stack().state.get("remaining_uses", -1)) == 6, "Bolt Shock starts with seven uses")
+	for child in world.get_children():
+		if child is BoltShockRod:
+			child.queue_free()
+	world.remove_child(player)
+	player.free()
+
+	var core := ContentCatalog.get_item(&"resonance_core")
+	_check(core.primary_behavior == null and core.recover_out_of_bounds and core.weight == 18, "Resonance Core uses impact discovery and protected recovery")
+	var previous_known := GameSession.known_items.duplicate()
+	GameSession.known_items.erase(&"resonance_core")
+	var thrown := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	thrown.configure(core, {}, null, Vector2.ZERO, Vector2.RIGHT * 300.0, 100.0)
+	world.add_child(thrown)
+	var core_impact := ImpactData.new()
+	core_impact.velocity = Vector2.RIGHT * 300.0
+	(core.secondary_behavior as ResonanceCoreBehavior).on_impact(thrown, core_impact)
+	_check(&"resonance_core" in GameSession.known_items, "Core discovers on qualifying impact")
+	GameSession.known_items.assign(previous_known)
+	thrown.queue_free()
+	attacker.queue_free()
+	world.queue_free()
 
 func _check(condition: bool, message: String) -> void:
 	if not condition: failures.append(message)

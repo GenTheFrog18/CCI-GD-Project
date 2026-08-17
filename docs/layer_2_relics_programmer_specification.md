@@ -7,6 +7,17 @@
 
 > **Answered-questionnaire authority (2026-08-17):** The implementation uses a press-toggle Plate Umbrella; non-throwable Umbrella/Lacerator/Bolt Shock; primary-to-load and secondary-to-fire launchers; a throwable Resonance Core whose first qualifying impact discovers it; four adjustable Lacerator shots; seven non-rechargeable Bolt Shock uses; and context changes that unload launchers without consuming ammunition. Any older conflicting statement below is superseded.
 
+### Locked input and persistence table
+
+| Relic | Primary | Secondary | Context change | Persistent instance state |
+| --- | --- | --- | --- | --- |
+| Plate Umbrella | Toggle open/close | Same as primary | Close without free stability | Stability and forced recovery |
+| Lacerator | Load | Fire loaded ball | Unload without spending ammo | Remaining ammo |
+| Resonance Core | Unavailable | Physical throw | Ordinary inventory behavior | World transform/velocity |
+| Bolt Shock | Load | Fire loaded rod | Unload without spending a use | Remaining uses |
+
+Umbrella, Lacerator, and Bolt Shock cannot be thrown. Inventory dropping remains available. Core discovery is the sole exception to primary-use discovery: its first qualifying resonant impact reveals it.
+
 ---
 
 ## 1. Shared implementation requirements

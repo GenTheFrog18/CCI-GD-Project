@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" path="res://game/items/behaviors/layer2_relic_behavior.gd" id="2"]
+[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
+[ext_resource type="Texture2D" path="res://assets/art/items/silver_weight.png" id="4"]
+
+[sub_resource type="Resource" id="Behavior"]
+script = ExtResource("2")
+kind = "plate_umbrella"
+
+[resource]
+script = ExtResource("1")
+item_id = &"plate_umbrella"
+display_name = "Plate Umbrella"
+unknown_description = "A plated relic that unfolds toward danger."
+known_description = "Toggle to block frontal attacks while accepting their force."
+category = &"relic"
+icon = ExtResource("4")
+world_scene = ExtResource("3")
+weight = 8
+max_stack = 1
+surface_sale_value = 120
+delivery_value = 90
+sellable = true
+discoverable = true
+discovery_threshold = 1
+primary_behavior = SubResource("Behavior")
+secondary_behavior = SubResource("Behavior")
