@@ -4,7 +4,8 @@ const BUTTON_NORMAL := preload("res://assets/art/ui/main_menu/button-long.png")
 const BUTTON_DISABLED := preload("res://assets/art/ui/main_menu/button-long-disabled.png")
 const CONTINUE_LABEL := preload("res://assets/art/ui/main_menu/continue.png")
 const CONTINUE_DISABLED_LABEL := preload("res://assets/art/ui/main_menu/continue_disabled.png")
-const SETTINGS_PANE := preload("res://assets/art/ui/settings/settings-pane-final.png")
+const SETTINGS_POPUP_SCENE := preload("res://ui/settings_popup.tscn")
+const NEW_RUN_CONFIRMATION_SCENE := preload("res://ui/new_run_confirmation.tscn")
 
 @export_range(1.0, 600.0, 1.0) var background_travel_seconds := 60.0
 @export_range(0.01, 2.0, 0.01) var popup_animation_seconds := 0.15
@@ -20,6 +21,7 @@ const SETTINGS_PANE := preload("res://assets/art/ui/settings/settings-pane-final
 var debug_panel: VBoxContainer
 var seed_input: SpinBox
 var settings_popup: SettingsPopup
+var confirmation_popup: NewRunConfirmation
 var debug_checkbox: CheckBox
 var _background_tween: Tween
 
@@ -73,11 +75,16 @@ func _button(text: String, callback: Callable) -> Button:
 	return button
 
 func _build_settings() -> void:
-	settings_popup = SettingsPopup.new()
+	settings_popup = SETTINGS_POPUP_SCENE.instantiate() as SettingsPopup
 	settings_popup.configure(false, "Close")
 	settings_popup.popup_animation_seconds = popup_animation_seconds
 	settings_popup.popup_slide_pixels = popup_slide_pixels
 	add_child(settings_popup)
+	confirmation_popup = NEW_RUN_CONFIRMATION_SCENE.instantiate() as NewRunConfirmation
+	confirmation_popup.popup_animation_seconds = popup_animation_seconds
+	confirmation_popup.popup_slide_pixels = popup_slide_pixels
+	confirmation_popup.confirmed.connect(_start_new)
+	add_child(confirmation_popup)
 
 func _build_debug() -> void:
 	debug_panel = VBoxContainer.new()
@@ -108,60 +115,7 @@ func _confirm_new() -> void:
 	_show_new_run_confirmation()
 
 func _show_new_run_confirmation() -> void:
-	var popup := Control.new()
-	popup.name = "NewRunConfirmation"
-	popup.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	popup.process_mode = Node.PROCESS_MODE_ALWAYS
-	popup.mouse_filter = Control.MOUSE_FILTER_STOP
-	popup.z_index = 10
-	add_child(popup)
-	var dimmer := ColorRect.new()
-	dimmer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	dimmer.color = Color(0.0, 0.0, 0.0, 0.0)
-	dimmer.mouse_filter = Control.MOUSE_FILTER_STOP
-	popup.add_child(dimmer)
-	var card := Control.new()
-	card.set_anchors_preset(Control.PRESET_CENTER)
-	card.position = Vector2(-180.0, -100.0 + popup_slide_pixels)
-	card.size = Vector2(360.0, 200.0)
-	card.modulate.a = 0.0
-	popup.add_child(card)
-	var parchment := TextureRect.new()
-	parchment.texture = SETTINGS_PANE
-	parchment.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	parchment.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	parchment.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	parchment.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(parchment)
-	var title := Label.new()
-	title.text = "Please Confirm..."
-	title.position = Vector2(42.0, 37.0)
-	title.size = Vector2(276.0, 26.0)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override(&"font_size", 18)
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(title)
-	var message := Label.new()
-	message.text = "Start a new run and replace the current save?"
-	message.position = Vector2(43.0, 70.0)
-	message.size = Vector2(274.0, 54.0)
-	message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	message.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	message.add_theme_font_size_override(&"font_size", 14)
-	message.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(message)
-	var actions := HBoxContainer.new()
-	actions.position = Vector2(32.0, 140.0)
-	actions.size = Vector2(296.0, 32.0)
-	actions.add_theme_constant_override(&"separation", 8)
-	card.add_child(actions)
-	actions.add_child(_button("Cancel", popup.queue_free))
-	actions.add_child(_button("Start New Run", func(): popup.queue_free(); _start_new()))
-	var tween := popup.create_tween().set_parallel()
-	tween.tween_property(dimmer, "color:a", 0.55, popup_animation_seconds)
-	tween.tween_property(card, "modulate:a", 1.0, popup_animation_seconds)
-	tween.tween_property(card, "position:y", -100.0, popup_animation_seconds).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	confirmation_popup.show_popup()
 
 func _start_new() -> void:
 	GameSession.start_new_run(int(seed_input.value), debug_checkbox.button_pressed)

@@ -8,6 +8,7 @@ const HOTBAR_MAIN := preload("res://assets/art/ui/hud/hotbar-main.png")
 const HOTBAR_SECONDARY := preload("res://assets/art/ui/hud/hotbar-sec.png")
 const HOTBAR_ARROW := preload("res://assets/art/ui/hud/arrow-hotbar.png")
 const BOOK_SHEET := preload("res://assets/art/ui/inventory/book-inventory-sprite.png")
+const SETTINGS_POPUP_SCENE := preload("res://ui/settings_popup.tscn")
 
 signal world_debug_action_requested(action: StringName)
 
@@ -246,7 +247,7 @@ func _build_ui() -> void:
 	dialogue_box = DialogueBox.new()
 	dialogue_box.position = Vector2(60, 245)
 	add_child(dialogue_box)
-	pause_panel = SettingsPopup.new()
+	pause_panel = SETTINGS_POPUP_SCENE.instantiate() as SettingsPopup
 	pause_panel.configure(true, "Save & Menu")
 	pause_panel.resume_requested.connect(_resume_pause_menu)
 	pause_panel.main_action_requested.connect(_save_and_return_to_menu)

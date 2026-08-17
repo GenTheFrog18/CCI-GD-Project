@@ -360,10 +360,10 @@ func _test_main_menu_ui() -> void:
 	menu._show_settings()
 	await get_tree().process_frame
 	assert(menu.settings_popup.visible and not menu.settings_popup.include_resume)
-	assert(menu.settings_popup._content.find_child("EntryResume", true, false) == null)
-	assert(menu.settings_popup._content.find_child("EntryClose", true, false) != null)
+	assert(not menu.settings_popup.get_node("Card/MenuPage/MenuColumn/EntryResume").visible)
+	assert(menu.settings_popup.get_node("Card/MenuPage/MenuColumn/EntryMainAction").text == "Close")
 	menu._show_new_run_confirmation()
-	assert(menu.get_node_or_null("NewRunConfirmation") != null)
+	assert(menu.confirmation_popup.visible)
 	assert(menu.find_children("*", "ConfirmationDialog", true, false).is_empty())
 	menu.free()
 
