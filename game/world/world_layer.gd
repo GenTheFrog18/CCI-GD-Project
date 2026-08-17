@@ -6,6 +6,7 @@ extends Node2D
 @export var runtime_root: Node2D
 @export var west_spawn: Marker2D
 @export var east_spawn: Marker2D
+@export var initial_spawn: Marker2D
 @export var world_bounds := Rect2(0.0, 0.0, 2560.0, 2400.0)
 
 var instantiated_sections: Dictionary = {}
@@ -110,11 +111,13 @@ func update_activation(world_position: Vector2) -> PackedStringArray:
 					node.process_mode = Node.PROCESS_MODE_INHERIT if active.has(slot_id) else Node.PROCESS_MODE_DISABLED
 	return active_slot_ids.duplicate()
 
-func spawn_position(route: StringName, spawn_id: StringName = &"") -> Vector2:
+func spawn_position(route: StringName, spawn_id: StringName = &"", use_initial_spawn := false) -> Vector2:
 	if not spawn_id.is_empty():
 		var requested := find_child(String(spawn_id), true, false) as Marker2D
 		if requested != null:
 			return requested.global_position
+	if use_initial_spawn and initial_spawn != null:
+		return initial_spawn.global_position
 	if route == &"east" and east_spawn != null:
 		return east_spawn.global_position
 	if west_spawn != null:

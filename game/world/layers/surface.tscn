@@ -4998,13 +4998,14 @@ size = Vector2(640, 40)
 [sub_resource type="RectangleShape2D" id="WallShape"]
 size = Vector2(20, 360)
 
-[node name="Surface" type="Node2D" node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn")]
+[node name="Surface" type="Node2D" node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn", "initial_spawn")]
 script = ExtResource("1")
 layer_id = &"surface"
 slots_root = NodePath("Slots")
 runtime_root = NodePath("RuntimeRoot")
 west_spawn = NodePath("WestSpawn")
 east_spawn = NodePath("EastSpawn")
+initial_spawn = NodePath("InitialSpawn")
 world_bounds = Rect2(0, 0, 640, 360)
 
 [node name="Background" type="ColorRect" parent="."]
@@ -5034,6 +5035,9 @@ position = Vector2(150, 320)
 
 [node name="EastSpawn" type="Marker2D" parent="."]
 position = Vector2(490, 320)
+
+[node name="InitialSpawn" type="Marker2D" parent="."]
+position = Vector2(320, 320)
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(320, 340)

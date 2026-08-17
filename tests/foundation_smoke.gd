@@ -757,6 +757,10 @@ func _test_determinism() -> void:
 	placer.free()
 
 func _test_world_authoring_foundation() -> void:
+	var surface := preload("res://game/world/layers/surface.tscn").instantiate() as WorldLayer
+	assert(surface.spawn_position(&"west", &"", true) == surface.initial_spawn.global_position)
+	assert(surface.spawn_position(&"west") == surface.west_spawn.global_position)
+	surface.free()
 	var layer2 := preload("res://game/world/layers/layer_2.tscn").instantiate() as WorldLayer
 	assert(layer2.get_node("ShopCombatSafeZone") is CombatSafeZone)
 	assert((layer2.get_node("ShopEnemyBoundary") as StaticBody2D).collision_layer == 512)

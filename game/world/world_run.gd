@@ -152,7 +152,7 @@ func _load_active_layer(is_transition: bool, target_spawn_id: StringName = &"") 
 	_append_runtime_stage("Restore persistent state", stage_started)
 	stage_started = Time.get_ticks_usec()
 	if is_transition or SaveManager.loaded_persistent_state.is_empty():
-		player.global_position = active_layer.spawn_position(GameSession.current_route_id, target_spawn_id)
+		player.global_position = active_layer.spawn_position(GameSession.current_route_id, target_spawn_id, not is_transition)
 		player.set_last_safe_position(player.global_position)
 		player.curse_tracker.reset_reference(true)
 	hud = HUD_SCENE.instantiate() as FoundationHUD
