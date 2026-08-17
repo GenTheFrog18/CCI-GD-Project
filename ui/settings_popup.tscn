@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://bdxd173p6h3gi" path="res://assets/art/ui/settings/screen.png" id="7_screen"]
 [ext_resource type="Texture2D" uid="uid://gcyc5068q3c5" path="res://assets/art/ui/settings/how_to_play.png" id="8_how_to"]
 [ext_resource type="Texture2D" uid="uid://cwl7f5o4qjyn4" path="res://assets/art/ui/settings/credits.png" id="9_credits"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/settings/button-close.png" id="10_close"]
+[ext_resource type="Texture2D" uid="uid://bayc8pamw0x18" path="res://assets/art/ui/settings/button-close.png" id="10_close"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleFocus"]
 
@@ -56,22 +56,12 @@ texture = ExtResource("2_pane")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="CloseButton" type="TextureButton" parent="Card"]
-layout_mode = 0
-offset_left = 306.0
-offset_top = 10.0
-offset_right = 338.0
-offset_bottom = 42.0
-mouse_default_cursor_shape = 2
-texture_normal = ExtResource("10_close")
-ignore_texture_size = true
-stretch_mode = 5
-
 [node name="MenuPage" type="Control" parent="Card" unique_id=688750258]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -62.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -302,3 +292,15 @@ theme_override_font_sizes/font_size = 11
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+
+[node name="CloseButton" type="TextureButton" parent="Card" unique_id=1525322063]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 273.0
+offset_top = 13.0
+offset_right = 305.0
+offset_bottom = 45.0
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("10_close")
+ignore_texture_size = true
+stretch_mode = 5
