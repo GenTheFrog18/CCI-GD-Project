@@ -52,6 +52,7 @@ var debug_text_nodes: Array[CanvasItem] = []
 @export_range(1.0, 2.0, 0.01) var selected_hotbar_scale := 1.25
 @export_range(1.0, 2.0, 0.01) var hotbar_bounce_scale := 1.35
 @export_range(0.01, 1.0, 0.01) var hotbar_animation_seconds := 0.18
+@export_range(16.0, 96.0, 1.0) var hotbar_slot_size := 32.0
 
 func _ready() -> void:
 	layer = 20
@@ -139,16 +140,23 @@ func _build_ui() -> void:
 	feedback_label = $Feedback
 	threat_label = $Threat
 	effect_overlay = $EffectOverlay
-	hotbar_slots = [$Hotbar/Slot0, $Hotbar/Slot1]
-	hotbar_icons = [$Hotbar/Slot0/Icon, $Hotbar/Slot1/Icon]
+	hotbar_slots.clear()
+	for child in $Hotbar.get_children():
+		if child is TextureRect:
+			hotbar_slots.append(child)
+	hotbar_icons = []
+	for slot in hotbar_slots:
+		hotbar_icons.append(slot.get_node("Icon") as TextureRect)
 	hotbar_labels = [$HotbarLabel0, $HotbarLabel1]
 	hotbar_arrow = $Arrow
 	whistle_button = $Hotbar/Whistle
-	$Hotbar.move_child(whistle_button, 0)
+	whistle_button.custom_minimum_size = Vector2.ONE * hotbar_slot_size
+	whistle_button.expand_icon = true
 	whistle_button.pressed.connect(func(): player.use_whistle() if player != null else false)
 	for display_index in hotbar_slots.size():
 		var slot := hotbar_slots[display_index]
-		slot.pivot_offset = Vector2(16.0, 16.0)
+		slot.custom_minimum_size = Vector2.ONE * hotbar_slot_size
+		slot.pivot_offset = Vector2.ONE * hotbar_slot_size * 0.5
 		var click_target := slot.get_node("ClickTarget") as Button
 		click_target.pressed.connect(_select_hotbar.bind(1 - display_index))
 	debug_text_nodes.append(health_label)
@@ -449,7 +457,7 @@ func _refresh_inventory() -> void:
 		hotbar_labels[index].text = "%s%d: %s" % ["▶ " if index == player.item_controller.inventory.active_hotbar_index else "", index + 1, item_name]
 	var active_display := 1 - player.item_controller.inventory.active_hotbar_index
 	var active_slot := hotbar_slots[active_display]
-	hotbar_arrow.global_position = active_slot.global_position + Vector2(8.0, -16.0)
+	hotbar_arrow.global_position = active_slot.global_position + Vector2((active_slot.size.x - hotbar_arrow.size.x) * 0.5, -hotbar_arrow.size.y)
 	for display_index in hotbar_slots.size(): _animate_hotbar_slot(hotbar_slots[display_index], display_index == active_display)
 	weight_label.text = "Weight %d/%d" % [player.item_controller.inventory.get_total_weight(), player.carry_capacity]
 

@@ -147,13 +147,48 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -116.0
-offset_top = -48.0
-offset_right = -8.0
-offset_bottom = -16.0
+offset_left = -111.64502
+offset_top = -46.575012
+offset_right = -5.0
+offset_bottom = -14.575012
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/separation = 4
+
+[node name="Whistle" type="Button" parent="Hotbar" unique_id=1078415435]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+
+[node name="Slot1" type="TextureRect" parent="Hotbar" unique_id=620230987]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("4_hotbar_secondary")
+expand_mode = 1
+
+[node name="Icon" type="TextureRect" parent="Hotbar/Slot1" unique_id=292453074]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.6450195
+offset_top = 8.575012
+offset_right = -7.3549805
+offset_bottom = -8.424988
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ClickTarget" type="Button" parent="Hotbar/Slot1" unique_id=1323182537]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+flat = true
 
 [node name="Slot0" type="TextureRect" parent="Hotbar" unique_id=1071106652]
 custom_minimum_size = Vector2(32, 32)
@@ -170,54 +205,21 @@ offset_left = 4.0
 offset_top = 4.0
 offset_right = -4.0
 offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ClickTarget" type="Button" parent="Hotbar/Slot0"]
+[node name="ClickTarget" type="Button" parent="Hotbar/Slot0" unique_id=1101979778]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 focus_mode = 0
 flat = true
-
-[node name="Slot1" type="TextureRect" parent="Hotbar" unique_id=620230987]
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-texture = ExtResource("4_hotbar_secondary")
-expand_mode = 1
-
-[node name="Icon" type="TextureRect" parent="Hotbar/Slot1" unique_id=292453074]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = -4.0
-offset_bottom = -4.0
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="ClickTarget" type="Button" parent="Hotbar/Slot1"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 0
-focus_mode = 0
-flat = true
-
-[node name="Whistle" type="Button" parent="Hotbar" unique_id=1078415435]
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
 
 [node name="Arrow" type="TextureRect" parent="." unique_id=1742264783]
 anchors_preset = 3
@@ -225,10 +227,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -108.0
-offset_top = -64.0
-offset_right = -92.0
-offset_bottom = -48.0
+offset_left = -70.0
+offset_top = -66.0
+offset_right = -54.0
+offset_bottom = -50.0
 grow_horizontal = 0
 grow_vertical = 0
 texture = ExtResource("5_arrow")
