@@ -1,8 +1,8 @@
-[gd_scene load_steps=22 format=4 uid="uid://e1y7y1n8w688"]
+[gd_scene format=4 uid="uid://e1y7y1n8w688"]
 
 [ext_resource type="Script" uid="uid://csuwc1l8vngs8" path="res://game/world/world_layer.gd" id="1"]
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
-[ext_resource type="PackedScene" uid="uid://cmahh3afjs5t1" path="res://game/npcs/shadow/shadow_npc.tscn" id="2_ckure"]
+[ext_resource type="PackedScene" uid="uid://bpnov7u6k22g4" path="res://game/npc's/shadow/shadow_npc.tscn" id="2_ckure"]
 [ext_resource type="Texture2D" uid="uid://bjcfu7hs2yhob" path="res://assets/art/world/surface/0.png" id="2_rpsi8"]
 [ext_resource type="PackedScene" path="res://game/shops/test_shop_terminal.tscn" id="3_7hsqt"]
 [ext_resource type="PackedScene" uid="uid://cflctunfjqval" path="res://game/enemies/test/test_amphibian.tscn" id="4_ckure"]
@@ -4993,12 +4993,12 @@ texture = ExtResource("5_78j1j")
 sources/0 = SubResource("TileSetAtlasSource_t2nio")
 
 [sub_resource type="RectangleShape2D" id="GroundShape"]
-size = Vector2(640, 40)
+size = Vector2(1286, 40)
 
 [sub_resource type="RectangleShape2D" id="WallShape"]
 size = Vector2(20, 360)
 
-[node name="Surface" type="Node2D" node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn", "initial_spawn")]
+[node name="Surface" type="Node2D" unique_id=523337460 node_paths=PackedStringArray("slots_root", "runtime_root", "west_spawn", "east_spawn", "initial_spawn")]
 script = ExtResource("1")
 layer_id = &"surface"
 slots_root = NodePath("Slots")
@@ -5006,109 +5006,112 @@ runtime_root = NodePath("RuntimeRoot")
 west_spawn = NodePath("WestSpawn")
 east_spawn = NodePath("EastSpawn")
 initial_spawn = NodePath("InitialSpawn")
-world_bounds = Rect2(0, 0, 640, 360)
+world_bounds = Rect2(0, 0, 1280, 360)
+metadata/_edit_vertical_guides_ = [1290.0, 1280.0]
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=289164793]
 z_index = -20
 offset_right = 640.0
 offset_bottom = 360.0
 mouse_filter = 2
 color = Color(0.05, 0.07, 0.1, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="Background"]
+[node name="Sprite2D" type="Sprite2D" parent="Background" unique_id=202035465]
 position = Vector2(-30.999996, -12)
 scale = Vector2(1.8593749, 1.7499998)
 texture = ExtResource("2_rpsi8")
 centered = false
 
-[node name="Slots" type="Node2D" parent="."]
+[node name="Slots" type="Node2D" parent="." unique_id=74440965]
 
-[node name="RuntimeRoot" type="Node2D" parent="."]
+[node name="RuntimeRoot" type="Node2D" parent="." unique_id=809541377]
 
-[node name="NPCContainer" type="Node2D" parent="RuntimeRoot"]
+[node name="NPCContainer" type="Node2D" parent="RuntimeRoot" unique_id=974914198]
 
-[node name="ShadowNpc" parent="RuntimeRoot/NPCContainer" instance=ExtResource("2_ckure")]
-position = Vector2(601, 305)
+[node name="ShadowNpc" parent="RuntimeRoot/NPCContainer" unique_id=874886287 instance=ExtResource("2_ckure")]
+position = Vector2(607, 320)
 
-[node name="WestSpawn" type="Marker2D" parent="."]
+[node name="WestSpawn" type="Marker2D" parent="." unique_id=432334965]
 position = Vector2(150, 320)
 
-[node name="EastSpawn" type="Marker2D" parent="."]
+[node name="EastSpawn" type="Marker2D" parent="." unique_id=153825712]
 position = Vector2(490, 320)
 
-[node name="InitialSpawn" type="Marker2D" parent="."]
-position = Vector2(320, 320)
+[node name="InitialSpawn" type="Marker2D" parent="." unique_id=813945585]
+position = Vector2(640, 320)
 
-[node name="Ground" type="StaticBody2D" parent="."]
+[node name="Ground" type="StaticBody2D" parent="." unique_id=97042608]
 position = Vector2(320, 340)
 
-[node name="Visual" type="Polygon2D" parent="Ground"]
+[node name="Visual" type="Polygon2D" parent="Ground" unique_id=1357068340]
 visible = false
 color = Color(0.2, 0.26, 0.31, 1)
 polygon = PackedVector2Array(-320, -20, 320, -20, 320, 20, -320, 20)
 
-[node name="GroundBase" type="TileMapLayer" parent="Ground"]
+[node name="GroundBase" type="TileMapLayer" parent="Ground" unique_id=438946236]
 tile_set = SubResource("TileSet_rpsi8")
 
-[node name="GroundPath" type="TileMapLayer" parent="Ground"]
+[node name="GroundPath" type="TileMapLayer" parent="Ground" unique_id=139523421]
 z_index = 1
 position = Vector2(0, -4)
 tile_map_data = PackedByteArray("AADs/wAAAAABAAIAAADt/wAAAAABAAIAAADu/wAAAAABAAIAAADv/wAAAAABAAIAAADw/wAAAAABAAIAAADx/wAAAAABAAIAAADy/wAAAAABAAIAAADz/wAAAAABAAIAAAD0/wAAAAABAAIAAAD1/wAAAAABAAIAAAD2/wAAAAABAAIAAAD3/wAAAAABAAIAAAD4/wAAAAABAAIAAAD5/wAAAAABAAIAAAD6/wAAAAABAAIAAAD7/wAAAAABAAIAAAD8/wAAAAABAAIAAAD9/wAAAAABAAIAAAD+/wAAAAABAAIAAAD//wAAAAABAAIAAAAAAAAAAAABAAIAAAABAAAAAAABAAIAAAACAAAAAAABAAIAAAADAAAAAAABAAIAAAAEAAAAAAABAAIAAAAFAAAAAAABAAIAAAAGAAAAAAABAAIAAAAHAAAAAAABAAIAAAAIAAAAAAABAAIAAAAJAAAAAAABAAIAAAAKAAAAAAABAAIAAAALAAAAAAABAAIAAAAMAAAAAAABAAIAAAANAAAAAAABAAIAAAAOAAAAAAABAAIAAAAPAAAAAAABAAIAAAAQAAAAAAABAAIAAAARAAAAAAABAAIAAAASAAAAAAABAAIAAAATAAAAAAABAAIAAADs/wEAAAABAAIAAADt/wEAAAABAAIAAADu/wEAAAABAAIAAADv/wEAAAABAAIAAADw/wEAAAABAAIAAADx/wEAAAABAAIAAADy/wEAAAABAAIAAADz/wEAAAABAAIAAAD0/wEAAAABAAIAAAD1/wEAAAABAAIAAAD2/wEAAAABAAIAAAD3/wEAAAABAAIAAAD4/wEAAAABAAIAAAD5/wEAAAABAAIAAAD6/wEAAAABAAIAAAD7/wEAAAABAAIAAAD8/wEAAAABAAIAAAD9/wEAAAABAAIAAAD+/wEAAAABAAIAAAD//wEAAAABAAIAAAAAAAEAAAABAAIAAAABAAEAAAABAAIAAAACAAEAAAABAAIAAAADAAEAAAABAAIAAAAEAAEAAAABAAIAAAAFAAEAAAABAAIAAAAGAAEAAAABAAIAAAAHAAEAAAABAAIAAAAIAAEAAAABAAIAAAAJAAEAAAABAAIAAAAKAAEAAAABAAIAAAALAAEAAAABAAIAAAAMAAEAAAABAAIAAAANAAEAAAABAAIAAAAOAAEAAAABAAIAAAAPAAEAAAABAAIAAAAQAAEAAAABAAIAAAARAAEAAAABAAIAAAASAAEAAAABAAIAAAATAAEAAAABAAIAAADs////AAABAAEAAADt////AAABAAEAAADu////AAABAAEAAADv////AAABAAEAAADw////AAABAAEAAADx////AAABAAEAAADy////AAABAAEAAADz////AAABAAEAAAD0////AAABAAEAAAD1////AAABAAEAAAD2////AAABAAEAAAD3////AAABAAEAAAD4////AAABAAEAAAD5////AAABAAEAAAD6////AAABAAEAAAD7////AAABAAEAAAD8////AAABAAEAAAD9////AAABAAEAAAD+////AAABAAEAAAD/////AAABAAEAAAAAAP//AAABAAEAAAABAP//AAABAAEAAAACAP//AAABAAEAAAADAP//AAABAAEAAAAEAP//AAABAAEAAAAFAP//AAABAAEAAAAGAP//AAABAAEAAAAHAP//AAABAAEAAAAIAP//AAABAAEAAAAJAP//AAABAAEAAAAKAP//AAABAAEAAAALAP//AAABAAEAAAAMAP//AAABAAEAAAANAP//AAABAAEAAAAOAP//AAABAAEAAAAPAP//AAABAAEAAAAQAP//AAABAAEAAAARAP//AAABAAEAAAASAP//AAABAAEAAAATAP//AAABAAEAAAA=")
 tile_set = SubResource("TileSet_78j1j")
 
-[node name="GroundDecoration" type="TileMapLayer" parent="Ground"]
+[node name="GroundDecoration" type="TileMapLayer" parent="Ground" unique_id=1104548823]
 z_index = 5
 tile_map_data = PackedByteArray("AADx////AAARAAQAAAD7/wAAAAARAAQAAAAHAAAAAAAQAAQAAAAEAAAAAAAJAAUAAAASAP//AAADAAcAAAD7////AAALAAUAAAD2////AAAJAAUAAAD0////AAAEAAYAAAD1////AAAFAAYAAAD7//7/AAAHAAkAAADx//7/AAADAAoAAAAIAP//AAABAAcAAAAJAP//AAACAAcAAAASAAAAAAADAAgAAAATAAAAAAAPAAUAAAARAAAAAAANAAUAAADx/wAAAAABAAcAAADy/wAAAAACAAcAAAD5/wAAAAARAAUAAAD4////AAAQAAQAAAA=")
 tile_set = SubResource("TileSet_y73ex")
 
-[node name="GroundForeground" type="TileMapLayer" parent="Ground"]
+[node name="GroundForeground" type="TileMapLayer" parent="Ground" unique_id=1884481663]
 z_index = 20
 position = Vector2(0, 10)
 tile_map_data = PackedByteArray("AAANAPv/AAAUAAEAAAANAPz/AAAUAAIAAAANAP3/AAAUAAMAAAAOAPv/AAAVAAEAAAAOAPz/AAAVAAIAAAAOAP3/AAAVAAMAAAAOAP7/AAAVAAQAAAAPAPv/AAAWAAEAAAAPAPz/AAAWAAIAAAAPAP3/AAAWAAMAAAAPAP7/AAAWAAQAAAAQAPv/AAAXAAEAAAAQAPz/AAAXAAIAAAAQAP3/AAAXAAMAAAAQAP7/AAAXAAQAAAA=")
 tile_set = SubResource("TileSet_t2nio")
 
-[node name="TileMapLayer" type="TileMapLayer" parent="Ground"]
+[node name="TileMapLayer" type="TileMapLayer" parent="Ground" unique_id=631121372]
 position = Vector2(35, -3)
 tile_map_data = PackedByteArray("AADv//r/AAAAABkAAADv//v/AAAAABoAAADv//z/AAAAABsAAADv//3/AAAAABwAAADv//7/AAAAAB0AAADw//r/AAABABkAAADw//v/AAABABoAAADw//z/AAABABsAAADw//3/AAABABwAAADw//7/AAABAB0AAADx//r/AAACABkAAADx//v/AAACABoAAADx//z/AAACABsAAADx//3/AAACABwAAADx//7/AAACAB0AAADy//r/AAADABkAAADy//v/AAADABoAAADy//z/AAADABsAAADy//3/AAADABwAAADy//7/AAADAB0AAADz//v/AAAEABoAAADz//z/AAAEABsAAADz//3/AAAEABwAAADz//7/AAAEAB0AAAA=")
 tile_set = SubResource("TileSet_c1nwm")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground" unique_id=1906638175]
+position = Vector2(323, 0)
 shape = SubResource("GroundShape")
 
-[node name="LeftWall" type="StaticBody2D" parent="."]
+[node name="LeftWall" type="StaticBody2D" parent="." unique_id=2141689076]
 position = Vector2(-10, 180)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall" unique_id=836736979]
 shape = SubResource("WallShape")
 
-[node name="RightWall" type="StaticBody2D" parent="."]
-position = Vector2(650, 180)
+[node name="RightWall" type="StaticBody2D" parent="." unique_id=1272058620]
+position = Vector2(1274, 182)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall" unique_id=2017875952]
+position = Vector2(17, -18)
 shape = SubResource("WallShape")
 
-[node name="EnterWest" parent="." instance=ExtResource("2")]
+[node name="EnterWest" parent="." unique_id=58462787 instance=ExtResource("2")]
 position = Vector2(200, 320)
 target_layer_id = &"layer_1"
 prompt = "Enter Layer 1 West"
 
-[node name="EnterEast" parent="." instance=ExtResource("2")]
+[node name="EnterEast" parent="." unique_id=790317973 instance=ExtResource("2")]
 position = Vector2(440, 320)
 target_layer_id = &"layer_1"
 target_route_id = "east"
 prompt = "Enter Layer 1 East"
 
-[node name="TestShopTerminal" parent="." instance=ExtResource("3_7hsqt")]
+[node name="TestShopTerminal" parent="." unique_id=1109330746 instance=ExtResource("3_7hsqt")]
 position = Vector2(312, 320)
 
-[node name="TestAmphibian" parent="." instance=ExtResource("4_ckure")]
+[node name="TestAmphibian" parent="." unique_id=2072690254 instance=ExtResource("4_ckure")]
 position = Vector2(576, 312)
 persistent_id = "surface_test_amphibian_01"
 
-[node name="TestAmphibian2" parent="." instance=ExtResource("4_ckure")]
+[node name="TestAmphibian2" parent="." unique_id=1156735356 instance=ExtResource("4_ckure")]
 position = Vector2(595, 309)
 persistent_id = "surface_test_amphibian_02"
 
-[node name="TestAmphibian3" parent="." instance=ExtResource("4_ckure")]
+[node name="TestAmphibian3" parent="." unique_id=1229369914 instance=ExtResource("4_ckure")]
 position = Vector2(554, 312)
 persistent_id = "surface_test_amphibian_03"
