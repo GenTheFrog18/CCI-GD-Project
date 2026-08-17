@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://c3vogrpin7vk"]
+[gd_scene load_steps=6 format=3 uid="uid://c3vogrpin7vk"]
 
 [ext_resource type="Script" uid="uid://cuvu5xbgb53kg" path="res://game/ui/dialogue/dialogue_box.gd" id="1_4v0rh"]
 [ext_resource type="Texture2D" uid="uid://cl36mg5bllu1y" path="res://assets/art/characters/player/Portrait_Smile.png" id="1_8n1ys"]
 [ext_resource type="FontFile" uid="uid://di7mogw7xh6qt" path="res://assets/fonts/Perfect DOS VGA 437.ttf" id="2_4v0rh"]
+[ext_resource type="AudioStream" uid="uid://bv6ats2u2qtks" path="res://assets/audio/dialogue/dialogue_blip.wav" id="4_cqc6h"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cqc6h"]
 bg_color = Color(0.12156863, 0.11372549, 0.19607843, 1)
@@ -60,3 +61,7 @@ offset_bottom = 104.0
 theme_override_fonts/font = ExtResource("2_4v0rh")
 theme_override_font_sizes/font_size = 16
 text = "[E]"
+
+[node name="TextSFX" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_cqc6h")
+volume_db = -20.0

@@ -47,6 +47,7 @@ var _jump_buffer_remaining := 0.0
 var _walking_distance := 0.0
 var _prompt_target: Node
 var _prompt_text := ""
+var _interaction_indicator_target: Node = null
 var facing_direction := 1.0
 var _nearby_ropes: Array[PlacedRope] = []
 var _climbing_rope: PlacedRope
@@ -274,11 +275,23 @@ func restore_state(data: Dictionary) -> void:
 
 func _update_prompt() -> void:
 	var target := interaction_sensor.best_target(self, get_global_mouse_position())
+
 	var text := ""
 	if target != null and target.has_method("get_interaction_prompt"):
 		text = target.get_interaction_prompt(self)
-	if target != _prompt_target or text != _prompt_text:
+
+	if target != _prompt_target:
+		if is_instance_valid(_prompt_target):
+			if _prompt_target.has_method("set_interaction_indicator"):
+				_prompt_target.set_interaction_indicator(false)
+
+		if is_instance_valid(target):
+			if target.has_method("set_interaction_indicator"):
+				target.set_interaction_indicator(true)
+
 		_prompt_target = target
+
+	if text != _prompt_text:
 		_prompt_text = text
 		prompt_changed.emit(text)
 

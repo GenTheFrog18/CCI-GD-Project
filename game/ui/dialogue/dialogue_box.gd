@@ -7,6 +7,12 @@ signal dialogue_finished
 @onready var name_label: Label = $Background/NameLabel
 @onready var dialogue_label: Label = $Background/DialogueLabel
 @onready var continue_label: Label = $Background/ContinueLabel
+@onready var dialogue_sfx: AudioStreamPlayer = $TextSFX
+
+@export var sfx_every_characters := 3
+@export var sfx_enabled := true
+
+var _sfx_counter := 0
 
 var dialogue_data: DialogueData
 var current_index := 0
@@ -30,11 +36,6 @@ func start_dialogue(
 	speaker: Node,
 	player_node: Node
 ) -> void:
-	
-	print("=== START DIALOGUE ===")
-	print("Data: ", data)
-	print("Speaker: ", speaker)
-	print("Player: ", player_node)
 
 	if data == null:
 		push_warning("DialogueData NULL!")
@@ -54,8 +55,6 @@ func start_dialogue(
 
 
 func _show_current_line() -> void:
-	print("=== SHOW CURRENT LINE ===")
-	
 	if dialogue_data == null:
 		print("dialogue_data NULL")
 		finish_dialogue()
@@ -67,10 +66,6 @@ func _show_current_line() -> void:
 		return
 
 	var line := dialogue_data.lines[current_index]
-	
-	print("Speaker: ", line.speaker_name)
-	print("Text: ", line.text)
-	print("Portrait: ", line.portrait)
 
 	name_label.text = line.speaker_name
 	portrait.texture = line.portrait
@@ -81,6 +76,7 @@ func _show_current_line() -> void:
 	continue_label.visible = false
 
 	typing = true
+	_sfx_counter = 0
 
 	for character in full_text:
 		if not typing:
@@ -88,11 +84,27 @@ func _show_current_line() -> void:
 
 		dialogue_label.text += character
 
+		if character != " ":
+			_sfx_counter += 1
+
+			if _sfx_counter >= sfx_every_characters:
+				_play_dialogue_sfx()
+				_sfx_counter = 0
+
 		await get_tree().create_timer(typing_speed).timeout
 
 	typing = false
 	continue_label.visible = true
 
+func _play_dialogue_sfx() -> void:
+	if not sfx_enabled:
+		return
+
+	if dialogue_sfx == null:
+		return
+
+	dialogue_sfx.stop()
+	dialogue_sfx.play()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
@@ -115,6 +127,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func finish_dialogue() -> void:
 	visible = false
+	
+	if current_speaker != null and current_speaker.has_method("reset_facing"):
+		current_speaker.reset_facing()
 
 	dialogue_data = null
 	current_index = 0
@@ -126,3 +141,6 @@ func finish_dialogue() -> void:
 	player = null
 
 	dialogue_finished.emit()
+	
+func close() -> void:
+	finish_dialogue()

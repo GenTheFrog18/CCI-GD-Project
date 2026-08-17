@@ -1,16 +1,13 @@
-[gd_resource type="Resource" script_class="ItemDefinition" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=8 format=3 uid="uid://daq1mtfojp2vb"]
 
-[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
-[ext_resource type="Script" path="res://game/items/behaviors/rope_behavior.gd" id="2"]
-[ext_resource type="Script" path="res://game/items/behaviors/default_throw_behavior.gd" id="3"]
+[ext_resource type="Script" uid="uid://bxol3nb5souin" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://c4o0jy07fwdiq" path="res://game/items/behaviors/rope_behavior.gd" id="2"]
+[ext_resource type="Script" uid="uid://cvn35o5hs7sqy" path="res://game/items/behaviors/default_throw_behavior.gd" id="3"]
 [ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="4"]
-[ext_resource type="Texture2D" path="res://assets/art/items/rope/rope_item.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://w2iexcd7d3nw" path="res://assets/art/items/rope/rope_item.png" id="5"]
 
 [sub_resource type="Resource" id="ThrowBehavior"]
 script = ExtResource("3")
-minimum_speed = 80.0
-maximum_speed = 420.0
-maximum_cursor_distance = 240.0
 
 [sub_resource type="Resource" id="RopeBehavior"]
 script = ExtResource("2")
@@ -28,7 +25,4 @@ world_scene = ExtResource("4")
 weight = 8
 max_stack = 4
 purchase_price = 20
-sellable = false
-persistent_when_dropped = true
-retrievable = true
 behavior = SubResource("RopeBehavior")

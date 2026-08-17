@@ -286,9 +286,10 @@ position = Vector2(0, -14)
 shape = SubResource("PlayerShape")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 10
 position = Vector2(0, -16)
 sprite_frames = SubResource("SpriteFrames_uoqeo")
-animation = &"throw"
+animation = &"jump"
 
 [node name="Visual" type="Polygon2D" parent="."]
 visible = false
