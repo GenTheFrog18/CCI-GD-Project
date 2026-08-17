@@ -1,52 +1,53 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://03ynx58sgiaq"]
 
-[ext_resource type="Script" path="res://ui/new_run_confirmation.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/settings/settings-pane-final.png" id="2_pane"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/button-long.png" id="3_button"]
+[ext_resource type="Script" uid="uid://ljsambcdog4y" path="res://ui/new_run_confirmation.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cggu85i780g2c" path="res://assets/art/ui/settings/settings-pane-final.png" id="2_pane"]
+[ext_resource type="Texture2D" uid="uid://d1j21e86b6cdw" path="res://assets/art/ui/main_menu/button-long.png" id="3_button"]
 
 [sub_resource type="StyleBoxTexture" id="StyleButton"]
 texture = ExtResource("3_button")
 
-[node name="NewRunConfirmation" type="Control"]
+[node name="NewRunConfirmation" type="Control" unique_id=859006441]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 script = ExtResource("1_script")
 
-[node name="Dimmer" type="ColorRect" parent="."]
+[node name="Dimmer" type="ColorRect" parent="." unique_id=1698309827]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 color = Color(0, 0, 0, 0.55)
 
-[node name="Card" type="Control" parent="."]
-layout_mode = 0
+[node name="Card" type="Control" parent="." unique_id=1995273570]
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -180.0
-offset_top = -100.0
-offset_right = 180.0
-offset_bottom = 100.0
+offset_left = -176.0
+offset_top = -103.0
+offset_right = 184.0
+offset_bottom = 97.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="Parchment" type="TextureRect" parent="Card"]
+[node name="Parchment" type="TextureRect" parent="Card" unique_id=1537913381]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -85.0
+offset_top = -42.0
+offset_right = 86.0
+offset_bottom = 42.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -54,51 +55,63 @@ texture = ExtResource("2_pane")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="Card"]
+[node name="Title" type="Label" parent="Card" unique_id=1363252934]
 layout_mode = 0
-offset_left = 42.0
-offset_top = 37.0
-offset_right = 318.0
-offset_bottom = 63.0
+offset_left = 40.0
+offset_right = 316.0
+offset_bottom = 26.0
 theme_override_font_sizes/font_size = 18
 text = "Please Confirm..."
 horizontal_alignment = 1
 
-[node name="Message" type="Label" parent="Card"]
+[node name="Message" type="Label" parent="Card" unique_id=566527525]
 layout_mode = 0
-offset_left = 43.0
-offset_top = 70.0
-offset_right = 317.0
-offset_bottom = 124.0
+offset_left = 37.0
+offset_top = 41.0
+offset_right = 311.0
+offset_bottom = 95.0
 theme_override_font_sizes/font_size = 14
-text = "Start a new run and replace the current save?"
-autowrap_mode = 3
+text = "Start a new run"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Actions" type="HBoxContainer" parent="Card"]
+[node name="Message" type="Label" parent="Card/Message" unique_id=973398645]
 layout_mode = 0
+offset_left = 5.0
+offset_top = 25.0
+offset_right = 279.0
+offset_bottom = 79.0
+theme_override_font_sizes/font_size = 14
+text = "and replace the current save?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Actions" type="HBoxContainer" parent="Card" unique_id=1678228271]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.89100003
+anchor_bottom = 1.065
 offset_left = 32.0
-offset_top = 140.0
-offset_right = 328.0
-offset_bottom = 172.0
+offset_top = 133.0
+offset_right = 7.23999
+offset_bottom = -48.000015
 theme_override_constants/separation = 8
 
-[node name="Cancel" type="Button" parent="Card/Actions"]
+[node name="Cancel" type="Button" parent="Card/Actions" unique_id=311873097]
 custom_minimum_size = Vector2(144, 32)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleButton")
-theme_override_styles/hover = SubResource("StyleButton")
 theme_override_styles/pressed = SubResource("StyleButton")
+theme_override_styles/hover = SubResource("StyleButton")
 text = "Cancel"
 
-[node name="StartNewRun" type="Button" parent="Card/Actions"]
+[node name="StartNewRun" type="Button" parent="Card/Actions" unique_id=533586813]
 custom_minimum_size = Vector2(144, 32)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 13
 theme_override_styles/normal = SubResource("StyleButton")
-theme_override_styles/hover = SubResource("StyleButton")
 theme_override_styles/pressed = SubResource("StyleButton")
+theme_override_styles/hover = SubResource("StyleButton")
 text = "Start New Run"

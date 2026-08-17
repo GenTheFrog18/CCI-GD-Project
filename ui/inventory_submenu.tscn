@@ -1,15 +1,15 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://od53i5xbchv1"]
 
-[node name="Submenu" type="Control"]
+[node name="Submenu" type="Control" unique_id=759654157]
 visible = false
-layout_mode = 0
+layout_mode = 3
+anchors_preset = 0
 offset_left = 132.0
 offset_top = 76.0
 offset_right = 224.0
 offset_bottom = 138.0
-mouse_filter = 0
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="Panel" type="PanelContainer" parent="." unique_id=1939060746]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,20 +17,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Content" type="VBoxContainer" parent="Panel"]
+[node name="Content" type="VBoxContainer" parent="Panel" unique_id=1581555638]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="Panel/Content"]
+[node name="Title" type="Label" parent="Panel/Content" unique_id=1808782411]
 layout_mode = 2
 text = "Placeholder"
 horizontal_alignment = 1
 
-[node name="Body" type="Label" parent="Panel/Content"]
+[node name="Body" type="Label" parent="Panel/Content" unique_id=242432956]
 layout_mode = 2
 text = "Add submenu content here."
 autowrap_mode = 2
 
-[node name="Close" type="Button" parent="Panel/Content"]
+[node name="Close" type="Button" parent="Panel/Content" unique_id=365451642]
 layout_mode = 2
 focus_mode = 0
 text = "Close"

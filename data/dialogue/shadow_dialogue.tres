@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="DialogueSequence" load_steps=9 format=3 uid="uid://cahbk2a2shbno"]
+[gd_resource type="Resource" script_class="DialogueSequence" format=3 uid="uid://cahbk2a2shbno"]
 
-[ext_resource type="Script" path="res://data/definitions/dialogue_line.gd" id="1_oej3r"]
-[ext_resource type="Script" path="res://data/definitions/dialogue_sequence.gd" id="2_20lkb"]
+[ext_resource type="Script" uid="uid://c561kj13kn4li" path="res://data/definitions/dialogue_line.gd" id="1_oej3r"]
+[ext_resource type="Script" uid="uid://j8ks4377trg3" path="res://data/definitions/dialogue_sequence.gd" id="2_20lkb"]
 [ext_resource type="Texture2D" uid="uid://dxksabwymww8v" path="res://assets/art/characters/npc/portrait/Portrait.png" id="2_gll11"]
 [ext_resource type="Texture2D" uid="uid://cbibwtoe3fo0w" path="res://assets/art/characters/player/Portrait_Frown.png" id="3_vcabc"]
 

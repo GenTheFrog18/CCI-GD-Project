@@ -2,14 +2,16 @@
 
 [ext_resource type="Script" uid="uid://csuwc1l8vngs8" path="res://game/world/world_layer.gd" id="1"]
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://game/shops/test_shop_terminal.tscn" id="3_7hsqt"]
-[ext_resource type="PackedScene" uid="uid://cflctunfjqval" path="res://game/enemies/test/test_amphibian.tscn" id="4_ckure"]
 [ext_resource type="PackedScene" path="res://game/enemies/layer1/knockback_bird.tscn" id="5_nghe8"]
 [ext_resource type="PackedScene" path="res://game/enemies/layer1/thorn_bloom.tscn" id="6_fc1rd"]
-[ext_resource type="PackedScene" path="res://game/npcs/shadow/shadow_npc.tscn" id="7_shadow"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/cave_spider.tscn" id="6_rpsi8"]
+[ext_resource type="PackedScene" uid="uid://cmahh3afjs5t1" path="res://game/npcs/shadow/shadow_npc.tscn" id="7_shadow"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/lantern_snail.tscn" id="7_y73ex"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/large_flyer.tscn" id="8_t2nio"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/tongue_amphibian.tscn" id="9_c1nwm"]
 
 [sub_resource type="RectangleShape2D" id="GroundShape"]
-size = Vector2(640, 40)
+size = Vector2(1216, 40)
 
 [sub_resource type="RectangleShape2D" id="WallShape"]
 size = Vector2(20, 360)
@@ -21,10 +23,10 @@ slots_root = NodePath("Slots")
 runtime_root = NodePath("RuntimeRoot")
 west_spawn = NodePath("WestSpawn")
 east_spawn = NodePath("EastSpawn")
-world_bounds = Rect2(0, 0, 640, 360)
+world_bounds = Rect2(0, 0, 1280, 360)
 
 [node name="Background" type="ColorRect" parent="." unique_id=173518940]
-offset_right = 640.0
+offset_right = 1200.0
 offset_bottom = 360.0
 mouse_filter = 2
 color = Color(0.05, 0.07, 0.1, 1)
@@ -33,24 +35,27 @@ color = Color(0.05, 0.07, 0.1, 1)
 
 [node name="RuntimeRoot" type="Node2D" parent="." unique_id=54215688]
 
-[node name="NPCs" type="Node2D" parent="RuntimeRoot"]
+[node name="NPCs" type="Node2D" parent="RuntimeRoot" unique_id=1358423983]
 
-[node name="Shadow" parent="RuntimeRoot/NPCs" instance=ExtResource("7_shadow")]
+[node name="Shadow" parent="RuntimeRoot/NPCs" unique_id=812995644 instance=ExtResource("7_shadow")]
 position = Vector2(96, 320)
 
 [node name="WestSpawn" type="Marker2D" parent="." unique_id=1705119377]
-position = Vector2(150, 320)
+position = Vector2(285, 316)
 
 [node name="EastSpawn" type="Marker2D" parent="." unique_id=958335547]
-position = Vector2(490, 320)
+position = Vector2(1028, 323)
 
 [node name="Ground" type="StaticBody2D" parent="." unique_id=1226066745]
 position = Vector2(320, 340)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground" unique_id=29696230]
+position = Vector2(288, 0)
 shape = SubResource("GroundShape")
 
 [node name="Visual" type="Polygon2D" parent="Ground" unique_id=1826159283]
+position = Vector2(289.5, -0.5)
+scale = Vector2(1.9046875, 1.025)
 color = Color(0.2, 0.26, 0.31, 1)
 polygon = PackedVector2Array(-320, -20, 320, -20, 320, 20, -320, 20)
 
@@ -64,6 +69,7 @@ shape = SubResource("WallShape")
 position = Vector2(650, 180)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall" unique_id=366880150]
+position = Vector2(560, -2)
 shape = SubResource("WallShape")
 
 [node name="EnterWest" parent="." unique_id=576122737 instance=ExtResource("2")]
@@ -72,33 +78,29 @@ target_layer_id = &"layer_1"
 prompt = "Enter Layer 1 West"
 
 [node name="EnterEast" parent="." unique_id=1582418226 instance=ExtResource("2")]
-position = Vector2(440, 320)
+position = Vector2(1099, 320)
 target_layer_id = &"layer_1"
 target_route_id = "east"
 prompt = "Enter Layer 1 East"
-
-[node name="TestShopTerminal" parent="." unique_id=66068193 instance=ExtResource("3_7hsqt")]
-position = Vector2(312, 320)
-
-[node name="TestAmphibian" parent="." unique_id=1118754930 instance=ExtResource("4_ckure")]
-position = Vector2(576, 312)
-persistent_id = "surface_test_amphibian_01"
-
-[node name="TestAmphibian2" parent="." unique_id=379937351 instance=ExtResource("4_ckure")]
-position = Vector2(595, 309)
-persistent_id = "surface_test_amphibian_02"
-
-[node name="TestAmphibian3" parent="." unique_id=810822037 instance=ExtResource("4_ckure")]
-position = Vector2(554, 312)
-persistent_id = "surface_test_amphibian_03"
-
-[node name="KnockbackBird" parent="." unique_id=1350972358 instance=ExtResource("5_nghe8")]
-position = Vector2(484, 125)
-persistent_id = "surface_knockback_bird_01"
 
 [node name="KnockbackBird2" parent="." unique_id=1252371887 instance=ExtResource("5_nghe8")]
 position = Vector2(502, 139)
 persistent_id = "surface_knockback_bird_02"
 
 [node name="ThornBloom" parent="." unique_id=1282810798 instance=ExtResource("6_fc1rd")]
-position = Vector2(373, 321)
+position = Vector2(727, 324)
+
+[node name="CaveSpider" parent="." unique_id=1515993897 instance=ExtResource("6_rpsi8")]
+position = Vector2(441, 312)
+
+[node name="LanternSnail" parent="." unique_id=149659007 instance=ExtResource("7_y73ex")]
+position = Vector2(550, 313)
+
+[node name="LargeFlyer" parent="." unique_id=1048559360 instance=ExtResource("8_t2nio")]
+position = Vector2(451, 233)
+
+[node name="ThornBloom2" parent="." unique_id=1804202365 instance=ExtResource("6_fc1rd")]
+position = Vector2(393, 316)
+
+[node name="TongueAmphibian" parent="." unique_id=280418276 instance=ExtResource("9_c1nwm")]
+position = Vector2(496, 316)

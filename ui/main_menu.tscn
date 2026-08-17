@@ -1,15 +1,15 @@
-[gd_scene load_steps=13 format=3 uid="uid://b3uhpcvpqp6kk"]
+[gd_scene format=3 uid="uid://b3uhpcvpqp6kk"]
 
 [ext_resource type="Script" uid="uid://ygi182n2r2eh" path="res://ui/main_menu.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/background_pixelated.jpg" id="2_background"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/vignette.png" id="3_vignette"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/titlecard.png" id="4_title"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/button-long.png" id="5_button"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/button-long-disabled.png" id="6_button_disabled"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/play_new.png" id="7_new"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/continue_disabled.png" id="8_continue"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/settings.png" id="9_settings"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/quit.png" id="10_quit"]
+[ext_resource type="Texture2D" uid="uid://cogglv62ruuhm" path="res://assets/art/ui/main_menu/background_pixelated.jpg" id="2_background"]
+[ext_resource type="Texture2D" uid="uid://dd5ietmbi51ut" path="res://assets/art/ui/main_menu/vignette.png" id="3_vignette"]
+[ext_resource type="Texture2D" uid="uid://cv1o0t78jl5k4" path="res://assets/art/ui/main_menu/titlecard.png" id="4_title"]
+[ext_resource type="Texture2D" uid="uid://d1j21e86b6cdw" path="res://assets/art/ui/main_menu/button-long.png" id="5_button"]
+[ext_resource type="Texture2D" uid="uid://bcsb6u6buymj2" path="res://assets/art/ui/main_menu/button-long-disabled.png" id="6_button_disabled"]
+[ext_resource type="Texture2D" uid="uid://bpvab0iph5csj" path="res://assets/art/ui/main_menu/play_new.png" id="7_new"]
+[ext_resource type="Texture2D" uid="uid://dg3prjkv64cvq" path="res://assets/art/ui/main_menu/continue_disabled.png" id="8_continue"]
+[ext_resource type="Texture2D" uid="uid://solloua7oxdu" path="res://assets/art/ui/main_menu/settings.png" id="9_settings"]
+[ext_resource type="Texture2D" uid="uid://c5knbiog4n7et" path="res://assets/art/ui/main_menu/quit.png" id="10_quit"]
 
 [sub_resource type="StyleBoxTexture" id="StyleNormal"]
 texture = ExtResource("5_button")
@@ -17,23 +17,24 @@ texture = ExtResource("5_button")
 [sub_resource type="StyleBoxTexture" id="StyleDisabled"]
 texture = ExtResource("6_button_disabled")
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=1419852137]
+clip_contents = true
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-clip_contents = true
 script = ExtResource("1_script")
+background_travel_seconds = 45.0
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=125689840]
 layout_mode = 0
 mouse_filter = 2
 texture = ExtResource("2_background")
 expand_mode = 1
 
-[node name="Vignette" type="TextureRect" parent="."]
+[node name="Vignette" type="TextureRect" parent="." unique_id=1321329724]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -45,18 +46,18 @@ texture = ExtResource("3_vignette")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TitleCard" type="TextureRect" parent="."]
+[node name="TitleCard" type="TextureRect" parent="." unique_id=1672659578]
 layout_mode = 0
-offset_left = 190.0
-offset_top = -48.0
-offset_right = 450.0
-offset_bottom = 212.0
+offset_left = 192.0
+offset_top = -41.0
+offset_right = 437.0
+offset_bottom = 188.0
 mouse_filter = 2
 texture = ExtResource("4_title")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="MenuColumn" type="VBoxContainer" parent="."]
+[node name="MenuColumn" type="VBoxContainer" parent="." unique_id=859592309]
 layout_mode = 0
 offset_left = 248.0
 offset_top = 168.0
@@ -64,21 +65,24 @@ offset_right = 392.0
 offset_bottom = 328.0
 theme_override_constants/separation = 8
 
-[node name="NewRun" type="Button" parent="MenuColumn"]
+[node name="NewRun" type="Button" parent="MenuColumn" unique_id=311907988]
 custom_minimum_size = Vector2(144, 32)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleNormal")
-theme_override_styles/hover = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleNormal")
-theme_override_styles/focus = SubResource("StyleNormal")
+theme_override_styles/hover = SubResource("StyleNormal")
 theme_override_styles/disabled = SubResource("StyleDisabled")
+theme_override_styles/focus = SubResource("StyleNormal")
 
-[node name="Label" type="TextureRect" parent="MenuColumn/NewRun"]
+[node name="Label" type="TextureRect" parent="MenuColumn/NewRun" unique_id=734468041]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 2.0
+offset_right = -2.0
+offset_bottom = -5.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -86,21 +90,24 @@ texture = ExtResource("7_new")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Continue" type="Button" parent="MenuColumn"]
+[node name="Continue" type="Button" parent="MenuColumn" unique_id=1890164326]
 custom_minimum_size = Vector2(144, 32)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleNormal")
-theme_override_styles/hover = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleNormal")
-theme_override_styles/focus = SubResource("StyleNormal")
+theme_override_styles/hover = SubResource("StyleNormal")
 theme_override_styles/disabled = SubResource("StyleDisabled")
+theme_override_styles/focus = SubResource("StyleNormal")
 
-[node name="Label" type="TextureRect" parent="MenuColumn/Continue"]
+[node name="Label" type="TextureRect" parent="MenuColumn/Continue" unique_id=1111725723]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 6.0
+offset_right = -3.0
+offset_bottom = -11.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -108,21 +115,24 @@ texture = ExtResource("8_continue")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Settings" type="Button" parent="MenuColumn"]
+[node name="Settings" type="Button" parent="MenuColumn" unique_id=457875886]
 custom_minimum_size = Vector2(144, 32)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleNormal")
-theme_override_styles/hover = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleNormal")
-theme_override_styles/focus = SubResource("StyleNormal")
+theme_override_styles/hover = SubResource("StyleNormal")
 theme_override_styles/disabled = SubResource("StyleDisabled")
+theme_override_styles/focus = SubResource("StyleNormal")
 
-[node name="Label" type="TextureRect" parent="MenuColumn/Settings"]
+[node name="Label" type="TextureRect" parent="MenuColumn/Settings" unique_id=1034296685]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 6.0
+offset_right = -6.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -130,21 +140,25 @@ texture = ExtResource("9_settings")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Quit" type="Button" parent="MenuColumn"]
+[node name="Quit" type="Button" parent="MenuColumn" unique_id=1386331355]
 custom_minimum_size = Vector2(144, 32)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleNormal")
-theme_override_styles/hover = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleNormal")
-theme_override_styles/focus = SubResource("StyleNormal")
+theme_override_styles/hover = SubResource("StyleNormal")
 theme_override_styles/disabled = SubResource("StyleDisabled")
+theme_override_styles/focus = SubResource("StyleNormal")
 
-[node name="Label" type="TextureRect" parent="MenuColumn/Quit"]
+[node name="Label" type="TextureRect" parent="MenuColumn/Quit" unique_id=126992292]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 1.0
+offset_right = -8.0
+offset_bottom = -6.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -152,7 +166,7 @@ texture = ExtResource("10_quit")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Footer" type="VBoxContainer" parent="."]
+[node name="Footer" type="VBoxContainer" parent="." unique_id=1039943615]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -164,12 +178,12 @@ offset_bottom = -4.0
 grow_vertical = 0
 theme_override_constants/separation = 0
 
-[node name="Version" type="Label" parent="Footer"]
+[node name="Version" type="Label" parent="Footer" unique_id=121538443]
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "Ver 1.0"
 
-[node name="Team" type="Label" parent="Footer"]
+[node name="Team" type="Label" parent="Footer" unique_id=693272862]
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
-text = "Team Gorillaz Games"
+text = "Team Gorillaz"

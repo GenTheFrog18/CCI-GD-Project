@@ -6,9 +6,9 @@
 [ext_resource type="Texture2D" uid="uid://c7cbrlyfj6wb5" path="res://assets/art/ui/inventory/book-inventory-grid.png" id="4_grid"]
 [ext_resource type="Texture2D" uid="uid://bdv7r0xhl5u6v" path="res://assets/art/ui/inventory/button-close.png" id="5_close"]
 [ext_resource type="Script" uid="uid://c3vtxtk7pbyea" path="res://ui/inventory_slot.gd" id="6_slot"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/hotbar_main.png" id="7_hotbar_main"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/inventory/hotbar_secondary.png" id="8_hotbar_secondary"]
-[ext_resource type="PackedScene" path="res://ui/inventory_submenu.tscn" id="9_submenu"]
+[ext_resource type="Texture2D" uid="uid://uuc4vckvqmga" path="res://assets/art/ui/inventory/hotbar_main.png" id="7_hotbar_main"]
+[ext_resource type="Texture2D" uid="uid://bcp4gw8fhkj40" path="res://assets/art/ui/inventory/hotbar_secondary.png" id="8_hotbar_secondary"]
+[ext_resource type="PackedScene" uid="uid://od53i5xbchv1" path="res://ui/inventory_submenu.tscn" id="9_submenu"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_xonaa"]
 
@@ -353,21 +353,24 @@ anchors_preset = 0
 
 [node name="Slot0" type="Control" parent="BookContent/HotbarSlots" unique_id=1616515216]
 anchors_preset = 0
-offset_left = 145.0
-offset_top = 46.0
-offset_right = 177.0
-offset_bottom = 78.0
-rotation = -0.14
+offset_left = 138.33333
+offset_top = 47.333336
+offset_right = 165.33333
+offset_bottom = 74.333336
 
 [node name="Frame" type="TextureRect" parent="BookContent/HotbarSlots/Slot0" unique_id=1170118903]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -3.3333282
+offset_top = -4.6666718
+offset_right = 6.0000153
+offset_bottom = 4.6666718
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("7_hotbar_main")
+texture = ExtResource("8_hotbar_secondary")
 expand_mode = 1
 stretch_mode = 5
 
@@ -398,21 +401,24 @@ theme_override_font_sizes/font_size = 6
 
 [node name="Slot1" type="Control" parent="BookContent/HotbarSlots" unique_id=1865263998]
 anchors_preset = 0
-offset_left = 181.0
-offset_top = 42.0
-offset_right = 213.0
-offset_bottom = 74.0
-rotation = 0.14
+offset_left = 175.66663
+offset_top = 46.00003
+offset_right = 202.66663
+offset_bottom = 73.00003
 
 [node name="Frame" type="TextureRect" parent="BookContent/HotbarSlots/Slot1" unique_id=165111859]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -3.3335266
+offset_top = -4.0000076
+offset_right = 3.333374
+offset_bottom = 3.6666489
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("8_hotbar_secondary")
+texture = ExtResource("7_hotbar_main")
 expand_mode = 1
 stretch_mode = 5
 
@@ -443,10 +449,10 @@ theme_override_font_sizes/font_size = 6
 
 [node name="Whistle" type="TextureButton" parent="BookContent" unique_id=1302103364]
 layout_mode = 0
-offset_left = 166.0
-offset_top = 100.0
-offset_right = 198.0
-offset_bottom = 132.0
+offset_left = 155.9996
+offset_top = 90.666794
+offset_right = 187.9996
+offset_bottom = 122.666794
 focus_mode = 0
 texture_normal = ExtResource("4_grid")
 ignore_texture_size = true
@@ -466,15 +472,21 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SubmenuButton" type="Button" parent="BookContent"]
+[node name="SubmenuButton" type="Button" parent="BookContent" unique_id=1777369477]
 layout_mode = 0
-offset_left = 185.0
-offset_top = 143.0
-offset_right = 230.0
-offset_bottom = 157.0
+offset_left = 233.33336
+offset_top = 139.33334
+offset_right = 318.33337
+offset_bottom = 158.33334
 focus_mode = 0
-flat = true
-text = "More..."
 theme_override_font_sizes/font_size = 7
+text = "placeholder buat nanti"
+flat = true
 
-[node name="Submenu" parent="BookContent" instance=ExtResource("9_submenu")]
+[node name="Submenu" parent="BookContent" unique_id=1955250578 instance=ExtResource("9_submenu")]
+visible = false
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 92.0
+offset_bottom = 62.0
