@@ -1,12 +1,10 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://b51yjvhjdw0v"]
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://bnn76gb88yl5i"]
 
 [ext_resource type="Texture2D" uid="uid://cnm3hoqo4arpo" path="res://art/world/graybox_tile.svg" id="1"]
 
 [sub_resource type="TileSetAtlasSource" id="Atlas"]
 texture = ExtResource("1")
 0:0/0 = 0
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
 [resource]
-physics_layer_0/collision_layer = 1
 sources/0 = SubResource("Atlas")

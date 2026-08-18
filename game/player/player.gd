@@ -392,6 +392,13 @@ func _update_prompt() -> void:
 	if target != null and target.has_method("get_interaction_prompt"):
 		text = target.get_interaction_prompt(self)
 	if target != _prompt_target or text != _prompt_text:
+		if is_instance_valid(_prompt_target):
+			if _prompt_target.has_method("set_interaction_indicator"):
+				_prompt_target.set_interaction_indicator(false)
+
+		if is_instance_valid(target):
+			if target.has_method("set_interaction_indicator"):
+				target.set_interaction_indicator(true)
 		_prompt_target = target
 		_prompt_text = text
 		prompt_changed.emit(text)
@@ -469,6 +476,9 @@ func _detach_rope(block_attach := false) -> void:
 	_climbing_rope = null
 	_rope_lateral_offset = 0.0
 	_rope_attach_blocked = block_attach
+	
+func face_toward_position(world_position: Vector2) -> void:
+	_face_toward(world_position)
 
 func _face_toward(world_position: Vector2) -> void:
 	if not is_equal_approx(world_position.x, global_position.x):

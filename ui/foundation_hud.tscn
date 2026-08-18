@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://d3o6v8awj7dcx"]
+[gd_scene load_steps=7 format=3 uid="uid://d3o6v8awj7dcx"]
 
 [ext_resource type="Script" uid="uid://batjqfqeaqv5c" path="res://ui/foundation_hud.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://cwopfscng8y6s" path="res://assets/art/ui/hud/fire-hp-bar.png" id="2_fire"]
@@ -7,13 +7,20 @@
 [ext_resource type="Texture2D" uid="uid://be070jd1tjb7c" path="res://assets/art/ui/hud/arrow-hotbar.png" id="5_arrow"]
 [ext_resource type="Texture2D" uid="uid://c7cbrlyfj6wb5" path="res://assets/art/ui/inventory/book-inventory-grid.png" id="6_whistle_slot"]
 
-[node name="FoundationHUD" type="CanvasLayer" unique_id=1283634119]
+[node name="FoundationHUD" type="CanvasLayer"]
 layer = 20
 script = ExtResource("1_script")
 
-[node name="EffectOverlay" type="ColorRect" parent="." unique_id=1022902151]
+[node name="LogicalUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+
+[node name="EffectOverlay" type="ColorRect" parent="LogicalUI"]
 z_index = -1
-anchors_preset = 15
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -21,104 +28,108 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
 
-[node name="HealthFlames" type="HBoxContainer" parent="." unique_id=1544862439]
+[node name="HealthFlames" type="HBoxContainer" parent="LogicalUI"]
+layout_mode = 0
 offset_left = 8.0
 offset_top = 6.0
 offset_right = 168.0
 offset_bottom = 22.0
 theme_override_constants/separation = 0
 
-[node name="Flame0" type="TextureRect" parent="HealthFlames" unique_id=1690845849]
+[node name="Flame0" type="TextureRect" parent="LogicalUI/HealthFlames"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="Flame1" type="TextureRect" parent="HealthFlames" unique_id=1537985758]
+[node name="Flame1" type="TextureRect" parent="LogicalUI/HealthFlames"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="Flame2" type="TextureRect" parent="HealthFlames" unique_id=2118135846]
+[node name="Flame2" type="TextureRect" parent="LogicalUI/HealthFlames"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="Flame3" type="TextureRect" parent="HealthFlames" unique_id=1517297453]
+[node name="Flame3" type="TextureRect" parent="LogicalUI/HealthFlames"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="Flame4" type="TextureRect" parent="HealthFlames" unique_id=1656623866]
+[node name="Flame4" type="TextureRect" parent="LogicalUI/HealthFlames"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="Flame5" type="TextureRect" parent="HealthFlames" unique_id=940815608]
+[node name="Flame5" type="TextureRect" parent="LogicalUI/HealthFlames"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="Flame6" type="TextureRect" parent="HealthFlames" unique_id=1315023126]
+[node name="Flame6" type="TextureRect" parent="LogicalUI/HealthFlames"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="Flame7" type="TextureRect" parent="HealthFlames" unique_id=1125915950]
+[node name="Flame7" type="TextureRect" parent="LogicalUI/HealthFlames"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="Flame8" type="TextureRect" parent="HealthFlames" unique_id=200918226]
+[node name="Flame8" type="TextureRect" parent="LogicalUI/HealthFlames"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="Flame9" type="TextureRect" parent="HealthFlames" unique_id=443332818]
+[node name="Flame9" type="TextureRect" parent="LogicalUI/HealthFlames"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 texture = ExtResource("2_fire")
 expand_mode = 1
 
-[node name="HealthValueTooltip" type="Label" parent="." unique_id=639503766]
+[node name="HealthValueTooltip" type="Label" parent="LogicalUI"]
 visible = false
+layout_mode = 0
 offset_left = 8.0
 offset_top = 24.0
 offset_right = 120.0
 offset_bottom = 44.0
 
-[node name="TopStats" type="HBoxContainer" parent="." unique_id=661148503]
+[node name="TopStats" type="HBoxContainer" parent="LogicalUI"]
+layout_mode = 0
 offset_left = 10.0
 offset_top = 25.0
 offset_right = 300.0
 offset_bottom = 45.0
 
-[node name="Health" type="Label" parent="TopStats" unique_id=2088355254]
+[node name="Health" type="Label" parent="LogicalUI/TopStats"]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 
-[node name="Money" type="Label" parent="TopStats" unique_id=1025985944]
+[node name="Money" type="Label" parent="LogicalUI/TopStats"]
 layout_mode = 2
 
-[node name="Weight" type="Label" parent="TopStats" unique_id=446964377]
+[node name="Weight" type="Label" parent="LogicalUI/TopStats"]
 layout_mode = 2
 
-[node name="Status" type="Label" parent="." unique_id=822630617]
+[node name="Status" type="Label" parent="LogicalUI"]
+layout_mode = 0
 offset_left = 10.0
 offset_top = 30.0
 offset_right = 190.0
 offset_bottom = 150.0
 
-[node name="Location" type="Label" parent="." unique_id=1691316578]
-anchors_preset = 1
+[node name="Location" type="Label" parent="LogicalUI"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -300.0
@@ -127,73 +138,76 @@ offset_right = -10.0
 offset_bottom = 42.0
 horizontal_alignment = 2
 
-[node name="Prompt" type="Label" parent="." unique_id=1712942356]
+[node name="Prompt" type="Label" parent="LogicalUI"]
+layout_mode = 0
 offset_left = 230.0
 offset_top = 320.0
 offset_right = 410.0
 offset_bottom = 348.0
 horizontal_alignment = 1
 
-[node name="Feedback" type="Label" parent="." unique_id=1871174459]
+[node name="Feedback" type="Label" parent="LogicalUI"]
+layout_mode = 0
 offset_left = 220.0
 offset_top = 40.0
 offset_right = 420.0
 offset_bottom = 65.0
 horizontal_alignment = 1
 
-[node name="Threat" type="Label" parent="." unique_id=1899423316]
+[node name="Threat" type="Label" parent="LogicalUI"]
 visible = false
+layout_mode = 0
 offset_left = 300.0
 offset_top = 110.0
 offset_right = 360.0
 offset_bottom = 140.0
 theme_override_font_sizes/font_size = 24
 
-[node name="Hotbar" type="HBoxContainer" parent="." unique_id=1574343723]
-anchors_preset = 3
+[node name="Hotbar" type="HBoxContainer" parent="LogicalUI"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -151.0
-offset_top = -57.575012
+offset_top = -58.0
 offset_right = -7.0
 offset_bottom = -7.0
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/separation = 4
 
-[node name="Whistle" type="TextureButton" parent="Hotbar" unique_id=1078415435]
-custom_minimum_size = Vector2(38.745, 32.49)
+[node name="Whistle" type="TextureButton" parent="LogicalUI/Hotbar"]
+custom_minimum_size = Vector2(39, 32)
 layout_mode = 2
 focus_mode = 0
 texture_normal = ExtResource("6_whistle_slot")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="Icon" type="TextureRect" parent="Hotbar/Whistle" unique_id=1297394791]
+[node name="Icon" type="TextureRect" parent="LogicalUI/Hotbar/Whistle"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 6.0
-offset_top = 12.575012
+offset_top = 13.0
 offset_right = -6.0
-offset_bottom = -12.849976
+offset_bottom = -13.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot0" type="TextureRect" parent="Hotbar" unique_id=1071106652]
-custom_minimum_size = Vector2(32, 30.39)
+[node name="Slot0" type="TextureRect" parent="LogicalUI/Hotbar"]
+custom_minimum_size = Vector2(32, 30)
 layout_mode = 2
 size_flags_horizontal = 3
 texture = ExtResource("4_hotbar_secondary")
 expand_mode = 1
 
-[node name="Icon" type="TextureRect" parent="Hotbar/Slot0" unique_id=743429069]
+[node name="Icon" type="TextureRect" parent="LogicalUI/Hotbar/Slot0"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -201,14 +215,14 @@ anchor_bottom = 1.0
 offset_left = 11.0
 offset_top = 13.0
 offset_right = -13.0
-offset_bottom = -12.424988
+offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ClickTarget" type="Button" parent="Hotbar/Slot0" unique_id=1101979778]
+[node name="ClickTarget" type="Button" parent="LogicalUI/Hotbar/Slot0"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -218,29 +232,29 @@ grow_vertical = 2
 focus_mode = 0
 flat = true
 
-[node name="Slot1" type="TextureRect" parent="Hotbar" unique_id=620230987]
+[node name="Slot1" type="TextureRect" parent="LogicalUI/Hotbar"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_horizontal = 3
 texture = ExtResource("3_hotbar_main")
 expand_mode = 1
 
-[node name="Icon" type="TextureRect" parent="Hotbar/Slot1" unique_id=292453074]
+[node name="Icon" type="TextureRect" parent="LogicalUI/Hotbar/Slot1"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 10.64502
-offset_top = 10.575012
+offset_left = 11.0
+offset_top = 11.0
 offset_right = -13.0
-offset_bottom = -14.424988
+offset_bottom = -14.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ClickTarget" type="Button" parent="Hotbar/Slot1" unique_id=1323182537]
+[node name="ClickTarget" type="Button" parent="LogicalUI/Hotbar/Slot1"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -250,8 +264,8 @@ grow_vertical = 2
 focus_mode = 0
 flat = true
 
-[node name="Arrow" type="TextureRect" parent="." unique_id=1742264783]
-anchors_preset = 3
+[node name="Arrow" type="TextureRect" parent="LogicalUI"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -265,8 +279,10 @@ grow_vertical = 0
 texture = ExtResource("5_arrow")
 expand_mode = 1
 
-[node name="HotbarLabel0" type="Label" parent="." unique_id=436242177]
+[node name="HotbarLabel0" type="Label" parent="LogicalUI"]
 visible = false
+layout_mode = 0
 
-[node name="HotbarLabel1" type="Label" parent="." unique_id=54967119]
+[node name="HotbarLabel1" type="Label" parent="LogicalUI"]
 visible = false
+layout_mode = 0
