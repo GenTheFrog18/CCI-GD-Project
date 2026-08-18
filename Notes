@@ -1,0 +1,96 @@
+
+bgm:
+main menu
+surface town
+layer 1 top bgm
+layer 1 botom bgm
+layer 2 top bgm
+layer 2 bottom bgm
+layer 2 shop bgm
+
+SFX:
+menu:
+button click
+
+player:
+warning signal for an enemy attack
+walking
+jump
+hit the ground
+throw
+attack
+player hurt
+
+enemies:
+lantern snail crystal flashbang
+frog hopping
+frog tongue attack
+frog idle croak
+spider shoot attack
+thorn bloom blowing up releasing spikes
+knockback bird roaming idle
+knockback bird swooping attack
+layer 1 big enemy alert sound
+layer 1 big enemy swooping & chomp attack
+
+layer 2 monster monkey warning
+layer 2 monster monkey rock throw
+layer 2 tremor hound warning 
+layer 2 tremor hound barking chase
+layer 2 tremor hound hurt
+layer 2 carrion stalker sniff
+layer 2 carrion stalker hurt
+layer 2 carrion stalker bite
+layer 2 beast warning
+layer 2 beast charge stampede
+layer 2 sky hunter screech
+layer 2 sky hunter dive swooping attack
+
+
+items:
+generic item hit ground
+multitool swing
+whistle
+bandage use
+rattlepod rattling for 5 seconds
+plate umbrella unfold
+lacerator armed
+lacerator fire
+resonance core hum
+bolt shock armed
+bolt shock fire
+
+https://sethbb.itch.io/32rogues /
+https://monopixelart.itch.io/flying-enemies /
+https://lukyaforge.itch.io/ancientforest /
+https://steelsoldier.itch.io/32x32-simple-sfx /
+https://scic.itch.io/rocks-assets-free /
+https://toffeecraft.itch.io/retro-grasses /
+https://bdragon1727.itch.io/free-smoke-fx-pixel /
+https://axolotl-jim.itch.io/32x32-terrain-pack /
+https://archonei.itch.io/pixel-art-mega-tree-pack /
+https://scic.itch.io/big-plant-asset-pack /
+https://electriclemon.itch.io/animal-wildlife-free-pack-retro-rpg-series /
+https://bdragon1727.itch.io/platfrom-trap-and-weapon /
+https://graphscriptdev.itch.io/plant-trees /
+https://smithygames.itch.io/crow-sprite /
+https://ateliermagicae.itch.io/rpg-maker-extras-flower-garden /
+https://clockworkraven.itch.io/raven-fantasy-pixel-art-tileset-green-forest / 
+
+https://luizmelo.itch.io/pet-cat-pack
+https://ponkpixels.itch.io/insect-enemies
+https://free-game-assets.itch.io/free-predator-plant-mobs-pixel-art-pack
+https://bdragon1727.itch.io/1050-rpg-effects-64x64
+https://glionox.itch.io/items16
+https://ansimuz.itch.io/sunnyland-enemies-extended-pack
+https://anokolisa.itch.io/sidescroller-pixelart-sprites-asset-pack-forest-16x16
+https://theflavare.itch.io/mondstadt-theme-background-pixel-art
+https://toffeecraft.itch.io/tree-pack-mega
+https://cairocreative.itch.io/pixel-art-collection
+https://karsiori.itch.io/woods-tileset-and-background
+https://brendon-bancer.itch.io/topdownpackforestpack
+https://ventilatore.itch.io/the-fantasy-tileset-desert-oasis
+https://ventilatore.itch.io/the-fantasy-tileset
+https://cubic-tree.itch.io/pixel-woods-free-platformer-tileset
+https://theflavare.itch.io/forest-nature-fantasy-tileset
+https://vmiinv.itch.io/tree-pixelart
