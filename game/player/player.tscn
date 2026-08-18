@@ -316,17 +316,10 @@ shape = SubResource("PlayerShape")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=89202644]
 position = Vector2(0, -16)
 sprite_frames = SubResource("SpriteFrames_uoqeo")
-animation = &"throw"
-frame = 2
-frame_progress = 1.0
-
-[node name="Visual" type="Polygon2D" parent="." unique_id=36704945]
-visible = false
-color = Color(0.35, 0.72, 0.95, 1)
-polygon = PackedVector2Array(-8, -28, 8, -28, 8, 0, -8, 0)
+animation = &"attack"
 
 [node name="HeldItemAnchor" type="Node2D" parent="." unique_id=608757879]
-position = Vector2(10, -14)
+position = Vector2(8, -12)
 
 [node name="HeldItemIcon" type="Sprite2D" parent="HeldItemAnchor" unique_id=1448294322]
 

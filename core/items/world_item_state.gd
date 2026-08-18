@@ -45,6 +45,19 @@ func restore(data: Dictionary) -> void:
 	frozen = bool(data.get("freeze", true))
 
 static func hitbox_for(item: ItemDefinition, fallback: Shape2D) -> Shape2D:
+	if item != null and item.world_hitbox_scene != null:
+		var authoring_root := item.world_hitbox_scene.instantiate()
+		var authored_collision := authoring_root.find_child("CollisionShape2D", true, false)
+		if authored_collision is CollisionShape2D and authored_collision.shape != null:
+			var authored_shape := authored_collision.shape.duplicate() as Shape2D
+			authoring_root.free()
+			return authored_shape
+		if authored_collision is CollisionPolygon2D and authored_collision.polygon.size() >= 3:
+			var authored_shape := ConvexPolygonShape2D.new()
+			authored_shape.points = authored_collision.polygon
+			authoring_root.free()
+			return authored_shape
+		authoring_root.free()
 	if item != null and item.world_hitbox != null:
 		return item.world_hitbox.duplicate() as Shape2D
 	return fallback.duplicate() as Shape2D

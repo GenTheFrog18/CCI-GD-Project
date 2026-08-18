@@ -58,6 +58,7 @@ func _test_state_visuals() -> void:
 func _test_world_item_contract() -> void:
 	var definition := ContentCatalog.get_item(&"throwable_rock")
 	var previous_hitbox := definition.world_hitbox
+	var previous_hitbox_scene := definition.world_hitbox_scene
 	var custom_hitbox := CircleShape2D.new()
 	custom_hitbox.radius = 11.0
 	definition.world_hitbox = custom_hitbox
@@ -67,17 +68,33 @@ func _test_world_item_contract() -> void:
 	add_child(thrown)
 	var thrown_shape := thrown.get_node("CollisionShape2D").shape as CircleShape2D
 	_check(thrown_shape != null and is_equal_approx(thrown_shape.radius, 11.0), "ThrownItem applies per-item world hitbox")
+	definition.world_hitbox_scene = preload("res://game/items/world/world_hitbox_authoring.tscn")
+	definition.world_hitbox = null
+	var scene_thrown := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	scene_thrown.configure(definition, {}, null, Vector2.ZERO, Vector2.ZERO)
+	add_child(scene_thrown)
+	var scene_shape := scene_thrown.get_node("CollisionShape2D").shape as CircleShape2D
+	_check(scene_shape != null and is_equal_approx(scene_shape.radius, 6.0), "ThrownItem applies scene-authored world hitbox")
 	var world_item := preload("res://game/items/world/world_item.tscn").instantiate() as WorldItem
 	world_item.item_id = definition.item_id
 	world_item.persistent_id = "content_smoke_world_item"
 	add_child(world_item)
 	var world_shape := world_item.get_node("CollisionShape2D").shape as CircleShape2D
-	_check(world_shape != null and is_equal_approx(world_shape.radius, 11.0), "WorldItem applies per-item world hitbox")
+	_check(world_shape != null and is_equal_approx(world_shape.radius, 6.0), "WorldItem applies scene-authored world hitbox")
+	var book := ContentCatalog.get_item(&"info_book")
+	var book_thrown := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	book_thrown.configure(book, {}, null, Vector2.ZERO, Vector2.ZERO)
+	add_child(book_thrown)
+	var book_shape := book_thrown.get_node("CollisionShape2D").shape as ConvexPolygonShape2D
+	_check(book_shape != null and book_shape.points.size() == 6, "Info Book applies polygon-authored world hitbox")
 	var saved := world_item.capture_state()
 	_check(saved.has("item_id") and saved.has("quantity") and saved.has("persistent_id"), "World state captures shared fields")
 	world_item.free()
+	book_thrown.free()
+	scene_thrown.free()
 	thrown.free()
 	definition.world_hitbox = previous_hitbox
+	definition.world_hitbox_scene = previous_hitbox_scene
 
 func _test_enemy_scenes() -> void:
 	var direct_flyer := LargeLayer1Flyer.new()

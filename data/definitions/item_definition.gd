@@ -11,6 +11,7 @@ extends Resource
 @export var state_visuals: Array[ItemStateVisual] = []
 @export_category("World item")
 @export var world_hitbox: Shape2D
+@export var world_hitbox_scene: PackedScene
 @export var world_scene: PackedScene
 @export_range(0, 999, 1) var weight := 1
 @export_range(1, 99, 1) var max_stack := 1

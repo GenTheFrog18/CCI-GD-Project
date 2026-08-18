@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://csj6e6nl4ot4j" path="res://assets/art/items/plate ubrella opened.png" id="4_open"]
 [ext_resource type="Texture2D" uid="uid://27vni26u0l6y" path="res://assets/art/items/plate ubrella closed sideways.png" id="5_52484"]
 [ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_visual"]
+[ext_resource type="PackedScene" uid="uid://bg7xnowgljr2b" path="res://game/items/world/hitbox_umbrella.tscn" id="7_ttqr8"]
 
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
@@ -42,6 +43,7 @@ known_description = "Toggle to block frontal attacks while accepting their force
 category = &"relic"
 icon = ExtResource("1_lr2tv")
 state_visuals = Array[ExtResource("5_visual")]([SubResource("VisualOpening"), SubResource("VisualOpen"), SubResource("VisualClosing"), SubResource("VisualRecovery")])
+world_hitbox_scene = ExtResource("7_ttqr8")
 world_scene = ExtResource("3")
 weight = 8
 surface_sale_value = 120

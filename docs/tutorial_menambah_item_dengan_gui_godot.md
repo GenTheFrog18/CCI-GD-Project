@@ -598,7 +598,9 @@ Item bertimer seperti Rattlepod membutuhkan owner node runtime yang melakukan `_
 
 ## 12.1 World hitbox dan impact threshold
 
-Semua item world memakai state umum dan hitbox umum. Pada resource `ItemDefinition`, buka kategori **World item** lalu isi `World Hitbox` dengan `CircleShape2D`, `RectangleShape2D`, atau shape lain yang sesuai. Shape tersebut dipakai oleh item pickup dan item yang sedang bergerak; jika kosong, fallback circle dipakai.
+Semua item world memakai state umum dan hitbox umum. Cara visual yang direkomendasikan adalah duplicate `res://game/items/world/world_hitbox_authoring.tscn` menjadi scene baru untuk item tersebut. Buka scene itu, isi `Preview Texture` dengan icon item, lalu ubah `CollisionShape2D` langsung di viewport. Assign scene tersebut ke `World Hitbox Scene` pada kategori **World item** di `ItemDefinition`.
+
+`World Hitbox` tetap tersedia sebagai alternatif `Shape2D` langsung. Jika keduanya kosong, fallback circle dipakai. Hitbox yang dipilih dipakai oleh item pickup dan item yang sedang bergerak.
 
 Untuk item yang mengaktifkan efek ketika terbentur, buka behavior throw dan ubah `Impact Activation Speed`. Nilainya dibandingkan dengan kecepatan benturan aktual. Lemparan pelan di bawah nilai tersebut tidak mengaktifkan efek dan item tetap berada di dunia untuk dipungut.
 

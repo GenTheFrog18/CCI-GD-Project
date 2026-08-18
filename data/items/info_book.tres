@@ -4,7 +4,9 @@
 [ext_resource type="Texture2D" uid="uid://dupl0q0yc807y" path="res://assets/art/items/info_book.png" id="1_fs6pd"]
 [ext_resource type="Script" uid="uid://bo3ti5x3q6u2y" path="res://game/items/behaviors/consumable_behavior.gd" id="2"]
 [ext_resource type="Script" uid="uid://cvn35o5hs7sqy" path="res://game/items/behaviors/default_throw_behavior.gd" id="3"]
-[ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="4"]
+[ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_yjxbl"]
+[ext_resource type="PackedScene" uid="uid://c4ihdetivpv3e" path="res://game/items/world/hitbox_book.tscn" id="6_2e568"]
+[ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="7_world"]
 
 [sub_resource type="Resource" id="Primary"]
 script = ExtResource("2")
@@ -21,7 +23,8 @@ unknown_description = "A field guide with many blank entries."
 known_description = "Reveals every currently discoverable relic description."
 category = &"supply"
 icon = ExtResource("1_fs6pd")
-world_scene = ExtResource("4")
+world_hitbox_scene = ExtResource("6_2e568")
+world_scene = ExtResource("7_world")
 max_stack = 4
 purchase_price = 100
 primary_behavior = SubResource("Primary")

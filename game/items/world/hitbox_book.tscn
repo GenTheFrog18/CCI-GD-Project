@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://c4ihdetivpv3e"]
+
+[ext_resource type="Script" uid="uid://h8avkfckcn8j" path="res://game/items/world/world_hitbox_authoring.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://dupl0q0yc807y" path="res://assets/art/items/info_book.png" id="2_e7f45"]
+
+[node name="WorldHitboxAuthoring" type="Area2D" unique_id=1384183447]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1")
+preview_texture = ExtResource("2_e7f45")
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="." unique_id=274965552]
+polygon = PackedVector2Array(0, -7, -8, 0, -8, 4, 0, 8, 8, 1, 8, -3)

@@ -17,4 +17,4 @@ shape = SubResource("CircleShape2D_4my8k")
 color = Color(0.55, 0.48, 0.38, 1)
 polygon = PackedVector2Array(-5, -5, 5, -5, 5, 5, -5, 5)
 
-[node name="Icon" type="Sprite2D" parent="."]
+[node name="Icon" type="Sprite2D" parent="." unique_id=1055264405]
