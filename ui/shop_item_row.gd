@@ -10,9 +10,9 @@ signal activated(mode: StringName, item_id: StringName, maximum_quantity: int, u
 @onready var amount: Label = $Amount
 @onready var action_button: Button = $Action
 
-const BUY_BACKGROUND := preload("res://assets/asset/shopkeeper/shop-box-container-buy.png")
-const SELL_BACKGROUND := preload("res://assets/asset/shopkeeper/shop-box-container-sell.png")
-const DISABLED_BACKGROUND := preload("res://assets/asset/shopkeeper/shop-box-container-disabled.png")
+const BUY_BACKGROUND := preload("res://assets/art/ui/shopkeeper/shop-box-container-buy.png")
+const SELL_BACKGROUND := preload("res://assets/art/ui/shopkeeper/shop-box-container-sell.png")
+const DISABLED_BACKGROUND := preload("res://assets/art/ui/shopkeeper/shop-box-container-disabled.png")
 
 var mode: StringName
 var item_id: StringName

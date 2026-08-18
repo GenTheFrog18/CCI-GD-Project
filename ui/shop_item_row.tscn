@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cc8vscpo8gx7b"]
 
 [ext_resource type="Script" uid="uid://dq4y2rlfnf02p" path="res://ui/shop_item_row.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://c7t5budy7d8bl" path="res://assets/asset/shopkeeper/shop-box-container-buy.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://c7t5budy7d8bl" path="res://assets/art/ui/shopkeeper/shop-box-container-buy.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://dpsxkr4w4g5n6" path="res://assets/art/items/lantern_crystal.png" id="3"]
 
 [node name="ShopItemRow" type="Control" unique_id=422724009]
