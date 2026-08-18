@@ -57,7 +57,7 @@ func _ready() -> void:
 	_collision = shape_node
 	add_child(shape_node)
 	_visual = Sprite2D.new()
-	_visual.texture = SUN_ACTIVE if kind == &"sun_sphere" else definition.icon
+	_visual.texture = definition.texture_for_state(&"active", SUN_ACTIVE) if kind == &"sun_sphere" else definition.texture_for_state(&"prepared")
 	add_child(_visual)
 	if kind == &"sun_sphere":
 		_light = LightSource2D.new()
@@ -71,7 +71,7 @@ func _process(delta: float) -> void:
 	if duration > 0.0:
 		duration -= delta
 		if kind == &"sun_sphere" and duration <= 3.0:
-			_visual.texture = SUN_EXPIRING
+			_visual.texture = definition.texture_for_state(&"expiring", SUN_EXPIRING)
 		if _light != null:
 			_light.light_intensity = 0.8 * minf(clampf(_elapsed / 0.25, 0.0, 1.0), clampf(duration, 0.0, 1.0))
 		if duration <= 0.0:

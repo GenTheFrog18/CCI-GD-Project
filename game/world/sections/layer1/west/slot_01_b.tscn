@@ -19,7 +19,7 @@ position = Vector2(43, 97)
 target_layer_id = &"surface"
 prompt = "Return to Surface"
 
-[node name="DepthOneCave" type="Node2D" parent="DarknessRegions"]
+[node name="DepthOneCave" type="Polygon2D" parent="DarknessRegions"]
 script = ExtResource("6_darkness")
 region_id = &"layer1_west_01_b_cave"
-region_rect = Rect2(96, 96, 1088, 608)
+polygon = PackedVector2Array(96, 96, 1184, 96, 1184, 704, 96, 704)

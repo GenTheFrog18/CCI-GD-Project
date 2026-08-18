@@ -65,6 +65,7 @@ func _ready() -> void:
 	layer = 20
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	add_to_group(&"foundation_hud")
+	GameSession.use_game_cursor()
 	GameSession.configure_design_root(logical_ui)
 	GameSession.display_settings_changed.connect(func(): GameSession.configure_design_root(logical_ui))
 	_build_ui()
@@ -72,6 +73,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	crosshair.position = GameSession.screen_to_design(get_viewport().get_mouse_position())
+	_update_cursor_appearance()
 	_update_location()
 	_update_threat(delta)
 	_status_elapsed += delta
@@ -340,25 +342,31 @@ func _build_health_flames() -> void:
 		health_flames.append(flame)
 
 func _build_crosshair() -> void:
-	crosshair = Node2D.new()
+	var cursor_sprite := Sprite2D.new()
+	cursor_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	crosshair = cursor_sprite
 	crosshair.z_index = 100
 	logical_ui.add_child(crosshair)
-	var ring := Line2D.new()
-	ring.width = 1.0
-	ring.default_color = Color.WHITE
-	for index in 17:
-		var angle := TAU * float(index) / 16.0
-		ring.add_point(Vector2.from_angle(angle) * 6.0)
-	crosshair.add_child(ring)
-	for points in [
-		PackedVector2Array([Vector2(-10, 0), Vector2(10, 0)]),
-		PackedVector2Array([Vector2(0, -10), Vector2(0, 10)]),
-	]:
-		var line := Line2D.new()
-		line.width = 1.0
-		line.default_color = Color.WHITE
-		line.points = points
-		crosshair.add_child(line)
+	_update_cursor_appearance()
+
+func _update_cursor_appearance() -> void:
+	var cursor_sprite := crosshair as Sprite2D
+	if cursor_sprite == null:
+		return
+	var menu_cursor := _menu_cursor_active()
+	var wanted_texture := GameSession.MENU_CURSOR if menu_cursor else GameSession.GAME_CURSOR
+	if cursor_sprite.texture != wanted_texture:
+		cursor_sprite.texture = wanted_texture
+		cursor_sprite.centered = not menu_cursor
+
+func _menu_cursor_active() -> bool:
+	return (player != null and player.inventory_open) \
+		or (shop_ui != null and shop_ui.visible) \
+		or (pause_panel != null and pause_panel.visible) \
+		or (dialogue_box != null and dialogue_box.visible) \
+		or (death_panel != null and death_panel.visible) \
+		or (debug_panel != null and debug_panel.visible) \
+		or (world_log_panel != null and world_log_panel.visible)
 
 func _make_panel(title_text: String, at: Vector2) -> PanelContainer:
 	var panel := PanelContainer.new()
@@ -426,7 +434,7 @@ func _refresh_inventory() -> void:
 		var quantity := 0
 		if not stack.is_empty():
 			var definition := ContentCatalog.get_item(stack.item_id)
-			icon = definition.icon if definition != null else null
+			icon = definition.texture_for_instance(stack.state) if definition != null else null
 			quantity = stack.quantity
 			tooltip = (definition.display_name + "\n" + (definition.known_description if stack.item_id in GameSession.known_items else definition.unknown_description)) if definition != null else String(stack.item_id)
 		var selected_flat := -1
@@ -450,7 +458,7 @@ func _refresh_inventory() -> void:
 		if not stack.is_empty():
 			var definition := ContentCatalog.get_item(stack.item_id)
 			item_name = "%s x%d" % [definition.display_name if definition != null else stack.item_id, stack.quantity]
-			hotbar_icons[display_index].texture = definition.icon if definition != null else null
+			hotbar_icons[display_index].texture = definition.texture_for_instance(stack.state) if definition != null else null
 		else:
 			hotbar_icons[display_index].texture = null
 		hotbar_labels[index].text = "%s%d: %s" % ["▶ " if index == player.item_controller.inventory.active_hotbar_index else "", index + 1, item_name]

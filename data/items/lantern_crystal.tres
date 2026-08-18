@@ -1,21 +1,27 @@
-[gd_resource type="Resource" script_class="ItemDefinition" load_steps=7 format=3]
-[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
-[ext_resource type="Script" path="res://game/items/behaviors/deployable_behavior.gd" id="2"]
-[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
-[ext_resource type="Texture2D" path="res://assets/art/items/lantern_crystal.png" id="4"]
-[sub_resource type="CircleShape2D" id="PrimaryShape"]
-radius = 180.0
+[gd_resource type="Resource" script_class="ItemDefinition" format=3 uid="uid://boktdpemiaon3"]
+
+[ext_resource type="Script" uid="uid://bxol3nb5souin" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://cehkf8lmoacox" path="res://game/items/behaviors/deployable_behavior.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="3"]
+[ext_resource type="Texture2D" uid="uid://dpsxkr4w4g5n6" path="res://assets/art/items/lantern_crystal.png" id="4"]
+
 [sub_resource type="CircleShape2D" id="ImpactShape"]
 radius = 180.0
+
+[sub_resource type="CircleShape2D" id="PrimaryShape"]
+radius = 180.0
+
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
 kind = "crystal"
+impact_activation_speed = 100.0
 duration = 4.0
 primary_shape = SubResource("PrimaryShape")
 impact_shape = SubResource("ImpactShape")
 sound_priority = 9
 sound_radius = 500.0
 base_damage = 1.0
+
 [resource]
 script = ExtResource("1")
 item_id = &"lantern_crystal"
@@ -31,6 +37,6 @@ surface_sale_value = 50
 delivery_value = 38
 discovery_threshold = 1
 sellable = true
-discoverable = true
 primary_behavior = SubResource("Behavior")
 secondary_behavior = SubResource("Behavior")
+discoverable = true

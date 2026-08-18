@@ -12,6 +12,8 @@ extends DefaultThrowBehavior
 @export var strong_priority := 9
 
 func on_impact(thrown_item: Node2D, impact: ImpactData) -> ItemActionResult:
+	if not impact_activation_allowed(impact):
+		return ItemActionResult.completed()
 	_emit_resonance(thrown_item, impact.velocity.length())
 	return ItemActionResult.completed()
 

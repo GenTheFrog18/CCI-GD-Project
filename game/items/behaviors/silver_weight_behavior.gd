@@ -4,6 +4,8 @@ extends DefaultThrowBehavior
 @export var impact_damage := 200.0
 
 func on_impact(thrown_item: Node2D, impact: ImpactData) -> ItemActionResult:
+	if not impact_activation_allowed(impact):
+		return ItemActionResult.completed()
 	var body := impact.receiver
 	if body != null and body.has_method("apply_damage"):
 		body.apply_damage(DamageInfo.new(impact_damage, impact.source_actor, impact.source_species_id))

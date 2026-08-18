@@ -108,8 +108,7 @@ Recommended region scene:
 
 ```text
 DarknessRegion2D
-├── Shape                  Polygon2D or authored rectangle data
-└── EditorDebugDisplay     optional
+└── Polygon2D geometry     edit vertices directly in the 2D editor
 ```
 
 It is not a physics body and must not use a collision shape for gameplay.
@@ -125,7 +124,7 @@ Minimum region data:
 
 `region_id` is for editor/debug identification. It is not a runtime object ID and does not need a save record.
 
-Use a rectangle for ordinary caves. Use an authored polygon for irregular rooms or corridors. Do not use a physics `Area2D` as the source of truth unless the script is explicitly configured as a non-colliding darkness region.
+Use a four-point polygon for ordinary caves and edit the same polygon into irregular rooms or corridors. Do not use a physics `Area2D` as the source of truth unless the script is explicitly configured as a non-colliding darkness region.
 
 ---
 
@@ -142,13 +141,13 @@ The runtime darkness mask uses a normalized value:
 
 The mask is generated from selected `DarknessRegion2D` nodes. It is not generated from the number of background-wall tiles.
 
-If multiple regions overlap, use the maximum value rather than adding them:
+If multiple regions overlap, add their values without an upper mask clamp:
 
 ```text
-cell_darkness = max(region_a, region_b, region_c)
+cell_darkness = region_a + region_b + region_c
 ```
 
-This prevents overlapping authoring regions from accidentally producing a black screen.
+This makes layered authored darkness continue accumulating visually. Light reveal still reduces the accumulated value, but never makes the scene brighter than its normal unlit color.
 
 ### 4.2 Edge falloff
 
@@ -241,7 +240,7 @@ The builder should:
 - Create an empty grayscale image initialized to zero.
 - Rasterize each region into the image.
 - Apply region falloff.
-- Compose overlapping regions with `max`.
+- Add overlapping region values and clamp the result to `1.0`.
 - Upload the resulting image as an `ImageTexture`.
 - Store the selected layer/world origin and mask size for coordinate conversion.
 
@@ -288,7 +287,7 @@ for each active light:
     contribution *= light.intensity
     light_reveal = max(light_reveal, contribution)
 
-final_darkness = clamp(base_darkness - light_reveal, 0.0, 1.0)
+final_darkness = max(base_darkness - light_reveal, 0.0)
 world_color = mix(screen_color, screen_color * darkness_tint, final_darkness)
 ```
 
@@ -675,7 +674,7 @@ If a light source has invalid radius/intensity:
 - [ ] A dark cave visibly darkens the player, enemies, items, ropes, and world particles.
 - [ ] Darkness follows the camera correctly during horizontal and vertical movement.
 - [ ] Darkness does not drift at camera bounds or seam transitions.
-- [ ] Multiple overlapping regions use the maximum, not additive blackening.
+- [ ] Multiple overlapping regions continue adding darkness without an upper mask clamp.
 - [ ] Solid terrain does not block light.
 
 ### Sun Sphere

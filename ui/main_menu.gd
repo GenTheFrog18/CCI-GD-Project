@@ -24,10 +24,12 @@ var seed_input: SpinBox
 var settings_popup: SettingsPopup
 var confirmation_popup: NewRunConfirmation
 var debug_checkbox: CheckBox
+var menu_cursor: Sprite2D
 var _background_tween: Tween
 
 func _ready() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
+	GameSession.use_menu_cursor()
 	GameSession.configure_design_root(design_ui)
 	GameSession.display_settings_changed.connect(func(): GameSession.configure_design_root(design_ui))
 	GameSession.apply_settings()
@@ -43,8 +45,21 @@ func _ready() -> void:
 	quit_button.tooltip_text = "Quit the game"
 	_build_settings()
 	_build_debug()
+	_build_menu_cursor()
 	resized.connect(_restart_background_animation)
 	call_deferred(&"_restart_background_animation")
+
+func _process(_delta: float) -> void:
+	if menu_cursor != null:
+		menu_cursor.position = GameSession.screen_to_design(get_viewport().get_mouse_position())
+
+func _build_menu_cursor() -> void:
+	menu_cursor = Sprite2D.new()
+	menu_cursor.texture = GameSession.MENU_CURSOR
+	menu_cursor.centered = false
+	menu_cursor.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	menu_cursor.z_index = 1000
+	design_ui.add_child(menu_cursor)
 
 func _restart_background_animation() -> void:
 	if background == null or background.texture == null or size.x <= 0.0 or size.y <= 0.0:

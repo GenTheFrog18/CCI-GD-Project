@@ -11,11 +11,9 @@ func apply_mask(mask: Texture2D, bounds: Rect2) -> void:
 
 func apply_camera_transform(canvas_transform: Transform2D) -> void:
 	var inverse := canvas_transform.affine_inverse()
-	_material.set_shader_parameter(&"screen_to_world", PackedFloat32Array([
-		inverse.x.x, inverse.x.y, 0.0,
-		inverse.y.x, inverse.y.y, 0.0,
-		inverse.origin.x, inverse.origin.y, 1.0,
-	]))
+	_material.set_shader_parameter(&"screen_to_world_x", inverse.x)
+	_material.set_shader_parameter(&"screen_to_world_y", inverse.y)
+	_material.set_shader_parameter(&"screen_to_world_origin", inverse.origin)
 
 func apply_lights(sources: Array[LightSource2D], maximum_sources: int) -> void:
 	var positions := PackedVector4Array()

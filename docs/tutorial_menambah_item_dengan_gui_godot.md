@@ -300,6 +300,23 @@ Project sudah memakai nearest filtering. Jangan mengubah import setting global h
 
 Penting: HUD dan world scene prototype saat ini masih memakai label/polygon placeholder. Mengisi `Icon` belum tentu langsung mengganti visual hotbar atau object dunia. Itu bukan error item definition. Jangan membuat sistem UI baru dari dalam task item.
 
+### State visuals
+
+Untuk item yang memiliki beberapa bentuk visual, gunakan bagian `State Visuals` pada `ItemDefinition`:
+
+1. Expand `State Visuals` pada Inspector.
+2. Tambahkan elemen `ItemStateVisual`.
+3. Isi `State Id` dengan nama state, lalu drag PNG ke `Texture`.
+4. Tambahkan satu elemen untuk setiap state yang ingin digambar manual.
+
+State ID yang dipakai relic Layer 2 saat ini:
+
+- `bolt_shock`: `default`, `loaded`
+- `lacerator`: `default`, `loaded`
+- `plate_umbrella`: `default`, `opening`, `open`, `closing`, `forced_recovery`
+
+Jika state belum memiliki entry, sistem otomatis memakai `Icon`. State instance yang disimpan menggunakan key `visual_state`, sehingga visual yang sama dipakai di inventory, hotbar, item jatuh, dan item yang dilempar.
+
 ---
 
 # 7. Membuat sandbox item melalui GUI
@@ -578,6 +595,12 @@ Simpan data per-item di:
 Item bertimer seperti Rattlepod membutuhkan owner node runtime yang melakukan `_process`/timer. Jangan menaruh timer berjalan pada shared behavior Resource.
 
 `ThrownItem.on_impact()` saat ini cocok untuk effect impact sederhana, tetapi result dari hook tersebut belum melakukan consume/state commit kedua. Jika item membutuhkan lifecycle kompleks, berhenti dan diskusikan contract dengan lead sebelum mengubah `ThrownItem`.
+
+## 12.1 World hitbox dan impact threshold
+
+Semua item world memakai state umum dan hitbox umum. Pada resource `ItemDefinition`, buka kategori **World item** lalu isi `World Hitbox` dengan `CircleShape2D`, `RectangleShape2D`, atau shape lain yang sesuai. Shape tersebut dipakai oleh item pickup dan item yang sedang bergerak; jika kosong, fallback circle dipakai.
+
+Untuk item yang mengaktifkan efek ketika terbentur, buka behavior throw dan ubah `Impact Activation Speed`. Nilainya dibandingkan dengan kecepatan benturan aktual. Lemparan pelan di bawah nilai tersebut tidak mengaktifkan efek dan item tetap berada di dunia untuk dipungut.
 
 ---
 

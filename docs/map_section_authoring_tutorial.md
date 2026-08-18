@@ -70,7 +70,7 @@ What each part does:
 - **`RespawnAnchor`**: safe point used when the player enters this section and after falling out of bounds. It may move anywhere inside the section.
 - **`Placers`**: recommended home for enemy/loot placer instances. The code finds placers recursively, but keeping them here makes scenes readable.
 - **`AuthoredContent`**: recommended home for authored gates, special props, fixed set pieces, and other non-random content.
-- **`DarknessRegions`**: add `DarknessRegion2D` nodes for playable dark volumes. Tune strength and edge falloff to match intended visibility.
+- **`DarknessRegions`**: add `DarknessRegion2D` polygon nodes for playable dark volumes. Drag their vertices in the 2D editor, then tune strength and edge falloff to match intended visibility.
 
 The base scene defines these links at `graybox_section_base.tscn:6–28`. The validator rejects missing links, wrong bounds, or wrong seam positions in `world_section.gd:22–48`.
 
@@ -177,7 +177,7 @@ Tile collision belongs to the TileSet tile definition, not to the section root. 
 
 ### Darkness rule
 
-Darkness comes only from explicit `DarknessRegion2D` nodes. Keep regions inside section bounds and outside the 96 px required seam clearances. Overlapping regions use the strongest value. Test the section with no light, Sun Sphere, Lantern Snail, and Lantern Crystal.
+Darkness comes only from explicit `DarknessRegion2D` polygon nodes. Keep polygons inside section bounds and outside the 96 px required seam clearances. Overlapping regions add their darkness without an upper mask clamp. Areas without a polygon remain fully lit. Test the section with no light, Sun Sphere, Lantern Snail, and Lantern Crystal.
 
 ## 7. Place authored gameplay content
 

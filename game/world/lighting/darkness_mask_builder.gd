@@ -10,37 +10,59 @@ func build_mask(layer_bounds: Rect2, regions: Array[DarknessRegion2D]) -> ImageT
 	for region in regions:
 		if not is_instance_valid(region) or not region.enabled:
 			continue
-		_rasterize_rect(image, layer_bounds, region)
+		_rasterize_polygon(image, layer_bounds, region)
 	return ImageTexture.create_from_image(image)
 
-func _rasterize_rect(image: Image, layer_bounds: Rect2, region: DarknessRegion2D) -> void:
-	var rect := region.world_rect()
+func _rasterize_polygon(image: Image, layer_bounds: Rect2, region: DarknessRegion2D) -> void:
+	var polygon := region.world_polygon()
+	if polygon.size() < 3:
+		return
+	var bounds := Rect2(polygon[0], Vector2.ZERO)
+	for point in polygon:
+		bounds = bounds.expand(point)
 	var falloff := region.edge_falloff_pixels
-	var min_x := maxi(0, floori((rect.position.x - layer_bounds.position.x - falloff) / TILE_SIZE))
-	var max_x := mini(image.get_width() - 1, ceili((rect.end.x - layer_bounds.position.x + falloff) / TILE_SIZE))
-	var min_y := maxi(0, floori((rect.position.y - layer_bounds.position.y - falloff) / TILE_SIZE))
-	var max_y := mini(image.get_height() - 1, ceili((rect.end.y - layer_bounds.position.y + falloff) / TILE_SIZE))
+	var min_x := maxi(0, floori((bounds.position.x - layer_bounds.position.x - falloff) / TILE_SIZE))
+	var max_x := mini(image.get_width() - 1, ceili((bounds.end.x - layer_bounds.position.x + falloff) / TILE_SIZE))
+	var min_y := maxi(0, floori((bounds.position.y - layer_bounds.position.y - falloff) / TILE_SIZE))
+	var max_y := mini(image.get_height() - 1, ceili((bounds.end.y - layer_bounds.position.y + falloff) / TILE_SIZE))
 	for y in range(min_y, max_y + 1):
 		for x in range(min_x, max_x + 1):
 			var point := layer_bounds.position + Vector2((x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE)
-			var strength := region.darkness_strength
-			if falloff > 0.0:
-				var distance := _distance_to_rect(point, rect)
-				if rect.has_point(point):
-					strength *= clampf(distance / falloff, 0.0, 1.0)
-				else:
-					strength *= 1.0 - smoothstep(0.0, falloff, distance)
-			elif not rect.has_point(point):
+			var inside := _point_in_polygon(point, polygon)
+			var strength := region.darkness_strength if inside else 0.0
+			if not inside and falloff > 0.0:
+				var distance := _distance_to_polygon(point, polygon)
+				strength = region.darkness_strength * _smooth_falloff(1.0 - distance / falloff)
+			if strength <= 0.0:
 				continue
 			var current := image.get_pixel(x, y).r
-			if strength > current:
-				image.set_pixel(x, y, Color(strength, 0.0, 0.0, 1.0))
+			image.set_pixel(x, y, Color(current + strength, 0.0, 0.0, 1.0))
 
-func _distance_to_rect(point: Vector2, rect: Rect2) -> float:
-	var outside := Vector2(
-		maxf(rect.position.x - point.x, maxf(point.x - rect.end.x, 0.0)),
-		maxf(rect.position.y - point.y, maxf(point.y - rect.end.y, 0.0))
-	)
-	if outside.length_squared() > 0.0:
-		return outside.length()
-	return minf(minf(point.x - rect.position.x, rect.end.x - point.x), minf(point.y - rect.position.y, rect.end.y - point.y))
+func _point_in_polygon(point: Vector2, polygon: PackedVector2Array) -> bool:
+	var inside := false
+	var previous := polygon[polygon.size() - 1]
+	for current in polygon:
+		var crosses := (current.y > point.y) != (previous.y > point.y)
+		if crosses and point.x < (previous.x - current.x) * (point.y - current.y) / (previous.y - current.y) + current.x:
+			inside = not inside
+		previous = current
+	return inside
+
+func _distance_to_polygon(point: Vector2, polygon: PackedVector2Array) -> float:
+	var distance := INF
+	for index in polygon.size():
+		var start := polygon[index]
+		var end := polygon[(index + 1) % polygon.size()]
+		distance = minf(distance, _distance_to_segment(point, start, end))
+	return distance
+
+func _distance_to_segment(point: Vector2, start: Vector2, end: Vector2) -> float:
+	var segment := end - start
+	if segment.length_squared() <= 0.000001:
+		return point.distance_to(start)
+	var factor := clampf((point - start).dot(segment) / segment.length_squared(), 0.0, 1.0)
+	return point.distance_to(start + segment * factor)
+
+func _smooth_falloff(value: float) -> float:
+	var normalized := clampf(value, 0.0, 1.0)
+	return normalized * normalized * (3.0 - 2.0 * normalized)

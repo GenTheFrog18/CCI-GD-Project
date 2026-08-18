@@ -1,16 +1,27 @@
 class_name WorldItem
 extends Area2D
 
-@export var item_id: StringName
-@export var quantity := 1
-@export var instance_state: Dictionary = {}
-@export var persistent_id := ""
+var world_state := WorldItemState.new()
+
+@export var item_id: StringName:
+	get: return world_state.item_id
+	set(value): world_state.item_id = value
+@export var quantity: int:
+	get: return world_state.quantity
+	set(value): world_state.quantity = value
+@export var instance_state: Dictionary:
+	get: return world_state.instance_state
+	set(value): world_state.instance_state = value
+@export var persistent_id: String:
+	get: return world_state.persistent_id
+	set(value): world_state.persistent_id = value
 @export var interaction_priority := 20
 
 var _spawn_position := Vector2.ZERO
 
 func _ready() -> void:
 	_spawn_position = global_position
+	_apply_world_hitbox()
 	add_to_group(&"interactables")
 	add_to_group(&"loose_items")
 	_apply_visual()
@@ -43,28 +54,32 @@ func take_as_stack() -> ItemStack:
 	return result
 
 func capture_state() -> Dictionary:
-	return {
-		"item_id": String(item_id),
-		"quantity": quantity,
-		"instance_state": instance_state.duplicate(true),
-		"position": [global_position.x, global_position.y],
-	}
+	world_state.position = global_position
+	world_state.rotation = rotation
+	return world_state.capture()
 
 func restore_state(data: Dictionary) -> void:
-	item_id = StringName(data.get("item_id", ""))
-	quantity = int(data.get("quantity", 1))
-	instance_state = data.get("instance_state", {}).duplicate(true)
-	var saved_position: Array = data.get("position", [0.0, 0.0])
-	global_position = Vector2(float(saved_position[0]), float(saved_position[1]))
+	world_state.restore(data)
+	global_position = world_state.position
+	rotation = world_state.rotation
 	_spawn_position = global_position
+	_apply_world_hitbox()
 	_apply_visual()
+
+func _apply_world_hitbox() -> void:
+	var collision := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if collision == null:
+		return
+	var fallback := CircleShape2D.new()
+	fallback.radius = 6.0
+	collision.shape = WorldItemState.hitbox_for(ContentCatalog.get_item(item_id), fallback)
 
 func _apply_visual() -> void:
 	var definition := ContentCatalog.get_item(item_id)
 	var icon := get_node_or_null("Icon") as Sprite2D
 	var fallback := get_node_or_null("Visual") as CanvasItem
 	if icon != null:
-		icon.texture = definition.icon if definition != null else null
+		icon.texture = definition.texture_for_instance(instance_state) if definition != null else null
 		icon.visible = icon.texture != null
 	if fallback != null:
 		fallback.visible = icon == null or icon.texture == null

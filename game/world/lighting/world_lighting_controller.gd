@@ -41,19 +41,15 @@ func build(bounds: Rect2, roots: Array[Node]) -> void:
 	var regions: Array[DarknessRegion2D] = []
 	for root in roots:
 		_collect_regions(root, regions)
-	var invalid := false
+	var valid_regions: Array[DarknessRegion2D] = []
 	for region in regions:
 		var errors := region.validate_against(layer_bounds)
 		if not errors.is_empty():
-			invalid = true
 			for error in errors:
 				push_error(error)
-	if invalid:
-		var empty := Image.create(160, 150, false, Image.FORMAT_RF)
-		empty.fill(Color(0.0, 0.0, 0.0, 1.0))
-		darkness_mask = ImageTexture.create_from_image(empty)
-	else:
-		darkness_mask = MASK_BUILDER.new().build_mask(layer_bounds, regions)
+		else:
+			valid_regions.append(region)
+	darkness_mask = MASK_BUILDER.new().build_mask(layer_bounds, valid_regions)
 	overlay.apply_mask(darkness_mask, layer_bounds)
 	_upload_lights()
 

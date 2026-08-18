@@ -1,12 +1,20 @@
 class_name ThrownItem
 extends RigidBody2D
 
-@export var persistent_id := ""
+var world_state := WorldItemState.new()
+
+@export var persistent_id: String:
+	get: return world_state.persistent_id
+	set(value): world_state.persistent_id = value
 @export var stop_speed := 12.0
 @export var stop_seconds := 0.35
 
-var definition: ItemDefinition
-var instance_state: Dictionary = {}
+var definition: ItemDefinition:
+	get: return world_state.definition
+	set(value): world_state.set_definition(value)
+var instance_state: Dictionary:
+	get: return world_state.instance_state
+	set(value): world_state.instance_state = value
 var source_actor: Node
 var source_species_id: StringName
 var base_damage := 0.0
@@ -26,6 +34,8 @@ func configure(item_definition: ItemDefinition, state: Dictionary, source: Node,
 	_initial_velocity = velocity
 	base_damage = damage
 	item_mass = maxf(float(item_definition.weight), 0.1) if item_definition != null else 1.0
+	world_state.position = spawn_position
+	world_state.linear_velocity = velocity
 	mass = item_mass
 
 func _ready() -> void:
@@ -36,6 +46,7 @@ func _ready() -> void:
 	linear_velocity = _initial_velocity
 	if persistent_id.is_empty():
 		persistent_id = GameSession.next_runtime_id(&"thrown", GameSession.current_layer_id)
+	_apply_world_hitbox()
 	add_to_group(&"persistent_objects")
 	add_to_group(&"loose_items")
 	_apply_visual()
@@ -98,40 +109,44 @@ func take_as_stack() -> ItemStack:
 	return result
 
 func capture_state() -> Dictionary:
-	return {
-		"item_id": String(definition.item_id) if definition != null else "",
-		"instance_state": instance_state.duplicate(true),
-		"position": [global_position.x, global_position.y],
-		"rotation": rotation,
-		"linear_velocity": [linear_velocity.x, linear_velocity.y],
-		"angular_velocity": angular_velocity,
-		"freeze": freeze,
-	}
+	world_state.position = global_position
+	world_state.rotation = rotation
+	world_state.linear_velocity = linear_velocity
+	world_state.angular_velocity = angular_velocity
+	world_state.frozen = freeze
+	return world_state.capture()
 
 func restore_state(data: Dictionary) -> void:
-	definition = ContentCatalog.get_item(StringName(data.get("item_id", "")))
+	world_state.restore(data)
+	definition = world_state.definition
 	item_mass = maxf(float(definition.weight), 0.1) if definition != null else 1.0
 	mass = item_mass
-	instance_state = data.get("instance_state", {}).duplicate(true)
-	var position_data: Array = data.get("position", [0.0, 0.0])
-	global_position = Vector2(float(position_data[0]), float(position_data[1]))
+	global_position = world_state.position
 	_spawn_position = global_position
-	rotation = float(data.get("rotation", 0.0))
-	var velocity_data: Array = data.get("linear_velocity", [0.0, 0.0])
-	linear_velocity = Vector2(float(velocity_data[0]), float(velocity_data[1]))
-	angular_velocity = float(data.get("angular_velocity", 0.0))
-	freeze = bool(data.get("freeze", true))
+	rotation = world_state.rotation
+	linear_velocity = world_state.linear_velocity
+	angular_velocity = world_state.angular_velocity
+	freeze = world_state.frozen
+	_apply_world_hitbox()
 	if freeze:
 		add_to_group(&"interactables")
 	else:
 		remove_from_group(&"interactables")
 	_apply_visual()
 
+func _apply_world_hitbox() -> void:
+	var collision := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if collision == null:
+		return
+	var fallback := CircleShape2D.new()
+	fallback.radius = 6.0
+	collision.shape = WorldItemState.hitbox_for(definition, fallback)
+
 func _apply_visual() -> void:
 	var icon := get_node_or_null("Icon") as Sprite2D
 	var fallback := get_node_or_null("Visual") as CanvasItem
 	if icon != null:
-		icon.texture = definition.icon if definition != null else null
+		icon.texture = definition.texture_for_instance(instance_state) if definition != null else null
 		icon.visible = icon.texture != null
 	if fallback != null:
 		fallback.visible = icon == null or icon.texture == null

@@ -21,6 +21,8 @@ func primary(context: ItemContext, _state: Dictionary) -> ItemActionResult:
 
 func on_impact(thrown_item: Node2D, impact: ImpactData) -> ItemActionResult:
 	super.on_impact(thrown_item, impact)
+	if not impact_activation_allowed(impact):
+		return ItemActionResult.completed()
 	if thrown_item.has_meta(&"effect_deployed"):
 		return ItemActionResult.completed()
 	thrown_item.set_meta(&"effect_deployed", true)

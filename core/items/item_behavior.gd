@@ -24,3 +24,9 @@ func on_impact(_thrown_item: Node2D, _impact: ImpactData) -> ItemActionResult:
 
 func on_received_impact(_thrown_item: Node2D, _impact: ImpactData) -> void:
 	pass
+
+func get_impact_activation_speed() -> float:
+	return 0.0
+
+func impact_activation_allowed(impact: ImpactData) -> bool:
+	return impact.velocity.length() >= get_impact_activation_speed()

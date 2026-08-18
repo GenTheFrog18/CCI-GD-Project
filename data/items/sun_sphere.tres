@@ -16,6 +16,7 @@ effect_shape = SubResource("LightShape")
 [sub_resource type="Resource" id="Secondary"]
 script = ExtResource("3")
 kind = "light"
+impact_activation_speed = 100.0
 duration = 20.0
 primary_shape = SubResource("LightShape")
 impact_shape = SubResource("LightShape")

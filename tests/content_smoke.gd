@@ -16,6 +16,8 @@ var failures := PackedStringArray()
 func _ready() -> void:
 	_check(ContentCatalog.rebuild().is_empty(), "content catalog validates")
 	_test_catalog()
+	_test_state_visuals()
+	_test_world_item_contract()
 	_test_enemy_scenes()
 	_test_layer2_enemies()
 	_test_layer2_quest()
@@ -43,6 +45,39 @@ func _test_catalog() -> void:
 		_check(ContentCatalog.get_item(id).icon != null, "finished item art missing: %s" % id)
 	for id in [&"bleed", &"poison", &"resin_bound", &"tracking_mark", &"curse_layer_1", &"curse_layer_2_penalty", &"curse_layer_2_health_cap", &"detector_suppressed", &"electro_stunned", &"electrocuted"]:
 		_check(ContentCatalog.get_effect(id) != null, "effect missing: %s" % id)
+
+func _test_state_visuals() -> void:
+	var bolt := ContentCatalog.get_item(&"bolt_shock")
+	var lacerator := ContentCatalog.get_item(&"lacerator")
+	var umbrella := ContentCatalog.get_item(&"plate_umbrella")
+	_check(bolt.texture_for_state(&"loaded") != bolt.icon, "Bolt Shock loaded visual is assigned")
+	_check(lacerator.texture_for_state(&"loaded") != lacerator.icon, "Lacerator loaded visual is assigned")
+	_check(umbrella.texture_for_state(&"open") != umbrella.icon, "Plate Umbrella open visual is assigned")
+	_check(bolt.texture_for_instance({"visual_state": "loaded"}) == bolt.texture_for_state(&"loaded"), "state dictionary selects item visual")
+
+func _test_world_item_contract() -> void:
+	var definition := ContentCatalog.get_item(&"throwable_rock")
+	var previous_hitbox := definition.world_hitbox
+	var custom_hitbox := CircleShape2D.new()
+	custom_hitbox.radius = 11.0
+	definition.world_hitbox = custom_hitbox
+	var thrown := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	thrown.persistent_id = "content_smoke_world_thrown"
+	thrown.configure(definition, {"origin": "smoke"}, null, Vector2.ZERO, Vector2.ZERO)
+	add_child(thrown)
+	var thrown_shape := thrown.get_node("CollisionShape2D").shape as CircleShape2D
+	_check(thrown_shape != null and is_equal_approx(thrown_shape.radius, 11.0), "ThrownItem applies per-item world hitbox")
+	var world_item := preload("res://game/items/world/world_item.tscn").instantiate() as WorldItem
+	world_item.item_id = definition.item_id
+	world_item.persistent_id = "content_smoke_world_item"
+	add_child(world_item)
+	var world_shape := world_item.get_node("CollisionShape2D").shape as CircleShape2D
+	_check(world_shape != null and is_equal_approx(world_shape.radius, 11.0), "WorldItem applies per-item world hitbox")
+	var saved := world_item.capture_state()
+	_check(saved.has("item_id") and saved.has("quantity") and saved.has("persistent_id"), "World state captures shared fields")
+	world_item.free()
+	thrown.free()
+	definition.world_hitbox = previous_hitbox
 
 func _test_enemy_scenes() -> void:
 	var direct_flyer := LargeLayer1Flyer.new()
@@ -225,12 +260,22 @@ func _test_item_impacts() -> void:
 	var probe := ReceiverProbe.new()
 	probe.add_to_group(&"small_enemy")
 	add_child(probe)
+	var safe_thrown := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+	safe_thrown.definition = ContentCatalog.get_item(&"silver_weight")
+	safe_thrown.persistent_id = "content_smoke_safe_weight"
+	add_child(safe_thrown)
+	var safe_impact := ImpactData.new()
+	safe_impact.receiver = probe
+	safe_impact.velocity = Vector2.RIGHT * 20.0
+	(ContentCatalog.get_item(&"silver_weight").secondary_behavior as SilverWeightBehavior).on_impact(safe_thrown, safe_impact)
+	_check(is_equal_approx(probe.damage, 0.0) and safe_thrown.definition.item_id == &"silver_weight", "Soft Silver Weight impact stays safely pickup-able")
 	var thrown := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
 	thrown.definition = ContentCatalog.get_item(&"silver_weight")
 	thrown.persistent_id = "content_smoke_weight"
 	add_child(thrown)
 	var impact := ImpactData.new()
 	impact.receiver = probe
+	impact.velocity = Vector2.RIGHT * 200.0
 	(ContentCatalog.get_item(&"silver_weight").secondary_behavior as SilverWeightBehavior).on_impact(thrown, impact)
 	_check(is_equal_approx(probe.damage, 200.0), "Silver Weight deals global adjustable heavy damage")
 	_check(thrown.definition.item_id == &"silver_weight_damaged", "Silver Weight changes to damaged item")
@@ -244,6 +289,7 @@ func _test_item_impacts() -> void:
 	var enemy_impact := ImpactData.new()
 	enemy_impact.receiver = frog
 	enemy_impact.source_actor = probe
+	enemy_impact.velocity = Vector2.RIGHT * 200.0
 	(ContentCatalog.get_item(&"silver_weight").secondary_behavior as SilverWeightBehavior).on_impact(enemy_weight, enemy_impact)
 	_check(frog.support.health.is_dead, "Silver Weight safely kills a real small enemy")
 	await get_tree().process_frame
@@ -257,9 +303,11 @@ func _test_item_impacts() -> void:
 	safe_drop._on_body_entered(probe)
 	safe_drop.free()
 	probe.free()
+	safe_thrown.free()
 	thrown.free()
 	if is_instance_valid(enemy_weight): enemy_weight.free()
 	SaveManager.destroyed_ids.erase("content_smoke_weight")
+	SaveManager.destroyed_ids.erase("content_smoke_safe_weight")
 	SaveManager.destroyed_ids.erase("content_smoke_enemy_weight")
 
 func _test_flyer_transfer() -> void:
@@ -291,6 +339,7 @@ func _test_layer2_relics() -> void:
 	var umbrella := player.item_controller.prepared_item as PreparedLayer2Relic
 	umbrella.umbrella_state = PreparedLayer2Relic.UmbrellaState.OPEN
 	umbrella.aim_direction = Vector2.RIGHT
+	_check(umbrella.blocking_hitbox != null and umbrella.blocking_hitbox.polygon.size() >= 3 and player.item_controller.get_movement_multiplier() == 1.0, "Umbrella has editable hitbox and neutral default speed")
 	var attacker := Node2D.new()
 	world.add_child(attacker)
 	attacker.global_position = player.global_position + Vector2.RIGHT * 40.0
@@ -311,7 +360,17 @@ func _test_layer2_relics() -> void:
 	world.add_child(player)
 	_check(player.item_controller.inventory.try_add_item(&"lacerator"), "Lacerator enters inventory")
 	player.item_controller.inventory.select_hotbar(1)
+	_check(player.item_controller.get_preview(player, world, player.global_position + Vector2.RIGHT * 100.0).is_empty(), "Lacerator hides trajectory until loaded")
 	_check(player.item_controller.primary(player, world, Vector2.RIGHT * 100.0), "Lacerator loads")
+	var loaded_lacerator := player.item_controller.prepared_item as PreparedLayer2Relic
+	var lacerator_preview := player.item_controller.get_preview(player, world, player.global_position + Vector2.RIGHT * 100.0)
+	_check(loaded_lacerator._direction_to_cursor(player.global_position + Vector2(100.0, 200.0)) == Vector2.RIGHT and loaded_lacerator._direction_to_cursor(player.global_position + Vector2(-100.0, 200.0)) == Vector2.LEFT, "Lacerator aim stays horizontal")
+	_check(lacerator_preview.get("kind") == &"trajectory" and lacerator_preview.get("points", PackedVector2Array()).size() > 1, "Loaded Lacerator shows trajectory dots")
+	var upward_preview := player.item_controller.get_preview(player, world, player.global_position + Vector2.UP * 100.0)
+	var upward_points: PackedVector2Array = upward_preview.get("points", PackedVector2Array())
+	_check(player.item_controller.get_jump_multiplier() == 0.0, "Active Lacerator locks jumping")
+	_check(player.item_controller.get_movement_multiplier() == 1.0, "Active Lacerator keeps default speed")
+	_check(upward_points.size() > 1 and upward_points[1].y < upward_points[0].y, "Active Lacerator aims its throw")
 	_check(player.item_controller.secondary(player, world, Vector2.RIGHT * 100.0), "Lacerator fires")
 	var lacerator_state := player.item_controller.inventory.get_active_stack().state
 	_check(int(lacerator_state.get("remaining_ammo", -1)) == 3, "Lacerator spends one successful shot")

@@ -66,6 +66,8 @@ func get_climb_multiplier() -> float:
 
 func get_preview(actor: Node2D, world: Node, cursor: Vector2, target: Node = null) -> Dictionary:
 	if is_instance_valid(prepared_item):
+		if prepared_item.has_method("get_preview"):
+			return prepared_item.get_preview(cursor)
 		return {}
 	var stack := inventory.get_active_stack()
 	if stack.is_empty():
@@ -135,7 +137,8 @@ func _refresh_held_icon() -> void:
 	if held_item_icon == null:
 		return
 	var definition := ContentCatalog.get_item(_active_item_id)
-	held_item_icon.texture = definition.icon if definition != null else null
+	var stack := inventory.get_active_stack()
+	held_item_icon.texture = definition.texture_for_instance(stack.state) if definition != null and not stack.is_empty() else null
 	held_item_icon.visible = held_item_icon.texture != null and not is_instance_valid(prepared_item)
 	if held_light != null:
 		held_light.enabled = _warming_light or _active_item_id == &"lantern_crystal"

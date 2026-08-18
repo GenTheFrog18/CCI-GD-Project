@@ -1,19 +1,19 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://dxb4pp3vqv25u"]
 
-[ext_resource type="Script" path="res://game/items/actions/held_thrust.gd" id="1"]
+[ext_resource type="Script" uid="uid://bv1msdlgxiktx" path="res://game/items/actions/held_thrust.gd" id="1"]
 
 [sub_resource type="RectangleShape2D" id="ThrustShape"]
 size = Vector2(14, 6)
 
-[node name="HeldThrust" type="Area2D"]
+[node name="HeldThrust" type="Area2D" unique_id=219540517]
 collision_layer = 0
 collision_mask = 68
 monitorable = false
 script = ExtResource("1")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1454989143]
 position = Vector2(8, 0)
 shape = SubResource("ThrustShape")
 
-[node name="Visual" type="Sprite2D" parent="."]
+[node name="Visual" type="Sprite2D" parent="." unique_id=989617214]
 position = Vector2(8, 0)

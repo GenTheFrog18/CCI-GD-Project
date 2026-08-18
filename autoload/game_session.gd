@@ -8,6 +8,8 @@ signal display_settings_changed
 
 const STARTING_MONEY := 50
 const DESIGN_SIZE := Vector2(640.0, 360.0)
+const MENU_CURSOR := preload("res://assets/art/ui/cursors/cursor-1.png")
+const GAME_CURSOR := preload("res://assets/art/ui/cursors/cursor-2.png")
 const DEFAULT_WINDOWED_SIZE := Vector2i(1280, 720)
 const WINDOWED_SIZE_PRESETS: Array[Vector2i] = [Vector2i(640, 360), Vector2i(1280, 720), Vector2i(1920, 1080), Vector2i(2560, 1440)]
 
@@ -193,6 +195,12 @@ func configure_design_root(root: Control) -> void:
 
 func screen_to_design(screen_position: Vector2) -> Vector2:
 	return (screen_position - display_origin()) / display_scale()
+
+func use_menu_cursor() -> void:
+	Input.set_custom_mouse_cursor(MENU_CURSOR, Input.CURSOR_ARROW, Vector2.ZERO)
+
+func use_game_cursor() -> void:
+	Input.set_custom_mouse_cursor(GAME_CURSOR, Input.CURSOR_ARROW, Vector2(8.0, 8.0))
 
 func sanitize_windowed_size(value: Vector2i) -> Vector2i:
 	return Vector2i(maxi(value.x, 640), maxi(value.y, 360))

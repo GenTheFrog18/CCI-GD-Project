@@ -1,14 +1,17 @@
-[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
-[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
-[ext_resource type="Script" path="res://game/items/behaviors/consumable_behavior.gd" id="2"]
-[ext_resource type="Script" path="res://game/items/behaviors/default_throw_behavior.gd" id="3"]
-[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="4"]
+[gd_resource type="Resource" script_class="ItemDefinition" format=3 uid="uid://bnsurs1vy88fb"]
+
+[ext_resource type="Script" uid="uid://bxol3nb5souin" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://b0dofcms8ylhv" path="res://assets/art/items/bandage.png" id="1_f2n7r"]
+[ext_resource type="Script" uid="uid://bo3ti5x3q6u2y" path="res://game/items/behaviors/consumable_behavior.gd" id="2"]
+[ext_resource type="Script" uid="uid://cvn35o5hs7sqy" path="res://game/items/behaviors/default_throw_behavior.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="4"]
+
 [sub_resource type="Resource" id="Primary"]
 script = ExtResource("2")
-kind = "bandage"
-duration = 10.0
+
 [sub_resource type="Resource" id="Secondary"]
 script = ExtResource("3")
+
 [resource]
 script = ExtResource("1")
 item_id = &"bandage"
@@ -16,8 +19,8 @@ display_name = "Bandage"
 unknown_description = "Clean cloth and basic medicine."
 known_description = "Stops bleeding and restores 50 health over twenty-five seconds."
 category = &"supply"
+icon = ExtResource("1_f2n7r")
 world_scene = ExtResource("4")
-weight = 1
 max_stack = 8
 purchase_price = 50
 primary_behavior = SubResource("Primary")

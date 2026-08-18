@@ -7,15 +7,22 @@ extends ItemBehavior
 @export var closing_duration := 0.3
 @export var max_stability := 100.0
 @export var forced_recovery_duration := 2.0
+@export_category("Plate Umbrella Blocking")
 @export var block_arc_degrees := 120.0
 @export var projectile_damage_reduction := 1.0
 @export var creature_damage_reduction := 0.65
 @export var bulwark_damage_reduction := 0.25
 @export var force_transfer_multiplier := 1.0
-@export var open_move_multiplier := 0.6
+@export var open_move_multiplier := 1.0
 @export var open_jump_multiplier := 0.75
 @export var open_climb_multiplier := 0.6
+@export_category("Active Relic Movement")
+@export_range(0.0, 3.0, 0.05) var active_move_speed_multiplier := 1.0
 @export var launch_speed := 260.0
+@export var minimum_launch_speed := 120.0
+@export var maximum_launch_speed := 420.0
+@export var maximum_cursor_distance := 240.0
+@export var preview_length := 48.0
 @export var direct_damage := 3.0
 @export var bleed_duration := 8.0
 @export var valid_ball_hits := 4
@@ -51,7 +58,12 @@ func primary(context: ItemContext, state: Dictionary) -> ItemActionResult:
 		"open_move_multiplier": open_move_multiplier,
 		"open_jump_multiplier": open_jump_multiplier,
 		"open_climb_multiplier": open_climb_multiplier,
+		"active_move_speed_multiplier": active_move_speed_multiplier,
 		"launch_speed": launch_speed,
+		"minimum_launch_speed": minimum_launch_speed,
+		"maximum_launch_speed": maximum_launch_speed,
+		"maximum_cursor_distance": maximum_cursor_distance,
+		"preview_length": preview_length,
 		"direct_damage": direct_damage,
 		"bleed_duration": bleed_duration,
 		"valid_ball_hits": valid_ball_hits,

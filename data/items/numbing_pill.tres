@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="ItemDefinition" format=3 uid="uid://c1ikc0icjswsn"]
 
 [ext_resource type="Script" uid="uid://bxol3nb5souin" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://d1gdo3n116vth" path="res://assets/art/items/numbing_pills.png" id="1_fjewa"]
 [ext_resource type="Script" uid="uid://bo3ti5x3q6u2y" path="res://game/items/behaviors/consumable_behavior.gd" id="2"]
 [ext_resource type="Script" uid="uid://cvn35o5hs7sqy" path="res://game/items/behaviors/default_throw_behavior.gd" id="3"]
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="4"]
@@ -19,6 +20,7 @@ display_name = "Numbing Pill"
 unknown_description = "A bitter tablet for difficult ascents."
 known_description = "Adds five minutes of Ascension Curse suppression, up to 999 seconds."
 category = &"supply"
+icon = ExtResource("1_fjewa")
 world_scene = ExtResource("4")
 max_stack = 8
 purchase_price = 120

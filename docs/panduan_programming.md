@@ -192,6 +192,12 @@ Jangan menyatukan keduanya:
 
 Keduanya menghasilkan `ImpactData`. Receiver menangani `apply_damage`, `apply_force`, `apply_status`, atau agitation tanpa mengetahui class pengirim.
 
+`WorldItem` dan `ThrownItem` memakai `WorldItemState` yang sama untuk item ID, instance state, quantity, persistent ID, transform, velocity, dan frozen state. Karena root physics Godot berbeda, state dibagi lewat composition, bukan inheritance node.
+
+`ItemDefinition.world_hitbox` adalah `Shape2D` per item. Generic world scenes menerapkan shape tersebut pada `CollisionShape2D`; jika kosong, keduanya memakai fallback circle. Edit field ini langsung pada resource item di Inspector.
+
+Behavior throw yang mengaktifkan efek saat impact mewarisi `impact_activation_speed`. Threshold membaca kecepatan impact aktual. Impact di bawah threshold tidak mengaktifkan efek khusus dan item tetap dapat berhenti serta dipungut.
+
 Moving payload wajib mempunyai source dan species ID. Filter same-species damage berada satu kali di shared damage pipeline, bukan di setiap enemy/projectile.
 
 Multi-hit payload menyimpan receiver ID yang sudah terkena. Default payload berhenti pada hit pertama; jangan menambah penetration logic ke semua projectile.

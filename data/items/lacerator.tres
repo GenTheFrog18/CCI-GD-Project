@@ -1,18 +1,25 @@
-[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ItemDefinition" format=3 uid="uid://c7jc4u71124u4"]
 
-[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
-[ext_resource type="Script" path="res://game/items/behaviors/layer2_relic_behavior.gd" id="2"]
-[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
-[ext_resource type="Texture2D" path="res://assets/art/items/multitool.png" id="4"]
+[ext_resource type="Script" uid="uid://bxol3nb5souin" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://c1ywr0vah57xy" path="res://assets/art/items/Lacerator-item not ready.png" id="1_s12js"]
+[ext_resource type="Script" uid="uid://cxxk43p1o7ejw" path="res://game/items/behaviors/layer2_relic_behavior.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="3"]
+[ext_resource type="Texture2D" uid="uid://b62e57kvpos7c" path="res://assets/art/items/Lacerator-item ready.png" id="4_ready"]
+[ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_visual"]
 
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
 kind = "lacerator"
-capacity = 4
-launch_speed = 260.0
-direct_damage = 3.0
-bleed_duration = 8.0
-valid_ball_hits = 4
+active_move_speed_multiplier = 1.0
+
+[sub_resource type="Resource" id="VisualDefault"]
+script = ExtResource("5_visual")
+texture = ExtResource("1_s12js")
+
+[sub_resource type="Resource" id="VisualLoaded"]
+script = ExtResource("5_visual")
+state_id = &"loaded"
+texture = ExtResource("4_ready")
 
 [resource]
 script = ExtResource("1")
@@ -21,14 +28,14 @@ display_name = "Lacerator"
 unknown_description = "A launcher built around a barbed red sphere."
 known_description = "Load, then fire a four-contact bleeding ground hazard."
 category = &"relic"
-icon = ExtResource("4")
+icon = ExtResource("1_s12js")
+state_visuals = Array[ExtResource("5_visual")]([SubResource("VisualDefault"), SubResource("VisualLoaded")])
 world_scene = ExtResource("3")
 weight = 4
-max_stack = 1
 surface_sale_value = 140
 delivery_value = 105
-sellable = true
-discoverable = true
 discovery_threshold = 1
+sellable = true
 primary_behavior = SubResource("Behavior")
 secondary_behavior = SubResource("Behavior")
+discoverable = true

@@ -11,8 +11,12 @@ extends ItemBehavior
 @export var throw_sound_radius := 96.0
 @export var impact_sound_priority := -1
 @export var impact_sound_radius := 0.0
+@export_range(0.0, 500.0, 1.0) var impact_activation_speed := 0.0
 
 var thrown_scene := preload("res://game/items/world/thrown_item.tscn")
+
+func get_impact_activation_speed() -> float:
+	return impact_activation_speed
 
 func can_secondary(context: ItemContext, _state: Dictionary) -> bool:
 	return context.actor != null and context.world != null and context.definition != null

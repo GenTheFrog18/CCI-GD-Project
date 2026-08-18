@@ -7,6 +7,10 @@ extends Resource
 @export_multiline var known_description := ""
 @export var category: StringName = &"ordinary"
 @export var icon: Texture2D
+@export_category("State visuals")
+@export var state_visuals: Array[ItemStateVisual] = []
+@export_category("World item")
+@export var world_hitbox: Shape2D
 @export var world_scene: PackedScene
 @export_range(0, 999, 1) var weight := 1
 @export_range(1, 99, 1) var max_stack := 1
@@ -37,3 +41,12 @@ func validate() -> PackedStringArray:
 	if behavior == null and primary_behavior == null and secondary_behavior == null:
 		errors.append("%s has no item behavior" % item_id)
 	return errors
+
+func texture_for_state(state_id: StringName, fallback: Texture2D = null) -> Texture2D:
+	for visual in state_visuals:
+		if visual != null and visual.state_id == state_id and visual.texture != null:
+			return visual.texture
+	return fallback if fallback != null else icon
+
+func texture_for_instance(state: Dictionary, fallback: Texture2D = null) -> Texture2D:
+	return texture_for_state(StringName(state.get("visual_state", "default")), fallback)

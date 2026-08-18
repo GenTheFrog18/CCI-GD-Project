@@ -1,15 +1,15 @@
-[gd_resource type="Resource" script_class="ItemDefinition" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ItemDefinition" format=3 uid="uid://dq55lv4nfqd6q"]
 
-[ext_resource type="Script" path="res://data/definitions/item_definition.gd" id="1"]
-[ext_resource type="Script" path="res://game/items/behaviors/resonance_core_behavior.gd" id="2"]
-[ext_resource type="PackedScene" path="res://game/items/world/world_item.tscn" id="3"]
-[ext_resource type="Texture2D" path="res://assets/art/items/rock.png" id="4"]
+[ext_resource type="Script" uid="uid://bxol3nb5souin" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://dsshg28eytpcj" path="res://assets/art/items/resonant core.png" id="1_vwes8"]
+[ext_resource type="Script" uid="uid://c32ggh23y1noo" path="res://game/items/behaviors/resonance_core_behavior.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="3"]
 
 [sub_resource type="Resource" id="ThrowBehavior"]
 script = ExtResource("2")
+impact_activation_speed = 40.0
 minimum_speed = 60.0
 maximum_speed = 360.0
-maximum_cursor_distance = 240.0
 base_damage = 100.0
 preview_length = 80.0
 
@@ -20,12 +20,10 @@ display_name = "Resonance Core"
 unknown_description = "A massive relic that hums under impact."
 known_description = "Heavy impacts damage targets and emit powerful disturbances."
 category = &"quest_relic"
-icon = ExtResource("4")
+icon = ExtResource("1_vwes8")
 world_scene = ExtResource("3")
 weight = 18
-max_stack = 1
-sellable = false
-recover_out_of_bounds = true
-discoverable = true
 discovery_threshold = 1
+recover_out_of_bounds = true
 secondary_behavior = SubResource("ThrowBehavior")
+discoverable = true
