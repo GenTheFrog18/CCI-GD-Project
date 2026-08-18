@@ -18,6 +18,7 @@ const SEAM_X := 640.0
 @export var respawn_anchor: Marker2D
 @export var placer_root: Node
 @export var dynamic_root: Node
+@export var darkness_regions_root: Node
 
 func validate() -> PackedStringArray:
 	var errors := PackedStringArray()
@@ -45,6 +46,17 @@ func validate() -> PackedStringArray:
 		errors.append("WorldSection %s placer root missing" % slot_id)
 	if dynamic_root == null:
 		errors.append("WorldSection %s authored content root missing" % slot_id)
+	var background_walls := get_node_or_null("BackgroundWalls") as TileMapLayer
+	if background_walls == null:
+		errors.append("WorldSection %s BackgroundWalls missing" % slot_id)
+	elif background_walls.collision_enabled:
+		errors.append("WorldSection %s BackgroundWalls must have collision disabled" % slot_id)
+	if darkness_regions_root == null:
+		errors.append("WorldSection %s darkness regions root missing" % slot_id)
+	if darkness_regions_root != null:
+		for region in darkness_regions_root.get_children():
+			if region is DarknessRegion2D:
+				errors.append_array(region.validate_against(Rect2(global_position, section_size)))
 	return errors
 
 func _draw() -> void:

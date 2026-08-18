@@ -307,6 +307,7 @@ animations = [{
 z_index = 2
 collision_layer = 2
 script = ExtResource("1")
+move_speed = 90.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=706998304]
 position = Vector2(0, -14)

@@ -50,11 +50,13 @@ Every generated section must inherit from `graybox_section_base.tscn` and retain
 
 ```text
 YourSection (WorldSection root)
+├── BackgroundWalls    TileMapLayer
 ├── Terrain             TileMapLayer
 ├── EntryAnchor         Marker2D
 ├── ExitAnchor          Marker2D
 ├── RespawnAnchor       Marker2D
 ├── Placers             Node2D
+├── DarknessRegions     Node2D
 └── AuthoredContent     Node2D
 ```
 
@@ -62,11 +64,13 @@ What each part does:
 
 - **Root `WorldSection`**: stores section identity, selection weight, tags, bounds, and links to the required child nodes. Do not remove its script or change its `section_size`/`camera_bounds`.
 - **`Terrain`**: paint all map tiles here. Tile collision comes from the selected TileSet, so use collision-enabled terrain tiles for solid ground, walls, and platforms.
+- **`BackgroundWalls`**: paint collisionless visual wall tiles behind enclosed spaces. It never creates gameplay darkness by itself.
 - **`EntryAnchor`**: top vertical seam marker. It must stay at `(640, 0)`.
 - **`ExitAnchor`**: bottom vertical seam marker. It must stay at `(640, 800)`.
 - **`RespawnAnchor`**: safe point used when the player enters this section and after falling out of bounds. It may move anywhere inside the section.
 - **`Placers`**: recommended home for enemy/loot placer instances. The code finds placers recursively, but keeping them here makes scenes readable.
 - **`AuthoredContent`**: recommended home for authored gates, special props, fixed set pieces, and other non-random content.
+- **`DarknessRegions`**: add `DarknessRegion2D` nodes for playable dark volumes. Tune strength and edge falloff to match intended visibility.
 
 The base scene defines these links at `graybox_section_base.tscn:6–28`. The validator rejects missing links, wrong bounds, or wrong seam positions in `world_section.gd:22–48`.
 
@@ -168,6 +172,12 @@ Useful Godot editor tools:
 ### Collision rule
 
 Tile collision belongs to the TileSet tile definition, not to the section root. A pretty tile with no collision will not support the player. A solid tile with collision can block the player even if it looks like decoration. Test all ledges, walls, slopes, and seam floors in game.
+
+`BackgroundWalls` uses a separate TileSet with no physics layer. Never copy collision-enabled terrain tiles into it without checking the TileSet.
+
+### Darkness rule
+
+Darkness comes only from explicit `DarknessRegion2D` nodes. Keep regions inside section bounds and outside the 96 px required seam clearances. Overlapping regions use the strongest value. Test the section with no light, Sun Sphere, Lantern Snail, and Lantern Crystal.
 
 ## 7. Place authored gameplay content
 

@@ -9,6 +9,7 @@ const HOTBAR_SECONDARY := preload("res://assets/art/ui/hud/hotbar-sec.png")
 const HOTBAR_ARROW := preload("res://assets/art/ui/hud/arrow-hotbar.png")
 const SETTINGS_POPUP_SCENE := preload("res://ui/settings_popup.tscn")
 const INVENTORY_MENU_SCENE := preload("res://ui/inventory_menu.tscn")
+const SHOP_UI_SCENE := preload("res://ui/shop_ui.tscn")
 
 signal world_debug_action_requested(action: StringName)
 
@@ -20,6 +21,7 @@ var weight_label: Label
 var prompt_label: Label
 var feedback_label: Label
 var inventory_menu: InventoryMenu
+var shop_ui: ShopUI
 var inventory_buttons: Array[Button] = []
 var hotbar_labels: Array[Label] = []
 var whistle_button: BaseButton
@@ -57,14 +59,19 @@ var debug_text_nodes: Array[CanvasItem] = []
 @export_range(0.01, 1.0, 0.01) var hotbar_animation_seconds := 0.18
 @export_range(16.0, 96.0, 1.0) var hotbar_slot_size := 32.0
 
+@onready var logical_ui: Control = $LogicalUI
+
 func _ready() -> void:
 	layer = 20
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	add_to_group(&"foundation_hud")
+	GameSession.configure_design_root(logical_ui)
+	GameSession.display_settings_changed.connect(func(): GameSession.configure_design_root(logical_ui))
 	_build_ui()
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
 
 func _process(delta: float) -> void:
-	crosshair.position = get_viewport().get_mouse_position()
+	crosshair.position = GameSession.screen_to_design(get_viewport().get_mouse_position())
 	_update_location()
 	_update_threat(delta)
 	_status_elapsed += delta
@@ -98,11 +105,19 @@ func set_player(value: PlayerController) -> void:
 	_refresh_whistle(player.physical_whistle_id)
 	_refresh_status()
 
+func open_shop(service: ShopService, shop_player: PlayerController) -> void:
+	shop_ui.open_shop(service, shop_player)
+
 func show_dialogue(sequence: DialogueSequence, actor: Node = null) -> void:
 	dialogue_box.show_sequence(sequence, actor)
 
 func _input(event: InputEvent) -> void:
 	if player == null:
+		return
+	if shop_ui != null and shop_ui.visible:
+		if event.is_action_pressed(&"ui_cancel") or event.is_action_pressed(&"inventory") or event.is_action_pressed(&"pause"):
+			shop_ui.close_shop()
+			get_viewport().set_input_as_handled()
 		return
 	if death_panel.visible:
 		if event.is_action_pressed(&"inventory") or event.is_action_pressed(&"pause"):
@@ -132,35 +147,35 @@ func _input(event: InputEvent) -> void:
 
 func _build_ui() -> void:
 	health_flames.clear()
-	for flame in $HealthFlames.get_children(): health_flames.append(flame as TextureRect)
-	$HealthFlames.mouse_filter = Control.MOUSE_FILTER_STOP
+	for flame in $LogicalUI/HealthFlames.get_children(): health_flames.append(flame as TextureRect)
+	$LogicalUI/HealthFlames.mouse_filter = Control.MOUSE_FILTER_STOP
 	for flame in health_flames: flame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	health_value_tooltip = $HealthValueTooltip
-	$HealthFlames.mouse_entered.connect(func(): health_value_tooltip.show())
-	$HealthFlames.mouse_exited.connect(func(): health_value_tooltip.hide())
-	health_label = $TopStats/Health
-	status_label = $Status
-	money_label = $TopStats/Money
-	weight_label = $TopStats/Weight
-	location_label = $Location
-	prompt_label = $Prompt
-	feedback_label = $Feedback
-	threat_label = $Threat
-	effect_overlay = $EffectOverlay
+	health_value_tooltip = $LogicalUI/HealthValueTooltip
+	$LogicalUI/HealthFlames.mouse_entered.connect(func(): health_value_tooltip.show())
+	$LogicalUI/HealthFlames.mouse_exited.connect(func(): health_value_tooltip.hide())
+	health_label = $LogicalUI/TopStats/Health
+	status_label = $LogicalUI/Status
+	money_label = $LogicalUI/TopStats/Money
+	weight_label = $LogicalUI/TopStats/Weight
+	location_label = $LogicalUI/Location
+	prompt_label = $LogicalUI/Prompt
+	feedback_label = $LogicalUI/Feedback
+	threat_label = $LogicalUI/Threat
+	effect_overlay = $LogicalUI/EffectOverlay
 	hotbar_slots.clear()
 	hotbar_indices.clear()
-	for child in $Hotbar.get_children():
+	for child in $LogicalUI/Hotbar.get_children():
 		if child is TextureRect:
 			hotbar_slots.append(child)
 			hotbar_indices.append(int(String(child.name).trim_prefix("Slot")))
 	hotbar_icons = []
 	for slot in hotbar_slots:
 		hotbar_icons.append(slot.get_node("Icon") as TextureRect)
-	hotbar_labels = [$HotbarLabel0, $HotbarLabel1]
-	hotbar_arrow = $Arrow
+	hotbar_labels = [$LogicalUI/HotbarLabel0, $LogicalUI/HotbarLabel1]
+	hotbar_arrow = $LogicalUI/Arrow
 	hotbar_arrow.hide()
-	whistle_button = $Hotbar/Whistle
-	whistle_icon = $Hotbar/Whistle/Icon
+	whistle_button = $LogicalUI/Hotbar/Whistle
+	whistle_icon = $LogicalUI/Hotbar/Whistle/Icon
 	whistle_button.custom_minimum_size = Vector2.ONE * hotbar_slot_size
 	whistle_button.pressed.connect(func(): player.use_whistle() if player != null else false)
 	for display_index in hotbar_slots.size():
@@ -174,7 +189,9 @@ func _build_ui() -> void:
 	debug_text_nodes.append(weight_label)
 	debug_text_nodes.append(location_label)
 	inventory_menu = INVENTORY_MENU_SCENE.instantiate() as InventoryMenu
-	add_child(inventory_menu)
+	logical_ui.add_child(inventory_menu)
+	shop_ui = SHOP_UI_SCENE.instantiate() as ShopUI
+	logical_ui.add_child(shop_ui)
 	inventory_menu.close_requested.connect(func(): player.set_inventory_open(false) if player != null else false)
 	for index in inventory_menu.slot_buttons.size():
 		var button := inventory_menu.slot_buttons[index]
@@ -186,12 +203,12 @@ func _build_ui() -> void:
 	(inventory_menu.get_node("BookContent/Whistle") as TextureButton).pressed.connect(func(): player.use_whistle() if player != null else false)
 	dialogue_box = DialogueBox.new()
 	dialogue_box.position = Vector2(60, 245)
-	add_child(dialogue_box)
+	logical_ui.add_child(dialogue_box)
 	pause_panel = SETTINGS_POPUP_SCENE.instantiate() as SettingsPopup
 	pause_panel.configure(true, "Save & Menu")
 	pause_panel.resume_requested.connect(_resume_pause_menu)
 	pause_panel.main_action_requested.connect(_save_and_return_to_menu)
-	add_child(pause_panel)
+	logical_ui.add_child(pause_panel)
 	death_panel = _make_panel("You Died", Vector2(240, 125))
 	death_panel.visible = false
 	var retry := Button.new()
@@ -210,7 +227,7 @@ func _build_ui() -> void:
 	debug_panel.offset_top = 44.0
 	debug_panel.offset_right = -10.0
 	debug_panel.offset_bottom = -10.0
-	add_child(debug_panel)
+	logical_ui.add_child(debug_panel)
 	debug_panel.visible = false
 	var debug_scroll := ScrollContainer.new()
 	debug_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -284,7 +301,7 @@ func _build_ui() -> void:
 	world_log_panel = PanelContainer.new()
 	world_log_panel.position = Vector2(40, 30)
 	world_log_panel.size = Vector2(560, 300)
-	add_child(world_log_panel)
+	logical_ui.add_child(world_log_panel)
 	world_log_panel.visible = false
 	var log_column := VBoxContainer.new()
 	world_log_panel.add_child(log_column)
@@ -313,7 +330,7 @@ func _build_health_flames() -> void:
 	var row := HBoxContainer.new()
 	row.position = Vector2(8, 6)
 	row.add_theme_constant_override(&"separation", 0)
-	add_child(row)
+	logical_ui.add_child(row)
 	for index in 10:
 		var flame := TextureRect.new()
 		flame.texture = FIRE_FULL
@@ -325,7 +342,7 @@ func _build_health_flames() -> void:
 func _build_crosshair() -> void:
 	crosshair = Node2D.new()
 	crosshair.z_index = 100
-	add_child(crosshair)
+	logical_ui.add_child(crosshair)
 	var ring := Line2D.new()
 	ring.width = 1.0
 	ring.default_color = Color.WHITE
@@ -353,7 +370,7 @@ func _make_panel(title_text: String, at: Vector2) -> PanelContainer:
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(4)
 	panel.add_theme_stylebox_override(&"panel", style)
-	add_child(panel)
+	logical_ui.add_child(panel)
 	var column := VBoxContainer.new()
 	panel.add_child(column)
 	var title := Label.new()
@@ -504,7 +521,7 @@ func _refresh_status() -> void:
 
 func _set_health_text(current: float, maximum: float) -> void:
 	health_label.text = "HP ∞" if GameSession.debug_unlimited_health else "HP %d/%d" % [ceili(current), ceili(maximum)]
-	$HealthFlames.tooltip_text = health_label.text
+	$LogicalUI/HealthFlames.tooltip_text = health_label.text
 	health_value_tooltip.text = health_label.text
 	for index in health_flames.size():
 		var threshold := maximum * float(index + 1) / float(health_flames.size())

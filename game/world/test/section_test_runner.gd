@@ -14,6 +14,10 @@ func _ready() -> void:
 	var errors := section.validate()
 	if not errors.is_empty():
 		push_error("\n".join(errors))
+	var lighting := WorldLightingController.new()
+	lighting.name = "WorldLightingController"
+	add_child(lighting)
+	lighting.build(Rect2(section.global_position, section.section_size), [section])
 	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
 	add_child(player)
 	player.global_position = section.respawn_anchor.global_position

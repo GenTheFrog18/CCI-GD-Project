@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ShopDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/definitions/shop_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+shop_id = &"layer2_shop"
+buy_price_multiplier = 0.75
+sell_price_multiplier = 0.75
+limited_stock = true
+counts_delivery = false
+stock = {
+&"bandage": 3,
+&"cling_resin": 3,
+&"hushcap": 3,
+&"lantern_crystal": 2,
+&"numbing_pill": 2,
+&"rope": 3,
+&"sun_sphere": 2
+}

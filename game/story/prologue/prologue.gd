@@ -4,13 +4,16 @@ extends Control
 @export var dialogue_sequence: DialogueSequence
 
 @onready var fade: ColorRect = $PrologueOverlay/Fade
+@onready var design_ui: Control = $DesignUI
 
 var dialogue_box: DialogueBox
 
 func _ready() -> void:
+	GameSession.configure_design_root(design_ui)
+	GameSession.display_settings_changed.connect(func(): GameSession.configure_design_root(design_ui))
 	dialogue_box = DialogueBox.new()
 	dialogue_box.position = Vector2(60, 245)
-	add_child(dialogue_box)
+	design_ui.add_child(dialogue_box)
 	dialogue_box.dialogue_finished.connect(_on_dialogue_finished)
 	fade.modulate.a = 1.0
 	var tween := create_tween()

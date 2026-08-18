@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
 [ext_resource type="TileSet" uid="uid://b51yjvhjdw0v" path="res://art/world/graybox_tileset.tres" id="2_ry4ye"]
+[ext_resource type="Script" path="res://game/world/lighting/darkness_region_2d.gd" id="6_darkness"]
 
 [node name="Layer1West01B" unique_id=496954163 instance=ExtResource("1")]
 slot_id = &"layer1_west_01"
@@ -17,3 +18,8 @@ tile_set = ExtResource("2_ry4ye")
 position = Vector2(43, 97)
 target_layer_id = &"surface"
 prompt = "Return to Surface"
+
+[node name="DepthOneCave" type="Node2D" parent="DarknessRegions"]
+script = ExtResource("6_darkness")
+region_id = &"layer1_west_01_b_cave"
+region_rect = Rect2(96, 96, 1088, 608)

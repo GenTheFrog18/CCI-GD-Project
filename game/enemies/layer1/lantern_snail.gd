@@ -15,6 +15,7 @@ enum State { IDLE, MOVE, ATTACK }
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sound: SoundListener = $SoundListener
+@onready var light: LightSource2D = $LightSource2D
 var state := State.MOVE
 var _origin := Vector2.ZERO
 var _direction := 1.0
@@ -25,13 +26,20 @@ var _surface_normal := Vector2.UP
 func _ready() -> void:
 	support.persistent_id = persistent_id
 	add_to_group(&"light_sources")
+	light.light_radius = 128.0
+	light.light_intensity = 0.65
+	light.source_type = &"lantern_snail"
 	_origin = global_position
 	up_direction = _surface_normal
 	sound.sound_accepted.connect(func(event: SoundEvent, _direct: bool):
 		if global_position.distance_to(event.position) <= sound_trigger_radius:
 			receive_agitation({"kind": "sound"})
 	)
-	support.health.died.connect(_drop_crystal)
+	support.health.died.connect(_on_died)
+
+func _on_died(source: Node) -> void:
+	light.enabled = false
+	_drop_crystal(source)
 
 func _physics_process(delta: float) -> void:
 	_timer = maxf(0.0, _timer - delta)

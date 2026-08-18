@@ -13,6 +13,7 @@ extends Resource
 @export var purchase_price := 0
 @export var surface_sale_value := 0
 @export var delivery_value := 0
+@export_range(0, 99, 1) var shop_quest_value := 0
 @export var discovery_threshold := 0
 @export var sellable := false
 @export var persistent_when_dropped := true

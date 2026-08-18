@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[node name="ShopQuestTracker" type="VBoxContainer"]
+custom_minimum_size = Vector2(280, 74)
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.82, 1)
+theme_type_variation = &"PixelHeading"
+text = "ITEM QUEST TRACKER"
+horizontal_alignment = 1
+
+[node name="Rarity1" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Rarity 1: —"
+
+[node name="Rarity2" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Rarity 2: —"
+
+[node name="Rarity3" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Rarity 3: —"
+
+[node name="Rarity4" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Rarity 4: —"
+
+[node name="Rarity5" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Rarity 5: —"

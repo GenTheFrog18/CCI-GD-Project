@@ -1,8 +1,6 @@
 class_name WorldEffectArea
 extends Area2D
 
-const PLACEHOLDER_LIGHT_TEXTURE := preload("res://game/items/world/placeholder_light_texture.tres")
-
 var effect_kind: StringName
 var effect_id: StringName
 var duration := 8.0
@@ -12,7 +10,7 @@ var provider_id := ""
 var sound_priority := -1
 var sound_radius := 0.0
 var _elapsed := 0.0
-var _light: PointLight2D
+var _light: LightSource2D
 
 func configure(kind: StringName, status_id: StringName, seconds: float, area_shape: Shape2D, source: Node = null, priority := -1, hearing_radius := 0.0) -> void:
 	effect_kind = kind
@@ -35,12 +33,11 @@ func _ready() -> void:
 	queue_redraw()
 	if sound_priority >= 0 and sound_radius > 0.0:
 		SoundBus.emit_sound(get_tree(), SoundEvent.new(global_position, sound_radius, effect_kind, sound_priority, self))
-	if effect_kind == &"light":
-		add_to_group(&"light_sources")
-		_light = PointLight2D.new()
-		_light.texture = PLACEHOLDER_LIGHT_TEXTURE
-		_light.texture_scale = _extent() / 64.0
-		_light.energy = 0.0
+	if effect_kind == &"light" or effect_kind == &"crystal":
+		_light = LightSource2D.new()
+		_light.light_radius = maxf(_extent(), 64.0)
+		_light.light_intensity = 0.0
+		_light.enabled = true
 		add_child(_light)
 	if effect_kind == &"crystal":
 		call_deferred("_flash")
@@ -49,7 +46,7 @@ func _process(delta: float) -> void:
 	_elapsed += delta
 	duration -= delta
 	if _light != null:
-		_light.energy = 0.8 * minf(clampf(_elapsed / 0.25, 0.0, 1.0), clampf(duration, 0.0, 1.0))
+		_light.light_intensity = 0.8 * minf(clampf(_elapsed / 0.25, 0.0, 1.0), clampf(duration, 0.0, 1.0))
 	if duration <= 0.0:
 		queue_free()
 

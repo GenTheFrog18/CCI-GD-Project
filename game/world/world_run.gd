@@ -11,8 +11,9 @@ const HUD_SCENE := preload("res://ui/foundation_hud.tscn")
 @onready var layer_host: Node2D = $LayerHost
 @onready var generator: WorldGenerator = $WorldGenerator
 @onready var loading_layer: CanvasLayer = $LoadingLayer
-@onready var loading_label: Label = $LoadingLayer/Panel/Column/LoadingLabel
-@onready var progress_bar: ProgressBar = $LoadingLayer/Panel/Column/ProgressBar
+@onready var loading_ui: Control = $LoadingLayer/LogicalUI
+@onready var loading_label: Label = $LoadingLayer/LogicalUI/Panel/Column/LoadingLabel
+@onready var progress_bar: ProgressBar = $LoadingLayer/LogicalUI/Panel/Column/ProgressBar
 
 var active_layer: WorldLayer
 var player: PlayerController
@@ -22,8 +23,11 @@ var _activation_elapsed := 0.0
 var _show_bounds := false
 var _debug_draw: WorldDebugDraw
 var _last_slot_id: StringName
+var lighting_controller: WorldLightingController
 
 func _ready() -> void:
+	GameSession.configure_design_root(loading_ui)
+	GameSession.display_settings_changed.connect(func(): GameSession.configure_design_root(loading_ui))
 	generator.layer_scenes = [layer_1_scene, layer_2_scene]
 	generator.generation_started.connect(func(total: int): progress_bar.max_value = total; progress_bar.value = 0)
 	generator.generation_progress.connect(_on_generation_progress)
@@ -114,13 +118,14 @@ func _load_active_layer(is_transition: bool, target_spawn_id: StringName = &"") 
 	var stage_started := Time.get_ticks_usec()
 	loading_layer.visible = true
 	progress_bar.visible = true
-	progress_bar.max_value = 4
+	progress_bar.max_value = 5
 	progress_bar.value = 0
 	loading_label.text = "Instantiating %s..." % GameSession.current_layer_id
 	if is_instance_valid(hud):
 		hud.queue_free()
 	if is_instance_valid(active_layer):
 		active_layer.queue_free()
+	lighting_controller = null
 	await get_tree().process_frame
 	var scene := _scene_for_layer(GameSession.current_layer_id)
 	if scene == null:
@@ -144,11 +149,17 @@ func _load_active_layer(is_transition: bool, target_spawn_id: StringName = &"") 
 	progress_bar.value = 2
 	_append_runtime_stage("Assemble sections and placers", stage_started)
 	stage_started = Time.get_ticks_usec()
+	lighting_controller = WorldLightingController.new()
+	lighting_controller.name = "WorldLightingController"
+	active_layer.add_child(lighting_controller)
+	lighting_controller.build_for_layer(active_layer)
+	progress_bar.value = 3
+	_append_runtime_stage("Build darkness mask", stage_started)
+	stage_started = Time.get_ticks_usec()
 	loading_label.text = "Restoring run..."
 	player = PLAYER_SCENE.instantiate() as PlayerController
 	active_layer.runtime_root.add_child(player)
 	SaveManager.restore_registered_objects(GameSession.current_layer_id)
-	progress_bar.value = 3
 	_append_runtime_stage("Restore persistent state", stage_started)
 	stage_started = Time.get_ticks_usec()
 	if is_transition or SaveManager.loaded_persistent_state.is_empty():
@@ -163,7 +174,7 @@ func _load_active_layer(is_transition: bool, target_spawn_id: StringName = &"") 
 	active_layer.update_activation(player.global_position)
 	var section := active_layer.section_at(player.global_position)
 	player.set_camera_bounds(active_layer.camera_bounds_for(section))
-	progress_bar.value = 4
+	progress_bar.value = 5
 	_append_runtime_stage("Spawn player and activate sections", stage_started)
 	hud.set_world_generation_log(GameSession.world_generation_log, GameSession.world_manifest)
 	loading_label.text = "Ready"

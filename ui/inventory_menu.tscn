@@ -93,7 +93,7 @@ offset_left = 25.0
 offset_top = 116.0
 offset_right = 106.0
 offset_bottom = 130.0
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 10
 text = "Backpack: 0g of 0g"
 
 [node name="ItemName" type="Label" parent="BookContent" unique_id=1122166294]
@@ -102,7 +102,7 @@ offset_left = 25.0
 offset_top = 132.0
 offset_right = 105.0
 offset_bottom = 143.0
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 10
 text = "Select an item"
 
 [node name="ItemDescription" type="Label" parent="BookContent" unique_id=1541039444]
@@ -111,7 +111,7 @@ offset_left = 25.0
 offset_top = 144.0
 offset_right = 107.0
 offset_bottom = 157.0
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 10
 autowrap_mode = 2
 
 [node name="Close" type="TextureButton" parent="BookContent" unique_id=1599208567]
@@ -170,7 +170,7 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 10
 
 [node name="Slot1" type="Control" parent="BookContent/BackpackSlots" unique_id=293451438]
 anchors_preset = 0
@@ -214,7 +214,7 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 10
 
 [node name="Slot2" type="Control" parent="BookContent/BackpackSlots" unique_id=1262576214]
 anchors_preset = 0
@@ -258,7 +258,7 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 10
 
 [node name="Slot3" type="Control" parent="BookContent/BackpackSlots" unique_id=969281324]
 anchors_preset = 0
@@ -302,7 +302,7 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 10
 
 [node name="Slot4" type="Control" parent="BookContent/BackpackSlots" unique_id=2079199372]
 anchors_preset = 0
@@ -346,7 +346,7 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 10
 
 [node name="HotbarSlots" type="Control" parent="BookContent" unique_id=1506183293]
 anchors_preset = 0
@@ -397,7 +397,7 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 10
 
 [node name="Slot1" type="Control" parent="BookContent/HotbarSlots" unique_id=1865263998]
 anchors_preset = 0
@@ -445,7 +445,7 @@ offset_left = -16.0
 offset_top = -10.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 10
 
 [node name="Whistle" type="TextureButton" parent="BookContent" unique_id=1302103364]
 layout_mode = 0
@@ -479,12 +479,11 @@ offset_top = 139.33334
 offset_right = 318.33337
 offset_bottom = 158.33334
 focus_mode = 0
-theme_override_font_sizes/font_size = 7
+theme_override_font_sizes/font_size = 10
 text = "placeholder buat nanti"
 flat = true
 
 [node name="Submenu" parent="BookContent" unique_id=1955250578 instance=ExtResource("9_submenu")]
-visible = false
 layout_mode = 0
 offset_left = 0.0
 offset_top = 0.0

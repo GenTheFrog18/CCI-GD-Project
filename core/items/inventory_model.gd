@@ -71,6 +71,33 @@ func has_item(item_id: StringName) -> bool:
 				return true
 	return false
 
+func get_item_quantity(item_id: StringName) -> int:
+	var total := 0
+	for container in [hotbar, backpack]:
+		for slot in container:
+			if not slot.is_empty() and slot.item_id == item_id:
+				total += slot.quantity
+	return total
+
+func remove_item(item_id: StringName, quantity: int) -> bool:
+	if quantity <= 0 or get_item_quantity(item_id) < quantity:
+		return false
+	var remaining := quantity
+	for container in [hotbar, backpack]:
+		for index in container.size():
+			var slot := container[index] as ItemStack
+			if slot.is_empty() or slot.item_id != item_id:
+				continue
+			var removed := mini(slot.quantity, remaining)
+			slot.quantity -= removed
+			remaining -= removed
+			if slot.quantity == 0:
+				container[index] = ItemStack.new()
+			if remaining == 0:
+				changed.emit()
+				return true
+	return false
+
 func take_item(item_id: StringName) -> ItemStack:
 	for container_name in [&"hotbar", &"backpack"]:
 		var container := _container(container_name)

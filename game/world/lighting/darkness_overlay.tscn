@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/world/lighting/darkness_overlay.gd" id="1"]
+[ext_resource type="Shader" path="res://game/world/lighting/darkness_overlay.gdshader" id="2"]
+
+[sub_resource type="ShaderMaterial" id="DarknessMaterial"]
+shader = ExtResource("2")
+
+[node name="DarknessOverlay" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1")
+
+[node name="DarknessRect" type="ColorRect" parent="."]
+material = SubResource("DarknessMaterial")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)

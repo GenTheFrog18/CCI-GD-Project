@@ -1,0 +1,10 @@
+[gd_resource type="TileSet" format=3 uid="uid://bnn76gb88yl5i"]
+
+[ext_resource type="Texture2D" uid="uid://cnm3hoqo4arpo" path="res://art/world/graybox_tile.svg" id="1"]
+
+[sub_resource type="TileSetAtlasSource" id="Atlas"]
+texture = ExtResource("1")
+0:0/0 = 0
+
+[resource]
+sources/0 = SubResource("Atlas")

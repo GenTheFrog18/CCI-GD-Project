@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://cc8vscpo8gx7b"]
+
+[ext_resource type="Script" uid="uid://dq4y2rlfnf02p" path="res://ui/shop_item_row.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://c7t5budy7d8bl" path="res://assets/asset/shopkeeper/shop-box-container-buy.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://dpsxkr4w4g5n6" path="res://assets/art/items/lantern_crystal.png" id="3"]
+
+[node name="ShopItemRow" type="Control" unique_id=422724009]
+custom_minimum_size = Vector2(149, 38)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 149.0
+offset_bottom = 38.0
+script = ExtResource("1")
+
+[node name="Background" type="NinePatchRect" parent="." unique_id=1355057743]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="Icon" type="TextureRect" parent="." unique_id=1768242698]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 30.0
+offset_bottom = 30.0
+mouse_filter = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ItemName" type="Label" parent="." unique_id=1130705390]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 5.0
+offset_right = 164.0
+offset_bottom = 21.0
+theme_override_colors/font_color = Color(0.25, 0.12, 0.08, 1)
+theme_override_font_sizes/font_size = 10
+text = "Item"
+
+[node name="Price" type="Label" parent="." unique_id=1424831405]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 20.0
+offset_right = 164.0
+offset_bottom = 35.0
+theme_override_colors/font_color = Color(0.2, 0.1, 0.06, 1)
+theme_override_font_sizes/font_size = 10
+text = "0g"
+
+[node name="Amount" type="Label" parent="." unique_id=1800984033]
+layout_mode = 0
+offset_left = 82.0
+offset_top = 7.0
+offset_right = 125.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(0.25, 0.12, 0.08, 1)
+theme_override_font_sizes/font_size = 10
+text = "x0"
+horizontal_alignment = 2
+
+[node name="Action" type="Button" parent="." unique_id=1986326246]
+layout_mode = 0
+offset_left = 128.0
+offset_top = 5.0
+offset_right = 147.0
+offset_bottom = 32.0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.35, 0.16, 0.1, 1)
+theme_override_font_sizes/font_size = 18
+text = "+"
+flat = true

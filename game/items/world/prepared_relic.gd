@@ -1,7 +1,6 @@
 class_name PreparedRelic
 extends RigidBody2D
 
-const PLACEHOLDER_LIGHT_TEXTURE := preload("res://game/items/world/placeholder_light_texture.tres")
 const SUN_ACTIVE := preload("res://assets/art/items/sun_sphere_active.png")
 const SUN_EXPIRING := preload("res://assets/art/items/sun_sphere_expiring.png")
 
@@ -23,7 +22,7 @@ var _pulse_remaining := 0.5
 var _pulses_sent := 0
 var _launched := false
 var _collision: CollisionShape2D
-var _light: PointLight2D
+var _light: LightSource2D
 var _elapsed := 0.0
 var _visual: Sprite2D
 
@@ -61,11 +60,10 @@ func _ready() -> void:
 	_visual.texture = SUN_ACTIVE if kind == &"sun_sphere" else definition.icon
 	add_child(_visual)
 	if kind == &"sun_sphere":
-		add_to_group(&"light_sources")
-		_light = PointLight2D.new()
-		_light.texture = PLACEHOLDER_LIGHT_TEXTURE
-		_light.energy = 0.0
-		_light.texture_scale = _effect_extent() / 64.0
+		_light = LightSource2D.new()
+		_light.light_radius = maxf(_effect_extent(), 64.0)
+		_light.light_intensity = 0.0
+		_light.enabled = true
 		add_child(_light)
 
 func _process(delta: float) -> void:
@@ -75,7 +73,7 @@ func _process(delta: float) -> void:
 		if kind == &"sun_sphere" and duration <= 3.0:
 			_visual.texture = SUN_EXPIRING
 		if _light != null:
-			_light.energy = 0.8 * minf(clampf(_elapsed / 0.25, 0.0, 1.0), clampf(duration, 0.0, 1.0))
+			_light.light_intensity = 0.8 * minf(clampf(_elapsed / 0.25, 0.0, 1.0), clampf(duration, 0.0, 1.0))
 		if duration <= 0.0:
 			queue_free()
 			return

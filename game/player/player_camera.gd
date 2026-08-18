@@ -20,10 +20,11 @@ func _process(delta: float) -> void:
 	if target == null:
 		return
 	var owns_cursor := ui_active or get_tree().paused
-	var wanted_position := base_offset if owns_cursor else target_offset_for(get_viewport().get_mouse_position())
+	var wanted_position := base_offset if owns_cursor else target_offset_for(GameSession.screen_to_design(get_viewport().get_mouse_position()), GameSession.DESIGN_SIZE)
 	var position_weight := 1.0 - exp(-smoothing * delta) if smoothing > 0.0 else 1.0
 	position = position.lerp(wanted_position, position_weight)
-	var wanted_zoom := ui_zoom if owns_cursor else Vector2.ONE
+	var world_scale := Vector2.ONE * GameSession.display_scale()
+	var wanted_zoom := world_scale * ui_zoom if owns_cursor else world_scale
 	var zoom_weight := 1.0 - exp(-zoom_smoothing * delta) if zoom_smoothing > 0.0 else 1.0
 	zoom = zoom.lerp(wanted_zoom, zoom_weight)
 

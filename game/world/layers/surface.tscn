@@ -5030,6 +5030,7 @@ centered = false
 
 [node name="ShadowNpc" parent="RuntimeRoot/NPCContainer" unique_id=874886287 instance=ExtResource("2_ckure")]
 position = Vector2(607, 320)
+script = null
 
 [node name="WestSpawn" type="Marker2D" parent="." unique_id=432334965]
 position = Vector2(150, 320)
@@ -5101,9 +5102,6 @@ target_layer_id = &"layer_1"
 target_route_id = "east"
 prompt = "Enter Layer 1 East"
 
-[node name="TestShopTerminal" parent="." unique_id=1109330746 instance=ExtResource("3_7hsqt")]
-position = Vector2(312, 320)
-
 [node name="TestAmphibian" parent="." unique_id=2072690254 instance=ExtResource("4_ckure")]
 position = Vector2(576, 312)
 persistent_id = "surface_test_amphibian_01"
@@ -5115,3 +5113,6 @@ persistent_id = "surface_test_amphibian_02"
 [node name="TestAmphibian3" parent="." unique_id=1229369914 instance=ExtResource("4_ckure")]
 position = Vector2(554, 312)
 persistent_id = "surface_test_amphibian_03"
+
+[node name="TestShopTerminal" parent="." unique_id=475008983 instance=ExtResource("3_7hsqt")]
+position = Vector2(318, 319)

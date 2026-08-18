@@ -1,15 +1,22 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://game/world/world_section.gd" id="1"]
 [ext_resource type="TileSet" path="res://art/world/graybox_tileset.tres" id="2"]
+[ext_resource type="TileSet" path="res://art/world/graybox_background_tileset.tres" id="3"]
 
-[node name="GrayboxSection" type="Node2D" node_paths=PackedStringArray("entry_anchor", "exit_anchor", "respawn_anchor", "placer_root", "dynamic_root")]
+[node name="GrayboxSection" type="Node2D" node_paths=PackedStringArray("entry_anchor", "exit_anchor", "respawn_anchor", "placer_root", "dynamic_root", "darkness_regions_root")]
 script = ExtResource("1")
 entry_anchor = NodePath("EntryAnchor")
 exit_anchor = NodePath("ExitAnchor")
 respawn_anchor = NodePath("RespawnAnchor")
 placer_root = NodePath("Placers")
 dynamic_root = NodePath("AuthoredContent")
+darkness_regions_root = NodePath("DarknessRegions")
+
+[node name="BackgroundWalls" type="TileMapLayer" parent="."]
+z_index = -10
+collision_enabled = false
+tile_set = ExtResource("3")
 
 [node name="Terrain" type="TileMapLayer" parent="."]
 tile_set = ExtResource("2")
@@ -24,5 +31,7 @@ position = Vector2(640, 800)
 position = Vector2(640, 64)
 
 [node name="Placers" type="Node2D" parent="."]
+
+[node name="DarknessRegions" type="Node2D" parent="."]
 
 [node name="AuthoredContent" type="Node2D" parent="."]

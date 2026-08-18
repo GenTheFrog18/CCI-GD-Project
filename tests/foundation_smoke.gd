@@ -384,7 +384,7 @@ func _test_ui_input_and_debug() -> void:
 	add_child(hud)
 	hud.set_player(player)
 	assert(hud.hotbar_labels[0].text.contains("Multitool"))
-	assert(hud.get_node("Hotbar").get_child(0) == hud.whistle_button)
+	assert(hud.get_node("LogicalUI/Hotbar").get_child(0) == hud.whistle_button)
 	assert(hud.whistle_button is TextureButton and hud.whistle_button.focus_mode == Control.FOCUS_NONE)
 	assert(hud.whistle_icon.texture != null)
 	for display_index in hud.hotbar_slots.size():
@@ -394,7 +394,7 @@ func _test_ui_input_and_debug() -> void:
 	assert(not hud.health_label.visible and not hud.money_label.visible and not hud.weight_label.visible and not hud.location_label.visible)
 	player.health.set_health(0.4)
 	assert(hud.health_label.text == "HP 1/100")
-	assert(hud.get_node("HealthFlames").tooltip_text == "HP 1/100")
+	assert(hud.get_node("LogicalUI/HealthFlames").tooltip_text == "HP 1/100")
 	assert(hud.health_value_tooltip.text == "HP 1/100")
 	hud._finish_hotbar_layout()
 	assert(hud.hotbar_arrow.visible)

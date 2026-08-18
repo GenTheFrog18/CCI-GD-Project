@@ -20,23 +20,28 @@ script = ExtResource("2")
 [node name="LoadingLayer" type="CanvasLayer" parent="."]
 layer = 90
 
-[node name="Panel" type="ColorRect" parent="LoadingLayer"]
+[node name="LogicalUI" type="Control" parent="LoadingLayer"]
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+
+[node name="Panel" type="ColorRect" parent="LoadingLayer/LogicalUI"]
 offset_right = 640.0
 offset_bottom = 360.0
 color = Color(0.02, 0.025, 0.04, 1)
 
-[node name="Column" type="VBoxContainer" parent="LoadingLayer/Panel"]
+[node name="Column" type="VBoxContainer" parent="LoadingLayer/LogicalUI/Panel"]
 offset_left = 120.0
 offset_top = 140.0
 offset_right = 520.0
 offset_bottom = 220.0
 
-[node name="LoadingLabel" type="Label" parent="LoadingLayer/Panel/Column"]
+[node name="LoadingLabel" type="Label" parent="LoadingLayer/LogicalUI/Panel/Column"]
 layout_mode = 2
 text = "Preparing world..."
 horizontal_alignment = 1
 
-[node name="ProgressBar" type="ProgressBar" parent="LoadingLayer/Panel/Column"]
+[node name="ProgressBar" type="ProgressBar" parent="LoadingLayer/LogicalUI/Panel/Column"]
 layout_mode = 2
 value = 0.0
 show_percentage = false

@@ -10,8 +10,10 @@ Dokumen ini adalah sumber kebenaran teknis. Dokumen di `docs/reference/` adalah 
 | --- | --- |
 | Engine | Godot 4.7.1, GDScript |
 | Renderer | Compatibility |
-| Viewport internal | 640×360 |
+| World design canvas | 640×360; camera zoom follows selected output scale |
 | Window awal | 1280×720 |
+| Output display | Native selected window resolution; UI uses a 640×360 design root with native MSDF text |
+| Fullscreen | Borderless desktop fullscreen; F11 toggle |
 | Texture filtering | Nearest |
 | Skala dunia | 32 px per metre |
 | Ukuran item art saat ini | 16×16 px; tidak mengubah skala dunia |

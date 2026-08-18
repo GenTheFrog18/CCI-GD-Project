@@ -1,8 +1,6 @@
 class_name PlayerItemController
 extends Node
 
-const PLACEHOLDER_LIGHT_TEXTURE := preload("res://game/items/world/placeholder_light_texture.tres")
-
 signal feedback_requested(message: String)
 signal prepared_item_changed(item: Node2D)
 
@@ -13,15 +11,14 @@ var inventory := InventoryModel.new()
 var prepared_item: Node2D
 var _active_item_id: StringName
 var _committing := false
-var held_light: PointLight2D
+var held_light: LightSource2D
 var _warming_light := true
 
 func _ready() -> void:
-	held_light = PointLight2D.new()
-	held_light.texture = PLACEHOLDER_LIGHT_TEXTURE
-	held_light.energy = 0.001
-	held_light.visible = true
-	held_light.add_to_group(&"light_sources")
+	held_light = LightSource2D.new()
+	held_light.light_radius = 96.0
+	held_light.light_intensity = 0.7
+	held_light.enabled = true
 	if held_item_anchor != null:
 		held_item_anchor.add_child(held_light)
 	else:
@@ -35,7 +32,7 @@ func _finish_light_warmup() -> void:
 	await get_tree().process_frame
 	_warming_light = false
 	if held_light != null:
-		held_light.energy = 0.7
+		held_light.light_intensity = 0.7
 	_refresh_held_icon()
 
 func cancel_prepared(reason: StringName = &"cancel") -> void:
@@ -141,7 +138,7 @@ func _refresh_held_icon() -> void:
 	held_item_icon.texture = definition.icon if definition != null else null
 	held_item_icon.visible = held_item_icon.texture != null and not is_instance_valid(prepared_item)
 	if held_light != null:
-		held_light.visible = _warming_light or _active_item_id == &"lantern_crystal"
+		held_light.enabled = _warming_light or _active_item_id == &"lantern_crystal"
 
 func _execute(is_secondary: bool, actor: Node2D, world: Node, cursor: Vector2, target: Node) -> bool:
 	var stack := inventory.get_active_stack()

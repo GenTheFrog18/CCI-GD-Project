@@ -1,11 +1,13 @@
-[gd_resource type="Resource" script_class="ShopDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ShopDefinition" format=3 uid="uid://d3du8yce8tkdc"]
 
-[ext_resource type="Script" path="res://data/definitions/shop_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://bdxmsum55kvy3" path="res://data/definitions/shop_definition.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
 shop_id = &"test_shop"
-price_multiplier = 1.0
 limited_stock = true
 counts_delivery = true
-stock = {&"multitool": 1}
+stock = {
+&"multitool": 2,
+"rope": 10
+}

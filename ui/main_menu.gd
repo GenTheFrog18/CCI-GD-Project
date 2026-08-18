@@ -12,11 +12,12 @@ const NEW_RUN_CONFIRMATION_SCENE := preload("res://ui/new_run_confirmation.tscn"
 @export_range(0.0, 64.0, 1.0) var popup_slide_pixels := 12.0
 
 @onready var background: TextureRect = $Background
-@onready var new_run_button: Button = $MenuColumn/NewRun
-@onready var continue_button: Button = $MenuColumn/Continue
-@onready var continue_label: TextureRect = $MenuColumn/Continue/Label
-@onready var settings_button: Button = $MenuColumn/Settings
-@onready var quit_button: Button = $MenuColumn/Quit
+@onready var design_ui: Control = $DesignUI
+@onready var new_run_button: Button = $DesignUI/MenuColumn/NewRun
+@onready var continue_button: Button = $DesignUI/MenuColumn/Continue
+@onready var continue_label: TextureRect = $DesignUI/MenuColumn/Continue/Label
+@onready var settings_button: Button = $DesignUI/MenuColumn/Settings
+@onready var quit_button: Button = $DesignUI/MenuColumn/Quit
 
 var debug_panel: VBoxContainer
 var seed_input: SpinBox
@@ -27,6 +28,8 @@ var _background_tween: Tween
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	GameSession.configure_design_root(design_ui)
+	GameSession.display_settings_changed.connect(func(): GameSession.configure_design_root(design_ui))
 	GameSession.apply_settings()
 	new_run_button.pressed.connect(_confirm_new)
 	continue_button.pressed.connect(_continue_run)
@@ -79,19 +82,19 @@ func _build_settings() -> void:
 	settings_popup.configure(false, "Close")
 	settings_popup.popup_animation_seconds = popup_animation_seconds
 	settings_popup.popup_slide_pixels = popup_slide_pixels
-	add_child(settings_popup)
+	design_ui.add_child(settings_popup)
 	confirmation_popup = NEW_RUN_CONFIRMATION_SCENE.instantiate() as NewRunConfirmation
 	confirmation_popup.popup_animation_seconds = popup_animation_seconds
 	confirmation_popup.popup_slide_pixels = popup_slide_pixels
 	confirmation_popup.confirmed.connect(_start_new)
-	add_child(confirmation_popup)
+	design_ui.add_child(confirmation_popup)
 
 func _build_debug() -> void:
 	debug_panel = VBoxContainer.new()
 	debug_panel.position = Vector2(12, 12)
 	debug_panel.size = Vector2(230, 120)
 	debug_panel.visible = false
-	add_child(debug_panel)
+	design_ui.add_child(debug_panel)
 	debug_checkbox = CheckBox.new()
 	debug_checkbox.text = "Debug Run"
 	debug_panel.add_child(debug_checkbox)

@@ -14,6 +14,7 @@ var main_action_text := "Close"
 var _tween: Tween
 var _card_top := 0.0
 var _card_bottom := 0.0
+var _syncing_display_controls := false
 
 @onready var dimmer: ColorRect = $Dimmer
 @onready var card: Control = $Card
@@ -29,7 +30,9 @@ var _card_bottom := 0.0
 @onready var sound_page: Control = $Card/SoundPage
 @onready var volume: HSlider = $Card/SoundPage/Volume
 @onready var screen_page: Control = $Card/ScreenPage
+@onready var resolution: OptionButton = $Card/ScreenPage/Resolution
 @onready var fullscreen: CheckButton = $Card/ScreenPage/Fullscreen
+@onready var fullscreen_hint: Label = $Card/ScreenPage/FullscreenHint
 @onready var info_page: Control = $Card/InfoPage
 @onready var info_title: Label = $Card/InfoPage/Title
 @onready var info_body: Label = $Card/InfoPage/Body
@@ -47,7 +50,7 @@ func _ready() -> void:
 	entry_resume.pressed.connect(func(): resume_requested.emit())
 	entry_sound.pressed.connect(func(): _show_page(sound_page, volume))
 	entry_screen.pressed.connect(func(): _show_page(screen_page, fullscreen))
-	entry_how_to.pressed.connect(func(): _show_info("How to Play", "A/D or arrows: move\nSpace: jump\nE: interact\n1/2 or mouse wheel: hotbar\nLeft click: use\nRight click: throw / secondary\nTab: inventory\nEsc: pause\nW/S: climb rope"))
+	entry_how_to.pressed.connect(func(): _show_info("How to Play", "A/D or arrows: move\nSpace: jump\nE: interact\n1/2 or mouse wheel: hotbar\nLeft click: use\nRight click: throw / secondary\nTab: inventory\nEsc: pause\nF11: fullscreen\nW/S: climb rope"))
 	entry_credits.pressed.connect(func(): _show_info("Credits", "Team Gorillaz Games\n\nFont: Perfect DOS VGA 437\nCopyright (c) Zeh Fernando\nLicensed under SIL Open Font License 1.1"))
 	entry_main_action.pressed.connect(_run_main_action)
 	for entry in [entry_resume, entry_sound, entry_screen, entry_how_to, entry_credits, entry_main_action]:
@@ -55,7 +58,9 @@ func _ready() -> void:
 		entry.mouse_entered.connect(entry.grab_focus)
 	close_button.pressed.connect(_close_or_resume)
 	volume.value_changed.connect(func(value: float): GameSession.master_volume = value; GameSession.apply_settings(); SaveManager.save_meta())
-	fullscreen.toggled.connect(func(enabled: bool): GameSession.fullscreen = enabled; GameSession.apply_settings(); SaveManager.save_meta())
+	fullscreen.toggled.connect(_on_fullscreen_toggled)
+	resolution.item_selected.connect(_on_resolution_selected)
+	GameSession.display_settings_changed.connect(_sync_display_controls)
 
 func show_popup() -> void:
 	_show_main_page()
@@ -98,8 +103,39 @@ func _show_page(page: Control, focus: Control) -> void:
 	if page == sound_page:
 		volume.value = GameSession.master_volume
 	if page == screen_page:
-		fullscreen.button_pressed = GameSession.fullscreen
+		_sync_display_controls()
 	focus.grab_focus()
+
+func _sync_display_controls() -> void:
+	if resolution == null:
+		return
+	_syncing_display_controls = true
+	resolution.clear()
+	var selected := -1
+	for size in GameSession.get_windowed_size_options():
+		var index := resolution.item_count
+		resolution.add_item(GameSession.windowed_size_label(size))
+		resolution.set_item_metadata(index, size)
+		if size == GameSession.windowed_size:
+			selected = index
+	if selected < 0:
+		selected = resolution.item_count
+		resolution.add_item("Custom: %s" % GameSession.windowed_size_label(GameSession.windowed_size))
+		resolution.set_item_metadata(selected, GameSession.windowed_size)
+	resolution.select(selected)
+	resolution.disabled = GameSession.fullscreen
+	fullscreen.button_pressed = GameSession.fullscreen
+	fullscreen_hint.visible = GameSession.fullscreen
+	_syncing_display_controls = false
+
+func _on_fullscreen_toggled(enabled: bool) -> void:
+	if not _syncing_display_controls:
+		GameSession.set_fullscreen(enabled)
+
+func _on_resolution_selected(index: int) -> void:
+	if _syncing_display_controls or GameSession.fullscreen:
+		return
+	GameSession.set_windowed_size(resolution.get_item_metadata(index) as Vector2i)
 
 func _show_info(title: String, body: String) -> void:
 	menu_page.visible = false
