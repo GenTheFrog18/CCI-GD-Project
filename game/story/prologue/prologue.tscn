@@ -13,6 +13,13 @@ grow_vertical = 2
 script = ExtResource("1_7doua")
 dialogue_sequence = ExtResource("2_0npns")
 
+[node name="DesignUI" type="Control" parent="."]
+z_index = 1
+anchors_preset = 0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
