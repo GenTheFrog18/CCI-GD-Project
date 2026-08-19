@@ -99,7 +99,7 @@ func _draw() -> void:
 	if effect_kind == &"light":
 		return
 	var color := Color(0.75, 0.75, 0.75, 0.3)
-	if effect_kind == &"resin": color = Color(0.8, 0.55, 0.15, 0.45)
+	if effect_kind == &"resin": color = Color(0.1608, 0.3804, 0.6588, 0.45)
 	if effect_kind == &"crystal": color = Color(0.8, 0.95, 1.0, 0.65)
 	if effect_shape is CircleShape2D:
 		draw_circle(Vector2.ZERO, (effect_shape as CircleShape2D).radius, color)

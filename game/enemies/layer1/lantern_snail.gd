@@ -5,7 +5,7 @@ const IDLE_SHEET := preload("res://assets/art/enemies/snail/snail_idle.png")
 const WALK_SHEET := preload("res://assets/art/enemies/snail/snail_walking.png")
 const HIT_SHEET := preload("res://assets/art/enemies/snail/snail_hit.png")
 
-enum State { MOVE, FLEE, ATTACK }
+enum State { MOVE, ATTACK }
 
 @export var persistent_id := "lantern_snail"
 @export var move_speed := 18.0
@@ -17,14 +17,10 @@ enum State { MOVE, FLEE, ATTACK }
 @export var scream_priority := 9
 @export var flash_duration := 4.0
 @export var sound_trigger_radius := 72.0
-@export var flee_speed_multiplier := 1.5
 @export_range(0.1, 2.0, 0.05) var sprite_scale := 0.65
-@export var gravity := 900.0
-@export var surface_probe_distance := 16.0
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sound: SoundListener = $SoundListener
-@onready var sight: SightSensor = $SightSensor
 @onready var light: LightSource2D = $LightSource2D
 @onready var visual: AnimatedSprite2D = $Visual
 var state := State.MOVE
@@ -33,7 +29,6 @@ var _direction := 1.0
 var _timer := 0.0
 var _cooldown := 0.0
 var _surface_normal := Vector2.UP
-var _flee_target: Node2D
 var _hit_remaining := 0.0
 
 func _ready() -> void:
@@ -47,19 +42,8 @@ func _ready() -> void:
 	light.source_type = &"lantern_snail"
 	_origin = global_position
 	up_direction = _surface_normal
-	sight.normal_angle_degrees = 360.0
-	sight.aggravated_angle_degrees = 360.0
-	sight.target_seen.connect(func(target: Node2D, _position: Vector2): _start_flee(target))
-	sight.target_lost.connect(func(target: Node2D):
-		if target == _flee_target:
-			_flee_target = null
-			if state == State.FLEE: state = State.MOVE
-	)
 	sound.sound_accepted.connect(func(event: SoundEvent, _direct: bool):
-		var source := event.source as Node2D
-		if source != null and source.is_in_group(&"player"):
-			_start_flee(source)
-		elif global_position.distance_to(event.position) <= sound_trigger_radius:
+		if global_position.distance_to(event.position) <= sound_trigger_radius:
 			receive_agitation({"kind": "sound"})
 	)
 	support.health.died.connect(_on_died)
@@ -78,83 +62,25 @@ func _physics_process(delta: float) -> void:
 	_hit_remaining = maxf(0.0, _hit_remaining - delta)
 	var player := get_tree().get_first_node_in_group(&"player") as Node2D
 	if player != null and _cooldown <= 0.0 and global_position.distance_to(player.global_position) <= trigger_radius and state != State.ATTACK:
-		_flee_target = null
 		receive_agitation({"kind": "proximity"})
 	if state == State.ATTACK:
 		velocity = Vector2.ZERO
 		_play_animation(&"hit")
 		if _timer <= 0.0: _scream()
 		return
-	if player != null and global_position.distance_to(player.global_position) <= trigger_radius:
-		_start_flee(player)
 	var tangent := Vector2(-_surface_normal.y, _surface_normal.x)
-	var previous_heading := tangent * _direction
-	if not _has_surface_support(_surface_normal):
-		velocity = Vector2.DOWN * gravity * delta
-		sight.facing = Vector2.DOWN
-		move_and_slide()
-		_update_surface_from_collisions(previous_heading)
-		return
-	var travel_direction := _direction
-	var speed_multiplier := support.status.get_multiplier(&"move_speed")
-	if is_instance_valid(_flee_target):
-		state = State.FLEE
-		var away := global_position - _flee_target.global_position
-		travel_direction = signf(tangent.dot(away))
-		if is_zero_approx(travel_direction): travel_direction = _direction
-		_direction = travel_direction
-		speed_multiplier *= flee_speed_multiplier
-	else:
-		state = State.MOVE
-	_try_forward_surface_transition(tangent * travel_direction)
-	tangent = Vector2(-_surface_normal.y, _surface_normal.x)
-	travel_direction = _direction
 	_play_animation(&"hit" if _hit_remaining > 0.0 else &"walk")
-	velocity = tangent * travel_direction * move_speed * speed_multiplier - _surface_normal * 60.0
-	sight.facing = tangent * travel_direction
+	velocity = tangent * _direction * move_speed * support.status.get_multiplier(&"move_speed") - _surface_normal * 60.0
 	move_and_slide()
-	_update_surface_from_collisions(tangent * travel_direction)
-	visual.flip_h = travel_direction > 0.0
-	if global_position.distance_to(_origin) >= roam_distance: _direction *= -1.0
-
-func _has_surface_support(normal: Vector2) -> bool:
-	var direction := normal.normalized()
-	var query := PhysicsRayQueryParameters2D.create(global_position, global_position - direction * surface_probe_distance, 1)
-	query.exclude = [get_rid()]
-	return not get_world_2d().direct_space_state.intersect_ray(query).is_empty()
-
-func _update_surface_from_collisions(previous_heading: Vector2) -> void:
 	for index in get_slide_collision_count():
 		var normal := get_slide_collision(index).get_normal().normalized()
-		if normal.dot(_surface_normal) > 0.75:
-			continue
-		_set_surface(normal, previous_heading)
-		return
-
-func _try_forward_surface_transition(heading: Vector2) -> void:
-	if heading.is_zero_approx():
-		return
-	var forward := heading.normalized()
-	var probe_origin := global_position + forward * surface_probe_distance
-	for direction in [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]:
-		var query := PhysicsRayQueryParameters2D.create(probe_origin, probe_origin + direction * surface_probe_distance * 2.0, 1)
-		query.exclude = [get_rid()]
-		var hit := get_world_2d().direct_space_state.intersect_ray(query)
-		if hit.is_empty():
-			continue
-		var normal: Vector2 = hit.get("normal", Vector2.ZERO)
-		if normal.dot(_surface_normal) > 0.75 or absf(normal.dot(forward)) < 0.5:
-			continue
-		_set_surface(normal, heading)
-		return
-
-func _set_surface(normal: Vector2, previous_heading: Vector2) -> void:
-	var new_tangent := Vector2(-normal.y, normal.x)
-	var new_direction := signf(new_tangent.dot(previous_heading))
-	if not is_zero_approx(new_direction): _direction = new_direction
-	_surface_normal = normal
-	up_direction = normal
-	rotation = normal.angle() + PI * 0.5
+		if absf(normal.dot(_surface_normal)) < 0.75 and normal.dot(tangent * _direction) < -0.25:
+			_surface_normal = normal
+			up_direction = normal
+			rotation = normal.angle() + PI * 0.5
+			break
+	visual.flip_h = _direction > 0.0
+	if global_position.distance_to(_origin) >= roam_distance: _direction *= -1.0
 
 func receive_agitation(_data: Dictionary = {}) -> void:
 	if _cooldown > 0.0 or state == State.ATTACK: return
@@ -163,18 +89,13 @@ func receive_agitation(_data: Dictionary = {}) -> void:
 	var player := get_tree().get_first_node_in_group(&"player")
 	if player != null and player.has_method("warn_attack"): player.warn_attack(self, telegraph_seconds)
 
-func _start_flee(target: Node2D) -> void:
-	if target == null or not target.is_in_group(&"player"): return
-	_flee_target = target
-	state = State.FLEE
-
 func _scream() -> void:
 	var flash := WorldEffectArea.new()
 	var shape := CircleShape2D.new()
 	shape.radius = scream_radius
 	flash.configure(&"crystal", &"dazzled", flash_duration, shape, self, scream_priority, scream_radius * 2.0)
-	get_parent().add_child(flash)
 	flash.global_position = global_position
+	get_parent().add_child(flash)
 	var player := get_tree().get_first_node_in_group(&"player") as Node2D
 	if player != null and global_position.distance_to(player.global_position) <= scream_radius and player.has_method("apply_status"):
 		player.apply_status(&"dazzled", {"duration": flash_duration})
