@@ -1,0 +1,156 @@
+[gd_resource type="Resource" script_class="DialogueSequence" load_steps=25 format=3 uid="uid://dpvw3j2w0jiiy"]
+
+[ext_resource type="Script" uid="uid://c561kj13kn4li" path="res://data/definitions/dialogue_line.gd" id="1_nidfc"]
+[ext_resource type="Texture2D" uid="uid://cbibwtoe3fo0w" path="res://assets/art/characters/player/Portrait_Frown.png" id="2_lagm2"]
+[ext_resource type="Texture2D" uid="uid://d0p2emigwb3c7" path="res://assets/art/characters/player/Portrait_Flat.png" id="3_lagm2"]
+[ext_resource type="Script" uid="uid://j8ks4377trg3" path="res://data/definitions/dialogue_sequence.gd" id="4_7parr"]
+[ext_resource type="Texture2D" uid="uid://cl36mg5bllu1y" path="res://assets/art/characters/player/Portrait_Smile.png" id="4_e14fb"]
+[ext_resource type="Texture2D" uid="uid://cov40fo3o7htl" path="res://assets/art/characters/player/Portrait_Angry.png" id="5_opn47"]
+
+[sub_resource type="Resource" id="Resource_31mnv"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Jadi... itu pintu menuju Layer 1"
+portrait = ExtResource("2_lagm2")
+
+[sub_resource type="Resource" id="Resource_6f5qi"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Dari sini kelihatannya tidak seseram yang diceritakan orang"
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_iay8g"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "...Tapi mungkin memang begitu caranya Abyss menipu orang"
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_kai5m"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Aku sudah dengar cerita tentang tempat itu sejak kecil"
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_edax8"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Katanya, semakin dalam seseorang pergi..."
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_v2udr"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "...semakin sedikit hal yang bisa dia bawa pulang."
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_yxvw6"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Harta, artefak, bahkan teman."
+portrait = ExtResource("4_e14fb")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_iotj0"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Pria tua itu selalu bilang aku terlalu banyak bertanya"
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_vdhko"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Setiap kali aku tanya apa yang sebenarnya ada di bawah sana..."
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_2xmd2"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "jawabannya selalu sama... Belum saatnya"
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_qq2e0"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Tapi aku bukan anak kecil lagi."
+portrait = ExtResource("5_opn47")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_2djd4"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "...kan??"
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_m5d2s"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Kalau semua cerita tentang Abyss itu benar..."
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_70lr4"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "...mungkin aku akhirnya bisa menemukan jawaban yang selama ini pria tua itu menyembunyikan dariku"
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_0k4my"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Tapi kalau aku mau masuk ke sana..."
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_bn1rj"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "...aku harus bisa lebih kuat lagi"
+portrait = ExtResource("4_e14fb")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_iaehk"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Aku harus bertemu pria tua itu. Dia pasti sedang ditempat latihan"
+portrait = ExtResource("4_e14fb")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_3mvcj"]
+script = ExtResource("1_nidfc")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Kalau aku terlambat lagi...aku bakal dengar ceramah yang sama untuk keseratus kalinya."
+portrait = ExtResource("3_lagm2")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[resource]
+script = ExtResource("4_7parr")
+sequence_id = &"surface_intro"
+entries = Array[ExtResource("1_nidfc")]([SubResource("Resource_31mnv"), SubResource("Resource_6f5qi"), SubResource("Resource_iay8g"), SubResource("Resource_kai5m"), SubResource("Resource_edax8"), SubResource("Resource_v2udr"), SubResource("Resource_yxvw6"), SubResource("Resource_iotj0"), SubResource("Resource_vdhko"), SubResource("Resource_2xmd2"), SubResource("Resource_qq2e0"), SubResource("Resource_2djd4"), SubResource("Resource_m5d2s"), SubResource("Resource_70lr4"), SubResource("Resource_0k4my"), SubResource("Resource_bn1rj"), SubResource("Resource_iaehk"), SubResource("Resource_3mvcj")])

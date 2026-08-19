@@ -111,7 +111,7 @@ func open_shop(service: ShopService, shop_player: PlayerController) -> void:
 	shop_ui.open_shop(service, shop_player)
 
 func show_dialogue(sequence: DialogueSequence, actor: Node = null) -> void:
-	dialogue_box.show_sequence(sequence, actor)
+	dialogue_box.show_sequence(sequence, actor, player)
 
 func _input(event: InputEvent) -> void:
 	if player == null:

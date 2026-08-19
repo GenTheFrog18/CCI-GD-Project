@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DialogueSequence" format=3 uid="uid://cahbk2a2shbno"]
+[gd_resource type="Resource" script_class="DialogueSequence" load_steps=9 format=3 uid="uid://cahbk2a2shbno"]
 
 [ext_resource type="Script" uid="uid://c561kj13kn4li" path="res://data/definitions/dialogue_line.gd" id="1"]
 [ext_resource type="Script" uid="uid://j8ks4377trg3" path="res://data/definitions/dialogue_sequence.gd" id="2"]
@@ -37,4 +37,3 @@ portrait = ExtResource("3")
 script = ExtResource("2")
 sequence_id = &"shadow_intro"
 entries = Array[ExtResource("1")]([SubResource("Resource_mfh8f"), SubResource("Resource_tdfu4"), SubResource("Resource_31mnv"), SubResource("Resource_fsqkk")])
-metadata/_custom_type_script = "uid://dujtthnk0na86"

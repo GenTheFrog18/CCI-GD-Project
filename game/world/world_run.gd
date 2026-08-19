@@ -14,6 +14,8 @@ const HUD_SCENE := preload("res://ui/foundation_hud.tscn")
 @onready var loading_ui: Control = $LoadingLayer/LogicalUI
 @onready var loading_label: Label = $LoadingLayer/LogicalUI/Panel/Column/LoadingLabel
 @onready var progress_bar: ProgressBar = $LoadingLayer/LogicalUI/Panel/Column/ProgressBar
+@onready var dialogue_layer: CanvasLayer = $DialogueLayer
+@onready var dialogue_ui: Control = $DialogueLayer/LogicalUI
 
 var active_layer: WorldLayer
 var player: PlayerController
@@ -27,12 +29,25 @@ var lighting_controller: WorldLightingController
 
 func _ready() -> void:
 	GameSession.configure_design_root(loading_ui)
-	GameSession.display_settings_changed.connect(func(): GameSession.configure_design_root(loading_ui))
+	GameSession.configure_design_root(dialogue_ui)
+
+	GameSession.display_settings_changed.connect(func():
+		GameSession.configure_design_root(loading_ui)
+		GameSession.configure_design_root(dialogue_ui)
+	)
 	generator.layer_scenes = [layer_1_scene, layer_2_scene]
-	generator.generation_started.connect(func(total: int): progress_bar.max_value = total; progress_bar.value = 0)
+
+	generator.generation_started.connect(
+		func(total: int):
+			progress_bar.max_value = total
+			progress_bar.value = 0
+	)
+
 	generator.generation_progress.connect(_on_generation_progress)
+
 	_debug_draw = WorldDebugDraw.new()
 	add_child(_debug_draw)
+
 	await _prepare_run()
 
 func _process(delta: float) -> void:
@@ -157,6 +172,7 @@ func _load_active_layer(is_transition: bool, target_spawn_id: StringName = &"") 
 	_append_runtime_stage("Build darkness mask", stage_started)
 	stage_started = Time.get_ticks_usec()
 	loading_label.text = "Restoring run..."
+	
 	player = PLAYER_SCENE.instantiate() as PlayerController
 	active_layer.runtime_root.add_child(player)
 	SaveManager.restore_registered_objects(GameSession.current_layer_id)
@@ -180,6 +196,13 @@ func _load_active_layer(is_transition: bool, target_spawn_id: StringName = &"") 
 	loading_label.text = "Ready"
 	await get_tree().process_frame
 	loading_layer.visible = false
+	
+	if GameSession.current_layer_id == &"surface":
+		if not GameSession.progression_flags.get("surface_intro_finished", false):
+			var surface_intro := active_layer.get_node_or_null("SurfaceIntro")
+
+			if surface_intro != null:
+				surface_intro.start_intro(player, dialogue_ui)
 
 func _scene_for_layer(layer_id: StringName) -> PackedScene:
 	match layer_id:

@@ -1,4 +1,4 @@
-class_name ShadowNPC
+class_name OldMan
 extends Area2D
 
 @export var interaction_priority := 10.0
@@ -17,7 +17,7 @@ func _ready() -> void:
 	interaction_indicator.visible = false
 
 func get_interaction_prompt(_actor: Node) -> String:
-	return "Talk to Shadow"
+	return "Talk to Old Man"
 	
 func set_interaction_indicator(enabled: bool) -> void:
 	interaction_indicator.visible = enabled

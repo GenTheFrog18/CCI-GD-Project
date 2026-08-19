@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=6 format=3 uid="uid://dpwwkblbck6b"]
 
-[ext_resource type="Script" path="res://game/world/world_run.gd" id="1"]
-[ext_resource type="Script" path="res://game/world/world_generator.gd" id="2"]
-[ext_resource type="PackedScene" path="res://game/world/layers/surface.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://game/world/layers/layer_1.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://game/world/layers/layer_2.tscn" id="5"]
+[ext_resource type="Script" uid="uid://dmffnss5iggpf" path="res://game/world/world_run.gd" id="1"]
+[ext_resource type="Script" uid="uid://bswlsbf7i2tac" path="res://game/world/world_generator.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://e1y7y1n8w688" path="res://game/world/layers/surface.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://d0y3so7uoe438" path="res://game/world/layers/layer_1.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://d2nyjdso2ylpo" path="res://game/world/layers/layer_2.tscn" id="5"]
 
 [node name="WorldRun" type="Node2D"]
 script = ExtResource("1")
@@ -21,16 +21,20 @@ script = ExtResource("2")
 layer = 90
 
 [node name="LogicalUI" type="Control" parent="LoadingLayer"]
+layout_mode = 3
+anchors_preset = 0
 offset_right = 640.0
 offset_bottom = 360.0
 mouse_filter = 2
 
 [node name="Panel" type="ColorRect" parent="LoadingLayer/LogicalUI"]
+layout_mode = 0
 offset_right = 640.0
 offset_bottom = 360.0
 color = Color(0.02, 0.025, 0.04, 1)
 
 [node name="Column" type="VBoxContainer" parent="LoadingLayer/LogicalUI/Panel"]
+layout_mode = 0
 offset_left = 120.0
 offset_top = 140.0
 offset_right = 520.0
@@ -43,5 +47,14 @@ horizontal_alignment = 1
 
 [node name="ProgressBar" type="ProgressBar" parent="LoadingLayer/LogicalUI/Panel/Column"]
 layout_mode = 2
-value = 0.0
 show_percentage = false
+
+[node name="DialogueLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="LogicalUI" type="Control" parent="DialogueLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2

@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="DialogueSequence" load_steps=9 format=3 uid="uid://btsg43bcuworu"]
+
+[ext_resource type="Script" uid="uid://c561kj13kn4li" path="res://data/definitions/dialogue_line.gd" id="1_44ace"]
+[ext_resource type="Texture2D" uid="uid://dxksabwymww8v" path="res://assets/art/characters/npc/portrait/Portrait.png" id="2_ewffl"]
+[ext_resource type="Texture2D" uid="uid://d0p2emigwb3c7" path="res://assets/art/characters/player/Portrait_Flat.png" id="3_58hi1"]
+[ext_resource type="Script" uid="uid://j8ks4377trg3" path="res://data/definitions/dialogue_sequence.gd" id="4_5tbgm"]
+
+[sub_resource type="Resource" id="Resource_mfh8f"]
+script = ExtResource("1_44ace")
+speaker_id = &"thewanderer"
+speaker_name = "The Wanderer"
+text = "..."
+portrait = ExtResource("2_ewffl")
+
+[sub_resource type="Resource" id="Resource_tdfu4"]
+script = ExtResource("1_44ace")
+speaker_id = &"thewanderer"
+speaker_name = "The Wanderer"
+text = "Kamu juga bisa melihat tempat ini?"
+portrait = ExtResource("2_ewffl")
+
+[sub_resource type="Resource" id="Resource_31mnv"]
+script = ExtResource("1_44ace")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Tempat ini?"
+portrait = ExtResource("3_58hi1")
+
+[sub_resource type="Resource" id="Resource_fsqkk"]
+script = ExtResource("1_44ace")
+speaker_id = &"thewanderer"
+speaker_name = "The Wanderer"
+text = "Tidak semua orang bisa melihat apa yang ada di balik permukaan."
+portrait = ExtResource("2_ewffl")
+
+[resource]
+script = ExtResource("4_5tbgm")
+sequence_id = &"oldman_intro"
+entries = Array[ExtResource("1_44ace")]([SubResource("Resource_mfh8f"), SubResource("Resource_tdfu4"), SubResource("Resource_31mnv"), SubResource("Resource_fsqkk")])
