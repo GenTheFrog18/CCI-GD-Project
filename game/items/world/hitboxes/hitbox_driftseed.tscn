@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://1nc0s65174bg"]
+
+[ext_resource type="Script" uid="uid://h8avkfckcn8j" path="res://game/items/world/world_hitbox_authoring.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://bhlrfftgouvow" path="res://assets/art/items/driftseed.png" id="2_mr2sy"]
+
+[node name="WorldHitboxAuthoring" type="Area2D" unique_id=1533944527]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1")
+preview_texture = ExtResource("2_mr2sy")
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="." unique_id=2029145209]
+polygon = PackedVector2Array(8, -5, 8, 5, 3, 8, -2, 8, -8, 3, -3, -7)

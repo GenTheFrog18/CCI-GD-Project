@@ -72,6 +72,16 @@ offset_right = 392.0
 offset_bottom = 328.0
 theme_override_constants/separation = 8
 
+[node name="PlayIntro" type="CheckButton" parent="DesignUI" unique_id=2093000001]
+offset_left = 396.0
+offset_top = 172.0
+offset_right = 550.0
+offset_bottom = 196.0
+mouse_default_cursor_shape = 2
+button_pressed = true
+text = "Play opening dialogue"
+tooltip_text = "Play the opening and first surface dialogue"
+
 [node name="NewRun" type="Button" parent="DesignUI/MenuColumn" unique_id=311907988]
 custom_minimum_size = Vector2(144, 32)
 layout_mode = 2

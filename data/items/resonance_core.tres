@@ -4,14 +4,15 @@
 [ext_resource type="Texture2D" uid="uid://dsshg28eytpcj" path="res://assets/art/items/resonant core.png" id="1_vwes8"]
 [ext_resource type="Script" uid="uid://c32ggh23y1noo" path="res://game/items/behaviors/resonance_core_behavior.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="3"]
+[ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="4_5vurl"]
 
 [sub_resource type="Resource" id="ThrowBehavior"]
 script = ExtResource("2")
-impact_activation_speed = 40.0
 minimum_speed = 60.0
 maximum_speed = 360.0
 base_damage = 100.0
 preview_length = 80.0
+impact_activation_speed = 40.0
 
 [resource]
 script = ExtResource("1")

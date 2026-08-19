@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://dbyplch60aaqu"]
+
+[ext_resource type="Script" uid="uid://h8avkfckcn8j" path="res://game/items/world/world_hitbox_authoring.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://dpsxkr4w4g5n6" path="res://assets/art/items/lantern_crystal.png" id="2_f1d85"]
+
+[node name="WorldHitboxAuthoring" type="Area2D" unique_id=818852985]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1")
+preview_texture = ExtResource("2_f1d85")
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="." unique_id=800130927]
+position = Vector2(-1, 1)
+polygon = PackedVector2Array(-4, -5, 0, -7, 4, -6, 6, -4, 7, 0, 6, 3, 3, 5, -1, 5, -5, 3, -6, 1, -6, -2)

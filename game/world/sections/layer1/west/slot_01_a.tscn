@@ -754,8 +754,10 @@ persistent_id = &"l1w1ae4"
 position = Vector2(569, 665)
 persistent_id = &"l1w1ae5"
 
-[node name="DepthOneCave" type="Polygon2D" parent="DarknessRegions" index="0" unique_id=2122150092]
+[node name="DarknessRegions" parent="." index="13"]
 visible = false
+
+[node name="DepthOneCave" type="Polygon2D" parent="DarknessRegions" index="0" unique_id=2122150092]
 position = Vector2(-67, -78)
 scale = Vector2(0.96087635, 0.9760705)
 polygon = PackedVector2Array(87.4202, 311.45288, 356.96582, 341.16388, 597.37134, 390.34064, 643.1629, 477.4245, 549.4984, 484.59613, 519.3176, 533.7729, 382.9837, 539.92, 331.9886, 510.209, 289.3192, 554.2632, 322.62216, 592.1703, 439.18243, 571.68, 590.08636, 584.99866, 642.1222, 603.43994, 331.9886, 675.15607, 236.24268, 615.73413, 176.92183, 613.6851, 120.72313, 720.2348)
@@ -765,7 +767,6 @@ darkness_strength = 0.17
 edge_falloff_pixels = 78.0
 
 [node name="DepthOneCave2" type="Polygon2D" parent="DarknessRegions" index="1" unique_id=199263639]
-visible = false
 position = Vector2(116, 10)
 scale = Vector2(0.96087635, 0.9760705)
 polygon = PackedVector2Array(87.4202, 311.45288, 356.96582, 341.16388, 597.37134, 390.34064, 643.1629, 477.4245, 549.4984, 484.59613, 519.3176, 533.7729, 382.9837, 539.92, 331.9886, 510.209, 289.3192, 554.2632, 322.62216, 592.1703, 439.18243, 571.68, 590.08636, 584.99866, 642.1222, 603.43994, 331.9886, 675.15607, 236.24268, 615.73413, 176.92183, 613.6851, 120.72313, 720.2348)

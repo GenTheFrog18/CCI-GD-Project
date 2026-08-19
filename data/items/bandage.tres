@@ -5,12 +5,17 @@
 [ext_resource type="Script" uid="uid://bo3ti5x3q6u2y" path="res://game/items/behaviors/consumable_behavior.gd" id="2"]
 [ext_resource type="Script" uid="uid://cvn35o5hs7sqy" path="res://game/items/behaviors/default_throw_behavior.gd" id="3"]
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="4"]
+[ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_cluqp"]
+[ext_resource type="PackedScene" uid="uid://dd6eeh6nq1y2p" path="res://game/items/world/hitboxes/hitbox_bandage.tscn" id="6_ril0d"]
 
 [sub_resource type="Resource" id="Primary"]
 script = ExtResource("2")
 
 [sub_resource type="Resource" id="Secondary"]
 script = ExtResource("3")
+maximum_speed = 500.0
+maximum_cursor_distance = 250.0
+throw_sound_priority = -1
 
 [resource]
 script = ExtResource("1")
@@ -20,6 +25,7 @@ unknown_description = "Clean cloth and basic medicine."
 known_description = "Stops bleeding and restores 50 health over twenty-five seconds."
 category = &"supply"
 icon = ExtResource("1_f2n7r")
+world_hitbox_scene = ExtResource("6_ril0d")
 world_scene = ExtResource("4")
 max_stack = 8
 purchase_price = 50

@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bqjl71x41raff"]
+
+[ext_resource type="Script" uid="uid://h8avkfckcn8j" path="res://game/items/world/world_hitbox_authoring.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://c1ywr0vah57xy" path="res://assets/art/items/Lacerator-item not ready.png" id="2_ra4lo"]
+
+[node name="WorldHitboxAuthoring" type="Area2D" unique_id=1971192294]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1")
+preview_texture = ExtResource("2_ra4lo")
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="." unique_id=2052203732]
+polygon = PackedVector2Array(-11, 16, 11, 16, 11, 6, 5, 0, 5, -16, 0, -16, 0, 1, -4, 8, -11, 10)

@@ -5,6 +5,8 @@
 [ext_resource type="Script" uid="uid://bnxj2ufmdqdnh" path="res://game/items/behaviors/silver_weight_behavior.gd" id="3"]
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://ccoqvuyx345yb" path="res://assets/art/items/silver_weight.png" id="5"]
+[ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_glet7"]
+[ext_resource type="PackedScene" uid="uid://crxctwqnrdxji" path="res://game/items/world/hitboxes/hitbox_silver.tscn" id="6_4ubas"]
 
 [sub_resource type="Resource" id="Primary"]
 script = ExtResource("2")
@@ -16,9 +18,9 @@ jump_multiplier = 0.35
 
 [sub_resource type="Resource" id="Secondary"]
 script = ExtResource("3")
-impact_activation_speed = 40.0
 minimum_speed = 100.0
 maximum_speed = 300.0
+impact_activation_speed = 40.0
 
 [resource]
 script = ExtResource("1")
@@ -28,6 +30,7 @@ unknown_description = "An impossibly dense silver relic."
 known_description = "Makes its holder heavy; impacts kill small creatures and heavily damage the large flyer."
 category = &"relic"
 icon = ExtResource("5")
+world_hitbox_scene = ExtResource("6_4ubas")
 world_scene = ExtResource("4")
 weight = 12
 surface_sale_value = 150

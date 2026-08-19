@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://hvhqjsa55yhr" path="res://assets/art/items/bolt shock on.png" id="4_on"]
 [ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_visual"]
+[ext_resource type="PackedScene" path="res://game/items/world/hitboxes/hitbox_bolt.tscn" id="6_56268"]
 
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
@@ -37,6 +38,7 @@ known_description = "Load and fire a rod that stuns, blinds sensors, and grounds
 category = &"quest_reward"
 icon = ExtResource("1_dvy37")
 state_visuals = Array[ExtResource("5_visual")]([SubResource("VisualDefault"), SubResource("VisualLoaded")])
+world_hitbox_scene = ExtResource("6_56268")
 world_scene = ExtResource("3")
 weight = 5
 surface_sale_value = 200

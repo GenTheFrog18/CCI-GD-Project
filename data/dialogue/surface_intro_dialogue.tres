@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DialogueSequence" load_steps=25 format=3 uid="uid://dpvw3j2w0jiiy"]
+[gd_resource type="Resource" script_class="DialogueSequence" format=3 uid="uid://dpvw3j2w0jiiy"]
 
 [ext_resource type="Script" uid="uid://c561kj13kn4li" path="res://data/definitions/dialogue_line.gd" id="1_nidfc"]
 [ext_resource type="Texture2D" uid="uid://cbibwtoe3fo0w" path="res://assets/art/characters/player/Portrait_Frown.png" id="2_lagm2"]

@@ -319,7 +319,7 @@ sprite_frames = SubResource("SpriteFrames_uoqeo")
 animation = &"attack"
 
 [node name="HeldItemAnchor" type="Node2D" parent="." unique_id=608757879]
-position = Vector2(8, -12)
+position = Vector2(8, -15)
 
 [node name="HeldItemIcon" type="Sprite2D" parent="HeldItemAnchor" unique_id=1448294322]
 

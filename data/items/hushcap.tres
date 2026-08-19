@@ -4,6 +4,8 @@
 [ext_resource type="Script" uid="uid://cehkf8lmoacox" path="res://game/items/behaviors/deployable_behavior.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://dkvi2tv02wg4e" path="res://assets/art/items/hushcap.png" id="4"]
+[ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="4_1h5fj"]
+[ext_resource type="PackedScene" uid="uid://dt8ncqbkowx48" path="res://game/items/world/hitboxes/hitbox_hushcap.tscn" id="5_432bg"]
 
 [sub_resource type="CircleShape2D" id="ImpactShape"]
 radius = 72.0
@@ -13,10 +15,12 @@ radius = 48.0
 
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
-impact_activation_speed = 100.0
 duration = 12.0
 primary_shape = SubResource("PrimaryShape")
 impact_shape = SubResource("ImpactShape")
+maximum_speed = 500.0
+maximum_cursor_distance = 250.0
+impact_activation_speed = 100.0
 
 [resource]
 script = ExtResource("1")
@@ -26,6 +30,7 @@ unknown_description = "A soft mushroom that sheds dark dust."
 known_description = "Creates a temporary cloud that blocks creature sight."
 category = &"relic"
 icon = ExtResource("4")
+world_hitbox_scene = ExtResource("5_432bg")
 world_scene = ExtResource("3")
 max_stack = 8
 surface_sale_value = 30

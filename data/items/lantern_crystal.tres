@@ -4,6 +4,8 @@
 [ext_resource type="Script" uid="uid://cehkf8lmoacox" path="res://game/items/behaviors/deployable_behavior.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://dpsxkr4w4g5n6" path="res://assets/art/items/lantern_crystal.png" id="4"]
+[ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="4_rvigr"]
+[ext_resource type="PackedScene" uid="uid://dbyplch60aaqu" path="res://game/items/world/hitboxes/hitbox_lantern.tscn" id="5_fhbyh"]
 
 [sub_resource type="CircleShape2D" id="ImpactShape"]
 radius = 180.0
@@ -14,13 +16,18 @@ radius = 180.0
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
 kind = "crystal"
-impact_activation_speed = 100.0
 duration = 4.0
 primary_shape = SubResource("PrimaryShape")
 impact_shape = SubResource("ImpactShape")
 sound_priority = 9
 sound_radius = 500.0
+maximum_speed = 500.0
+maximum_cursor_distance = 250.0
 base_damage = 1.0
+preview_length = 50.0
+impact_sound_priority = 2
+impact_sound_radius = 120.0
+impact_activation_speed = 40.0
 
 [resource]
 script = ExtResource("1")
@@ -30,8 +37,8 @@ unknown_description = "A luminous shell crystal."
 known_description = "Flashes visible actors and emits a powerful lure signal."
 category = &"relic"
 icon = ExtResource("4")
+world_hitbox_scene = ExtResource("5_fhbyh")
 world_scene = ExtResource("3")
-weight = 2
 max_stack = 8
 surface_sale_value = 50
 delivery_value = 38
