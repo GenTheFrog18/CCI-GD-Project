@@ -20,6 +20,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
+weight_text_template = "Weight: %s/%s"
+weight_unit = ""
 
 [node name="Dim" type="ColorRect" parent="." unique_id=49120836]
 layout_mode = 1
@@ -89,29 +91,31 @@ horizontal_alignment = 1
 
 [node name="Weight" type="Label" parent="BookContent" unique_id=452134816]
 layout_mode = 0
-offset_left = 25.0
-offset_top = 116.0
-offset_right = 106.0
-offset_bottom = 130.0
-theme_override_font_sizes/font_size = 10
+offset_left = 129.33334
+offset_top = 130.0
+offset_right = 206.00002
+offset_bottom = 145.33334
+theme_override_colors/font_color = Color(0.6039216, 0.4, 0, 1)
+theme_override_font_sizes/font_size = 7
 text = "weight: 0"
 
 [node name="ItemName" type="Label" parent="BookContent" unique_id=1122166294]
 layout_mode = 0
-offset_left = 25.0
-offset_top = 132.0
-offset_right = 105.0
-offset_bottom = 143.0
-theme_override_font_sizes/font_size = 10
+offset_left = 26.666668
+offset_top = 103.333336
+offset_right = 106.66667
+offset_bottom = 114.33334
+theme_override_colors/font_color = Color(0.6039216, 0.4, 0, 1)
+theme_override_font_sizes/font_size = 8
 text = "Select an item"
 
 [node name="ItemDescription" type="Label" parent="BookContent" unique_id=1541039444]
 layout_mode = 0
-offset_left = 25.0
-offset_top = 144.0
-offset_right = 107.0
-offset_bottom = 157.0
-theme_override_font_sizes/font_size = 10
+offset_left = 27.333334
+offset_top = 114.0
+offset_right = 116.666664
+offset_bottom = 127.0
+theme_override_font_sizes/font_size = 6
 autowrap_mode = 2
 
 [node name="Close" type="TextureButton" parent="BookContent" unique_id=1599208567]

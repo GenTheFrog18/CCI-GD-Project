@@ -21,12 +21,13 @@ force = 30.0
 [resource]
 script = ExtResource("1")
 item_id = &"throwable_rock"
-display_name = "Throwable Rock"
+display_name = "Rock"
 unknown_description = "A small rock."
 known_description = "A recoverable thrown object that deals velocity-based damage and knockback."
 icon = ExtResource("4")
 world_scene = ExtResource("3")
 max_stack = 8
+discovery_threshold = 1
 behavior = SubResource("Behavior")
 primary_behavior = SubResource("Primary")
 secondary_behavior = SubResource("Behavior")
