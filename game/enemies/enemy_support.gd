@@ -41,7 +41,7 @@ func _ready() -> void:
 			effect_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.45, 1.0))
 			effect_label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 1.0))
 			effect_label.add_theme_constant_override("outline_size", 3)
-			actor.add_child(effect_label)
+			actor.call_deferred(&"add_child", effect_label)
 		if register_persistence:
 			actor.add_to_group(&"persistent_objects")
 		actor.add_to_group(&"effect_receivers")

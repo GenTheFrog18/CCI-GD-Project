@@ -1,6 +1,8 @@
 class_name ThornNeedle
 extends CharacterBody2D
 
+const PROJECTILE_TEXTURE := preload("res://assets/art/enemies/thorn_bloom/projectile.png")
+
 @export var gravity := 360.0
 @export var damage := 10.0
 @export var stuck_seconds := 300.0
@@ -11,6 +13,11 @@ var _stuck := false
 func _ready() -> void:
 	collision_layer = 32
 	collision_mask = 7
+	var sprite := Sprite2D.new()
+	sprite.texture = PROJECTILE_TEXTURE
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	sprite.name = "Sprite"
+	add_child(sprite)
 	var collision := CollisionShape2D.new()
 	var shape := RectangleShape2D.new()
 	shape.size = Vector2(10, 2)
@@ -31,6 +38,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if _stuck: return
 	velocity.y += gravity * delta
+	rotation = velocity.angle()
 	var collision := move_and_collide(velocity * delta)
 	if collision == null: return
 	var body := collision.get_collider() as Node
@@ -46,6 +54,3 @@ func _physics_process(delta: float) -> void:
 	else:
 		_stuck = true
 		velocity = Vector2.ZERO
-
-func _draw() -> void:
-	draw_line(Vector2(-5, 0), Vector2(5, 0), Color(0.8, 0.2, 0.4), 2.0)
