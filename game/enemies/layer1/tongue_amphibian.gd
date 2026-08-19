@@ -14,6 +14,8 @@ enum State { IDLE, MOVE, ATTACK, RETREAT }
 @export var cooldown_seconds := 2.0
 @export var jump_cooldown_min := 1.75
 @export var jump_cooldown_max := 2.25
+@export_range(0.0, 1.0, 0.05) var jump_height_randomness := 0.1
+@export var theft_cooldown_seconds := 3.0
 @export var leash_distance := 180.0
 
 @onready var support: EnemySupport = $EnemySupport
@@ -27,6 +29,7 @@ var _origin := Vector2.ZERO
 var _target: Node2D
 var _timer := 0.0
 var _jump_timer := 0.0
+var _theft_cooldown := 0.0
 var _roam_target := Vector2.ZERO
 var _has_roam_target := false
 var _facing_direction := 1.0
@@ -51,6 +54,10 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor(): velocity.y += gravity * delta
 	_timer = maxf(0.0, _timer - delta)
 	_jump_timer = maxf(0.0, _jump_timer - delta)
+	_theft_cooldown = maxf(0.0, _theft_cooldown - delta)
+	var grounded := is_on_floor()
+	if grounded:
+		velocity.x = 0.0
 	var loose := _nearest_loose_item()
 	var desired: Node2D = loose if loose != null else _target
 	if not carried.is_empty():
@@ -74,8 +81,9 @@ func _physics_process(delta: float) -> void:
 	else:
 		state = State.MOVE
 		_roam()
-	if state != State.ATTACK and is_on_floor() and _jump_timer <= 0.0:
-		velocity.y = jump_velocity * support.status.get_multiplier(&"jump_strength")
+	if state != State.ATTACK and grounded and _jump_timer <= 0.0:
+		velocity.x = _facing_direction * move_speed * support.status.get_multiplier(&"move_speed")
+		velocity.y = jump_velocity * _random_jump_height() * support.status.get_multiplier(&"jump_strength")
 		_jump_timer = _random_jump_cooldown()
 	velocity += _knockback
 	_knockback = Vector2.ZERO
@@ -85,18 +93,27 @@ func _physics_process(delta: float) -> void:
 		queue_redraw()
 
 func _nearest_loose_item() -> Node2D:
+	if _theft_cooldown > 0.0:
+		return null
 	var best: Node2D
 	var distance := tongue_range * 1.5
+	var best_weight := INF
 	for node in get_tree().get_nodes_in_group(&"loose_items"):
 		if node is not Node2D or node.is_queued_for_deletion() or not node.has_method("can_be_picked_up") or not node.can_be_picked_up(): continue
 		var candidate := global_position.distance_to(node.global_position)
-		if candidate < distance:
+		if candidate >= distance:
+			continue
+		var weight := _item_weight(node)
+		if weight < best_weight or (is_equal_approx(weight, best_weight) and candidate < distance):
 			best = node
 			distance = candidate
+			best_weight = weight
 	return best
 
 func _perform_tongue(target: Node2D) -> void:
 	if target == null or not target.has_method("can_be_picked_up") and not target.has_method("take_item_for_theft"):
+		return
+	if _theft_cooldown > 0.0:
 		return
 	if global_position.distance_to(target.global_position) > tongue_range or not _tongue_reaches(target):
 		return
@@ -133,7 +150,6 @@ func _tongue_reaches(target: Node2D) -> bool:
 	return false
 
 func _move_toward(point: Vector2) -> void:
-	velocity.x = signf(point.x - global_position.x) * move_speed * support.status.get_multiplier(&"move_speed")
 	if absf(point.x - global_position.x) > 1.0:
 		_set_facing(signf(point.x - global_position.x))
 
@@ -155,6 +171,17 @@ func _tongue_direction() -> Vector2:
 func _random_jump_cooldown() -> float:
 	return _random.randf_range(minf(jump_cooldown_min, jump_cooldown_max), maxf(jump_cooldown_min, jump_cooldown_max))
 
+func _random_jump_height() -> float:
+	var variation := clampf(jump_height_randomness, 0.0, 1.0)
+	return _random.randf_range(1.0 - variation, 1.0 + variation)
+
+func _item_weight(item: Node) -> float:
+	var definition := item.get("definition") as ItemDefinition
+	if definition == null:
+		var item_id: Variant = item.get("item_id")
+		definition = ContentCatalog.get_item(StringName(item_id)) if item_id != null else null
+	return float(definition.weight) if definition != null else INF
+
 func apply_damage(info: DamageInfo) -> bool:
 	return support.apply_damage(info)
 
@@ -172,6 +199,7 @@ func _drop_carried(position: Vector2) -> void:
 		drop.configure(definition, carried.state, self, position, Vector2(0, -40))
 		get_parent().call_deferred(&"add_child", drop)
 	carried = ItemStack.new()
+	_theft_cooldown = maxf(theft_cooldown_seconds, 0.0)
 	_refresh_carried_icon()
 
 func _refresh_carried_icon() -> void:
