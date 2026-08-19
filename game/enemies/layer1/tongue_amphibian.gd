@@ -60,22 +60,15 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 	var loose := _nearest_loose_item()
 	var desired: Node2D = loose if loose != null else _target
-	var keep_distance := tongue_range * 0.5
 	if not carried.is_empty():
 		state = State.RETREAT
-		if _target != null and global_position.distance_to(_target.global_position) < keep_distance:
-			_move_away_from(_target.global_position)
-		else:
-			velocity.x = 0.0
+		_move_toward(_origin)
 	elif state == State.ATTACK:
 		if _timer <= 0.0:
 			velocity.x = 0.0
 			_perform_tongue(desired)
 			state = State.IDLE
 			_timer = cooldown_seconds
-	elif _target != null and global_position.distance_to(_target.global_position) < keep_distance:
-		state = State.MOVE
-		_move_away_from(_target.global_position)
 	elif desired != null:
 		var distance := global_position.distance_to(desired.global_position)
 		if distance <= tongue_range and _timer <= 0.0:
