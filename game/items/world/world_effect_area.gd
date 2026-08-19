@@ -64,6 +64,9 @@ func _physics_process(delta: float) -> void:
 		body.linear_velocity *= damping
 
 func _on_body_entered(body: Node) -> void:
+	if effect_kind == &"hushcap" and body.is_in_group(&"player") and body.has_method("set_hushcap_area"):
+		body.set_hushcap_area(true)
+		return
 	if effect_kind == &"resin":
 		if body.has_method("apply_status"):
 			body.apply_status(effect_id, {"provider_id": provider_id, "duration": duration})
@@ -73,6 +76,9 @@ func _on_body_entered(body: Node) -> void:
 			_resin_bodies.append(body)
 
 func _on_body_exited(body: Node) -> void:
+	if effect_kind == &"hushcap" and body.is_in_group(&"player") and body.has_method("set_hushcap_area"):
+		body.set_hushcap_area(false)
+		return
 	if effect_kind == &"resin":
 		if body is RigidBody2D:
 			_resin_bodies.erase(body)

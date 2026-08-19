@@ -1,0 +1,67 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://game/items/world/hushcap_overlay.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/art/items/effects/hushcap_effect_25.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/art/items/effects/hushcap_effect_50.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/art/items/effects/hushcap_effect_75.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/art/items/effects/hushcap_effect_100.png" id="5"]
+
+[node name="HushcapOverlay" type="CanvasLayer"]
+script = ExtResource("1")
+
+[node name="Layers" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Layer25" type="TextureRect" parent="Layers"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Layer50" type="TextureRect" parent="Layers"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Layer75" type="TextureRect" parent="Layers"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Layer100" type="TextureRect" parent="Layers"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5")
+expand_mode = 1
+stretch_mode = 6

@@ -62,7 +62,9 @@ var curse_tracker: CurseTracker
 var _action_animation := false
 var _combat_safe_zone_count := 0
 var _thorn_spike_iframe_until := 0
+var _hushcap_area_count := 0
 
+@onready var hushcap_overlay: HushcapOverlay = $HushcapOverlay
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
 	add_to_group(&"detection_producers")
@@ -79,6 +81,10 @@ func _ready() -> void:
 	_set_facing(facing_direction)
 	if ContentCatalog.get_item(&"multitool") != null and item_controller.inventory.get_active_stack().is_empty():
 		item_controller.inventory.try_add_item(&"multitool", 1, {"origin": "starting"})
+
+func set_hushcap_area(active: bool) -> void:
+	_hushcap_area_count = maxi(0, _hushcap_area_count + (1 if active else -1))
+	hushcap_overlay.set_active(_hushcap_area_count > 0)
 
 func _physics_process(delta: float) -> void:
 	if not is_alive():

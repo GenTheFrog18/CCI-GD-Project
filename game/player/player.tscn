@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://cs7y2l3ovo2wq" path="res://assets/art/characters/player/CCI-idle.png" id="6_uv2nh"]
 [ext_resource type="Script" uid="uid://cw04hr0tcjxom" path="res://game/player/player_camera.gd" id="7_camera"]
 [ext_resource type="Script" uid="uid://dtp8poa044sqh" path="res://game/player/player_item_preview.gd" id="8_preview"]
+[ext_resource type="PackedScene" path="res://game/items/world/hushcap_overlay.tscn" id="9_hushcap"]
 
 [sub_resource type="CapsuleShape2D" id="PlayerShape"]
 radius = 6.0
@@ -347,3 +348,5 @@ script = ExtResource("5")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1285975351]
 position = Vector2(0, -40)
 script = ExtResource("7_camera")
+
+[node name="HushcapOverlay" parent="." instance=ExtResource("9_hushcap")]
