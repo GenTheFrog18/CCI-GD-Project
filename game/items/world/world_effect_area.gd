@@ -9,10 +9,12 @@ var source_actor: Node
 var provider_id := ""
 var sound_priority := -1
 var sound_radius := 0.0
+var loose_item_speed_multiplier := 0.25
 var _elapsed := 0.0
 var _light: LightSource2D
+var _resin_bodies: Array[RigidBody2D] = []
 
-func configure(kind: StringName, status_id: StringName, seconds: float, area_shape: Shape2D, source: Node = null, priority := -1, hearing_radius := 0.0) -> void:
+func configure(kind: StringName, status_id: StringName, seconds: float, area_shape: Shape2D, source: Node = null, priority := -1, hearing_radius := 0.0, item_speed_multiplier := 0.25) -> void:
 	effect_kind = kind
 	effect_id = status_id
 	duration = seconds
@@ -20,6 +22,7 @@ func configure(kind: StringName, status_id: StringName, seconds: float, area_sha
 	source_actor = source
 	sound_priority = priority
 	sound_radius = hearing_radius
+	loose_item_speed_multiplier = clampf(item_speed_multiplier, 0.0, 1.0)
 	provider_id = "area:%d" % get_instance_id()
 
 func _ready() -> void:
@@ -50,17 +53,29 @@ func _process(delta: float) -> void:
 	if duration <= 0.0:
 		queue_free()
 
+func _physics_process(delta: float) -> void:
+	if effect_kind != &"resin":
+		return
+	var damping := pow(loose_item_speed_multiplier, delta)
+	for body in _resin_bodies.duplicate():
+		if not is_instance_valid(body):
+			_resin_bodies.erase(body)
+			continue
+		body.linear_velocity *= damping
+
 func _on_body_entered(body: Node) -> void:
 	if effect_kind == &"resin":
 		if body.has_method("apply_status"):
 			body.apply_status(effect_id, {"provider_id": provider_id, "duration": duration})
-		elif body is RigidBody2D:
-			body.linear_velocity *= 0.5
 		elif body is CharacterBody2D:
 			body.velocity *= 0.5
+		elif body is RigidBody2D and body.is_in_group(&"loose_items") and body not in _resin_bodies:
+			_resin_bodies.append(body)
 
 func _on_body_exited(body: Node) -> void:
 	if effect_kind == &"resin":
+		if body is RigidBody2D:
+			_resin_bodies.erase(body)
 		var status = body.get("status")
 		if not status is StatusController:
 			var support := body.get_node_or_null("EnemySupport") as EnemySupport

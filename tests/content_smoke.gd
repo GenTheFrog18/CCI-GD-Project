@@ -271,6 +271,23 @@ func _test_player_item_regressions() -> void:
 	_check(not is_instance_valid(player.item_controller.prepared_item) and player.item_controller.inventory.get_active_stack().item_id == &"silver_weight", "Silver Weight returns after toggle")
 	var resin := ContentCatalog.get_item(&"cling_resin").primary_behavior as DeployableBehavior
 	_check(resin.primary_shape is CircleShape2D and resin.impact_shape is CircleShape2D, "item effect shapes are editable resources")
+	_check(is_equal_approx(resin.loose_item_speed_multiplier, 0.25), "Cling Resin exposes loose item slowdown")
+	var resin_area := WorldEffectArea.new()
+	resin_area.effect_kind = &"resin"
+	resin_area.loose_item_speed_multiplier = resin.loose_item_speed_multiplier
+	var loose_item := RigidBody2D.new()
+	loose_item.add_to_group(&"loose_items")
+	loose_item.linear_velocity = Vector2.RIGHT * 100.0
+	resin_area._on_body_entered(loose_item)
+	resin_area._physics_process(1.0 / 60.0)
+	_check(loose_item.linear_velocity.x < 100.0 and loose_item.linear_velocity.x > 90.0, "Cling Resin gradually slows loose items")
+	loose_item.linear_velocity += Vector2.DOWN * 100.0
+	resin_area._physics_process(1.0 / 60.0)
+	_check(loose_item.linear_velocity.x > 80.0 and loose_item.linear_velocity.y > 90.0, "Cling Resin preserves velocity while slowing")
+	resin_area._on_body_exited(loose_item)
+	_check(resin_area._resin_bodies.is_empty(), "Loose items leave resin tracking on exit")
+	loose_item.free()
+	resin_area.free()
 	world.free()
 
 func _test_item_impacts() -> void:

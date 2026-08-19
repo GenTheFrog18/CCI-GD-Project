@@ -6,6 +6,7 @@ extends DefaultThrowBehavior
 @export var duration := 8.0
 @export var primary_shape: Shape2D
 @export var impact_shape: Shape2D
+@export_range(0.0, 1.0, 0.05) var loose_item_speed_multiplier := 0.25
 @export var sound_priority := -1
 @export var sound_radius := 0.0
 
@@ -40,6 +41,6 @@ func on_impact(thrown_item: Node2D, impact: ImpactData) -> ItemActionResult:
 
 func _make_area(position: Vector2, area_shape: Shape2D, source: Node) -> WorldEffectArea:
 	var area := WorldEffectArea.new()
-	area.configure(StringName(kind), effect_id, duration, area_shape, source, sound_priority, sound_radius)
+	area.configure(StringName(kind), effect_id, duration, area_shape, source, sound_priority, sound_radius, loose_item_speed_multiplier)
 	area.global_position = position
 	return area
