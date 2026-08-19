@@ -60,15 +60,25 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 	var loose := _nearest_loose_item()
 	var desired: Node2D = loose if loose != null else _target
+	var keep_distance := tongue_range * 0.5
 	if not carried.is_empty():
 		state = State.RETREAT
-		_move_toward(_origin)
+		if _target != null and global_position.distance_to(_target.global_position) < keep_distance:
+			_move_away_from(_target.global_position)
+		else:
+			velocity.x = 0.0
 	elif state == State.ATTACK:
-		velocity.x = 0.0
-		if _timer <= 0.0:
+		if _target != null and global_position.distance_to(_target.global_position) < keep_distance:
+			state = State.MOVE
+			_move_away_from(_target.global_position)
+		elif _timer <= 0.0:
+			velocity.x = 0.0
 			_perform_tongue(desired)
 			state = State.IDLE
 			_timer = cooldown_seconds
+	elif _target != null and global_position.distance_to(_target.global_position) < keep_distance:
+		state = State.MOVE
+		_move_away_from(_target.global_position)
 	elif desired != null:
 		var distance := global_position.distance_to(desired.global_position)
 		if distance <= tongue_range and _timer <= 0.0:
@@ -152,6 +162,10 @@ func _tongue_reaches(target: Node2D) -> bool:
 func _move_toward(point: Vector2) -> void:
 	if absf(point.x - global_position.x) > 1.0:
 		_set_facing(signf(point.x - global_position.x))
+
+func _move_away_from(point: Vector2) -> void:
+	if absf(point.x - global_position.x) > 1.0:
+		_set_facing(signf(global_position.x - point.x))
 
 func _roam() -> void:
 	if not _has_roam_target or global_position.distance_to(_roam_target) <= 8.0:

@@ -6249,7 +6249,7 @@ dialogue_sequence = ExtResource("11_t2nio")
 position = Vector2(272, 311)
 
 [node name="TongueAmphibian2" parent="." unique_id=1847598059 instance=ExtResource("12_c1nwm")]
-position = Vector2(1230, 310)
+position = Vector2(1242, 313)
 
 [node name="BreakableLoot" parent="." unique_id=1596650627 instance=ExtResource("10_5086k")]
 position = Vector2(568, 183)
