@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://d0xljos4bjkc8" path="res://assets/art/world/ground/Tiles1.png" id="7_c1nwm"]
 [ext_resource type="Script" uid="uid://bklq5e7ut66ux" path="res://game/story/surface/surface_intro.gd" id="10_y73ex"]
 [ext_resource type="Resource" uid="uid://dpvw3j2w0jiiy" path="res://data/dialogue/surface_intro_dialogue.tres" id="11_t2nio"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/tongue_amphibian.tscn" id="12_c1nwm"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_78j1j"]
 texture = ExtResource("4_fc1rd")
@@ -5753,7 +5754,7 @@ position = Vector2(150, 320)
 position = Vector2(490, 320)
 
 [node name="InitialSpawn" type="Marker2D" parent="." unique_id=24744099]
-position = Vector2(1498, 318)
+position = Vector2(1520, 317)
 
 [node name="Ground" type="StaticBody2D" parent="." unique_id=1394573641]
 position = Vector2(320, 340)
@@ -5826,3 +5827,9 @@ position = Vector2(318, 319)
 [node name="SurfaceIntro" type="Node" parent="." unique_id=852172844]
 script = ExtResource("10_y73ex")
 dialogue_sequence = ExtResource("11_t2nio")
+
+[node name="TongueAmphibian" parent="." unique_id=668899494 instance=ExtResource("12_c1nwm")]
+position = Vector2(1322, 304)
+
+[node name="TongueAmphibian2" parent="." unique_id=1847598059 instance=ExtResource("12_c1nwm")]
+position = Vector2(1725, 310)

@@ -103,6 +103,9 @@ offset_left = 8.0
 offset_top = 24.0
 offset_right = 120.0
 offset_bottom = 44.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
 
 [node name="TopStats" type="HBoxContainer" parent="LogicalUI" unique_id=661148503]
 layout_mode = 0
@@ -114,6 +117,7 @@ offset_bottom = 45.0
 [node name="Health" type="Label" parent="LogicalUI/TopStats" unique_id=2088355254]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.6039216, 0.4, 0, 1)
 
 [node name="Money" type="Label" parent="LogicalUI/TopStats" unique_id=1025985944]
 layout_mode = 2
@@ -123,10 +127,13 @@ layout_mode = 2
 
 [node name="Status" type="Label" parent="LogicalUI" unique_id=822630617]
 layout_mode = 0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = 190.0
-offset_bottom = 150.0
+offset_left = 8.0
+offset_top = 41.0
+offset_right = 188.0
+offset_bottom = 195.0
+theme_override_colors/font_color = Color(1, 1, 0.54901963, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
 
 [node name="Location" type="Label" parent="LogicalUI" unique_id=1691316578]
 layout_mode = 0
@@ -144,6 +151,10 @@ offset_left = 230.0
 offset_top = 320.0
 offset_right = 410.0
 offset_bottom = 348.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.1764706, 0.1764706, 0.1764706, 0.5647059)
+theme_override_colors/font_outline_color = Color(0.0018410678, 0.0018410682, 0.0018410678, 1)
+theme_override_constants/outline_size = 5
 horizontal_alignment = 1
 
 [node name="Feedback" type="Label" parent="LogicalUI" unique_id=1871174459]
@@ -152,6 +163,9 @@ offset_left = 220.0
 offset_top = 40.0
 offset_right = 420.0
 offset_bottom = 65.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
 horizontal_alignment = 1
 
 [node name="Threat" type="Label" parent="LogicalUI" unique_id=1899423316]

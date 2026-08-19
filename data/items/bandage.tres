@@ -10,6 +10,7 @@
 
 [sub_resource type="Resource" id="Primary"]
 script = ExtResource("2")
+duration = 15.0
 
 [sub_resource type="Resource" id="Secondary"]
 script = ExtResource("3")

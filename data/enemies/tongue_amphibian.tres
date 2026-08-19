@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
-[ext_resource type="Script" path="res://data/definitions/enemy_definition.gd" id="1"]
+[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://cxmpj1p0ndknj"]
+
+[ext_resource type="Script" uid="uid://bnea80q8oknfw" path="res://data/definitions/enemy_definition.gd" id="1"]
 [ext_resource type="PackedScene" path="res://game/enemies/layer1/tongue_amphibian.tscn" id="2"]
+
 [resource]
 script = ExtResource("1")
 enemy_id = &"tongue_amphibian"
@@ -9,4 +11,3 @@ species_id = &"tongue_amphibian"
 tags = Array[StringName]([&"small_enemy"])
 max_health = 25.0
 move_speed = 45.0
-layer = 1
