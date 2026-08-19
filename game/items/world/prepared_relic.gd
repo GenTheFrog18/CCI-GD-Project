@@ -25,6 +25,8 @@ var _collision: CollisionShape2D
 var _light: LightSource2D
 var _elapsed := 0.0
 var _visual: Sprite2D
+var _impact_velocity := Vector2.ZERO
+var _impact_activation_pending := false
 
 func configure(item: ItemDefinition, state: Dictionary, actor: Node2D, relic_kind: StringName, settings: Dictionary = {}) -> void:
 	definition = item
@@ -65,6 +67,8 @@ func _ready() -> void:
 		_light.light_intensity = 0.0
 		_light.enabled = true
 		add_child(_light)
+	if _impact_activation_pending:
+		call_deferred(&"_finish_impact_activation")
 
 func _process(delta: float) -> void:
 	_elapsed += delta
@@ -104,8 +108,17 @@ func throw_toward(cursor: Vector2) -> void:
 
 func activate_from_impact(velocity: Vector2) -> void:
 	_launched = true
+	_impact_velocity = velocity
+	_impact_activation_pending = true
+	if is_inside_tree():
+		call_deferred(&"_finish_impact_activation")
+
+func _finish_impact_activation() -> void:
+	if not _impact_activation_pending or not is_inside_tree():
+		return
+	_impact_activation_pending = false
 	_enable_world_physics()
-	linear_velocity = velocity
+	linear_velocity = _impact_velocity
 
 func can_deactivate() -> bool:
 	return kind == &"silver_weight"

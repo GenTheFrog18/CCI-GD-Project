@@ -48,9 +48,9 @@ func _activate_sun_sphere(thrown_item: ThrownItem, impact: ImpactData) -> void:
 		"duration": duration,
 		"effect_shape": impact_shape,
 	})
-	thrown_item.get_parent().add_child(active)
 	active.global_transform = thrown_item.global_transform
 	active.activate_from_impact(impact.velocity)
+	thrown_item.get_parent().call_deferred(&"add_child", active)
 	SaveManager.mark_destroyed(thrown_item.persistent_id)
 	thrown_item.queue_free()
 
