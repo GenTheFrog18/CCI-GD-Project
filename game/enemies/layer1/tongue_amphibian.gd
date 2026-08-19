@@ -77,7 +77,8 @@ func _physics_process(delta: float) -> void:
 	if grounded:
 		velocity.x = 0.0
 	var loose := _nearest_loose_item()
-	var desired: Node2D = loose if loose != null else _target
+	var chasing_player := _target != null and sight.current_target == _target
+	var desired: Node2D = _target if chasing_player else loose if loose != null else _target
 	if not carried.is_empty():
 		state = State.RETREAT
 		_move_toward(_origin)
