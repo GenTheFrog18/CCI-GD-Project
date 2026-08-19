@@ -16,7 +16,7 @@
 [ext_resource type="Resource" uid="uid://dpvw3j2w0jiiy" path="res://data/dialogue/surface_intro_dialogue.tres" id="11_t2nio"]
 [ext_resource type="PackedScene" uid="uid://b4lo51iq316d1" path="res://game/enemies/layer1/tongue_amphibian.tscn" id="12_c1nwm"]
 [ext_resource type="PackedScene" uid="uid://nes3153cti6e" path="res://game/enemies/layer1/thorn_bloom.tscn" id="16_npgeb"]
-[ext_resource type="PackedScene" path="res://game/enemies/layer1/lantern_snail.tscn" id="17_xytb8"]
+[ext_resource type="PackedScene" uid="uid://u1b4ki8jlewf" path="res://game/enemies/layer1/lantern_snail.tscn" id="17_xytb8"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_78j1j"]
 texture = ExtResource("4_fc1rd")
@@ -6260,4 +6260,5 @@ position = Vector2(568, 183)
 position = Vector2(1056, 97)
 
 [node name="LanternSnail" parent="." unique_id=133574324 instance=ExtResource("17_xytb8")]
-position = Vector2(689, 85)
+position = Vector2(607, 84)
+surface_probe_distance = 24.0

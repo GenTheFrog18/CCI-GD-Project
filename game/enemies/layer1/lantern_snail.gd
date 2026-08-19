@@ -15,6 +15,7 @@ enum State { MOVE, FLEE, ATTACK }
 @export var scream_cooldown := 8.0
 @export var scream_radius := 220.0
 @export var scream_priority := 9
+@export var flash_duration := 4.0
 @export var sound_trigger_radius := 72.0
 @export var flee_speed_multiplier := 1.5
 @export_range(0.1, 2.0, 0.05) var sprite_scale := 0.65
@@ -122,7 +123,7 @@ func _has_surface_support(normal: Vector2) -> bool:
 func _update_surface_from_collisions(previous_heading: Vector2) -> void:
 	for index in get_slide_collision_count():
 		var normal := get_slide_collision(index).get_normal().normalized()
-		if normal.dot(_surface_normal) > 0.75 or not _has_surface_support(normal):
+		if normal.dot(_surface_normal) > 0.75:
 			continue
 		var new_tangent := Vector2(-normal.y, normal.x)
 		var new_direction := signf(new_tangent.dot(previous_heading))
@@ -148,9 +149,12 @@ func _scream() -> void:
 	var flash := WorldEffectArea.new()
 	var shape := CircleShape2D.new()
 	shape.radius = scream_radius
-	flash.configure(&"crystal", &"dazzled", 4.0, shape, self, scream_priority, scream_radius * 2.0)
+	flash.configure(&"crystal", &"dazzled", flash_duration, shape, self, scream_priority, scream_radius * 2.0)
 	get_parent().call_deferred(&"add_child", flash)
 	flash.global_position = global_position
+	var player := get_tree().get_first_node_in_group(&"player") as Node2D
+	if player != null and global_position.distance_to(player.global_position) <= scream_radius and player.has_method("apply_status"):
+		player.apply_status(&"dazzled", {"duration": flash_duration})
 	state = State.MOVE
 	_cooldown = scream_cooldown
 
