@@ -18,6 +18,8 @@ enum State { MOVE, FLEE, ATTACK }
 @export var sound_trigger_radius := 72.0
 @export var flee_speed_multiplier := 1.5
 @export_range(0.1, 2.0, 0.05) var sprite_scale := 0.65
+@export var gravity := 900.0
+@export var surface_probe_distance := 16.0
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sound: SoundListener = $SoundListener
@@ -85,6 +87,13 @@ func _physics_process(delta: float) -> void:
 	if player != null and global_position.distance_to(player.global_position) <= trigger_radius:
 		_start_flee(player)
 	var tangent := Vector2(-_surface_normal.y, _surface_normal.x)
+	var previous_heading := tangent * _direction
+	if not _has_surface_support(_surface_normal):
+		velocity = Vector2.DOWN * gravity * delta
+		sight.facing = Vector2.DOWN
+		move_and_slide()
+		_update_surface_from_collisions(previous_heading)
+		return
 	var travel_direction := _direction
 	var speed_multiplier := support.status.get_multiplier(&"move_speed")
 	if is_instance_valid(_flee_target):
@@ -100,19 +109,28 @@ func _physics_process(delta: float) -> void:
 	velocity = tangent * travel_direction * move_speed * speed_multiplier - _surface_normal * 60.0
 	sight.facing = tangent * travel_direction
 	move_and_slide()
-	for index in get_slide_collision_count():
-		var normal := get_slide_collision(index).get_normal().normalized()
-		if absf(normal.dot(_surface_normal)) < 0.75 and normal.dot(tangent * _direction) < -0.25:
-			var previous_heading := tangent * travel_direction
-			var new_tangent := Vector2(-normal.y, normal.x)
-			var new_direction := signf(new_tangent.dot(previous_heading))
-			if not is_zero_approx(new_direction): _direction = new_direction
-			_surface_normal = normal
-			up_direction = normal
-			rotation = normal.angle() + PI * 0.5
-			break
+	_update_surface_from_collisions(tangent * travel_direction)
 	visual.flip_h = travel_direction > 0.0
 	if global_position.distance_to(_origin) >= roam_distance: _direction *= -1.0
+
+func _has_surface_support(normal: Vector2) -> bool:
+	var direction := normal.normalized()
+	var query := PhysicsRayQueryParameters2D.create(global_position, global_position - direction * surface_probe_distance, 1)
+	query.exclude = [get_rid()]
+	return not get_world_2d().direct_space_state.intersect_ray(query).is_empty()
+
+func _update_surface_from_collisions(previous_heading: Vector2) -> void:
+	for index in get_slide_collision_count():
+		var normal := get_slide_collision(index).get_normal().normalized()
+		if normal.dot(_surface_normal) > 0.75 or not _has_surface_support(normal):
+			continue
+		var new_tangent := Vector2(-normal.y, normal.x)
+		var new_direction := signf(new_tangent.dot(previous_heading))
+		if not is_zero_approx(new_direction): _direction = new_direction
+		_surface_normal = normal
+		up_direction = normal
+		rotation = normal.angle() + PI * 0.5
+		return
 
 func receive_agitation(_data: Dictionary = {}) -> void:
 	if _cooldown > 0.0 or state == State.ATTACK: return
