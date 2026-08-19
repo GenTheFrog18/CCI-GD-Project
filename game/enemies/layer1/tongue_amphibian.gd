@@ -17,6 +17,7 @@ enum State { IDLE, MOVE, ATTACK, RETREAT }
 @export_range(0.0, 1.0, 0.05) var jump_height_randomness := 0.1
 @export var theft_cooldown_seconds := 3.0
 @export var leash_distance := 180.0
+@export var carried_drop_offset := Vector2(0.0, -16.0)
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sight: SightSensor = $SightSensor
@@ -81,7 +82,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		state = State.MOVE
 		_roam()
-	if state != State.ATTACK and grounded and _jump_timer <= 0.0:
+	if state != State.ATTACK and grounded and _jump_timer <= 0.0 and not support.status.has_status(&"electro_stunned"):
 		velocity.x = _facing_direction * move_speed * support.status.get_multiplier(&"move_speed")
 		velocity.y = jump_velocity * _random_jump_height() * support.status.get_multiplier(&"jump_strength")
 		_jump_timer = _random_jump_cooldown()
@@ -200,7 +201,7 @@ func _drop_carried(position: Vector2) -> void:
 	var definition := ContentCatalog.get_item(carried.item_id)
 	if definition != null:
 		var drop := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
-		drop.configure(definition, carried.state, self, position, Vector2(0, -40))
+		drop.configure(definition, carried.state, self, position + carried_drop_offset, Vector2(0, -40))
 		get_parent().call_deferred(&"add_child", drop)
 	carried = ItemStack.new()
 	_theft_cooldown = maxf(theft_cooldown_seconds, 0.0)

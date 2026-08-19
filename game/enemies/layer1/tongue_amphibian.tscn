@@ -9,9 +9,10 @@
 size = Vector2(24, 18)
 
 [node name="TongueAmphibian" type="CharacterBody2D" unique_id=2067116479]
+position = Vector2(-1, 0)
 collision_layer = 4
 script = ExtResource("1")
-tongue_range = 52.0
+tongue_range = 64.0
 tongue_angle_degrees = 30.0
 tongue_width = 10.0
 jump_height_randomness = 0.2
@@ -28,7 +29,7 @@ polygon = PackedVector2Array(-12, 8, -10, -8, 10, -8, 12, 8)
 visible = false
 z_index = 30
 texture_filter = 1
-position = Vector2(0, -44)
+position = Vector2(0, -30)
 scale = Vector2(0.75, 0.75)
 
 [node name="EnemySupport" type="Node" parent="." unique_id=1577383427]

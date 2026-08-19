@@ -14,6 +14,7 @@ extends Node
 
 var health: HealthComponent
 var status: StatusController
+var effect_label: Label
 var _flight_fall_speed := 0.0
 
 func _ready() -> void:
@@ -28,6 +29,19 @@ func _ready() -> void:
 	add_child(status)
 	var actor := get_parent()
 	if actor != null:
+		if actor is Node2D:
+			effect_label = Label.new()
+			effect_label.name = "EnemyEffects"
+			effect_label.position = Vector2(-70.0, -24.0)
+			effect_label.size = Vector2(140.0, 24.0)
+			effect_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			effect_label.z_index = 20
+			effect_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			effect_label.add_theme_font_size_override("font_size", 8)
+			effect_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.45, 1.0))
+			effect_label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 1.0))
+			effect_label.add_theme_constant_override("outline_size", 3)
+			actor.add_child(effect_label)
 		if register_persistence:
 			actor.add_to_group(&"persistent_objects")
 		actor.add_to_group(&"effect_receivers")
@@ -37,6 +51,24 @@ func _ready() -> void:
 	health.died.connect(_on_died)
 	status.tick_damage_requested.connect(_on_status_damage)
 	status.tick_healing_requested.connect(func(amount: float): health.heal(amount))
+	status.status_changed.connect(_refresh_effect_label)
+	_refresh_effect_label()
+
+func _process(_delta: float) -> void:
+	_refresh_effect_label()
+
+func _refresh_effect_label() -> void:
+	if effect_label == null or status == null:
+		return
+	var lines := PackedStringArray()
+	for id: StringName in status.active:
+		var definition := ContentCatalog.get_effect(id)
+		var name := definition.display_name if definition != null else String(id)
+		var stacks := status.get_stack_count(id)
+		var stack_text := " x%d" % stacks if stacks > 1 else ""
+		lines.append("%s%s %ds" % [name, stack_text, ceili(status.get_remaining(id))])
+	effect_label.text = "\n".join(lines)
+	effect_label.visible = not lines.is_empty()
 
 func apply_damage(info: DamageInfo) -> bool:
 	return health.apply_damage(info, species_id)
