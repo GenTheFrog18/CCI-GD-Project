@@ -20,6 +20,7 @@ effect_id = &"resin_bound"
 duration = 20.0
 primary_shape = SubResource("CircleShape2D_cluqp")
 impact_shape = SubResource("ImpactShape")
+loose_item_speed_multiplier = 0.25
 minimum_speed = 70.0
 maximum_speed = 500.0
 maximum_cursor_distance = 200.0

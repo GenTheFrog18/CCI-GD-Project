@@ -56,7 +56,7 @@ func _process(delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	if effect_kind != &"resin":
 		return
-	var damping := pow(loose_item_speed_multiplier, delta)
+	var damping := pow(maxf(loose_item_speed_multiplier, 0.001), delta * 4.0)
 	for body in _resin_bodies.duplicate():
 		if not is_instance_valid(body):
 			_resin_bodies.erase(body)
