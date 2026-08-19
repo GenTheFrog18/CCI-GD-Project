@@ -73,12 +73,15 @@ func _physics_process(delta: float) -> void:
 	_timer = maxf(0.0, _timer - delta)
 	_cooldown = maxf(0.0, _cooldown - delta)
 	_hit_remaining = maxf(0.0, _hit_remaining - delta)
+	var player := get_tree().get_first_node_in_group(&"player") as Node2D
+	if player != null and _cooldown <= 0.0 and global_position.distance_to(player.global_position) <= trigger_radius and state != State.ATTACK:
+		_flee_target = null
+		receive_agitation({"kind": "proximity"})
 	if state == State.ATTACK:
 		velocity = Vector2.ZERO
 		_play_animation(&"hit")
 		if _timer <= 0.0: _scream()
 		return
-	var player := get_tree().get_first_node_in_group(&"player") as Node2D
 	if player != null and global_position.distance_to(player.global_position) <= trigger_radius:
 		_start_flee(player)
 	var tangent := Vector2(-_surface_normal.y, _surface_normal.x)
@@ -108,7 +111,7 @@ func _physics_process(delta: float) -> void:
 			up_direction = normal
 			rotation = normal.angle() + PI * 0.5
 			break
-	visual.flip_h = travel_direction < 0.0
+	visual.flip_h = travel_direction > 0.0
 	if global_position.distance_to(_origin) >= roam_distance: _direction *= -1.0
 
 func receive_agitation(_data: Dictionary = {}) -> void:
@@ -138,10 +141,9 @@ func _drop_crystal(_source: Node) -> void:
 	if definition == null: return
 	var drop := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
 	drop.persistent_id = "%s:crystal" % persistent_id
-	drop.configure(definition, {"origin": "enemy_drop"}, self, global_position + Vector2(0, -10), Vector2.ZERO)
-	drop.freeze = true
+	drop.configure(definition, {"origin": "enemy_drop"}, self, global_position + _surface_normal * 12.0, _surface_normal * 80.0)
+	drop.set_meta(&"effect_deployed", true)
 	get_parent().add_child(drop)
-	drop.add_to_group(&"interactables")
 
 func _setup_visual() -> void:
 	var frames := SpriteFrames.new()
