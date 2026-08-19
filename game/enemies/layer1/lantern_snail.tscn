@@ -2,12 +2,24 @@
 
 [ext_resource type="Script" uid="uid://tqwjejlocui5" path="res://game/enemies/layer1/lantern_snail.gd" id="1"]
 [ext_resource type="Script" uid="uid://ducaowngygpn0" path="res://game/enemies/enemy_support.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://ck36adc1sx465" path="res://assets/art/enemies/snail/snail_idle.png" id="2_locek"]
 [ext_resource type="Script" uid="uid://ctpy5jx0wglna" path="res://core/sensing/sound_listener.gd" id="3"]
 [ext_resource type="Script" uid="uid://bp5r3gpofym7m" path="res://game/world/lighting/light_source_2d.gd" id="4"]
-[ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="5"]
+[ext_resource type="Script" uid="uid://dedxrelm31xit" path="res://core/sensing/sight_sensor.gd" id="5"]
 
 [sub_resource type="RectangleShape2D" id="Shape"]
-size = Vector2(20, 14)
+size = Vector2(26, 23)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_qmu1m"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_locek")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
 
 [sub_resource type="Gradient" id="GlowGradient"]
 colors = PackedColorArray(1, 0.9, 0.35, 1, 1, 0.9, 0.35, 0)
@@ -25,12 +37,15 @@ collision_layer = 4
 script = ExtResource("1")
 move_speed = 9.0
 sound_trigger_radius = 50.0
+sprite_scale = 0.65
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1366317970]
+position = Vector2(0, -4.5)
 shape = SubResource("Shape")
 
 [node name="Visual" type="AnimatedSprite2D" parent="." unique_id=284403318]
-position = Vector2(0, -8)
+position = Vector2(0, -9)
+sprite_frames = SubResource("SpriteFrames_qmu1m")
 
 [node name="EnemySupport" type="Node" parent="." unique_id=1509188411]
 script = ExtResource("2")

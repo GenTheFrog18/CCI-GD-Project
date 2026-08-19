@@ -503,7 +503,7 @@ func _set_debug_text_visible(visible: bool) -> void:
 		node.visible = visible
 
 func _show_threat(source: Node2D, duration: float) -> void:
-	if source == null:
+	if not is_instance_valid(source):
 		return
 	var id := source.get_instance_id()
 	if _threats.has(id):
@@ -525,12 +525,14 @@ func _update_threat(delta: float) -> void:
 	warning_icon.show()
 	for id in _threats.keys():
 		var threat: Dictionary = _threats[id]
-		var source := threat.source as Node2D
+		var source_value: Variant = threat.get("source")
 		threat.remaining = float(threat.remaining) - delta
-		if not is_instance_valid(source) or threat.remaining <= 0.0:
-			(threat.pointer as Sprite2D).queue_free()
+		if not is_instance_valid(source_value) or not source_value.is_inside_tree() or threat.remaining <= 0.0:
+			var expired_pointer := threat.get("pointer") as Sprite2D
+			if is_instance_valid(expired_pointer): expired_pointer.queue_free()
 			_threats.erase(id)
 			continue
+		var source := source_value as Node2D
 		var direction := GameSession.screen_to_design(source.get_global_transform_with_canvas().origin) - warning_position
 		if direction.length_squared() < 0.001:
 			direction = Vector2.RIGHT

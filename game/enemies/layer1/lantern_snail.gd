@@ -17,6 +17,7 @@ enum State { MOVE, FLEE, ATTACK }
 @export var scream_priority := 9
 @export var sound_trigger_radius := 72.0
 @export var flee_speed_multiplier := 1.5
+@export_range(0.1, 2.0, 0.05) var sprite_scale := 0.65
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sound: SoundListener = $SoundListener
@@ -35,6 +36,7 @@ var _hit_remaining := 0.0
 func _ready() -> void:
 	support.persistent_id = persistent_id
 	_setup_visual()
+	visual.scale = Vector2.ONE * sprite_scale
 	_play_animation(&"walk")
 	add_to_group(&"light_sources")
 	light.light_radius = 128.0
@@ -98,10 +100,15 @@ func _physics_process(delta: float) -> void:
 	for index in get_slide_collision_count():
 		var normal := get_slide_collision(index).get_normal().normalized()
 		if absf(normal.dot(_surface_normal)) < 0.75 and normal.dot(tangent * _direction) < -0.25:
+			var previous_heading := tangent * travel_direction
+			var new_tangent := Vector2(-normal.y, normal.x)
+			var new_direction := signf(new_tangent.dot(previous_heading))
+			if not is_zero_approx(new_direction): _direction = new_direction
 			_surface_normal = normal
 			up_direction = normal
 			rotation = normal.angle() + PI * 0.5
 			break
+	visual.flip_h = travel_direction < 0.0
 	if global_position.distance_to(_origin) >= roam_distance: _direction *= -1.0
 
 func receive_agitation(_data: Dictionary = {}) -> void:
