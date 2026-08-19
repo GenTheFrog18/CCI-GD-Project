@@ -1,11 +1,12 @@
-[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
-[ext_resource type="Script" path="res://data/definitions/enemy_definition.gd" id="1"]
-[ext_resource type="PackedScene" path="res://game/enemies/layer1/thorn_bloom.tscn" id="2"]
+[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://chotxvamp8gx"]
+
+[ext_resource type="Script" uid="uid://bnea80q8oknfw" path="res://data/definitions/enemy_definition.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://nes3153cti6e" path="res://game/enemies/layer1/thorn_bloom.tscn" id="2"]
+
 [resource]
 script = ExtResource("1")
 enemy_id = &"thorn_bloom"
 scene = ExtResource("2")
 species_id = &"thorn_bloom"
 tags = Array[StringName]([&"neutral_creature", &"hazard"])
-max_health = 30.0
-layer = 1
+detection_range = 100.0

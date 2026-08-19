@@ -9,6 +9,8 @@ const PROJECTILE_TEXTURE := preload("res://assets/art/enemies/thorn_bloom/projec
 var source_actor: Node
 var species_id: StringName = &"thorn_bloom"
 var _stuck := false
+var _resolved := false
+var _player_detector: Area2D
 
 func _ready() -> void:
 	collision_layer = 32
@@ -23,6 +25,17 @@ func _ready() -> void:
 	shape.size = Vector2(10, 2)
 	collision.shape = shape
 	add_child(collision)
+	_player_detector = Area2D.new()
+	_player_detector.collision_layer = 0
+	_player_detector.collision_mask = 2
+	_player_detector.monitorable = false
+	var detector_shape := CollisionShape2D.new()
+	var detector_rect := RectangleShape2D.new()
+	detector_rect.size = Vector2(12, 4)
+	detector_shape.shape = detector_rect
+	_player_detector.add_child(detector_shape)
+	_player_detector.body_entered.connect(_on_player_entered)
+	add_child(_player_detector)
 	queue_redraw()
 
 func configure(source: Node, initial_velocity: Vector2, hit_damage: float, lifetime: float) -> void:
@@ -36,21 +49,32 @@ func _physics_process(delta: float) -> void:
 	if stuck_seconds <= 0.0:
 		queue_free()
 		return
-	if _stuck: return
+	if _stuck:
+		for body in _player_detector.get_overlapping_bodies():
+			_apply_hit(body)
+		return
 	velocity.y += gravity * delta
 	rotation = velocity.angle()
 	var collision := move_and_collide(velocity * delta)
 	if collision == null: return
 	var body := collision.get_collider() as Node
-	if body != source_actor and body.has_method("apply_damage"):
-		var impact := ImpactData.new()
-		impact.source_actor = source_actor
-		impact.source_species_id = species_id
-		impact.base_damage = damage
-		impact.velocity = velocity
-		impact.status_effects = [{"effect_id": &"bleed", "duration": 8.0}]
-		impact.apply_to(body)
-		queue_free()
-	else:
+	if not _apply_hit(body):
 		_stuck = true
 		velocity = Vector2.ZERO
+
+func _on_player_entered(body: Node2D) -> void:
+	_apply_hit(body)
+
+func _apply_hit(body: Node) -> bool:
+	if _resolved or body == null or body == source_actor or not body.has_method("apply_damage"):
+		return false
+	var impact := ImpactData.new()
+	impact.source_actor = source_actor
+	impact.source_species_id = species_id
+	impact.base_damage = damage
+	impact.velocity = velocity
+	impact.status_effects = [{"effect_id": &"bleed", "duration": 8.0}]
+	impact.apply_to(body)
+	_resolved = true
+	queue_free()
+	return true

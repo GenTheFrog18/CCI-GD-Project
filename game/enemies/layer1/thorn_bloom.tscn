@@ -1,18 +1,43 @@
-[gd_scene load_steps=5 format=3]
-[ext_resource type="Script" path="res://game/enemies/layer1/thorn_bloom.gd" id="1"]
-[ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
+[gd_scene format=3 uid="uid://nes3153cti6e"]
+
+[ext_resource type="Script" uid="uid://bnjqtbwb56hne" path="res://game/enemies/layer1/thorn_bloom.gd" id="1"]
+[ext_resource type="Script" uid="uid://ducaowngygpn0" path="res://game/enemies/enemy_support.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://4ajrsynl35d4" path="res://assets/art/enemies/thorn_bloom/idle.png" id="2_qmu1m"]
+
 [sub_resource type="RectangleShape2D" id="Shape"]
-size = Vector2(22, 30)
-[node name="ThornBloom" type="StaticBody2D"]
+size = Vector2(16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wihvf"]
+atlas = ExtResource("2_qmu1m")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_npgeb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wihvf")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="ThornBloom" type="StaticBody2D" unique_id=449926197]
 collision_layer = 4
-collision_mask = 1
 script = ExtResource("1")
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -15)
+trigger_radius = 60.0
+telegraph_seconds = 0.5
+reload_seconds = 180.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=121494692]
+position = Vector2(0, -8)
 shape = SubResource("Shape")
-[node name="Visual" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -15)
-[node name="EnemySupport" type="Node" parent="."]
+
+[node name="Visual" type="AnimatedSprite2D" parent="." unique_id=1598894233]
+position = Vector2(0, -8)
+sprite_frames = SubResource("SpriteFrames_npgeb")
+
+[node name="EnemySupport" type="Node" parent="." unique_id=1635767905]
 script = ExtResource("2")
 species_id = &"thorn_bloom"
 max_health = 30.0
