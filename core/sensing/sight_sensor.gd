@@ -45,7 +45,7 @@ func scan() -> Node2D:
 		var target := candidate as Node2D
 		if target.has_method("is_combat_protected") and target.is_combat_protected():
 			continue
-		var distance := global_position.distance_to(target.global_position)
+		var distance := global_position.distance_to(_target_detection_position(target))
 		if distance < best_distance and can_see(target):
 			best = target
 			best_distance = distance
@@ -66,7 +66,8 @@ func can_see(target: Node2D) -> bool:
 	var owner_status := _owner_status()
 	if owner_status is StatusController and owner_status.get_multiplier(&"sight_enabled") <= 0.0:
 		return false
-	var offset := target.global_position - global_position
+	var target_position := _target_detection_position(target)
+	var offset := target_position - global_position
 	var distance := offset.length()
 	var sight_range := aggravated_range if aggravated else normal_range
 	var angle := aggravated_angle_degrees if aggravated else normal_angle_degrees
@@ -76,14 +77,17 @@ func can_see(target: Node2D) -> bool:
 		var forward := facing.normalized() if not facing.is_zero_approx() else Vector2.RIGHT
 		if forward.dot(offset.normalized()) < cos(deg_to_rad(angle * 0.5)):
 			return false
-	last_ray_end = target.global_position
-	var query := PhysicsRayQueryParameters2D.create(global_position, target.global_position, obstruction_mask)
+	last_ray_end = target_position
+	var query := PhysicsRayQueryParameters2D.create(global_position, target_position, obstruction_mask)
 	query.collide_with_areas = true
 	if get_parent() is CollisionObject2D:
 		query.exclude = [get_parent().get_rid()]
 	var hit := get_world_2d().direct_space_state.intersect_ray(query)
 	last_ray_blocked = not hit.is_empty() and hit.get("collider") != target
 	return not last_ray_blocked
+
+func _target_detection_position(target: Node2D) -> Vector2:
+	return target.get_detection_origin() if target.has_method("get_detection_origin") else target.global_position
 
 func _owner_status() -> StatusController:
 	var actor := get_parent()

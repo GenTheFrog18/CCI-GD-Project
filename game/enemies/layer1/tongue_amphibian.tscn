@@ -32,6 +32,19 @@ texture_filter = 1
 position = Vector2(0, -30)
 scale = Vector2(0.75, 0.75)
 
+[node name="AwarenessIndicator" type="Label" parent="." unique_id=1816357396]
+visible = false
+offset_left = -16.0
+offset_top = -26.0
+offset_right = 16.0
+offset_bottom = -8.0
+theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+z_index = 40
+
 [node name="EnemySupport" type="Node" parent="." unique_id=1577383427]
 script = ExtResource("2")
 species_id = &"tongue_amphibian"

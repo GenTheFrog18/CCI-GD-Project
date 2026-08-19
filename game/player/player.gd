@@ -31,6 +31,7 @@ signal threat_warning_requested(source: Node2D, duration: float)
 @export var rope_jump_horizontal_speed := 120.0
 @export var rope_lateral_range := 8.0
 @export var rope_lateral_speed := 48.0
+@export var detection_origin_offset := Vector2(0.0, -28.0)
 @export var species_id: StringName = &"player"
 @export var persistent_id := "player"
 
@@ -209,7 +210,10 @@ func _on_landed(speed: float) -> void:
 
 func _emit_sound(type: StringName, priority: int, radius: float) -> void:
 	if radius > 0.0:
-		SoundBus.emit_sound(get_tree(), SoundEvent.new(global_position, radius, type, priority, self))
+		SoundBus.emit_sound(get_tree(), SoundEvent.new(get_detection_origin(), radius, type, priority, self))
+
+func get_detection_origin() -> Vector2:
+	return global_position + detection_origin_offset
 
 func set_inventory_open(open: bool) -> void:
 	if inventory_open == open:

@@ -28,7 +28,7 @@ func _process(_delta: float) -> void:
 	var age := (Time.get_ticks_msec() - current_event.timestamp) / 1000.0
 	var listener := get_parent() as Node2D
 	var source_out_of_range := is_instance_valid(current_event.source) and current_event.source is Node2D and listener != null \
-		and listener.global_position.distance_to(current_event.source.global_position) > current_event.radius
+		and listener.global_position.distance_to(current_event.position) > current_event.radius
 	if age > target_timeout or source_out_of_range:
 		clear_target()
 

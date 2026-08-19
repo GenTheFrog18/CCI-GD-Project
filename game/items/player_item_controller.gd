@@ -203,7 +203,7 @@ func _commit_result(result: ItemActionResult, world: Node, actor: Node2D = null)
 		feedback_requested.emit(result.message)
 	if actor != null and result.sound_priority >= 0 and result.sound_radius > 0.0:
 		SoundBus.emit_sound(actor.get_tree(), SoundEvent.new(
-			actor.global_position,
+			actor.get_detection_origin() if actor.has_method("get_detection_origin") else actor.global_position,
 			result.sound_radius,
 			result.sound_type,
 			result.sound_priority,

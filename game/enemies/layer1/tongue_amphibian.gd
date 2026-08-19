@@ -36,6 +36,7 @@ var _has_roam_target := false
 var _facing_direction := 1.0
 var _random := RandomNumberGenerator.new()
 var _knockback := Vector2.ZERO
+var _investigation_remaining := 0.0
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
@@ -44,9 +45,22 @@ func _ready() -> void:
 	_random.randomize()
 	_jump_timer = _random_jump_cooldown()
 	_refresh_carried_icon()
-	sight.target_seen.connect(func(target: Node2D, _position: Vector2): _target = target)
-	sight.target_lost.connect(func(_target_node: Node2D): _target = null)
-	sound.sound_accepted.connect(func(event: SoundEvent, _direct: bool): _move_toward(event.position))
+	sight.target_seen.connect(func(target: Node2D, _position: Vector2):
+		_target = target
+		_investigation_remaining = 0.0
+		$AwarenessIndicator.text = "!"
+		$AwarenessIndicator.show()
+	)
+	sight.target_lost.connect(func(_target_node: Node2D):
+		_target = null
+		if _investigation_remaining <= 0.0: $AwarenessIndicator.hide()
+	)
+	sound.sound_accepted.connect(func(event: SoundEvent, _direct: bool):
+		_investigation_remaining = 2.0
+		$AwarenessIndicator.text = "?"
+		$AwarenessIndicator.show()
+		_move_toward(event.position)
+	)
 	support.health.damaged.connect(func(_info: DamageInfo):
 		if not carried.is_empty(): _drop_carried(global_position)
 	)
@@ -56,6 +70,9 @@ func _physics_process(delta: float) -> void:
 	_timer = maxf(0.0, _timer - delta)
 	_jump_timer = maxf(0.0, _jump_timer - delta)
 	_theft_cooldown = maxf(0.0, _theft_cooldown - delta)
+	_investigation_remaining = maxf(0.0, _investigation_remaining - delta)
+	if _target == null and _investigation_remaining <= 0.0:
+		$AwarenessIndicator.hide()
 	var grounded := is_on_floor()
 	if grounded:
 		velocity.x = 0.0
