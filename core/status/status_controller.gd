@@ -86,6 +86,28 @@ func apply_status(effect_id: StringName, data: Dictionary = {}) -> bool:
 	status_changed.emit()
 	return true
 
+func extend_status_duration(effect_id: StringName, duration: float, maximum: float) -> bool:
+	var amount := maxf(duration, 0.0)
+	var cap := maxf(maximum, 0.0)
+	if amount <= 0.0 or cap <= 0.0:
+		return false
+	if not active.has(effect_id):
+		return apply_status(effect_id, {"duration": minf(amount, cap)})
+	var entry: Dictionary = active[effect_id]
+	var applications: Array = entry.get("applications", [])
+	if applications.is_empty():
+		return apply_status(effect_id, {"duration": minf(amount, cap)})
+	var longest_index := 0
+	for index in range(1, applications.size()):
+		if float(applications[index].get("remaining", 0.0)) > float(applications[longest_index].get("remaining", 0.0)):
+			longest_index = index
+	var current := float(applications[longest_index].get("remaining", 0.0))
+	applications[longest_index].remaining = minf(current + amount, cap)
+	entry.applications = applications
+	active[effect_id] = entry
+	status_changed.emit()
+	return true
+
 func remove_status(effect_id: StringName, provider_id := "") -> bool:
 	if not active.has(effect_id):
 		return false

@@ -15,6 +15,8 @@ enum State { IDLE, EXPLODING, DORMANT }
 @export var needle_speeds: Array[float] = [150.0, 190.0, 230.0]
 @export var radial_projectile_count := 8
 @export var spike_iframe_seconds := 0.35
+@export var needle_bleed_duration := 10.0
+@export var needle_bleed_cap := 80.0
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var visual: AnimatedSprite2D = $Visual
@@ -57,7 +59,7 @@ func _fire() -> void:
 		get_parent().add_child(needle)
 		needle.global_position = global_position + Vector2(0, -10)
 		var speed := needle_speeds[index % needle_speeds.size()] if not needle_speeds.is_empty() else 180.0
-		needle.configure(self, Vector2.RIGHT.rotated(TAU * index / count) * speed, needle_damage, needle_lifetime, spike_iframe_seconds)
+		needle.configure(self, Vector2.RIGHT.rotated(TAU * index / count) * speed, needle_damage, needle_lifetime, spike_iframe_seconds, needle_bleed_duration, needle_bleed_cap)
 
 func _setup_visual() -> void:
 	var frames := SpriteFrames.new()

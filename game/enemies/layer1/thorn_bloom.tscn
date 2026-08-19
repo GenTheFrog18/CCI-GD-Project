@@ -25,10 +25,14 @@ animations = [{
 [node name="ThornBloom" type="StaticBody2D" unique_id=449926197]
 collision_layer = 4
 script = ExtResource("1")
-trigger_radius = 60.0
-telegraph_seconds = 0.5
+trigger_radius = 50.0
 reload_seconds = 180.0
-spike_iframe_seconds = 0.35
+needle_damage = 2.0
+needle_lifetime = 60.0
+radial_projectile_count = 6
+spike_iframe_seconds = 0.4
+needle_bleed_duration = 10.0
+needle_bleed_cap = 80.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=121494692]
 position = Vector2(0, -8)
