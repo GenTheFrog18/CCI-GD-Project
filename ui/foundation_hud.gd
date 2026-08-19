@@ -7,6 +7,8 @@ const FIRE_DEAD := preload("res://assets/art/ui/hud/fire-dead-hp-bar.png")
 const HOTBAR_MAIN := preload("res://assets/art/ui/hud/hotbar-main.png")
 const HOTBAR_SECONDARY := preload("res://assets/art/ui/hud/hotbar-sec.png")
 const HOTBAR_ARROW := preload("res://assets/art/ui/hud/arrow-hotbar.png")
+const WARNING_ICON := preload("res://assets/art/characters/player/warning.png")
+const ENEMY_POINTER_ICON := preload("res://assets/art/characters/player/enemy_pointer.png")
 const SETTINGS_POPUP_SCENE := preload("res://ui/settings_popup.tscn")
 const INVENTORY_MENU_SCENE := preload("res://ui/inventory_menu.tscn")
 const SHOP_UI_SCENE := preload("res://ui/shop_ui.tscn")
@@ -38,13 +40,13 @@ var world_log_panel: PanelContainer
 var world_log_label: Label
 var unlimited_health_toggle: CheckButton
 var location_label: Label
-var threat_label: Label
+var warning_layer: Control
+var warning_icon: Sprite2D
 var _selected_container: StringName
 var _selected_index := -1
 var _performance_elapsed := 0.0
 var _status_elapsed := 0.0
-var _threat_source: Node2D
-var _threat_remaining := 0.0
+var _threats: Dictionary = {}
 var effect_overlay: ColorRect
 var health_flames: Array[TextureRect] = []
 var hotbar_icons: Array[TextureRect] = []
@@ -58,6 +60,8 @@ var debug_text_nodes: Array[CanvasItem] = []
 @export_range(1.0, 2.0, 0.01) var hotbar_bounce_scale := 1.35
 @export_range(0.01, 1.0, 0.01) var hotbar_animation_seconds := 0.18
 @export_range(16.0, 96.0, 1.0) var hotbar_slot_size := 32.0
+@export var warning_icon_offset := Vector2(0.0, -30.0)
+@export_range(0.0, 128.0, 1.0) var warning_pointer_orbit_distance := 24.0
 
 @onready var logical_ui: Control = $LogicalUI
 
@@ -162,7 +166,13 @@ func _build_ui() -> void:
 	location_label = $LogicalUI/Location
 	prompt_label = $LogicalUI/Prompt
 	feedback_label = $LogicalUI/Feedback
-	threat_label = $LogicalUI/Threat
+	warning_layer = $LogicalUI/Threat
+	warning_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	warning_icon = Sprite2D.new()
+	warning_icon.texture = WARNING_ICON
+	warning_icon.z_index = 1
+	warning_layer.add_child(warning_icon)
+	warning_icon.hide()
 	effect_overlay = $LogicalUI/EffectOverlay
 	hotbar_slots.clear()
 	hotbar_indices.clear()
@@ -493,20 +503,42 @@ func _set_debug_text_visible(visible: bool) -> void:
 		node.visible = visible
 
 func _show_threat(source: Node2D, duration: float) -> void:
-	_threat_source = source
-	_threat_remaining = maxf(_threat_remaining, duration)
-	threat_label.visible = true
+	if source == null:
+		return
+	var id := source.get_instance_id()
+	if _threats.has(id):
+		_threats[id].remaining = maxf(float(_threats[id].remaining), duration)
+		return
+	var pointer := Sprite2D.new()
+	pointer.texture = ENEMY_POINTER_ICON
+	warning_layer.add_child(pointer)
+	_threats[id] = {"source": source, "remaining": duration, "pointer": pointer}
 
 func _update_threat(delta: float) -> void:
-	if threat_label == null:
+	if warning_icon == null or player == null:
 		return
-	if _threat_remaining <= 0.0:
-		threat_label.visible = false
+	if _threats.is_empty():
+		warning_icon.hide()
 		return
-	_threat_remaining -= delta
-	if is_instance_valid(_threat_source) and player != null:
-		threat_label.position = player.get_global_transform_with_canvas().origin + Vector2(-18.0, -52.0)
-		threat_label.text = "! %s" % ("▶" if _threat_source.global_position.x > player.global_position.x else "◀")
+	var warning_position := GameSession.screen_to_design(player.get_global_transform_with_canvas().origin) + warning_icon_offset
+	warning_icon.position = warning_position
+	warning_icon.show()
+	for id in _threats.keys():
+		var threat: Dictionary = _threats[id]
+		var source := threat.source as Node2D
+		threat.remaining = float(threat.remaining) - delta
+		if not is_instance_valid(source) or threat.remaining <= 0.0:
+			(threat.pointer as Sprite2D).queue_free()
+			_threats.erase(id)
+			continue
+		var direction := GameSession.screen_to_design(source.get_global_transform_with_canvas().origin) - warning_position
+		if direction.length_squared() < 0.001:
+			direction = Vector2.RIGHT
+		else:
+			direction = direction.normalized()
+		var pointer := threat.pointer as Sprite2D
+		pointer.position = warning_position + direction * warning_pointer_orbit_distance
+		pointer.rotation = direction.angle()
 
 func _refresh_status() -> void:
 	if player == null or status_label == null: return

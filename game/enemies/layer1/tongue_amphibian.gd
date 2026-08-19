@@ -68,10 +68,7 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.x = 0.0
 	elif state == State.ATTACK:
-		if _target != null and global_position.distance_to(_target.global_position) < keep_distance:
-			state = State.MOVE
-			_move_away_from(_target.global_position)
-		elif _timer <= 0.0:
+		if _timer <= 0.0:
 			velocity.x = 0.0
 			_perform_tongue(desired)
 			state = State.IDLE
