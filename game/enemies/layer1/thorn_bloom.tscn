@@ -28,6 +28,7 @@ script = ExtResource("1")
 trigger_radius = 60.0
 telegraph_seconds = 0.5
 reload_seconds = 180.0
+spike_iframe_seconds = 0.35
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=121494692]
 position = Vector2(0, -8)

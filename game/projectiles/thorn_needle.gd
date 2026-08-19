@@ -11,6 +11,7 @@ var species_id: StringName = &"thorn_bloom"
 var _stuck := false
 var _resolved := false
 var _player_detector: Area2D
+var player_iframe_seconds := 0.35
 
 func _ready() -> void:
 	collision_layer = 32
@@ -38,11 +39,14 @@ func _ready() -> void:
 	add_child(_player_detector)
 	queue_redraw()
 
-func configure(source: Node, initial_velocity: Vector2, hit_damage: float, lifetime: float) -> void:
+func configure(source: Node, initial_velocity: Vector2, hit_damage: float, lifetime: float, iframe_seconds := 0.35) -> void:
 	source_actor = source
 	velocity = initial_velocity
 	damage = hit_damage
 	stuck_seconds = lifetime
+	player_iframe_seconds = iframe_seconds
+	if source_actor is CollisionObject2D:
+		add_collision_exception_with(source_actor)
 
 func _physics_process(delta: float) -> void:
 	stuck_seconds -= delta
@@ -73,8 +77,17 @@ func _apply_hit(body: Node) -> bool:
 	impact.source_species_id = species_id
 	impact.base_damage = damage
 	impact.velocity = velocity
+	impact.attack_kind = &"thorn_needle"
 	impact.status_effects = [{"effect_id": &"bleed", "duration": 8.0}]
-	impact.apply_to(body)
+	var accepted := false
+	if body.has_method("apply_thorn_spike_damage"):
+		accepted = body.apply_thorn_spike_damage(impact.to_damage_info(), player_iframe_seconds)
+		if accepted and body.has_method("apply_status"):
+			body.apply_status(&"bleed", {"duration": 8.0})
+	else:
+		accepted = bool(impact.apply_to(body).get("damage", false))
+	if not accepted:
+		return false
 	_resolved = true
 	queue_free()
 	return true

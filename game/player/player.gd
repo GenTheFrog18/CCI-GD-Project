@@ -61,6 +61,7 @@ var _bird_hit_times: Array[float] = []
 var curse_tracker: CurseTracker
 var _action_animation := false
 var _combat_safe_zone_count := 0
+var _thorn_spike_iframe_until := 0
 
 func _ready() -> void:
 	add_to_group(&"persistent_objects")
@@ -290,6 +291,14 @@ func apply_damage(info: DamageInfo) -> bool:
 	if GameSession.debug_unlimited_health:
 		return false
 	return health.apply_damage(info, species_id)
+
+func apply_thorn_spike_damage(info: DamageInfo, iframe_seconds: float) -> bool:
+	if Time.get_ticks_msec() < _thorn_spike_iframe_until:
+		return false
+	if not apply_damage(info):
+		return false
+	_thorn_spike_iframe_until = Time.get_ticks_msec() + int(maxf(iframe_seconds, 0.0) * 1000.0)
+	return true
 
 func resolve_impact(impact: ImpactData) -> Dictionary:
 	if is_combat_protected() and not impact.source_species_id.is_empty() and impact.source_species_id != species_id:
