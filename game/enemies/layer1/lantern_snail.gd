@@ -106,6 +106,9 @@ func _physics_process(delta: float) -> void:
 		speed_multiplier *= flee_speed_multiplier
 	else:
 		state = State.MOVE
+	_try_forward_surface_transition(tangent * travel_direction)
+	tangent = Vector2(-_surface_normal.y, _surface_normal.x)
+	travel_direction = _direction
 	_play_animation(&"hit" if _hit_remaining > 0.0 else &"walk")
 	velocity = tangent * travel_direction * move_speed * speed_multiplier - _surface_normal * 60.0
 	sight.facing = tangent * travel_direction
@@ -125,13 +128,33 @@ func _update_surface_from_collisions(previous_heading: Vector2) -> void:
 		var normal := get_slide_collision(index).get_normal().normalized()
 		if normal.dot(_surface_normal) > 0.75:
 			continue
-		var new_tangent := Vector2(-normal.y, normal.x)
-		var new_direction := signf(new_tangent.dot(previous_heading))
-		if not is_zero_approx(new_direction): _direction = new_direction
-		_surface_normal = normal
-		up_direction = normal
-		rotation = normal.angle() + PI * 0.5
+		_set_surface(normal, previous_heading)
 		return
+
+func _try_forward_surface_transition(heading: Vector2) -> void:
+	if heading.is_zero_approx():
+		return
+	var forward := heading.normalized()
+	var probe_origin := global_position + forward * surface_probe_distance
+	for direction in [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]:
+		var query := PhysicsRayQueryParameters2D.create(probe_origin, probe_origin + direction * surface_probe_distance * 2.0, 1)
+		query.exclude = [get_rid()]
+		var hit := get_world_2d().direct_space_state.intersect_ray(query)
+		if hit.is_empty():
+			continue
+		var normal: Vector2 = hit.get("normal", Vector2.ZERO)
+		if normal.dot(_surface_normal) > 0.75 or absf(normal.dot(forward)) < 0.5:
+			continue
+		_set_surface(normal, heading)
+		return
+
+func _set_surface(normal: Vector2, previous_heading: Vector2) -> void:
+	var new_tangent := Vector2(-normal.y, normal.x)
+	var new_direction := signf(new_tangent.dot(previous_heading))
+	if not is_zero_approx(new_direction): _direction = new_direction
+	_surface_normal = normal
+	up_direction = normal
+	rotation = normal.angle() + PI * 0.5
 
 func receive_agitation(_data: Dictionary = {}) -> void:
 	if _cooldown > 0.0 or state == State.ATTACK: return
@@ -150,7 +173,7 @@ func _scream() -> void:
 	var shape := CircleShape2D.new()
 	shape.radius = scream_radius
 	flash.configure(&"crystal", &"dazzled", flash_duration, shape, self, scream_priority, scream_radius * 2.0)
-	get_parent().call_deferred(&"add_child", flash)
+	get_parent().add_child(flash)
 	flash.global_position = global_position
 	var player := get_tree().get_first_node_in_group(&"player") as Node2D
 	if player != null and global_position.distance_to(player.global_position) <= scream_radius and player.has_method("apply_status"):
