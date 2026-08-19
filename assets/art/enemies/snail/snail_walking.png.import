@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b0qifvky56rcq"
-path="res://.godot/imported/crystal snail walking-Sheet.png-114ba55eee23e95583528a144059e83e.ctex"
+uid="uid://ctv80rcpojlit"
+path="res://.godot/imported/snail_walking.png-7450f6461a4f8895a9bddacfd1adfabf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/enemies/snail/crystal snail walking-Sheet.png"
-dest_files=["res://.godot/imported/crystal snail walking-Sheet.png-114ba55eee23e95583528a144059e83e.ctex"]
+source_file="res://assets/art/enemies/snail/snail_walking.png"
+dest_files=["res://.godot/imported/snail_walking.png-7450f6461a4f8895a9bddacfd1adfabf.ctex"]
 
 [params]
 

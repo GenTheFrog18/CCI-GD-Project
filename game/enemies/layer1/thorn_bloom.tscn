@@ -31,8 +31,7 @@ needle_damage = 2.0
 needle_lifetime = 60.0
 radial_projectile_count = 6
 spike_iframe_seconds = 0.4
-needle_bleed_duration = 10.0
-needle_bleed_cap = 80.0
+needle_bleed_duration = 8.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=121494692]
 position = Vector2(0, -8)
