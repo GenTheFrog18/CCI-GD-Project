@@ -102,6 +102,11 @@ func throw_toward(cursor: Vector2) -> void:
 	var direction := global_position.direction_to(cursor)
 	linear_velocity = (direction if not direction.is_zero_approx() else Vector2.RIGHT) * throw_speed
 
+func activate_from_impact(velocity: Vector2) -> void:
+	_launched = true
+	_enable_world_physics()
+	linear_velocity = velocity
+
 func can_deactivate() -> bool:
 	return kind == &"silver_weight"
 

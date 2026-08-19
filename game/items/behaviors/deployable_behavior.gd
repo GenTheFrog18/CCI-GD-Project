@@ -26,6 +26,9 @@ func on_impact(thrown_item: Node2D, impact: ImpactData) -> ItemActionResult:
 		return ItemActionResult.completed()
 	if thrown_item.has_meta(&"effect_deployed"):
 		return ItemActionResult.completed()
+	if kind == "light" and thrown_item is ThrownItem and thrown_item.definition.item_id == &"sun_sphere":
+		_activate_sun_sphere(thrown_item as ThrownItem, impact)
+		return ItemActionResult.completed()
 	thrown_item.set_meta(&"effect_deployed", true)
 	var parent := thrown_item.get_parent()
 	if parent == null:
@@ -38,6 +41,18 @@ func on_impact(thrown_item: Node2D, impact: ImpactData) -> ItemActionResult:
 		SaveManager.mark_destroyed(String(thrown_item.persistent_id))
 	thrown_item.queue_free()
 	return ItemActionResult.completed()
+
+func _activate_sun_sphere(thrown_item: ThrownItem, impact: ImpactData) -> void:
+	var active := PreparedRelic.new()
+	active.configure(thrown_item.definition, thrown_item.instance_state, thrown_item.source_actor as Node2D, &"sun_sphere", {
+		"duration": duration,
+		"effect_shape": impact_shape,
+	})
+	thrown_item.get_parent().add_child(active)
+	active.global_transform = thrown_item.global_transform
+	active.activate_from_impact(impact.velocity)
+	SaveManager.mark_destroyed(thrown_item.persistent_id)
+	thrown_item.queue_free()
 
 func _make_area(position: Vector2, area_shape: Shape2D, source: Node) -> WorldEffectArea:
 	var area := WorldEffectArea.new()
