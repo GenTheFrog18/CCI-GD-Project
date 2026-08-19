@@ -94,7 +94,7 @@ offset_top = 116.0
 offset_right = 106.0
 offset_bottom = 130.0
 theme_override_font_sizes/font_size = 10
-text = "Backpack: 0g of 0g"
+text = "weight: 0"
 
 [node name="ItemName" type="Label" parent="BookContent" unique_id=1122166294]
 layout_mode = 0

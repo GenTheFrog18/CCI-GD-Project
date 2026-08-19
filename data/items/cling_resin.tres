@@ -20,11 +20,10 @@ effect_id = &"resin_bound"
 duration = 20.0
 primary_shape = SubResource("CircleShape2D_cluqp")
 impact_shape = SubResource("ImpactShape")
-loose_item_speed_multiplier = 0.25
 minimum_speed = 70.0
 maximum_speed = 500.0
 maximum_cursor_distance = 200.0
-impact_activation_speed = 100.0
+impact_activation_speed = 70.0
 
 [resource]
 script = ExtResource("1")
@@ -36,9 +35,9 @@ category = &"relic"
 icon = ExtResource("4")
 world_hitbox_scene = ExtResource("5_byclk")
 world_scene = ExtResource("3")
-max_stack = 8
+max_stack = 4
 surface_sale_value = 50
-delivery_value = 38
+delivery_value = 5
 discovery_threshold = 1
 sellable = true
 primary_behavior = SubResource("Behavior")

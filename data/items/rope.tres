@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://w2iexcd7d3nw" path="res://assets/art/items/rope/rope_item.png" id="5"]
 [ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_mbxlt"]
-[ext_resource type="PackedScene" uid="uid://boo3vdw5h22ig" path="res://game/items/world/hitboxes/hitbox_rope.tscn" id="6_23kc5"]
+[ext_resource type="PackedScene" uid="uid://boo3vdw5h22ig" path="res://game/items/world/hitboxes/hitbox_rope.tscn" id="6_mbxlt"]
 
 [sub_resource type="Resource" id="ThrowBehavior"]
 script = ExtResource("3")
@@ -23,11 +23,13 @@ unknown_description = "A coil of sturdy rope."
 known_description = "Places a fixed climbable line up to 160 px long."
 category = &"supply"
 icon = ExtResource("5")
-world_hitbox_scene = ExtResource("6_23kc5")
+world_hitbox_scene = ExtResource("6_mbxlt")
 world_scene = ExtResource("4")
-weight = 8
-max_stack = 4
+weight = 3
+max_stack = 8
 purchase_price = 20
+surface_sale_value = 20
+sellable = true
 behavior = SubResource("RopeBehavior")
 primary_behavior = SubResource("RopeBehavior")
 secondary_behavior = SubResource("RopeBehavior")

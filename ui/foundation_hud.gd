@@ -447,10 +447,11 @@ func _refresh_inventory() -> void:
 		inventory_menu.set_details(
 			selected_definition.display_name if selected_definition != null else "Select an item",
 			(selected_definition.known_description if selected_stack.item_id in GameSession.known_items else selected_definition.unknown_description) if selected_definition != null else "",
-			"Backpack: %dg of %dg" % [player.item_controller.inventory.get_total_weight(), player.carry_capacity],
+			player.item_controller.inventory.get_total_weight(),
+			player.carry_capacity,
 		)
 	else:
-		inventory_menu.set_details("Select an item", "", "Backpack: %dg of %dg" % [player.item_controller.inventory.get_total_weight(), player.carry_capacity])
+		inventory_menu.set_details("Select an item", "", player.item_controller.inventory.get_total_weight(), player.carry_capacity)
 	for display_index in hotbar_slots.size():
 		var index := hotbar_indices[display_index]
 		var stack := player.item_controller.inventory.hotbar[index]

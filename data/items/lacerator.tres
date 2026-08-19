@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://b62e57kvpos7c" path="res://assets/art/items/Lacerator-item ready.png" id="4_ready"]
 [ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_visual"]
-[ext_resource type="PackedScene" path="res://game/items/world/hitboxes/hitbox_lacerator.tscn" id="6_83smd"]
+[ext_resource type="PackedScene" uid="uid://bqjl71x41raff" path="res://game/items/world/hitboxes/hitbox_lacerator.tscn" id="6_83smd"]
 
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
@@ -32,9 +32,9 @@ icon = ExtResource("1_s12js")
 state_visuals = Array[ExtResource("5_visual")]([SubResource("VisualDefault"), SubResource("VisualLoaded")])
 world_hitbox_scene = ExtResource("6_83smd")
 world_scene = ExtResource("3")
-weight = 4
-surface_sale_value = 140
-delivery_value = 105
+weight = 14
+surface_sale_value = 150
+delivery_value = 50
 discovery_threshold = 1
 sellable = true
 primary_behavior = SubResource("Behavior")

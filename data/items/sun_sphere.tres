@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://cehkf8lmoacox" path="res://game/items/behaviors/deployable_behavior.gd" id="3"]
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://dnud3miy1nodu" path="res://assets/art/items/sun_sphere.png" id="5"]
+[ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_mbxkm"]
 
 [sub_resource type="CircleShape2D" id="LightShape"]
 radius = 80.0
@@ -16,10 +17,10 @@ effect_shape = SubResource("LightShape")
 [sub_resource type="Resource" id="Secondary"]
 script = ExtResource("3")
 kind = "light"
-impact_activation_speed = 100.0
 duration = 20.0
 primary_shape = SubResource("LightShape")
 impact_shape = SubResource("LightShape")
+impact_activation_speed = 100.0
 
 [resource]
 script = ExtResource("1")
@@ -33,8 +34,8 @@ world_scene = ExtResource("4")
 weight = 2
 max_stack = 8
 surface_sale_value = 20
-delivery_value = 15
-discovery_threshold = 5
+delivery_value = 5
+discovery_threshold = 4
 sellable = true
 primary_behavior = SubResource("Primary")
 secondary_behavior = SubResource("Secondary")

@@ -8,6 +8,16 @@ signal close_requested
 @export_range(0.1, 2.0, 0.05) var book_open_seconds := 0.5
 @export_range(0.05, 2.0, 0.05) var backpack_enter_seconds := 0.25
 @export var backpack_slide_offset := 20.0
+@export_category("Item details layout")
+@export var weight_rect := Rect2(25.0, 116.0, 81.0, 14.0)
+@export var item_name_rect := Rect2(25.0, 132.0, 80.0, 11.0)
+@export var item_description_rect := Rect2(25.0, 144.0, 82.0, 13.0)
+@export_range(1, 64, 1) var weight_font_size := 10
+@export_range(1, 64, 1) var item_name_font_size := 10
+@export_range(1, 64, 1) var item_description_font_size := 10
+@export_category("Weight display")
+@export var weight_text_template := "Backpack: %s of %s"
+@export var weight_unit := "g"
 
 @onready var dim: ColorRect = $Dim
 @onready var backpack: TextureRect = $Backpack
@@ -37,6 +47,7 @@ func _ready() -> void:
 	]:
 		slot_buttons.append(get_node(path) as InventorySlot)
 	_backpack_rest_position = backpack.position
+	_apply_item_details_layout()
 	close_button.pressed.connect(close_requested.emit)
 	($BookContent/SubmenuButton as Button).pressed.connect(func(): $BookContent/Submenu.visible = not $BookContent/Submenu.visible)
 	($BookContent/Submenu/Panel/Content/Close as Button).pressed.connect(func(): $BookContent/Submenu.hide())
@@ -74,10 +85,13 @@ func set_slot(index: int, icon: Texture2D, quantity: int, tooltip: String, selec
 	var frame := button.get_parent().get_node("Frame") as TextureRect
 	frame.modulate = Color(1.0, 0.82, 0.36) if selected else Color.WHITE
 
-func set_details(name_text: String, description_text: String, weight_text: String) -> void:
+func set_details(name_text: String, description_text: String, total_weight: int, carry_capacity: int) -> void:
 	item_name.text = name_text
 	item_description.text = description_text
-	weight_label.text = weight_text
+	weight_label.text = weight_text_template % [
+		"%d%s" % [total_weight, weight_unit],
+		"%d%s" % [carry_capacity, weight_unit],
+	]
 
 func set_whistle(icon: Texture2D, tooltip: String) -> void:
 	whistle_icon.texture = icon
@@ -101,3 +115,13 @@ func _build_book_frames() -> void:
 		frame.region = Rect2(index * 240, 0, 240, 160)
 		frames.add_frame(&"open", frame)
 	book_opening.sprite_frames = frames
+
+func _apply_item_details_layout() -> void:
+	_set_label_layout(weight_label, weight_rect, weight_font_size)
+	_set_label_layout(item_name, item_name_rect, item_name_font_size)
+	_set_label_layout(item_description, item_description_rect, item_description_font_size)
+
+func _set_label_layout(label: Label, rect: Rect2, font_size: int) -> void:
+	label.position = rect.position
+	label.size = rect.size
+	label.add_theme_font_size_override(&"font_size", font_size)
