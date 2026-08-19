@@ -10,6 +10,7 @@ const HOTBAR_ARROW := preload("res://assets/art/ui/hud/arrow-hotbar.png")
 const SETTINGS_POPUP_SCENE := preload("res://ui/settings_popup.tscn")
 const INVENTORY_MENU_SCENE := preload("res://ui/inventory_menu.tscn")
 const SHOP_UI_SCENE := preload("res://ui/shop_ui.tscn")
+const OBJECTIVE_HUD_SCENE := preload("res://game/story/objective/objective_hud.tscn")
 
 signal world_debug_action_requested(action: StringName)
 
@@ -31,6 +32,7 @@ var debug_panel: PanelContainer
 var pause_panel: SettingsPopup
 var death_panel: PanelContainer
 var dialogue_box: DialogueBox
+var objective_hud: ObjectiveHUD
 var crosshair: Node2D
 var performance_label: Label
 var world_debug_label: Label
@@ -206,6 +208,8 @@ func _build_ui() -> void:
 	dialogue_box = DialogueBox.new()
 	dialogue_box.position = Vector2(60, 245)
 	logical_ui.add_child(dialogue_box)
+	objective_hud = OBJECTIVE_HUD_SCENE.instantiate() as ObjectiveHUD
+	logical_ui.add_child(objective_hud)
 	pause_panel = SETTINGS_POPUP_SCENE.instantiate() as SettingsPopup
 	pause_panel.configure(true, "Save & Menu")
 	pause_panel.resume_requested.connect(_resume_pause_menu)

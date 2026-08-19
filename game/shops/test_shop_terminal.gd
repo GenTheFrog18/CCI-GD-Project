@@ -5,6 +5,8 @@ extends Area2D
 @export var interaction_priority := 30
 @export var shop_definition: ShopDefinition
 
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+
 var service: ShopService
 
 func _ready() -> void:
@@ -13,6 +15,7 @@ func _ready() -> void:
 	if shop_definition == null:
 		shop_definition = ContentCatalog.get_shop(&"test_shop")
 	service = ShopService.new(shop_definition)
+	sprite.play(&"idle")
 
 func get_interaction_prompt(_actor: Node) -> String:
 	return "Open Shop"

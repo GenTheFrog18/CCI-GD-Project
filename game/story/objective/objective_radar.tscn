@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=3 uid="uid://b18xqq256edos"]
+
+[ext_resource type="Texture2D" uid="uid://11f4o7o70yy4" path="res://assets/art/ui/radar/Arrow.png" id="1_a5mje"]
+[ext_resource type="Script" uid="uid://bnnqx8wucjrqn" path="res://game/story/objective/objective_radar.gd" id="1_k5h5w"]
+[ext_resource type="Texture2D" uid="uid://c54jfr31w40hw" path="res://assets/art/ui/radar/Exclamation_Mark.png" id="2_k5h5w"]
+
+[node name="ObjectiveRadar" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_k5h5w")
+
+[node name="RadarIcon" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 58.0
+offset_bottom = 58.0
+mouse_filter = 2
+texture = ExtResource("1_a5mje")
+expand_mode = 1
+
+[node name="TargetMarker" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="ExclamationIcon" type="TextureRect" parent="TargetMarker"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource("2_k5h5w")
+expand_mode = 1

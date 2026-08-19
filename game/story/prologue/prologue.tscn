@@ -15,7 +15,7 @@ dialogue_sequence = ExtResource("2_0npns")
 
 [node name="DesignUI" type="Control" parent="."]
 z_index = 1
-layout_mode = 3
+anchors_preset = 0
 offset_right = 640.0
 offset_bottom = 360.0
 mouse_filter = 2

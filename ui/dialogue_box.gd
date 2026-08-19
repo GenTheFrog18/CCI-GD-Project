@@ -16,6 +16,7 @@ var _full_text := ""
 var _visible_characters := 0.0
 var _portrait: TextureRect
 var _speaker_label: Label
+var current_speaker: Node = null
 var _text_label: Label
 var _continue_label: Label
 var _typing_sfx: AudioStreamPlayer
@@ -50,10 +51,12 @@ func _ready() -> void:
 	_typing_sfx.stream = TYPING_SFX
 	add_child(_typing_sfx)
 
-func show_sequence(sequence: DialogueSequence, player: Node = null) -> void:
+func show_sequence(sequence: DialogueSequence, speaker: Node = null, player: Node = null) -> void:
 	if sequence == null or (sequence.lines.is_empty() and sequence.entries.is_empty()):
+		push_warning("DialougeData NULL")
 		return
 	close()
+	current_speaker = speaker
 	_sequence = sequence
 	_player = player
 	if sequence.locks_gameplay and _player != null and "locks" in _player:
@@ -84,11 +87,16 @@ func _input(event: InputEvent) -> void:
 	else:
 		_advance()
 	get_viewport().set_input_as_handled()
+	
+func _finish_dialogue() -> void:
+	close()
+	dialogue_finished.emit()
 
 func _advance() -> void:
 	_index += 1
+
 	if _sequence == null or _index >= _line_count():
-		close()
+		_finish_dialogue()
 	else:
 		_show_line()
 
@@ -121,16 +129,20 @@ func _line_count() -> int:
 	return _sequence.entries.size() if not _sequence.entries.is_empty() else _sequence.lines.size()
 
 func close() -> void:
-	var was_open := _sequence != null
 	visible = false
+
+	if current_speaker != null and current_speaker.has_method("reset_facing"):
+		current_speaker.reset_facing()
+
 	set_process(false)
 	_typing = false
+	current_speaker = null
+
 	if _player != null and "locks" in _player:
 		_player.locks.unlock(&"dialogue")
+
 	_player = null
 	_sequence = null
-	if was_open:
-		dialogue_finished.emit()
 
 func _play_typing_sfx(visible_characters: int) -> void:
 	if visible_characters <= _sfx_visible_characters:

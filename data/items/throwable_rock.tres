@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ItemDefinition" format=3 uid="uid://cu7x7dorfysgn"]
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=9 format=3 uid="uid://cu7x7dorfysgn"]
 
 [ext_resource type="Script" uid="uid://bxol3nb5souin" path="res://data/definitions/item_definition.gd" id="1"]
 [ext_resource type="Script" uid="uid://cvn35o5hs7sqy" path="res://game/items/behaviors/default_throw_behavior.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://d4d7t63uo3nyc" path="res://assets/art/items/rock.png" id="4"]
 [ext_resource type="Script" uid="uid://cogrw0mam2nmw" path="res://game/items/behaviors/multitool_behavior.gd" id="5"]
+[ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_nj0rh"]
 
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")

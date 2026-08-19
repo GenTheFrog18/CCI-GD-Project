@@ -1,0 +1,159 @@
+[gd_resource type="Resource" script_class="DialogueSequence" load_steps=24 format=3 uid="uid://bx0c3idm7aual"]
+
+[ext_resource type="Script" uid="uid://c561kj13kn4li" path="res://data/definitions/dialogue_line.gd" id="1_cd48q"]
+[ext_resource type="Texture2D" uid="uid://jn5oqbwj8ijn" path="res://assets/art/characters/npc/portrait/old_man_smile.png" id="2_sxug8"]
+[ext_resource type="Texture2D" uid="uid://cov40fo3o7htl" path="res://assets/art/characters/player/Portrait_Angry.png" id="3_sj2d6"]
+[ext_resource type="Script" uid="uid://j8ks4377trg3" path="res://data/definitions/dialogue_sequence.gd" id="4_uhuwc"]
+
+[sub_resource type="Resource" id="Resource_mfh8f"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Hm... Kamu datang lebih awal dari biasanya"
+portrait = ExtResource("2_sxug8")
+
+[sub_resource type="Resource" id="Resource_tdfu4"]
+script = ExtResource("1_cd48q")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Aku ingin latihan lebih serius hari ini"
+portrait = ExtResource("3_sj2d6")
+
+[sub_resource type="Resource" id="Resource_31mnv"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Latihan? Biasanya kamu menghindari latihan"
+portrait = ExtResource("2_sxug8")
+
+[sub_resource type="Resource" id="Resource_fsqkk"]
+script = ExtResource("1_cd48q")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Kali ini aku serius."
+portrait = ExtResource("3_sj2d6")
+
+[sub_resource type="Resource" id="Resource_cd48q"]
+script = ExtResource("1_cd48q")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Aku ingin pergi ke Abyss."
+portrait = ExtResource("3_sj2d6")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_ewffl"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Abyss...?"
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_sxug8"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Kenapa tiba-tiba begitu ingin ke sana?"
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_58hi1"]
+script = ExtResource("1_cd48q")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Aku ingin  mencari tau apa yang terjadi pada orang tuaku"
+portrait = ExtResource("3_sj2d6")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_sj2d6"]
+script = ExtResource("1_cd48q")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Dan... aku ingin melihat sendiri dunia yang ada di bawah sana"
+portrait = ExtResource("3_sj2d6")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_uhuwc"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "..."
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_5tbgm"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Jadi itu alasanmu datang lebih awal"
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_p6y6x"]
+script = ExtResource("1_cd48q")
+speaker_id = &"player"
+speaker_name = "Elenara"
+text = "Kalau aku tidak mempersiapkan diri sekarang, kapan lagi ?"
+portrait = ExtResource("3_sj2d6")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_p6m26"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "... Begitu Rupanya"
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_iisv1"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Kalau begitu, jangan buang waktu lagi."
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_isfch"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Sekarang kamu datang ke penjual barang untuk membeli multitool"
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_lndbx"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Setelah itu... Belilah Multitool dan hancurkan batu yang ada diseberangnya"
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_s4yuv"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Batu tersebut bisa kamu gunakan untuk menyerang lawan yang ada di Abyss"
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_1jb46"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Agar kamu bisa ke penjual barang tersebut, kamu harus naik dengan rope yang aku berikan"
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[sub_resource type="Resource" id="Resource_1v5wg"]
+script = ExtResource("1_cd48q")
+speaker_id = &"oldman"
+speaker_name = "Old Man"
+text = "Lakukanlah dengan baik anak muda"
+portrait = ExtResource("2_sxug8")
+metadata/_custom_type_script = "uid://c561kj13kn4li"
+
+[resource]
+script = ExtResource("4_uhuwc")
+sequence_id = &"tutorial_1"
+entries = Array[ExtResource("1_cd48q")]([SubResource("Resource_mfh8f"), SubResource("Resource_tdfu4"), SubResource("Resource_31mnv"), SubResource("Resource_fsqkk"), SubResource("Resource_cd48q"), SubResource("Resource_ewffl"), SubResource("Resource_sxug8"), SubResource("Resource_58hi1"), SubResource("Resource_sj2d6"), SubResource("Resource_uhuwc"), SubResource("Resource_5tbgm"), SubResource("Resource_p6y6x"), SubResource("Resource_p6m26"), SubResource("Resource_iisv1"), SubResource("Resource_isfch"), SubResource("Resource_lndbx"), SubResource("Resource_s4yuv"), SubResource("Resource_1jb46"), SubResource("Resource_1v5wg")])

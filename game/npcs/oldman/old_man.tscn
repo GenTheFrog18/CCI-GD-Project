@@ -1,0 +1,83 @@
+[gd_scene load_steps=13 format=3 uid="uid://fa3vq2yqswup"]
+
+[ext_resource type="Script" uid="uid://bwxgu4v7j6iyj" path="res://game/npcs/oldman/old_man.gd" id="1_wqj8m"]
+[ext_resource type="Resource" uid="uid://bx0c3idm7aual" path="res://data/dialogue/tutorial_1_dialogue.tres" id="2_1whv8"]
+[ext_resource type="Texture2D" uid="uid://cudxmnb2ypq47" path="res://assets/art/characters/npc/animation/Male_Old_Npc_16x16.png" id="3_w23vc"]
+[ext_resource type="FontFile" uid="uid://di7mogw7xh6qt" path="res://assets/fonts/Perfect DOS VGA 437.ttf" id="4_svfqh"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_by4v3"]
+atlas = ExtResource("3_w23vc")
+region = Rect2(192, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0ds41"]
+atlas = ExtResource("3_w23vc")
+region = Rect2(208, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i05ga"]
+atlas = ExtResource("3_w23vc")
+region = Rect2(224, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5v1ah"]
+atlas = ExtResource("3_w23vc")
+region = Rect2(240, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_snn18"]
+atlas = ExtResource("3_w23vc")
+region = Rect2(256, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_axv8r"]
+atlas = ExtResource("3_w23vc")
+region = Rect2(272, 0, 16, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vhvkq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_by4v3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0ds41")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i05ga")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5v1ah")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_snn18")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_axv8r")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1r8fe"]
+size = Vector2(20, 28)
+
+[node name="OldMan" type="Area2D"]
+collision_layer = 64
+collision_mask = 0
+script = ExtResource("1_wqj8m")
+dialogue_sequence = ExtResource("2_1whv8")
+metadata/_custom_type_script = "uid://bwxgu4v7j6iyj"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_vhvkq")
+animation = &"idle"
+frame_progress = 0.89259106
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 2)
+shape = SubResource("RectangleShape2D_1r8fe")
+
+[node name="InteractionIndicator" type="Label" parent="."]
+offset_left = -13.0
+offset_top = -31.0
+offset_right = 15.0
+offset_bottom = -8.0
+theme_override_fonts/font = ExtResource("4_svfqh")
+text = "[E]"
