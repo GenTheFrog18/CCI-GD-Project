@@ -4,12 +4,15 @@ class ReceiverProbe:
 	extends Node2D
 	var damage := 0.0
 	var effects: Array[StringName] = []
+	var detection_origin_offset := Vector2.ZERO
 	func apply_damage(info: DamageInfo) -> bool:
 		damage += info.amount
 		return true
 	func apply_status(id: StringName, _data: Dictionary = {}) -> bool:
 		effects.append(id)
 		return true
+	func get_detection_origin() -> Vector2:
+		return global_position + detection_origin_offset
 
 var failures := PackedStringArray()
 
@@ -239,6 +242,20 @@ func _test_layer2_quest() -> void:
 
 func _test_effects_and_curse() -> void:
 	var old_layer := GameSession.current_layer_id
+	var flash_receiver := ReceiverProbe.new()
+	flash_receiver.add_to_group(&"effect_receivers")
+	flash_receiver.position = Vector2(80.0, 80.0)
+	flash_receiver.detection_origin_offset = Vector2(0.0, -80.0)
+	add_child(flash_receiver)
+	var crystal_flash := WorldEffectArea.new()
+	var crystal_shape := CircleShape2D.new()
+	crystal_shape.radius = 110.0
+	crystal_flash.configure(&"crystal", &"dazzled", 4.0, crystal_shape)
+	add_child(crystal_flash)
+	crystal_flash._flash()
+	_check(flash_receiver.effects.has(&"dazzled"), "Crystal flash targets the receiver detection origin")
+	crystal_flash.free()
+	flash_receiver.free()
 	var player := preload("res://game/player/player.tscn").instantiate() as PlayerController
 	add_child(player)
 	player.health.set_health(95.0)

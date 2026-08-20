@@ -246,10 +246,7 @@ func _scream() -> void:
 	shape.radius = scream_radius
 	flash.configure(&"crystal", &"dazzled", flash_duration, shape, self, scream_priority, scream_radius * 2.0)
 	flash.global_position = global_position
-	get_parent().add_child(flash)
-	var player := get_tree().get_first_node_in_group(&"player") as Node2D
-	if player != null and global_position.distance_to(player.global_position) <= scream_radius and player.has_method("apply_status"):
-		player.apply_status(&"dazzled", {"duration": flash_duration})
+	get_parent().call_deferred(&"add_child", flash)
 	state = State.MOVE
 	_cooldown = scream_cooldown
 

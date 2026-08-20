@@ -91,15 +91,26 @@ func _on_body_exited(body: Node) -> void:
 
 func _flash() -> void:
 	for actor in get_tree().get_nodes_in_group(&"effect_receivers"):
-		if not actor is Node2D or not _contains(actor.global_position):
+		if not actor is Node2D or not actor.has_method("apply_status"):
 			continue
-		var query := PhysicsRayQueryParameters2D.create(global_position, actor.global_position, 257)
-		query.collide_with_areas = true
-		var hit := get_world_2d().direct_space_state.intersect_ray(query)
-		if hit.is_empty() or hit.get("collider") == actor:
-			var ratio := 1.0 - global_position.distance_to(actor.global_position) / maxf(_extent(), 1.0)
-			actor.apply_status(&"dazzled", {"duration": maxf(0.1, duration * ratio)})
+		var target_position := _target_position(actor as Node2D)
+		if not _contains(target_position) or not _has_line_of_sight(target_position):
+			continue
+		var ratio := 1.0 - global_position.distance_to(target_position) / maxf(_extent(), 1.0)
+		actor.apply_status(&"dazzled", {"duration": maxf(0.1, duration * ratio)})
 	duration = minf(duration, 0.15)
+
+func _target_position(actor: Node2D) -> Vector2:
+	return actor.get_detection_origin() if actor.has_method("get_detection_origin") else actor.global_position
+
+func _has_line_of_sight(target_position: Vector2) -> bool:
+	var query := PhysicsRayQueryParameters2D.create(global_position, target_position, 257)
+	query.collide_with_areas = true
+	var excluded: Array[RID] = [get_rid()]
+	if source_actor is CollisionObject2D:
+		excluded.append((source_actor as CollisionObject2D).get_rid())
+	query.exclude = excluded
+	return get_world_2d().direct_space_state.intersect_ray(query).is_empty()
 
 func _draw() -> void:
 	if effect_kind == &"light":

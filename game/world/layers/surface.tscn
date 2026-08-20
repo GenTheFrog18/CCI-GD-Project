@@ -9014,7 +9014,10 @@ item_id = &"rope"
 position = Vector2(373, 98)
 
 [node name="LanternSnail" parent="." unique_id=1158744585 instance=ExtResource("18_h2sgq")]
-position = Vector2(453, 191)
-surface_probe_distance = 16.0
-surface_probe_radius = 16.0
+position = Vector2(680, 65)
+adhesion_speed = 30.0
+surface_probe_distance = 12.0
+surface_probe_radius = 12.0
+normal_turn_speed = 8.0
+normal_change_epsilon_degrees = 2.0
 detach_grace_seconds = 1.0
