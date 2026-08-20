@@ -9,7 +9,15 @@ enum State { PATROL, ALERT_WAIT, TELEGRAPH, SWOOP, RECOVERY }
 @export var patrol_bounds := Rect2()
 @export var flight_radius := 130.0
 @export var flight_speed := 70.0
-@export var patrol_destination_refresh_time := 2.0
+@export var patrol_destination_refresh_min := 1.5
+@export var patrol_destination_refresh_max := 2.5
+@export var patrol_min_distance := 50.0
+@export var patrol_max_distance := 120.0
+@export_range(0.1, 1.0, 0.05) var patrol_inner_radius := 0.75
+@export_range(0.0, 180.0, 1.0) var patrol_direction_variance_degrees := 60.0
+@export_range(0.0, 1.0, 0.01) var patrol_steering_strength := 0.04
+@export var max_destination_attempts := 10
+@export_flags_2d_physics var flight_blocking_collision_mask := 1
 @export var nest_trigger_radius := 170.0
 @export var telegraph_duration := 0.6
 @export var swoop_speed := 240.0
@@ -35,6 +43,7 @@ var _nest := Vector2.ZERO
 var _target: PlayerController
 var _patrol_destination := Vector2.ZERO
 var _patrol_timer := 0.0
+var _patrol_hover := false
 var _state_timer := 0.0
 var _attack_cooldown_remaining := 0.0
 var _attack_target_position := Vector2.ZERO
@@ -79,9 +88,13 @@ func _process_patrol(delta: float) -> void:
 		_enter_alert_wait()
 		return
 	_patrol_timer -= delta
-	if _patrol_timer <= 0.0 or global_position.distance_to(_patrol_destination) <= 12.0:
+	if _patrol_timer <= 0.0 or (not _patrol_hover and global_position.distance_to(_patrol_destination) <= 12.0):
 		_choose_patrol_destination()
-	velocity = global_position.direction_to(_patrol_destination) * flight_speed * _flight_multiplier()
+	if _patrol_hover:
+		velocity = velocity.lerp(Vector2.ZERO, _steering_alpha(delta))
+	else:
+		var desired_velocity := global_position.direction_to(_patrol_destination) * flight_speed * _flight_multiplier()
+		velocity = velocity.lerp(desired_velocity, _steering_alpha(delta))
 	move_and_slide()
 
 func _process_alert_wait() -> void:
@@ -164,15 +177,61 @@ func _setup_attack_coordinator(group_id: StringName) -> void:
 		_coordinator = AttackGroupCoordinator.find_or_create(get_parent(), group_id, attack_group_maximum, attack_group_spacing)
 
 func _choose_patrol_destination() -> void:
+	_patrol_hover = false
+	for _attempt in max_destination_attempts:
+		var candidate := _generate_patrol_candidate()
+		if _valid_patrol_candidate(candidate):
+			_patrol_destination = candidate
+			_patrol_timer = randf_range(patrol_destination_refresh_min, patrol_destination_refresh_max)
+			return
+	var center := _patrol_area_center()
+	if _valid_patrol_candidate(center):
+		_patrol_destination = center
+		_patrol_timer = randf_range(patrol_destination_refresh_min, patrol_destination_refresh_max)
+		return
+	if _is_destination_path_clear(_patrol_destination):
+		_patrol_timer = 0.25
+		return
+	_patrol_destination = global_position
+	_patrol_hover = true
+	_patrol_timer = 0.25
+
+func _generate_patrol_candidate() -> Vector2:
+	var forward := velocity.normalized()
+	if velocity.length_squared() < 1.0:
+		forward = Vector2.RIGHT.rotated(randf_range(0.0, TAU))
+	var angle := deg_to_rad(randf_range(-patrol_direction_variance_degrees, patrol_direction_variance_degrees))
+	return global_position + forward.rotated(angle) * randf_range(patrol_min_distance, patrol_max_distance)
+
+func _valid_patrol_candidate(candidate: Vector2) -> bool:
+	if candidate.distance_to(global_position) < patrol_min_distance:
+		return false
 	if patrol_bounds.has_area():
-		_patrol_destination = _nest + Vector2(
-			randf_range(patrol_bounds.position.x, patrol_bounds.end.x),
-			randf_range(patrol_bounds.position.y, patrol_bounds.end.y)
-		)
+		var center := _nest + patrol_bounds.get_center()
+		var size := patrol_bounds.size * patrol_inner_radius
+		var inner := Rect2(center - size * 0.5, size)
+		if not inner.has_point(candidate):
+			return false
 	else:
-		var angle := randf_range(0.0, TAU)
-		_patrol_destination = _nest + Vector2.from_angle(angle) * sqrt(randf()) * flight_radius
-	_patrol_timer = patrol_destination_refresh_time
+		if candidate.distance_to(_nest) > flight_radius * patrol_inner_radius:
+			return false
+	var direction := global_position.direction_to(candidate)
+	if velocity.length_squared() >= 1.0 and velocity.normalized().dot(direction) < -0.25:
+		return false
+	return _is_destination_path_clear(candidate)
+
+func _is_destination_path_clear(candidate: Vector2) -> bool:
+	if candidate.is_equal_approx(global_position):
+		return true
+	var query := PhysicsRayQueryParameters2D.create(global_position, candidate, flight_blocking_collision_mask)
+	query.exclude = [self]
+	return get_world_2d().direct_space_state.intersect_ray(query).is_empty()
+
+func _patrol_area_center() -> Vector2:
+	return _nest + patrol_bounds.get_center() if patrol_bounds.has_area() else _nest
+
+func _steering_alpha(delta: float) -> float:
+	return clampf(patrol_steering_strength * delta * 60.0, 0.0, 1.0)
 
 func _player_in_nest() -> bool:
 	return is_instance_valid(_target) and _nest.distance_to(_target.global_position) <= nest_trigger_radius
