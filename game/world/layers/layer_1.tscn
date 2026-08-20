@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dbcv7ixchlequ" path="res://game/world/sections/layer1/east/slot_01_a.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://bddta4kbxsboo" path="res://game/world/sections/layer1/east/slot_03_a.tscn" id="8"]
+[ext_resource type="Texture2D" uid="uid://ci8jch0iib7pa" path="res://assets/art/world/bg/windrise-background-4k.png" id="9_6bbwv"]
 
 [sub_resource type="RectangleShape2D" id="OuterWall"]
 size = Vector2(20, 2400)
@@ -106,3 +107,8 @@ shape = SubResource("OuterWall")
 [node name="Middle" type="CollisionShape2D" parent="RouteBoundaries" unique_id=724391683]
 position = Vector2(1280, 960)
 shape = SubResource("MiddleWall")
+
+[node name="WindriseBackground4k" type="Sprite2D" parent="." unique_id=356663620]
+position = Vector2(723, 473.49994)
+scale = Vector2(0.3618164, 0.43272564)
+texture = ExtResource("9_6bbwv")
