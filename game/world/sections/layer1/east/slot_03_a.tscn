@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://game/world/placers/loot_placer.tscn" id="5_a4be2"]
 [ext_resource type="Script" uid="uid://dmbspp22qtl7r" path="res://game/world/world_spawn_entry.gd" id="6_ljy2k"]
 [ext_resource type="PackedScene" uid="uid://bxrr7i18qw7gw" path="res://game/world/sources/breakable_loot.tscn" id="7_y6m8j"]
+[ext_resource type="PackedScene" path="res://game/enemies/layer1/senior_diver.tscn" id="8_ljy2k"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_mdurk"]
 texture = ExtResource("4_cksro")
@@ -1397,3 +1398,9 @@ tile_set = SubResource("TileSet_vign8")
 position = Vector2(586, 165)
 persistent_id = &"heavyweight_east_03"
 entries = Array[ExtResource("6_ljy2k")]([SubResource("Resource_m7jaf")])
+
+[node name="SeniorDiver" parent="." index="9" unique_id=1904040106 instance=ExtResource("8_ljy2k")]
+position = Vector2(375, 573)
+persistent_id = "senior_diver_east"
+move_speed = 70.0
+grab_range = 50.0

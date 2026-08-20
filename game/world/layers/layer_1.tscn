@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b7yipua6tyu2n" path="res://game/world/sections/layer1/west/slot_02_a.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://xnsshmg5bt6y" path="res://game/world/sections/layer1/west/slot_03_a.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://dbcv7ixchlequ" path="res://game/world/sections/layer1/east/slot_01_a.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://bxk3bhnbvmhl8" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://sbl5t6mykcwa" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://bddta4kbxsboo" path="res://game/world/sections/layer1/east/slot_03_a.tscn" id="8"]
 [ext_resource type="Texture2D" uid="uid://53g7bbk1hoxf" path="res://assets/art/world/bg/dc6154349939ed3f483591c02be13aa1.png" id="9_6bbwv"]
 
@@ -114,11 +114,13 @@ scale = Vector2(1.0649999, 1.0438336)
 texture = ExtResource("9_6bbwv")
 
 [node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1" unique_id=868980378]
+z_index = -4
 position = Vector2(0.6878853, 682.0309)
 scale = Vector2(1.0066782, 1.0201375)
 texture = ExtResource("9_6bbwv")
 
 [node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1/Dc6154349939Ed3f483591c02Be13Aa1" unique_id=2045218946]
+z_index = -6
 position = Vector2(92.080734, 784.1675)
 scale = Vector2(1.1589997, 1.3236638)
 texture = ExtResource("9_6bbwv")
@@ -129,11 +131,13 @@ scale = Vector2(1.0649999, 1.0438336)
 texture = ExtResource("9_6bbwv")
 
 [node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1/Dc6154349939Ed3f483591c02Be13Aa2" unique_id=1221146884]
+z_index = -4
 position = Vector2(14.106502, 650.70435)
 scale = Vector2(1.0066782, 1.0201375)
 texture = ExtResource("9_6bbwv")
 
 [node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1/Dc6154349939Ed3f483591c02Be13Aa2/Dc6154349939Ed3f483591c02Be13Aa1" unique_id=1132723062]
+z_index = -5
 position = Vector2(272.3771, 782.70447)
 scale = Vector2(1.1589997, 1.3236638)
 texture = ExtResource("9_6bbwv")

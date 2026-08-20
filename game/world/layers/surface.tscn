@@ -16,8 +16,6 @@
 [ext_resource type="Resource" uid="uid://dpvw3j2w0jiiy" path="res://data/dialogue/surface_intro_dialogue.tres" id="11_t2nio"]
 [ext_resource type="PackedScene" uid="uid://cflctunfjqval" path="res://game/enemies/test/test_amphibian.tscn" id="12_ifvir"]
 [ext_resource type="PackedScene" uid="uid://bxrr7i18qw7gw" path="res://game/world/sources/breakable_loot.tscn" id="16_56uc8"]
-[ext_resource type="PackedScene" uid="uid://cjwcecup4eqge" path="res://game/enemies/layer1/cave_spider.tscn" id="17_xytb8"]
-[ext_resource type="PackedScene" uid="uid://u1b4ki8jlewf" path="res://game/enemies/layer1/lantern_snail.tscn" id="18_h2sgq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_78j1j"]
 texture = ExtResource("4_fc1rd")
@@ -9009,15 +9007,3 @@ item_id = &"rope"
 position = Vector2(995, 203)
 persistent_id = "spawnloot 1"
 item_id = &"rope"
-
-[node name="CaveSpider" parent="." unique_id=188768499 instance=ExtResource("17_xytb8")]
-position = Vector2(373, 98)
-
-[node name="LanternSnail" parent="." unique_id=1158744585 instance=ExtResource("18_h2sgq")]
-position = Vector2(565, 81)
-adhesion_speed = 30.0
-surface_probe_distance = 12.0
-surface_probe_radius = 12.0
-normal_turn_speed = 8.0
-normal_change_epsilon_degrees = 2.0
-detach_grace_seconds = 1.0
