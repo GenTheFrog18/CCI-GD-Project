@@ -817,6 +817,7 @@ func _test_world_authoring_foundation() -> void:
 	assert(breakable.apply_damage(DamageInfo.new(1.0)))
 	assert(not breakable.is_queued_for_deletion())
 	assert(breakable.apply_damage(DamageInfo.new(1.0)))
+	await get_tree().process_frame
 	var dropped_ids: Dictionary = {}
 	for child in drop_root.get_children():
 		if child is WorldItem:

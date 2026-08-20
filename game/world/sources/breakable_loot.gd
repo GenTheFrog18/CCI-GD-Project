@@ -45,5 +45,5 @@ func _spawn_drop(drop_item_id: StringName, drop_id: String) -> void:
 	drop.persistent_id = drop_id
 	drop.item_id = definition.item_id
 	drop.instance_state = {"origin": "map"}
-	parent.add_child(drop)
 	drop.global_position = global_position + Vector2(0.0, -12.0)
+	parent.call_deferred(&"add_child", drop)
