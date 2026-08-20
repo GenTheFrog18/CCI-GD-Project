@@ -1,6 +1,8 @@
 class_name KnockbackBird
 extends CharacterBody2D
 
+const FLY_SHEET := preload("res://assets/art/enemies/knockback_bird/knockback_bird_fly_and_dive.png")
+
 enum State { PATROL, ALERT_WAIT, TELEGRAPH, SWOOP, RECOVERY }
 
 @export var persistent_id := "knockback_bird"
@@ -34,6 +36,7 @@ enum State { PATROL, ALERT_WAIT, TELEGRAPH, SWOOP, RECOVERY }
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sight: SightSensor = $SightSensor
+@onready var visual: AnimatedSprite2D = $Visual
 @onready var swoop_hitbox: Area2D = $SwoopHitbox
 @onready var swoop_shape: CollisionShape2D = $SwoopHitbox/CollisionShape2D
 
@@ -51,6 +54,7 @@ var _coordinator: AttackGroupCoordinator
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
+	_setup_visual()
 	_nest = nest_position if not nest_position.is_zero_approx() else global_position
 	var group_id := spawn_group_id if not spawn_group_id.is_empty() else StringName(persistent_id)
 	call_deferred(&"_setup_attack_coordinator", group_id)
@@ -68,6 +72,7 @@ func _physics_process(delta: float) -> void:
 			_release_attack()
 		state = State.PATROL
 		_set_swoop_hitbox(false)
+		_play_visual(&"fly")
 		return
 	match state:
 		State.PATROL:
@@ -80,9 +85,12 @@ func _physics_process(delta: float) -> void:
 			_process_swoop(delta)
 		State.RECOVERY:
 			_process_recovery(delta)
+	if absf(velocity.x) > 0.1:
+		visual.flip_h = velocity.x < 0.0
 	sight.facing = velocity.normalized() if not velocity.is_zero_approx() else sight.facing
 
 func _process_patrol(delta: float) -> void:
+	_play_visual(&"fly")
 	if _player_in_nest():
 		_enter_alert_wait()
 		return
@@ -97,6 +105,7 @@ func _process_patrol(delta: float) -> void:
 	move_and_slide()
 
 func _process_alert_wait() -> void:
+	_play_visual(&"fly")
 	velocity = Vector2.ZERO
 	if not _player_in_nest():
 		_enter_patrol()
@@ -106,6 +115,7 @@ func _process_alert_wait() -> void:
 		_enter_telegraph()
 
 func _process_telegraph(delta: float) -> void:
+	_play_visual(&"dive")
 	_state_timer -= delta
 	velocity = Vector2.ZERO
 	_face_target()
@@ -113,6 +123,7 @@ func _process_telegraph(delta: float) -> void:
 		_enter_swoop()
 
 func _process_swoop(delta: float) -> void:
+	_play_visual(&"dive")
 	_state_timer -= delta
 	var direction := global_position.direction_to(_attack_target_position)
 	velocity = direction * swoop_speed * _flight_multiplier()
@@ -121,6 +132,7 @@ func _process_swoop(delta: float) -> void:
 		_enter_recovery()
 
 func _process_recovery(delta: float) -> void:
+	_play_visual(&"fly")
 	_state_timer -= delta
 	var direction := global_position.direction_to(_nest)
 	velocity = direction * flight_speed * _flight_multiplier()
@@ -136,6 +148,7 @@ func _enter_patrol() -> void:
 	_release_attack()
 	_set_swoop_hitbox(false)
 	state = State.PATROL
+	_play_visual(&"fly")
 	if is_instance_valid(_target) and not sight.can_see(_target):
 		_target = null
 	_choose_patrol_destination()
@@ -144,10 +157,12 @@ func _enter_alert_wait() -> void:
 	_release_attack()
 	_set_swoop_hitbox(false)
 	state = State.ALERT_WAIT
+	_play_visual(&"fly")
 	velocity = Vector2.ZERO
 
 func _enter_telegraph() -> void:
 	state = State.TELEGRAPH
+	_play_visual(&"dive")
 	_state_timer = telegraph_duration
 	velocity = Vector2.ZERO
 	if is_instance_valid(_target) and _target.has_method("warn_attack"):
@@ -155,6 +170,7 @@ func _enter_telegraph() -> void:
 
 func _enter_swoop() -> void:
 	state = State.SWOOP
+	_play_visual(&"dive")
 	_state_timer = swoop_max_duration
 	_attack_target_position = _target.global_position if is_instance_valid(_target) else global_position
 	_has_hit_this_swoop = false
@@ -164,6 +180,7 @@ func _enter_recovery() -> void:
 	_release_attack()
 	_set_swoop_hitbox(false)
 	state = State.RECOVERY
+	_play_visual(&"fly")
 	_state_timer = recovery_duration
 	_has_hit_this_swoop = false
 
@@ -238,6 +255,34 @@ func _flight_multiplier() -> float:
 func _set_swoop_hitbox(active: bool) -> void:
 	swoop_hitbox.set_deferred(&"monitoring", active)
 	swoop_shape.set_deferred(&"disabled", not active)
+
+func _setup_visual() -> void:
+	var frames := SpriteFrames.new()
+	frames.remove_animation(&"default")
+	_add_animation(frames, &"fly", 5, 8.0, true)
+	var dive := AtlasTexture.new()
+	dive.atlas = FLY_SHEET
+	dive.region = Rect2(4 * 48, 0, 48, 48)
+	frames.add_animation(&"dive")
+	frames.set_animation_speed(&"dive", 1.0)
+	frames.set_animation_loop(&"dive", true)
+	frames.add_frame(&"dive", dive)
+	visual.sprite_frames = frames
+	visual.play(&"fly")
+
+func _add_animation(frames: SpriteFrames, animation: StringName, count: int, speed: float, loop: bool) -> void:
+	frames.add_animation(animation)
+	frames.set_animation_speed(animation, speed)
+	frames.set_animation_loop(animation, loop)
+	for index in count:
+		var frame := AtlasTexture.new()
+		frame.atlas = FLY_SHEET
+		frame.region = Rect2(index * 48, 0, 48, 48)
+		frames.add_frame(animation, frame)
+
+func _play_visual(animation: StringName) -> void:
+	if visual.animation != animation:
+		visual.play(animation)
 
 func _on_target_seen(target: Node2D, _position: Vector2) -> void:
 	if target is PlayerController:

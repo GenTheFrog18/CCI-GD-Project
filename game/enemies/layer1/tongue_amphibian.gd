@@ -1,6 +1,10 @@
 class_name TongueAmphibian
 extends CharacterBody2D
 
+const IDLE_SHEET := preload("res://assets/art/enemies/frog/Frog-idle.png")
+const ATTACK_SHEET := preload("res://assets/art/enemies/frog/Frog-attack.png")
+const JUMP_SHEET := preload("res://assets/art/enemies/frog/Frog-static (untuk jump).png")
+
 enum State { IDLE, MOVE, ATTACK, RETREAT }
 
 @export var persistent_id := "tongue_amphibian"
@@ -24,6 +28,7 @@ enum State { IDLE, MOVE, ATTACK, RETREAT }
 @onready var sight: SightSensor = $SightSensor
 @onready var sound: SoundListener = $SoundListener
 @onready var carried_icon: Sprite2D = $CarriedItemIcon
+@onready var visual: AnimatedSprite2D = $Visual
 
 var state := State.IDLE
 var carried := ItemStack.new()
@@ -42,6 +47,7 @@ var _investigation_remaining := 0.0
 func _ready() -> void:
 	support.persistent_id = persistent_id
 	add_to_group(&"tongue_amphibian")
+	_setup_visual()
 	_origin = global_position
 	_random.randomize()
 	_jump_timer = _random_jump_cooldown()
@@ -111,6 +117,7 @@ func _physics_process(delta: float) -> void:
 	velocity += _knockback
 	_knockback = Vector2.ZERO
 	move_and_slide()
+	_update_visual(grounded)
 	sight.facing = Vector2(_facing_direction, 0.0)
 	if GameSession.debug_gameplay_draw:
 		queue_redraw()
@@ -191,6 +198,37 @@ func _set_facing(direction: float) -> void:
 		return
 	_facing_direction = -1.0 if direction < 0.0 else 1.0
 	$Visual.scale.x = absf($Visual.scale.x) * _facing_direction
+
+func _setup_visual() -> void:
+	var frames := SpriteFrames.new()
+	frames.remove_animation(&"default")
+	_add_animation(frames, &"idle", IDLE_SHEET, 4, 6.0, true)
+	_add_animation(frames, &"attack", ATTACK_SHEET, 6, 10.0, false)
+	_add_animation(frames, &"jump", JUMP_SHEET, 1, 1.0, true)
+	visual.sprite_frames = frames
+	visual.play(&"idle")
+
+func _add_animation(frames: SpriteFrames, animation: StringName, sheet: Texture2D, count: int, speed: float, loop: bool) -> void:
+	frames.add_animation(animation)
+	frames.set_animation_speed(animation, speed)
+	frames.set_animation_loop(animation, loop)
+	for index in count:
+		var frame := AtlasTexture.new()
+		frame.atlas = sheet
+		frame.region = Rect2(index * 64, 0, 64, 64)
+		frames.add_frame(animation, frame)
+
+func _update_visual(grounded: bool) -> void:
+	if state == State.ATTACK:
+		_play_visual(&"attack")
+	elif not grounded:
+		_play_visual(&"jump")
+	else:
+		_play_visual(&"idle")
+
+func _play_visual(animation: StringName) -> void:
+	if visual.animation != animation:
+		visual.play(animation)
 
 func _tongue_direction() -> Vector2:
 	return Vector2(_facing_direction, 0.0).rotated(deg_to_rad(tongue_angle_degrees)).normalized()

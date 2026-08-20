@@ -23,9 +23,8 @@ leash_distance = 300.0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1085069742]
 shape = SubResource("Shape")
 
-[node name="Visual" type="Polygon2D" parent="." unique_id=1367569525]
-color = Color(0.35, 0.8, 0.3, 1)
-polygon = PackedVector2Array(-12, 8, -10, -8, 10, -8, 12, 8)
+[node name="Visual" type="AnimatedSprite2D" parent="." unique_id=1367569525]
+texture_filter = 1
 
 [node name="CarriedItemIcon" type="Sprite2D" parent="." unique_id=1253136443]
 visible = false
