@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://game/world/placers/loot_placer.tscn" id="4_qdaku"]
 [ext_resource type="PackedScene" uid="uid://cflctunfjqval" path="res://game/enemies/test/test_amphibian.tscn" id="5_7gi2b"]
 [ext_resource type="Script" uid="uid://cffkoem4dm71c" path="res://game/world/lighting/darkness_region_2d.gd" id="6_darkness"]
+[ext_resource type="PackedScene" path="res://game/world/placers/bird_nest_placer.tscn" id="9_12xhm"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_phjxa"]
 texture = ExtResource("2_phjxa")
@@ -779,3 +780,10 @@ edge_falloff_pixels = 78.0
 position = Vector2(39, 92)
 target_layer_id = &"surface"
 prompt = "Return to Surface"
+
+[node name="BirdNestPlacer" parent="." index="15" unique_id=2088869438 instance=ExtResource("9_12xhm")]
+position = Vector2(434, 97)
+persistent_id = &"test"
+minimum_quantity = 2
+allocation_group = &"1"
+required_allocation = true

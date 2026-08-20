@@ -124,7 +124,7 @@ Kedua preset memakai `DeterministicPlacer`, sehingga property dasarnya sama:
 - `Allocation Group`: ID group opsional untuk content unik. Placer dengan group sama berkompetisi dan maksimal satu placer menjadi pemenang.
 - `Required Allocation`: jika aktif bersama `Allocation Group`, world wajib memilih satu pemenang dari group. Gunakan untuk quest atau progression item yang tidak boleh hilang dari run.
 - `Facing`: arah horizontal scene hasil spawn. Gunakan `1` untuk arah normal/kanan dan `-1` untuk flip/kiri. Property ini terutama dipakai enemy; loot biasanya memakai `1`.
-- `Patrol Bounds`: rectangle patrol authored yang diteruskan kepada enemy yang mempunyai property `patrol_bounds`. Abaikan untuk loot. `BirdNestPlacer` memakainya sebagai flight region.
+- `Patrol Bounds`: rectangle patrol authored yang diteruskan kepada enemy yang mempunyai property `patrol_bounds`. Abaikan untuk loot. `BirdNestPlacer` memakai `Patrol Radius` sebagai flight region lingkaran.
 - child `SpawnPoint`: direct child `Marker2D` yang menentukan posisi spawn. Urutan Scene tree menghasilkan suffix ID `:0`, `:1`, dan seterusnya. Jangan mengubah urutannya setelah content freeze.
 
 Setiap object `WorldSpawnEntry` di dalam `Entries` mempunyai:

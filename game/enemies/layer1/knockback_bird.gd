@@ -6,14 +6,13 @@ enum State { PATROL, ALERT_WAIT, TELEGRAPH, SWOOP, RECOVERY }
 @export var persistent_id := "knockback_bird"
 @export var spawn_group_id: StringName
 @export var nest_position := Vector2.ZERO
-@export var patrol_bounds := Rect2()
+@export_range(1.0, 1000.0, 1.0) var patrol_radius := 160.0
 @export var flight_radius := 130.0
 @export var flight_speed := 70.0
 @export var patrol_destination_refresh_min := 1.5
 @export var patrol_destination_refresh_max := 2.5
 @export var patrol_min_distance := 50.0
 @export var patrol_max_distance := 120.0
-@export_range(0.1, 1.0, 0.05) var patrol_inner_radius := 0.75
 @export_range(0.0, 180.0, 1.0) var patrol_direction_variance_degrees := 60.0
 @export_range(0.0, 1.0, 0.01) var patrol_steering_strength := 0.04
 @export var max_destination_attempts := 10
@@ -206,15 +205,8 @@ func _generate_patrol_candidate() -> Vector2:
 func _valid_patrol_candidate(candidate: Vector2) -> bool:
 	if candidate.distance_to(global_position) < patrol_min_distance:
 		return false
-	if patrol_bounds.has_area():
-		var center := _nest + patrol_bounds.get_center()
-		var size := patrol_bounds.size * patrol_inner_radius
-		var inner := Rect2(center - size * 0.5, size)
-		if not inner.has_point(candidate):
-			return false
-	else:
-		if candidate.distance_to(_nest) > flight_radius * patrol_inner_radius:
-			return false
+	if candidate.distance_to(_nest) > patrol_radius:
+		return false
 	var direction := global_position.direction_to(candidate)
 	if velocity.length_squared() >= 1.0 and velocity.normalized().dot(direction) < -0.25:
 		return false
@@ -228,7 +220,7 @@ func _is_destination_path_clear(candidate: Vector2) -> bool:
 	return get_world_2d().direct_space_state.intersect_ray(query).is_empty()
 
 func _patrol_area_center() -> Vector2:
-	return _nest + patrol_bounds.get_center() if patrol_bounds.has_area() else _nest
+	return _nest
 
 func _steering_alpha(delta: float) -> float:
 	return clampf(patrol_steering_strength * delta * 60.0, 0.0, 1.0)

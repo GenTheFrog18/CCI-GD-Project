@@ -138,11 +138,11 @@ Defaults:
 Entry:            knockback_bird
 Scene:            game/enemies/layer1/knockback_bird.tscn
 Quantity:         1–3
-Patrol Bounds:    Rect2(-160, -100, 320, 200)
+Patrol Radius:    160
 SpawnPoints:      3
 ```
 
-Use for a nest encounter. Move root to nest centre. Resize **Patrol Bounds** to a clear flight region around it; it is local to placer root. Keep all three SpawnPoints in free air and leave room for swoop/recovery. Do not place birds directly on floor collision. Add fewer points or lower maximum quantity for a smaller nest.
+Use for a nest encounter. Move root to nest centre. Adjust **Patrol Radius** to set the circular flight region around it. Keep all three SpawnPoints in free air and leave room for swoop/recovery. Do not place birds directly on floor collision. Add fewer points or lower maximum quantity for a smaller nest.
 
 ### 5.3 `LargeFlyerPlacer` — one Layer 1 large flyer candidate
 

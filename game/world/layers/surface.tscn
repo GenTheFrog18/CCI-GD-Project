@@ -12,7 +12,6 @@
 [ext_resource type="Texture2D" uid="uid://b7vy7poxghu3v" path="res://assets/art/world/ground/Tiles 2.png" id="8_re60w"]
 [ext_resource type="PackedScene" path="res://game/items/world/placed_rope.tscn" id="8_ukf4u"]
 [ext_resource type="Script" uid="uid://bklq5e7ut66ux" path="res://game/story/surface/surface_intro.gd" id="10_y73ex"]
-[ext_resource type="PackedScene" path="res://game/world/placers/bird_nest_placer.tscn" id="11_h2sgq"]
 [ext_resource type="PackedScene" path="res://game/enemies/layer1/knockback_bird.tscn" id="11_ifvir"]
 [ext_resource type="Resource" uid="uid://dpvw3j2w0jiiy" path="res://data/dialogue/surface_intro_dialogue.tres" id="11_t2nio"]
 [ext_resource type="PackedScene" uid="uid://b4lo51iq316d1" path="res://game/enemies/layer1/tongue_amphibian.tscn" id="12_c1nwm"]
@@ -6214,16 +6213,8 @@ tile_set = SubResource("TileSet_5086k")
 [node name="PlacedRope" parent="Ground" unique_id=1536229429 instance=ExtResource("8_ukf4u")]
 position = Vector2(129, -119)
 
-[node name="BirdNestPlacer" parent="Ground" unique_id=1257289170 instance=ExtResource("11_h2sgq")]
-position = Vector2(1129, -138)
-persistent_id = &"test"
-minimum_quantity = 2
-required_allocation = true
-spawn_group_id = &"n1"
-
 [node name="KnockbackBird" parent="Ground" unique_id=86845348 instance=ExtResource("11_ifvir")]
 position = Vector2(1033, -89)
-knockback = 500.0
 
 [node name="LeftWall" type="StaticBody2D" parent="." unique_id=1766931987]
 position = Vector2(-10, 180)

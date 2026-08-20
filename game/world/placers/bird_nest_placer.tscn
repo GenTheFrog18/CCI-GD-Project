@@ -1,5 +1,5 @@
 [gd_scene load_steps=4 format=3]
-[ext_resource type="Script" path="res://game/world/deterministic_placer.gd" id="1"]
+[ext_resource type="Script" path="res://game/world/placers/bird_nest_placer.gd" id="1"]
 [ext_resource type="Script" path="res://game/world/world_spawn_entry.gd" id="2"]
 [ext_resource type="PackedScene" path="res://game/enemies/layer1/knockback_bird.tscn" id="3"]
 [sub_resource type="Resource" id="BirdEntry"]
@@ -13,7 +13,7 @@ minimum_quantity = 1
 maximum_quantity = 3
 attack_group_maximum = 0
 attack_group_spacing = 0.8
-patrol_bounds = Rect2(-160, -100, 320, 200)
+patrol_radius = 160.0
 [node name="SpawnPoint1" type="Marker2D" parent="."]
 [node name="SpawnPoint2" type="Marker2D" parent="."]
 position = Vector2(-24, -12)

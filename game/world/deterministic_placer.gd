@@ -78,11 +78,15 @@ func spawn_resolved(parent: Node) -> void:
 		_set_property_if_present(node, &"item_id", entry.content_id)
 		_set_property_if_present(node, &"spawn_position", points[point_index].global_position)
 		_set_property_if_present(node, &"patrol_bounds", patrol_bounds)
+		_configure_spawned_node(node)
 		if node is Node2D and parent is Node2D:
 			node.position = (parent as Node2D).to_local(points[point_index].global_position)
 			if facing != 0.0:
 				node.scale.x = absf(node.scale.x) * signf(facing)
 		parent.add_child(node)
+
+func _configure_spawned_node(_node: Node) -> void:
+	pass
 
 func capture_state() -> Dictionary:
 	return {"resolved_results": resolved_results.duplicate(true)}
