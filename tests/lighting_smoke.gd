@@ -31,6 +31,12 @@ func _ready() -> void:
 	invalid_region.region_id = &"invalid"
 	var invalid_image := builder.build_mask(Rect2(0.0, 0.0, 64.0, 64.0), [invalid_region]).get_image()
 	assert(is_zero_approx(invalid_image.get_pixel(2, 2).r))
+	var outside_region := DarknessRegion2D.new()
+	outside_region.region_id = &"outside"
+	outside_region.polygon = PackedVector2Array([Vector2(-16.0, 16.0), Vector2(16.0, 16.0), Vector2(16.0, 48.0), Vector2(-16.0, 48.0)])
+	assert(outside_region.validate_against(Rect2(0.0, 0.0, 64.0, 64.0)).is_empty())
+	var outside_image := builder.build_mask(Rect2(0.0, 0.0, 64.0, 64.0), [outside_region]).get_image()
+	assert(outside_image.get_pixel(0, 2).r > 0.0)
 
 	var controller := WorldLightingController.new()
 	add_child(controller)

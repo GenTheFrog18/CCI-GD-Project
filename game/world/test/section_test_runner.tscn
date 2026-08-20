@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://game/world/test/section_test_runner.gd" id="1"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/west/slot_01_a.tscn" id="2"]
+[ext_resource type="Script" uid="uid://dnsy2vnt68uii" path="res://game/world/test/section_test_runner.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://c63f51qe7nae7" path="res://game/world/sections/layer1/west/xslot_01_a.tscn" id="2"]
 
 [node name="SectionTestRunner" type="Node2D"]
 script = ExtResource("1")

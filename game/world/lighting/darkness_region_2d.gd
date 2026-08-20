@@ -27,7 +27,7 @@ func world_bounds() -> Rect2:
 		bounds = bounds.expand(point)
 	return bounds
 
-func validate_against(bounds: Rect2) -> PackedStringArray:
+func validate_against(_bounds: Rect2) -> PackedStringArray:
 	var errors := PackedStringArray()
 	if region_id.is_empty():
 		errors.append("DarknessRegion2D has blank region_id")
@@ -37,10 +37,6 @@ func validate_against(bounds: Rect2) -> PackedStringArray:
 		errors.append("DarknessRegion2D %s has invalid darkness_strength" % region_id)
 	if edge_falloff_pixels < 0.0:
 		errors.append("DarknessRegion2D %s has negative edge_falloff_pixels" % region_id)
-	for point in world_polygon():
-		if not bounds.grow(0.01).has_point(point):
-			errors.append("DarknessRegion2D %s is outside layer bounds" % region_id)
-			break
 	return errors
 
 func _draw() -> void:
