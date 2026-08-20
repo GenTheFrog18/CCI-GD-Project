@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://ducaowngygpn0" path="res://game/enemies/enemy_support.gd" id="2"]
 [ext_resource type="Script" uid="uid://ctpy5jx0wglna" path="res://core/sensing/sound_listener.gd" id="3"]
 [ext_resource type="Script" uid="uid://bp5r3gpofym7m" path="res://game/world/lighting/light_source_2d.gd" id="4"]
+[ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="5"]
 
 [sub_resource type="RectangleShape2D" id="Shape"]
 size = Vector2(26, 23)
@@ -60,6 +61,13 @@ tags = Array[StringName]([&"neutral_creature", &"hazard"])
 [node name="SoundListener" type="Node2D" parent="." unique_id=92199020]
 script = ExtResource("3")
 minimum_priority = 1
+
+[node name="SightSensor" type="Node2D" parent="." unique_id=1975291844]
+script = ExtResource("5")
+normal_range = 180.0
+normal_angle_degrees = 360.0
+aggravated_range = 180.0
+aggravated_angle_degrees = 360.0
 
 [node name="Glow" type="PointLight2D" parent="." unique_id=1128373612]
 energy = 0.6
