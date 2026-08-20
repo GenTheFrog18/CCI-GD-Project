@@ -128,5 +128,20 @@ offset_top = 196.0
 offset_right = 312.0
 offset_bottom = 270.0
 
+[node name="Money" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -120.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 40.0
+grow_horizontal = 0
+theme_type_variation = &"PixelHeading"
+theme_override_colors/font_color = Color(1, 0.92, 0.82, 1)
+text = "0g"
+horizontal_alignment = 2
+
 [node name="Confirmation" parent="." unique_id=299100056 instance=ExtResource("5")]
 visible = false
