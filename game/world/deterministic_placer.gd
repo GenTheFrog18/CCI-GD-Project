@@ -1,3 +1,4 @@
+@tool
 class_name DeterministicPlacer
 extends Marker2D
 
@@ -18,6 +19,15 @@ extends Marker2D
 @export var patrol_bounds := Rect2()
 
 var resolved_results: Array[Dictionary] = []
+
+func _draw() -> void:
+	if not Engine.is_editor_hint() or drop_scatter_radius <= 0.0:
+		return
+	var center := Vector2(0.0, -drop_height_offset)
+	draw_circle(center, drop_scatter_radius, Color(0.25, 0.7, 1.0, 0.12))
+	draw_arc(center, drop_scatter_radius, 0.0, TAU, 48, Color(0.25, 0.8, 1.0, 0.9), 2.0)
+	draw_line(center - Vector2(4.0, 0.0), center + Vector2(4.0, 0.0), Color(0.25, 0.8, 1.0, 0.9), 1.0)
+	draw_line(center - Vector2(0.0, 4.0), center + Vector2(0.0, 4.0), Color(0.25, 0.8, 1.0, 0.9), 1.0)
 
 func validate() -> PackedStringArray:
 	var errors := PackedStringArray()
