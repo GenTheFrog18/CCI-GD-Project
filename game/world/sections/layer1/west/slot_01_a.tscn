@@ -2392,6 +2392,8 @@ spawn_chance = 0.8
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa")])
 minimum_quantity = 2
 maximum_quantity = 2
+drop_scatter_radius = 0.0
+drop_height_offset = 0.0
 
 [node name="DepthOneCave" type="Polygon2D" parent="DarknessRegions" index="0" unique_id=2122150092]
 position = Vector2(-118, -187)

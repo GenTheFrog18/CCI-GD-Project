@@ -65,6 +65,8 @@ func _physics_process(delta: float) -> void:
 		_target = null
 		_begin_flee(sound_event.position)
 		_cancel_attack()
+	else:
+		_fleeing = false
 	if state == State.ATTACK:
 		velocity = Vector2.ZERO
 		sprite.play(&"shoot")
@@ -129,6 +131,7 @@ func _move_on_surface(delta: float, destination: Vector2) -> void:
 	var speed := move_speed * support.status.get_multiplier(&"move_speed")
 	var walk_velocity := tangent * travel_direction * speed
 	velocity = walk_velocity - _surface_normal * adhesion_speed
+	_last_facing = walk_direction
 	move_and_slide()
 	_update_surface_from_collision(walk_velocity)
 	rotation = _surface_normal.angle() + PI * 0.5

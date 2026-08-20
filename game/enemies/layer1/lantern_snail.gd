@@ -235,7 +235,7 @@ func receive_agitation(_data: Dictionary = {}) -> void:
 	if player != null and player.has_method("warn_attack"): player.warn_attack(self, telegraph_seconds)
 
 func _start_flee(target: Node2D) -> void:
-	if target == null or not target.is_in_group(&"player"):
+	if target == null or not target.is_in_group(&"player") or state == State.ATTACK:
 		return
 	_flee_target = target
 	state = State.FLEE
