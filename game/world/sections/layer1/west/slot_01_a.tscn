@@ -2325,32 +2325,32 @@ position = Vector2(620, 312)
 persistent_id = &"l1w1al2"
 spawn_chance = 0.8
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa")])
-minimum_quantity = 1
-maximum_quantity = 1
+minimum_quantity = 2
+maximum_quantity = 2
 
 [node name="LootPlacer3" parent="." index="12" unique_id=451176812 instance=ExtResource("6_3e46b")]
 position = Vector2(889, 313)
 persistent_id = &"l1w1al3"
 spawn_chance = 0.8
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa"), SubResource("Resource_f8mwi")])
-minimum_quantity = 1
-maximum_quantity = 1
+minimum_quantity = 2
+maximum_quantity = 2
 
 [node name="LootPlacer4" parent="." index="13" unique_id=1782024711 instance=ExtResource("6_3e46b")]
 position = Vector2(915, 172)
 persistent_id = &"l1w1al4"
 spawn_chance = 0.8
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa"), SubResource("Resource_f8mwi")])
-minimum_quantity = 1
-maximum_quantity = 1
+minimum_quantity = 2
+maximum_quantity = 2
 
 [node name="LootPlacer5" parent="." index="14" unique_id=2005672199 instance=ExtResource("6_3e46b")]
 position = Vector2(987, 219)
 persistent_id = &"l1w1al5"
 spawn_chance = 0.8
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa")])
-minimum_quantity = 1
-maximum_quantity = 1
+minimum_quantity = 2
+maximum_quantity = 2
 
 [node name="EnemyPlacer4" parent="." index="15" unique_id=1278501311 instance=ExtResource("3_556nl")]
 position = Vector2(534, 674)

@@ -26,8 +26,6 @@ func validate() -> PackedStringArray:
 		errors.append("DeterministicPlacer %s has no entries" % persistent_id)
 	if minimum_quantity > maximum_quantity:
 		errors.append("DeterministicPlacer %s quantity range is invalid" % persistent_id)
-	if maximum_quantity > points.size():
-		errors.append("DeterministicPlacer %s quantity exceeds SpawnPoint count" % persistent_id)
 	for entry in entries:
 		if entry == null:
 			errors.append("DeterministicPlacer %s has a missing entry" % persistent_id)
@@ -46,19 +44,22 @@ func resolve(run_seed: int, force_active := false) -> Array[Dictionary]:
 	if not force_active and random.randf() > spawn_chance:
 		return resolved_results
 	var quantity := random.randi_range(minimum_quantity, maximum_quantity)
-	var available_points: Array[int] = []
-	for index in points.size():
-		available_points.append(index)
-	for _index in mini(quantity, available_points.size()):
-		var point_list_index := random.randi_range(0, available_points.size() - 1)
-		var point_index: int = available_points.pop_at(point_list_index)
+	for _index in quantity:
+		var point_index := random.randi_range(0, points.size() - 1)
 		var entry := _pick_entry(random)
 		if entry == null:
 			continue
+		var occurrence := 0
+		for previous in resolved_results:
+			if int(previous.get("spawn_point_index", -1)) == point_index:
+				occurrence += 1
+		var result_id := "%s:%d" % [persistent_id, point_index]
+		if occurrence > 0:
+			result_id = "%s:%d:%d" % [persistent_id, point_index, occurrence]
 		resolved_results.append({
 			"content_id": String(entry.content_id),
 			"spawn_point_index": point_index,
-			"persistent_id": "%s:%d" % [persistent_id, point_index],
+			"persistent_id": result_id,
 		})
 	return resolved_results.duplicate(true)
 

@@ -801,6 +801,13 @@ func _test_world_authoring_foundation() -> void:
 	add_child(loot_placer)
 	assert(loot_placer.validate().is_empty())
 	assert(loot_placer.resolve(10).size() == 1)
+	loot_placer.minimum_quantity = 3
+	loot_placer.maximum_quantity = 3
+	var multi_loot := loot_placer.resolve(10)
+	var multi_ids := {}
+	for result in multi_loot:
+		multi_ids[result.persistent_id] = true
+	assert(multi_loot.size() == 3 and multi_ids.size() == 3)
 
 	var drop_root := Node2D.new()
 	add_child(drop_root)
