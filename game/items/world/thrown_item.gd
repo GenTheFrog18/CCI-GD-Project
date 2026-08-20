@@ -50,6 +50,8 @@ func _ready() -> void:
 	add_to_group(&"persistent_objects")
 	add_to_group(&"loose_items")
 	_apply_visual()
+	if freeze:
+		_remove_broken_weight_when_available()
 
 func _physics_process(delta: float) -> void:
 	if freeze:
@@ -59,8 +61,15 @@ func _physics_process(delta: float) -> void:
 		if _still_time >= stop_seconds:
 			freeze = true
 			add_to_group(&"interactables")
+			_remove_broken_weight_when_available()
 	else:
 		_still_time = 0.0
+
+func _remove_broken_weight_when_available() -> void:
+	if not freeze or definition == null or definition.item_id != &"silver_weight_damaged":
+		return
+	SaveManager.mark_destroyed(persistent_id)
+	queue_free()
 
 func _on_body_entered(body: Node) -> void:
 	if is_queued_for_deletion() or body == source_actor or _hit_ids.has(body.get_instance_id()):

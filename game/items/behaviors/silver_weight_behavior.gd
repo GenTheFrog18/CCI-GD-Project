@@ -10,8 +10,7 @@ func on_impact(thrown_item: Node2D, impact: ImpactData) -> ItemActionResult:
 	if body != null and body.has_method("apply_damage"):
 		body.apply_damage(DamageInfo.new(impact_damage, impact.source_actor, impact.source_species_id))
 	if thrown_item.definition.item_id == &"silver_weight_damaged":
-		SaveManager.mark_destroyed(String(thrown_item.persistent_id))
-		thrown_item.queue_free()
+		return ItemActionResult.completed()
 	else:
 		thrown_item.definition = ContentCatalog.get_item(&"silver_weight_damaged")
 		thrown_item._apply_visual()
