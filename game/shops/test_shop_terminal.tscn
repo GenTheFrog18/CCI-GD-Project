@@ -16,6 +16,6 @@ shop_definition = ExtResource("2")
 position = Vector2(0, -16)
 shape = SubResource("Shape")
 
-[node name="Visual" type="Polygon2D" parent="." unique_id=304894145]
-color = Color(0.7, 0.55, 0.25, 1)
-polygon = PackedVector2Array(-14, -32, 14, -32, 14, 0, -14, 0)
+[node name="Visual" type="AnimatedSprite2D" parent="." unique_id=304894145]
+position = Vector2(0, -24)
+texture_filter = 1

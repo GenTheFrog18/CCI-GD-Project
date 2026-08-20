@@ -14,10 +14,9 @@ script = ExtResource("1")
 position = Vector2(0, -22)
 shape = SubResource("Shape")
 
-[node name="Visual" type="Polygon2D" parent="."]
-position = Vector2(0, -22)
-polygon = PackedVector2Array(-14, 22, -13, -14, 0, -22, 13, -14, 14, 22)
-color = Color(0.32, 0.56, 0.62, 1)
+[node name="Visual" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -24)
+texture_filter = 1
 
 [node name="Label" type="Label" parent="."]
 offset_left = -55.0

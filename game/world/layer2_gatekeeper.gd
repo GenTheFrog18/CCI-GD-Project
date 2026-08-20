@@ -1,6 +1,9 @@
 class_name Layer2Gatekeeper
 extends Area2D
 
+const IDLE_SHEET := preload("res://assets/art/characters/npc/animation/Gatekeeper1/Gatekeeper1Idle-48x64-4FPS.png")
+const GRAB_SHEET := preload("res://assets/art/characters/npc/animation/Gatekeeper1/Gatekeeper1Grab-48x64-10FPS.png")
+const WALK_SHEET := preload("res://assets/art/characters/npc/animation/Gatekeeper1/Gatekeeper1Walk-48x64-4FPS.png")
 const REWARD_FLAG := "layer_2_core_rewarded"
 const REWARD_SCENE := preload("res://game/items/world/world_item.tscn")
 
@@ -8,9 +11,11 @@ const REWARD_SCENE := preload("res://game/items/world/world_item.tscn")
 @export var interaction_priority := 80
 
 @onready var reward_marker: Marker2D = $RewardMarker
+@onready var visual: AnimatedSprite2D = $Visual
 var _confirmation_until := -1
 
 func _ready() -> void:
+	_setup_visual()
 	add_to_group(&"interactables")
 	reward_marker.add_to_group(&"quest_item_recovery_marker")
 
@@ -24,6 +29,7 @@ func get_interaction_prompt(actor: Node) -> String:
 func interact(actor: Node) -> bool:
 	if actor is not PlayerController:
 		return false
+	_play_visual(&"grab")
 	if bool(GameSession.progression_flags.get(REWARD_FLAG, false)):
 		_feedback(actor, "The Resonance Core reward has already been claimed.")
 		return true
@@ -59,3 +65,30 @@ func _spawn_reward(state: Dictionary) -> void:
 
 func _feedback(actor: PlayerController, message: String) -> void:
 	actor.item_controller.feedback_requested.emit(message)
+
+func _setup_visual() -> void:
+	var frames := SpriteFrames.new()
+	frames.remove_animation(&"default")
+	_add_animation(frames, &"idle", IDLE_SHEET, 4, 4.0, true)
+	_add_animation(frames, &"grab", GRAB_SHEET, 10, 10.0, false)
+	_add_animation(frames, &"walk", WALK_SHEET, 6, 4.0, true)
+	visual.sprite_frames = frames
+	visual.play(&"idle")
+	visual.animation_finished.connect(func():
+		if visual.animation == &"grab":
+			_play_visual(&"idle")
+	)
+
+func _add_animation(frames: SpriteFrames, animation: StringName, sheet: Texture2D, count: int, speed: float, loop: bool) -> void:
+	frames.add_animation(animation)
+	frames.set_animation_speed(animation, speed)
+	frames.set_animation_loop(animation, loop)
+	for index in count:
+		var frame := AtlasTexture.new()
+		frame.atlas = sheet
+		frame.region = Rect2(index * 48, 0, 48, 48)
+		frames.add_frame(animation, frame)
+
+func _play_visual(animation: StringName) -> void:
+	if visual.animation != animation:
+		visual.play(animation)
