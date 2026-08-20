@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=8 format=3]
+
+[ext_resource type="Script" uid="uid://bxol3nb5souin" path="res://data/definitions/item_definition.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://lw41xvr8e4ro" path="res://assets/art/items/silver_weight_broken.png" id="2"]
+[ext_resource type="Script" uid="uid://ct1k138qj1wrk" path="res://game/items/behaviors/prepared_relic_behavior.gd" id="3"]
+[ext_resource type="Script" uid="uid://bnxj2ufmdqdnh" path="res://game/items/behaviors/silver_weight_behavior.gd" id="4"]
+[ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://crxctwqnrdxji" path="res://game/items/world/hitboxes/hitbox_silver.tscn" id="6"]
+
+[sub_resource type="Resource" id="Primary"]
+script = ExtResource("3")
+kind = "silver_weight"
+duration = 0.0
+throw_speed = 190.0
+movement_multiplier = 0.45
+jump_multiplier = 0.35
+
+[sub_resource type="Resource" id="Secondary"]
+script = ExtResource("4")
+minimum_speed = 100.0
+maximum_speed = 300.0
+impact_activation_speed = 40.0
+
+[resource]
+script = ExtResource("1")
+item_id = &"silver_weight_impact_damaged"
+display_name = "Damaged Silver Weight"
+unknown_description = "A cracked, impossibly dense silver relic."
+known_description = "Can still be recovered before it breaks completely."
+category = &"relic"
+icon = ExtResource("2")
+world_hitbox_scene = ExtResource("6")
+world_scene = ExtResource("5")
+weight = 17
+max_stack = 1
+surface_sale_value = 75
+delivery_value = 35
+sellable = false
+persistent_when_dropped = true
+retrievable = true
+primary_behavior = SubResource("Primary")
+secondary_behavior = SubResource("Secondary")

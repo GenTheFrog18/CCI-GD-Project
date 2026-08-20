@@ -1,12 +1,15 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://d3qmj5faix8wh"]
 
-[ext_resource type="Script" path="res://game/player/dazzled_overlay.gd" id="1"]
+[ext_resource type="Script" uid="uid://ea2fod06x4yv" path="res://game/player/dazzled_overlay.gd" id="1"]
 
-[node name="DazzledOverlay" type="CanvasLayer"]
+[node name="DazzledOverlay" type="CanvasLayer" unique_id=1557607422]
 layer = 110
 script = ExtResource("1")
+fade_in_seconds = 0.25
+ninety_percent_hold_seconds = 0.5
+white_opacity = 0.7
 
-[node name="Layers" type="Control" parent="."]
+[node name="Layers" type="Control" parent="." unique_id=1316275514]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,7 +18,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Screenshot" type="TextureRect" parent="Layers"]
+[node name="Screenshot" type="TextureRect" parent="Layers" unique_id=1590824444]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,7 +29,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 6
 
-[node name="WhiteFill" type="ColorRect" parent="Layers"]
+[node name="WhiteFill" type="ColorRect" parent="Layers" unique_id=371401542]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -34,4 +37,3 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(1, 1, 1, 1)

@@ -103,7 +103,10 @@ func get_interaction_prompt(_actor: Node) -> String:
 func interact(actor: Node) -> bool:
 	if not freeze or definition == null or not actor.has_method("try_pickup_item"):
 		return false
-	if actor.try_pickup_item(definition.item_id, 1, instance_state):
+	var pickup_id := definition.item_id
+	if pickup_id == &"silver_weight_impact_damaged":
+		pickup_id = &"silver_weight_damaged"
+	if actor.try_pickup_item(pickup_id, 1, instance_state):
 		SaveManager.mark_destroyed(persistent_id)
 		queue_free()
 		return true
@@ -112,7 +115,10 @@ func interact(actor: Node) -> bool:
 func take_as_stack() -> ItemStack:
 	if definition == null:
 		return ItemStack.new()
-	var result := ItemStack.new(definition.item_id, 1, instance_state)
+	var pickup_id := definition.item_id
+	if pickup_id == &"silver_weight_impact_damaged":
+		pickup_id = &"silver_weight_damaged"
+	var result := ItemStack.new(pickup_id, 1, instance_state)
 	SaveManager.mark_destroyed(persistent_id)
 	queue_free()
 	return result
