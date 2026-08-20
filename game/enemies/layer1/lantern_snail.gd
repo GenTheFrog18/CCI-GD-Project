@@ -124,11 +124,29 @@ func _move_on_surface(delta: float) -> void:
 	up_direction = _surface_normal
 	tangent = Vector2(-_surface_normal.y, _surface_normal.x).normalized()
 	_play_animation(&"hit" if _hit_remaining > 0.0 else &"walk")
-	velocity = tangent * _direction * move_speed * support.status.get_multiplier(&"move_speed") - _surface_normal * adhesion_speed
+	var walk_velocity := tangent * _direction * move_speed * support.status.get_multiplier(&"move_speed")
+	velocity = walk_velocity - _surface_normal * adhesion_speed
 	move_and_slide()
+	_update_surface_from_collision(walk_velocity)
 	visual.flip_h = _direction > 0.0
 	rotation = _surface_normal.angle() + PI * 0.5
-	if global_position.distance_to(_origin) >= roam_distance: _direction *= -1.0
+	var from_origin := global_position - _origin
+	var moving_away := not from_origin.is_zero_approx() and from_origin.normalized().dot(walk_velocity) > 0.0
+	if from_origin.length() >= roam_distance and moving_away:
+		_direction *= -1.0
+
+func _update_surface_from_collision(walk_velocity: Vector2) -> void:
+	if surface_state != SurfaceState.ATTACHED:
+		return
+	for index in get_slide_collision_count():
+		var normal := get_slide_collision(index).get_normal().normalized()
+		if normal.is_zero_approx() or normal.dot(walk_velocity) > -0.1:
+			continue
+		if _surface_angle(normal) <= deg_to_rad(normal_change_epsilon_degrees):
+			continue
+		_target_surface_normal = normal
+		surface_state = SurfaceState.TRANSITIONING
+		return
 
 func _update_probes(walk_direction: Vector2) -> void:
 	var probe_origin := global_position + _surface_normal * (surface_probe_radius + surface_offset)

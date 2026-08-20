@@ -31,22 +31,20 @@ script = ExtResource("1")
 move_speed = 9.0
 sound_trigger_radius = 50.0
 sprite_scale = 0.4
+surface_probe_distance = 16.0
+surface_probe_radius = 16.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1366317970]
 position = Vector2(0, -0.5)
 shape = SubResource("Shape")
 
 [node name="ForwardSurfaceProbe" type="ShapeCast2D" parent="." unique_id=202014264]
-collision_mask = 1
-target_position = Vector2(10, 0)
 shape = SubResource("ProbeShape")
-exclude_parent = true
+target_position = Vector2(10, 0)
 
 [node name="SupportSurfaceProbe" type="ShapeCast2D" parent="." unique_id=202014265]
-collision_mask = 1
-target_position = Vector2(0, 18)
 shape = SubResource("ProbeShape")
-exclude_parent = true
+target_position = Vector2(0, 18)
 
 [node name="Visual" type="AnimatedSprite2D" parent="." unique_id=284403318]
 position = Vector2(0, 5)
