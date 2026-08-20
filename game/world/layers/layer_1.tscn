@@ -5,13 +5,9 @@
 [ext_resource type="PackedScene" uid="uid://pp2jaujwp3vc" path="res://game/world/sections/layer1/west/slot_01_a.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://b7yipua6tyu2n" path="res://game/world/sections/layer1/west/slot_02_a.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://xnsshmg5bt6y" path="res://game/world/sections/layer1/west/slot_03_a.tscn" id="5"]
-[ext_resource type="PackedScene" uid="uid://c63f51qe7nae7" path="res://game/world/sections/layer1/west/xslot_01_a.tscn" id="5_wj7ke"]
 [ext_resource type="PackedScene" uid="uid://dbcv7ixchlequ" path="res://game/world/sections/layer1/east/slot_01_a.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://ijluv1w1mqas" path="res://game/world/sections/layer1/west/slot_02_b.tscn" id="6_0c1d5"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://sbl5t6mykcwa" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://bddta4kbxsboo" path="res://game/world/sections/layer1/east/slot_03_a.tscn" id="8"]
-[ext_resource type="PackedScene" uid="uid://vjs0idvynj0w" path="res://game/world/sections/layer1/west/slot_03_b.tscn" id="8_wj7ke"]
-[ext_resource type="PackedScene" uid="uid://tjdlwrxnt2gs" path="res://game/world/sections/layer1/west/slot_01_b.tscn" id="9"]
 
 [sub_resource type="RectangleShape2D" id="OuterWall"]
 size = Vector2(20, 2400)
@@ -33,8 +29,8 @@ east_spawn = NodePath("EastSpawn")
 script = ExtResource("2")
 slot_id = &"layer1_west_01"
 layer_id = &"layer_1"
-variations = Array[PackedScene]([ExtResource("3"), ExtResource("9")])
-fallback_scene = ExtResource("5_wj7ke")
+variations = Array[PackedScene]([ExtResource("3")])
+fallback_scene = ExtResource("3")
 
 [node name="West02" type="Marker2D" parent="Slots" unique_id=1715781223]
 position = Vector2(0, 800)
@@ -42,7 +38,7 @@ script = ExtResource("2")
 slot_id = &"layer1_west_02"
 layer_id = &"layer_1"
 depth_index = 2
-variations = Array[PackedScene]([ExtResource("4"), ExtResource("6_0c1d5")])
+variations = Array[PackedScene]([ExtResource("4")])
 fallback_scene = ExtResource("4")
 
 [node name="West03" type="Marker2D" parent="Slots" unique_id=2085210856]
@@ -51,7 +47,7 @@ script = ExtResource("2")
 slot_id = &"layer1_west_03"
 layer_id = &"layer_1"
 depth_index = 3
-variations = Array[PackedScene]([ExtResource("5"), ExtResource("8_wj7ke")])
+variations = Array[PackedScene]([ExtResource("5")])
 fallback_scene = ExtResource("5")
 
 [node name="East01" type="Marker2D" parent="Slots" unique_id=1781049290]
