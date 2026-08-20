@@ -1,7 +1,9 @@
 class_name SeniorDiver
 extends CharacterBody2D
 
-enum State { IDLE, MOVE, ATTACK }
+enum State { POST, CHASE, GRAB_TELEGRAPH, GRAB_RESOLUTION, LOST_TARGET, INVESTIGATE }
+
+const GRAB_LOCK_REASON := &"senior_diver_grab"
 
 @export var persistent_id := "senior_diver"
 @export var move_speed := 42.0
@@ -9,90 +11,294 @@ enum State { IDLE, MOVE, ATTACK }
 @export var restricted_radius := 120.0
 @export var grab_range := 26.0
 @export var telegraph_seconds := 0.25
+@export var grab_lock_seconds := 1.0
 @export var lost_seconds := 3.0
 @export var trespass_knockback := 180.0
+@export var investigation_speed := 76.0
+@export var investigation_seconds := 3.0
+@export var return_drop_spacing := 12.0
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sight: SightSensor = $SightSensor
-var state := State.IDLE
+@onready var sound: SoundListener = $SoundListener
+@onready var lost_item_return: Marker2D = $LostItemReturn
+
+var state := State.POST
 var _origin := Vector2.ZERO
 var _target: PlayerController
+var _grab_target: PlayerController
 var _timer := 0.0
 var _lost := 0.0
 var _has_sight := false
 var _knockback := Vector2.ZERO
 var _was_restricted := false
+var _last_known_position := Vector2.ZERO
+var _investigation_position := Vector2.ZERO
+var _investigation_remaining := 0.0
+var _grab_in_progress := false
+var _grab_cancelled := false
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
 	_origin = global_position
 	add_to_group(&"interactables")
 	sight.target_seen.connect(_on_seen)
-	sight.target_lost.connect(func(_target_node: Node2D): _has_sight = false; _lost = lost_seconds)
-	$LostItemReturn.add_to_group(&"lost_item_return_marker")
+	sight.target_lost.connect(_on_lost)
+	sound.sound_accepted.connect(_on_sound)
+	support.health.died.connect(_on_died)
+	lost_item_return.add_to_group(&"lost_item_return_marker")
 
 func _physics_process(delta: float) -> void:
-	if not is_on_floor(): velocity.y += gravity * delta
+	if not is_on_floor():
+		velocity.y += gravity * delta
 	_timer = maxf(0.0, _timer - delta)
-	var inside_restricted := _target != null and _has_sight and GameSession.whistle_tier != &"blue" and global_position.distance_to(_target.global_position) <= restricted_radius
+
+	if _grab_in_progress:
+		_apply_motion(delta)
+		return
+
+	if state == State.GRAB_TELEGRAPH:
+		_process_grab_telegraph()
+		_apply_motion(delta)
+		return
+
+	if state == State.INVESTIGATE:
+		_process_investigation(delta)
+		_apply_motion(delta)
+		return
+
+	if not _valid_target(_target) or _is_authorized(_target):
+		_clear_target()
+
+	var inside_restricted := _target != null and _has_sight and not _is_authorized(_target) \
+		and global_position.distance_to(_target.global_position) <= restricted_radius
 	if inside_restricted and not _was_restricted:
-		var away := global_position.direction_to(_target.global_position)
-		_target.apply_force(Vector2(away.x * trespass_knockback, -trespass_knockback * 0.35))
+		_warn_trespass(_target)
 	_was_restricted = inside_restricted
+
 	if inside_restricted:
-		if state == State.ATTACK:
-			velocity.x = 0.0
-			if _timer <= 0.0: _grab()
-		elif global_position.distance_to(_target.global_position) <= grab_range:
-			state = State.ATTACK
-			_timer = telegraph_seconds
-			_target.warn_attack(self, telegraph_seconds)
-		else:
-			state = State.MOVE
-			velocity.x = signf(_target.global_position.x - global_position.x) * move_speed * support.status.get_multiplier(&"move_speed")
+		_process_chase()
+	elif not _has_sight and _target != null:
+		_process_lost_target(delta)
 	else:
-		if not _has_sight:
-			_lost -= delta
-		if _lost <= 0.0:
-			_target = null
-			state = State.IDLE
-			velocity.x = signf(_origin.x - global_position.x) * move_speed if absf(_origin.x - global_position.x) > 4.0 else 0.0
+		state = State.POST
+		_lost = lost_seconds
+		_move_to_post()
+
+	_apply_motion(delta)
+
+func _process_chase() -> void:
+	if _target == null:
+		return
+	if global_position.distance_to(_target.global_position) <= grab_range:
+		state = State.GRAB_TELEGRAPH
+		_timer = telegraph_seconds
+		_grab_target = _target
+		_grab_cancelled = false
+		_target.warn_attack(self, telegraph_seconds)
+		velocity.x = 0.0
+		return
+	state = State.CHASE
+	velocity.x = signf(_target.global_position.x - global_position.x) * move_speed * _move_multiplier()
+
+func _process_grab_telegraph() -> void:
+	velocity.x = 0.0
+	if not _grab_valid():
+		_cancel_grab()
+		return
+	if _timer <= 0.0:
+		_resolve_grab()
+
+func _resolve_grab() -> void:
+	if _grab_in_progress or not _grab_valid():
+		_cancel_grab()
+		return
+	_grab_in_progress = true
+	_grab_cancelled = false
+	state = State.GRAB_RESOLUTION
+	var target := _grab_target
+	target.locks.lock(GRAB_LOCK_REASON)
+	var confiscated := target.confiscate_map_items()
+	_return_confiscated_items(confiscated)
+	await get_tree().create_timer(grab_lock_seconds).timeout
+	if _grab_cancelled:
+		return
+	if is_instance_valid(target):
+		target.locks.unlock(GRAB_LOCK_REASON)
+	_grab_in_progress = false
+	_grab_target = null
+	_target = null
+	_has_sight = false
+	_was_restricted = false
+	state = State.POST
+	_lost = lost_seconds
+	var world := _find_world_run()
+	if world != null:
+		world.request_layer_transition(&"surface", &"west")
+
+func _process_lost_target(delta: float) -> void:
+	state = State.LOST_TARGET
+	_lost = maxf(0.0, _lost - delta)
+	if _lost <= 0.0:
+		_clear_target()
+		_move_to_post()
+		return
+	velocity.x = signf(_last_known_position.x - global_position.x) * move_speed * _move_multiplier()
+
+func _process_investigation(delta: float) -> void:
+	_investigation_remaining = maxf(0.0, _investigation_remaining - delta)
+	if _investigation_remaining <= 0.0 or global_position.distance_to(_investigation_position) <= 12.0:
+		state = State.POST
+		_move_to_post()
+		return
+	velocity.x = signf(_investigation_position.x - global_position.x) * investigation_speed * _move_multiplier()
+
+func _move_to_post() -> void:
+	velocity.x = signf(_origin.x - global_position.x) * move_speed * _move_multiplier() if absf(_origin.x - global_position.x) > 4.0 else 0.0
+
+func _warn_trespass(target: PlayerController) -> void:
+	if target == null:
+		return
+	var away := global_position.direction_to(target.global_position)
+	target.apply_force(Vector2(away.x * trespass_knockback, -trespass_knockback * 0.35))
+
+func _apply_motion(_delta: float) -> void:
 	velocity += _knockback
 	_knockback = Vector2.ZERO
 	move_and_slide()
-	sight.facing = Vector2(signf(velocity.x), 0) if absf(velocity.x) > 0.1 else sight.facing
+	sight.facing = Vector2(signf(velocity.x), 0.0) if absf(velocity.x) > 0.1 else sight.facing
 
-func _on_seen(target: Node2D, _position: Vector2) -> void:
-	if target is PlayerController:
-		_target = target
-		_has_sight = true
+func _on_seen(target: Node2D, position: Vector2) -> void:
+	if target is not PlayerController:
+		return
+	_target = target
+	_last_known_position = position
+	_has_sight = true
+	_lost = lost_seconds
 
-func _grab() -> void:
-	if _target == null: return
-	_target.locks.lock(&"senior_diver_grab")
-	_target.confiscate_map_items()
-	await get_tree().create_timer(1.0).timeout
-	if is_instance_valid(_target): _target.locks.unlock(&"senior_diver_grab")
-	var world := _find_world_run()
-	if world != null: world.request_layer_transition(&"surface", &"west")
-	state = State.IDLE
+func _on_lost(target: Node2D) -> void:
+	if target != _target:
+		return
+	_has_sight = false
+	_lost = lost_seconds
+	_last_known_position = target.global_position
+	if state == State.GRAB_TELEGRAPH:
+		_cancel_grab()
+
+func _on_sound(event: SoundEvent, _direct: bool) -> void:
+	if event == null or event.sound_type not in [&"rattlepod", &"whistle", &"crystal", &"lantern_crystal"]:
+		return
+	if state == State.GRAB_RESOLUTION or _grab_in_progress:
+		return
+	_cancel_grab()
 	_target = null
+	_has_sight = false
+	_was_restricted = false
+	_investigation_position = event.position
+	_investigation_remaining = investigation_seconds
+	state = State.INVESTIGATE
 
-func get_interaction_prompt(_actor: Node) -> String: return "Talk to Senior Diver"
+func _grab_valid() -> bool:
+	return is_instance_valid(_grab_target) and _grab_target.is_alive() \
+		and not _is_authorized(_grab_target) and _has_sight \
+		and global_position.distance_to(_grab_target.global_position) <= grab_range
+
+func _valid_target(target: PlayerController) -> bool:
+	return is_instance_valid(target) and target.is_alive()
+
+func _is_authorized(player: PlayerController) -> bool:
+	return player != null and GameSession.whistle_tier == &"blue"
+
+func _clear_target() -> void:
+	_target = null
+	_has_sight = false
+	_lost = 0.0
+	_was_restricted = false
+	if state in [State.CHASE, State.LOST_TARGET, State.GRAB_TELEGRAPH]:
+		state = State.POST
+
+func _cancel_grab() -> void:
+	_grab_cancelled = true
+	if is_instance_valid(_grab_target):
+		_grab_target.locks.unlock(GRAB_LOCK_REASON)
+	_grab_target = null
+	_grab_in_progress = false
+	if state == State.GRAB_TELEGRAPH or state == State.GRAB_RESOLUTION:
+		state = State.POST
+		_timer = 0.0
+
+func _return_confiscated_items(stacks: Array[ItemStack]) -> void:
+	var parent := get_parent()
+	if parent == null:
+		return
+	var index := 0
+	for stack in stacks:
+		var definition := ContentCatalog.get_item(stack.item_id)
+		if definition == null:
+			continue
+		for _quantity in stack.quantity:
+			var drop := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
+			var offset := Vector2(float(index % 4) * return_drop_spacing, float(index / 4) * return_drop_spacing)
+			drop.configure(definition, stack.state, null, lost_item_return.global_position + offset, Vector2.ZERO)
+			drop.freeze = true
+			parent.call_deferred(&"add_child", drop)
+			index += 1
+
+func _on_died(_source: Node) -> void:
+	_cancel_grab()
+	_target = null
+	_has_sight = false
+	_was_restricted = false
+
+func get_interaction_prompt(_actor: Node) -> String:
+	return "Talk to Senior Diver"
+
 func interact(actor: Node) -> bool:
-	if actor is not PlayerController: return false
-	actor.item_controller.feedback_requested.emit("Blue rank confirmed." if GameSession.whistle_tier == &"blue" else "The diver warns you not to pass.")
+	if actor is not PlayerController:
+		return false
+	actor.item_controller.feedback_requested.emit("Blue rank confirmed." if _is_authorized(actor) else "The diver warns you not to pass.")
 	return true
+
 func _find_world_run() -> WorldRun:
 	var node: Node = self
 	while node != null:
-		if node is WorldRun: return node
+		if node is WorldRun:
+			return node
 		node = node.get_parent()
 	return null
-func apply_damage(info: DamageInfo) -> bool: return support.apply_damage(info)
-func apply_force(force: Vector2) -> void: _knockback += support.apply_force(force)
-func apply_status(id: StringName, data: Dictionary = {}) -> bool: return support.apply_status(id, data)
-func capture_state() -> Dictionary: return support.capture_state()
+
+func _move_multiplier() -> float:
+	return support.status.get_multiplier(&"move_speed")
+
+func apply_damage(info: DamageInfo) -> bool:
+	return support.apply_damage(info)
+
+func apply_force(force: Vector2) -> void:
+	_knockback += support.apply_force(force)
+
+func apply_status(id: StringName, data: Dictionary = {}) -> bool:
+	return support.apply_status(id, data)
+
+func capture_state() -> Dictionary:
+	return support.capture_state()
+
 func restore_state(data: Dictionary) -> void:
-	if support.restore_state(data): global_position = _origin; state = State.IDLE
-func handle_world_out_of_bounds() -> void: global_position = _origin; velocity = Vector2.ZERO
+	if support.restore_state(data):
+		global_position = _origin
+		velocity = Vector2.ZERO
+		_cancel_grab()
+		_target = null
+		_has_sight = false
+		_lost = 0.0
+		_was_restricted = false
+		state = State.POST
+
+func handle_world_out_of_bounds() -> void:
+	_cancel_grab()
+	global_position = _origin
+	velocity = Vector2.ZERO
+	_target = null
+	_has_sight = false
+	_lost = 0.0
+	_was_restricted = false
+	state = State.POST

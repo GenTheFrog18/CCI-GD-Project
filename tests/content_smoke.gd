@@ -120,6 +120,22 @@ func _test_enemy_scenes() -> void:
 	_check(snail.forward_probe is ShapeCast2D and snail.support_probe is ShapeCast2D, "Lantern Snail surface probes exist")
 	_check(snail.walkable_collision_mask == 1, "Lantern Snail uses terrain collision mask")
 	snail.free()
+	var diver := preload("res://game/enemies/layer1/senior_diver.tscn").instantiate() as SeniorDiver
+	add_child(diver)
+	_check(diver.sound.minimum_priority == 8 and diver.state == SeniorDiver.State.POST, "Senior Diver has strong-sound investigation and post state")
+	var diver_player := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	add_child(diver_player)
+	var old_whistle_tier := GameSession.whistle_tier
+	GameSession.whistle_tier = &"blue"
+	_check(diver._is_authorized(diver_player), "Senior Diver authorization uses Blue progression rank")
+	GameSession.whistle_tier = &"red"
+	_check(not diver._is_authorized(diver_player), "Physical whistle does not authorize Senior Diver")
+	var distraction := SoundEvent.new(Vector2(40.0, 20.0), 200.0, &"rattlepod", 8)
+	diver._on_sound(distraction, false)
+	_check(diver.state == SeniorDiver.State.INVESTIGATE and diver._investigation_position == distraction.position, "Senior Diver investigates strong distraction sounds")
+	GameSession.whistle_tier = old_whistle_tier
+	diver_player.free()
+	diver.free()
 	for id: StringName in ContentCatalog.enemies:
 		var definition := ContentCatalog.get_enemy(id)
 		var enemy := definition.scene.instantiate() as CollisionObject2D

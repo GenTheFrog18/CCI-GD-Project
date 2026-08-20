@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 [ext_resource type="Script" path="res://game/enemies/layer1/senior_diver.gd" id="1"]
 [ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
 [ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="3"]
+[ext_resource type="Script" path="res://core/sensing/sound_listener.gd" id="4"]
 [sub_resource type="RectangleShape2D" id="Shape"]
 size = Vector2(24, 36)
 [node name="SeniorDiver" type="CharacterBody2D"]
@@ -23,5 +24,8 @@ tags = Array[StringName]([&"gatekeeper"])
 [node name="SightSensor" type="Node2D" parent="."]
 script = ExtResource("3")
 normal_range = 240.0
+[node name="SoundListener" type="Node2D" parent="."]
+script = ExtResource("4")
+minimum_priority = 8
 [node name="LostItemReturn" type="Marker2D" parent="."]
 position = Vector2(-40, 0)
