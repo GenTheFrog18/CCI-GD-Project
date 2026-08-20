@@ -819,9 +819,9 @@ func _test_world_authoring_foundation() -> void:
 	assert(breakable.apply_damage(DamageInfo.new(1.0)))
 	var dropped_ids: Dictionary = {}
 	for child in drop_root.get_children():
-		if child is ThrownItem:
-			dropped_ids[child.definition.item_id] = true
-			assert(not child.freeze)
+		if child is WorldItem:
+			dropped_ids[child.item_id] = true
+			assert(child.is_in_group(&"interactables") and not child is RigidBody2D)
 	assert(dropped_ids.has(&"throwable_rock") and dropped_ids.has(&"multitool"))
 	assert(dropped_ids.size() == 2)
 	SaveManager.destroyed_ids.erase("smoke_loot_placer:0")

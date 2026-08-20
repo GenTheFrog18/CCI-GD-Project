@@ -1,7 +1,7 @@
 class_name BreakableLoot
 extends StaticBody2D
 
-const THROWN_ITEM_SCENE := preload("res://game/items/world/thrown_item.tscn")
+const WORLD_ITEM_SCENE := preload("res://game/items/world/world_item.tscn")
 
 @export var persistent_id := ""
 @export var item_id: StringName = &"multitool"
@@ -31,17 +31,19 @@ func _break(_source: Node) -> void:
 		return
 	_broken = true
 	SaveManager.mark_destroyed(persistent_id)
-	_spawn_drop(&"throwable_rock", "%s:rock" % persistent_id, Vector2(-35.0, -120.0))
-	_spawn_drop(item_id, "%s:item" % persistent_id, Vector2(35.0, -140.0))
+	_spawn_drop(&"throwable_rock", "%s:rock" % persistent_id)
+	_spawn_drop(item_id, "%s:item" % persistent_id)
 	queue_free()
 
-func _spawn_drop(drop_item_id: StringName, drop_id: String, velocity: Vector2) -> void:
+func _spawn_drop(drop_item_id: StringName, drop_id: String) -> void:
 	var definition := ContentCatalog.get_item(drop_item_id)
 	var parent := get_parent()
 	if definition == null or parent == null:
 		push_error("BreakableLoot cannot spawn item %s" % drop_item_id)
 		return
-	var drop := THROWN_ITEM_SCENE.instantiate() as ThrownItem
+	var drop := WORLD_ITEM_SCENE.instantiate() as WorldItem
 	drop.persistent_id = drop_id
-	drop.configure(definition, {"origin": "map"}, null, global_position + Vector2(0.0, -12.0), velocity)
+	drop.item_id = definition.item_id
+	drop.instance_state = {"origin": "map"}
 	parent.add_child(drop)
+	drop.global_position = global_position + Vector2(0.0, -12.0)
