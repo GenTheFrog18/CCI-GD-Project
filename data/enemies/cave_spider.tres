@@ -9,5 +9,5 @@ enemy_id = &"cave_spider"
 scene = ExtResource("2")
 species_id = &"cave_spider"
 tags = Array[StringName]([&"small_enemy"])
-max_health = 25.0
+max_health = 22.0
 move_speed = 52.0

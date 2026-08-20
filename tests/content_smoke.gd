@@ -103,6 +103,14 @@ func _test_enemy_scenes() -> void:
 	var spider := preload("res://game/enemies/layer1/cave_spider.tscn").instantiate() as CaveSpider
 	add_child(spider)
 	_check(spider.sprite.sprite_frames.has_animation(&"walk") and spider.sprite.sprite_frames.has_animation(&"shoot"), "Cave Spider finished animations missing")
+	_check(is_equal_approx(spider.projectile_damage, 3.0), "Cave Spider projectile damage is adjustable with 3 default")
+	var disabled_light := LightSource2D.new()
+	disabled_light.enabled = false
+	disabled_light.light_intensity = 0.0
+	add_child(disabled_light)
+	disabled_light.global_position = spider.global_position
+	_check(spider._nearest_light() == null, "Cave Spider ignores inactive lights")
+	disabled_light.free()
 	spider.free()
 	for id: StringName in ContentCatalog.enemies:
 		var definition := ContentCatalog.get_enemy(id)

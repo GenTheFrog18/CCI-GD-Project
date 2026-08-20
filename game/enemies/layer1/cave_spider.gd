@@ -10,6 +10,7 @@ enum State { IDLE, MOVE, ATTACK }
 @export var telegraph_seconds := 0.7
 @export var cooldown_seconds := 4.0
 @export var projectile_speed := 170.0
+@export var projectile_damage := 3.0
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sight: SightSensor = $SightSensor
@@ -35,15 +36,20 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_timer = maxf(0.0, _timer - delta)
 	var light := _nearest_light()
+	var sound_event := _active_sound_threat()
 	if light != null:
 		_target = null
 		_begin_flee(light.global_position)
+		_cancel_attack()
+	elif sound_event != null:
+		_target = null
+		_begin_flee(sound_event.position)
 		_cancel_attack()
 	if state == State.ATTACK:
 		velocity = Vector2.ZERO
 		sprite.play(&"shoot")
 		if _timer <= 0.0: _fire()
-	elif _target != null and global_position.distance_to(_target.global_position) <= attack_range and sight.can_see(_target):
+	elif not _fleeing and _target != null and _timer <= 0.0 and global_position.distance_to(_target.global_position) <= attack_range and sight.can_see(_target):
 		state = State.ATTACK
 		_aim = _target.global_position
 		_timer = telegraph_seconds
@@ -76,13 +82,17 @@ func _nearest_light() -> Node2D:
 			best_distance = distance
 	return best
 
+func _active_sound_threat() -> SoundEvent:
+	var event := sound.current_event
+	return event if event != null and event.priority >= 8 else null
+
 func _on_seen(target: Node2D, _position: Vector2) -> void:
-	if target is PlayerController: _target = target
+	if target is PlayerController and state != State.ATTACK and not _fleeing:
+		_target = target
 
 func _on_target_lost(target: Node2D) -> void:
-	if target == _target:
+	if target == _target and state != State.ATTACK:
 		_target = null
-		_cancel_attack()
 
 func _on_sound(event: SoundEvent, _direct: bool) -> void:
 	if event.priority >= 8:
@@ -107,7 +117,9 @@ func _fire() -> void:
 	var impact := ImpactData.new()
 	impact.source_actor = self
 	impact.source_species_id = support.species_id
-	impact.base_damage = 3.0
+	impact.base_damage = projectile_damage
+	impact.reference_speed = projectile_speed
+	impact.attack_kind = &"projectile"
 	impact.max_hits = 1
 	impact.status_effects = [
 		{"effect_id": &"spider_slow", "duration": 3.0},
@@ -118,6 +130,7 @@ func _fire() -> void:
 	get_parent().add_child(projectile)
 	projectile.global_position = global_position
 	state = State.IDLE
+	_target = null
 	_timer = cooldown_seconds
 
 func apply_damage(info: DamageInfo) -> bool: return support.apply_damage(info)
