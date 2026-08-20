@@ -2341,6 +2341,8 @@ maximum_quantity = 2
 position = Vector2(525, 412)
 persistent_id = &"l1w1al1"
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa")])
+drop_scatter_radius = 7.0
+drop_height_offset = 3.0
 
 [node name="LootPlacer2" parent="." index="9" unique_id=1283425574 instance=ExtResource("6_3e46b")]
 position = Vector2(609, 328)
@@ -2349,7 +2351,8 @@ spawn_chance = 0.8
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa")])
 minimum_quantity = 2
 maximum_quantity = 2
-drop_scatter_radius = 5.0
+drop_scatter_radius = 7.0
+drop_height_offset = 1.0
 
 [node name="LootPlacer3" parent="." index="10" unique_id=451176812 instance=ExtResource("6_3e46b")]
 position = Vector2(889, 313)
@@ -2358,6 +2361,8 @@ spawn_chance = 0.8
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa"), SubResource("Resource_f8mwi")])
 minimum_quantity = 2
 maximum_quantity = 2
+drop_scatter_radius = 7.0
+drop_height_offset = 3.0
 facing = -1.0
 
 [node name="LootPlacer6" parent="." index="11" unique_id=509624316 instance=ExtResource("6_3e46b")]
@@ -2366,6 +2371,8 @@ persistent_id = &"l1w1al6"
 spawn_chance = 0.8
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa"), SubResource("Resource_f8mwi"), SubResource("Resource_qy4c4")])
 maximum_quantity = 2
+drop_scatter_radius = 7.0
+drop_height_offset = 3.0
 facing = -1.0
 
 [node name="LootPlacer4" parent="." index="12" unique_id=1782024711 instance=ExtResource("6_3e46b")]
@@ -2375,6 +2382,8 @@ spawn_chance = 0.8
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa"), SubResource("Resource_f8mwi")])
 minimum_quantity = 2
 maximum_quantity = 2
+drop_scatter_radius = 7.0
+drop_height_offset = 3.0
 
 [node name="LootPlacer5" parent="." index="13" unique_id=2005672199 instance=ExtResource("6_3e46b")]
 position = Vector2(987, 219)
@@ -2415,3 +2424,5 @@ spawn_group_id = &"bw111"
 attack_group_spacing = 0.7
 drop_scatter_radius = null
 drop_height_offset = null
+facing = 0.0
+patrol_bounds = 0.0

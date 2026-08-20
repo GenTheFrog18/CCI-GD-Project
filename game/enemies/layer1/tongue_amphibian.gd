@@ -7,6 +7,7 @@ enum State { IDLE, MOVE, ATTACK, RETREAT }
 @export var move_speed := 45.0
 @export var gravity := 900.0
 @export var jump_velocity := -280.0
+@export_range(0.0, 1.0, 0.05) var air_control := 0.15
 @export var tongue_range := 150.0
 @export var tongue_angle_degrees := 0.0
 @export var tongue_width := 16.0
@@ -76,6 +77,9 @@ func _physics_process(delta: float) -> void:
 	var grounded := is_on_floor()
 	if grounded:
 		velocity.x = 0.0
+	else:
+		var air_target := _facing_direction * move_speed * support.status.get_multiplier(&"move_speed")
+		velocity.x = move_toward(velocity.x, air_target, move_speed * air_control * delta)
 	var loose := _nearest_loose_item()
 	var chasing_player := _target != null and sight.current_target == _target
 	var desired: Node2D = _target if chasing_player else loose if loose != null else _target

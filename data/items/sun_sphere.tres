@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dw52movdq7ybi" path="res://game/items/world/world_item.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://dnud3miy1nodu" path="res://assets/art/items/sun_sphere.png" id="5"]
 [ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="5_mbxkm"]
+[ext_resource type="PackedScene" uid="uid://b3fg3cuqr1js0" path="res://game/items/world/hitboxes/hitbox_sunsphere.tscn" id="6_65ust"]
 
 [sub_resource type="CircleShape2D" id="LightShape"]
 radius = 160.0
@@ -30,6 +31,7 @@ unknown_description = "A warm dormant sphere."
 known_description = "Produces temporary light in hand or after impact."
 category = &"relic"
 icon = ExtResource("5")
+world_hitbox_scene = ExtResource("6_65ust")
 world_scene = ExtResource("4")
 weight = 2
 max_stack = 8

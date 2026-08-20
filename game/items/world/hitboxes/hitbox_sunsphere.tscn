@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://b3fg3cuqr1js0"]
+
+[ext_resource type="Script" uid="uid://h8avkfckcn8j" path="res://game/items/world/world_hitbox_authoring.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://dnud3miy1nodu" path="res://assets/art/items/sun_sphere.png" id="2_e3ux8"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5mrea"]
+radius = 7.0
+height = 16.0
+
+[node name="WorldHitboxAuthoring" type="Area2D" unique_id=1831478901]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1")
+preview_texture = ExtResource("2_e3ux8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=12680124]
+shape = SubResource("CapsuleShape2D_5mrea")
