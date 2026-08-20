@@ -30,28 +30,10 @@ background_travel_seconds = 45.0
 
 [node name="DesignUI" type="Control" parent="." unique_id=1419852138]
 z_index = 1
-layout_mode = 3
+anchors_preset = 0
 offset_right = 640.0
 offset_bottom = 360.0
 mouse_filter = 2
-
-[node name="Background" type="TextureRect" parent="." unique_id=125689840]
-layout_mode = 0
-mouse_filter = 2
-texture = ExtResource("2_background")
-expand_mode = 1
-
-[node name="Vignette" type="TextureRect" parent="." unique_id=1321329724]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("3_vignette")
-expand_mode = 1
-stretch_mode = 6
 
 [node name="TitleCard" type="TextureRect" parent="DesignUI" unique_id=1672659578]
 layout_mode = 0
@@ -71,16 +53,6 @@ offset_top = 168.0
 offset_right = 392.0
 offset_bottom = 328.0
 theme_override_constants/separation = 8
-
-[node name="PlayIntro" type="CheckButton" parent="DesignUI" unique_id=2093000001]
-offset_left = 396.0
-offset_top = 172.0
-offset_right = 550.0
-offset_bottom = 196.0
-mouse_default_cursor_shape = 2
-button_pressed = true
-text = "Play opening dialogue"
-tooltip_text = "Play the opening and first surface dialogue"
 
 [node name="NewRun" type="Button" parent="DesignUI/MenuColumn" unique_id=311907988]
 custom_minimum_size = Vector2(144, 32)
@@ -183,6 +155,17 @@ texture = ExtResource("10_quit")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="PlayIntro" type="CheckButton" parent="DesignUI" unique_id=2093000001]
+layout_mode = 0
+offset_left = 396.0
+offset_top = 172.0
+offset_right = 550.0
+offset_bottom = 196.0
+tooltip_text = "Play the opening and first surface dialogue"
+mouse_default_cursor_shape = 2
+button_pressed = true
+text = "Play opening dialogue"
+
 [node name="Footer" type="VBoxContainer" parent="DesignUI" unique_id=1039943615]
 layout_mode = 1
 anchors_preset = 2
@@ -204,3 +187,21 @@ text = "Ver 1.0"
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "Team Gorillaz"
+
+[node name="Background" type="TextureRect" parent="." unique_id=125689840]
+layout_mode = 0
+mouse_filter = 2
+texture = ExtResource("2_background")
+expand_mode = 1
+
+[node name="Vignette" type="TextureRect" parent="." unique_id=1321329724]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_vignette")
+expand_mode = 1
+stretch_mode = 6
