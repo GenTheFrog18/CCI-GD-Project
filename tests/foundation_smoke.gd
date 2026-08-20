@@ -101,6 +101,10 @@ func _test_inventory() -> void:
 	restored.restore_state(inventory.capture_state())
 	assert(restored.backpack[0].quantity == 8)
 	assert(restored.get_total_weight() == 8)
+	var protected := InventoryModel.new()
+	assert(protected.try_add_item(&"multitool", 1))
+	assert(protected.take_for_theft(false).is_empty())
+	assert(protected.take_for_theft(true).item_id == &"multitool")
 	_test_item_action_rollback_and_pickup()
 
 func _test_weighted_throw() -> void:

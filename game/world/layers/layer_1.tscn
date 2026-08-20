@@ -109,6 +109,7 @@ position = Vector2(1280, 960)
 shape = SubResource("MiddleWall")
 
 [node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="." unique_id=1071352017]
+z_index = -6
 position = Vector2(632.99994, 361.75)
 scale = Vector2(1.0649999, 1.0438336)
 texture = ExtResource("9_6bbwv")
@@ -126,6 +127,7 @@ scale = Vector2(1.1589997, 1.3236638)
 texture = ExtResource("9_6bbwv")
 
 [node name="Dc6154349939Ed3f483591c02Be13Aa2" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1" unique_id=996023732]
+z_index = -6
 position = Vector2(1241.3147, -2.6345215)
 scale = Vector2(1.0649999, 1.0438336)
 texture = ExtResource("9_6bbwv")

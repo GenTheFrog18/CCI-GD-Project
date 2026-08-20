@@ -21,6 +21,7 @@ enum State { IDLE, MOVE, ATTACK, RETREAT }
 @export var jump_cooldown_max := 2.25
 @export_range(0.0, 1.0, 0.05) var jump_height_randomness := 0.1
 @export var theft_cooldown_seconds := 3.0
+@export var can_steal_multitool := false
 @export var leash_distance := 180.0
 @export var carried_drop_offset := Vector2(0.0, -16.0)
 
@@ -129,7 +130,7 @@ func _nearest_loose_item() -> Node2D:
 	var distance := tongue_range * 1.5
 	var best_weight := INF
 	for node in get_tree().get_nodes_in_group(&"loose_items"):
-		if node is not Node2D or node.is_queued_for_deletion() or not node.has_method("can_be_picked_up") or not node.can_be_picked_up(): continue
+		if node is not Node2D or node.is_queued_for_deletion() or not node.has_method("can_be_picked_up") or not node.can_be_picked_up() or not _can_steal_item(node): continue
 		var candidate := global_position.distance_to(node.global_position)
 		if candidate >= distance:
 			continue
@@ -148,11 +149,13 @@ func _perform_tongue(target: Node2D) -> void:
 	if global_position.distance_to(target.global_position) > tongue_range or not _tongue_reaches(target):
 		return
 	if target.has_method("take_as_stack"):
+		if not _can_steal_item(target):
+			return
 		carried = target.take_as_stack()
 		_refresh_carried_icon()
 		return
 	if target.has_method("take_item_for_theft"):
-		carried = target.take_item_for_theft()
+		carried = target.take_item_for_theft(can_steal_multitool)
 		if carried.is_empty(): carried = target.take_physical_whistle()
 		if carried.is_empty():
 			target.apply_damage(DamageInfo.new(1.0, self, support.species_id))
@@ -246,6 +249,15 @@ func _item_weight(item: Node) -> float:
 		var item_id: Variant = item.get("item_id")
 		definition = ContentCatalog.get_item(StringName(item_id)) if item_id != null else null
 	return float(definition.weight) if definition != null else INF
+
+func _can_steal_item(item: Node) -> bool:
+	if can_steal_multitool:
+		return true
+	var definition := item.get("definition") as ItemDefinition
+	if definition != null:
+		return definition.item_id != &"multitool"
+	var item_id: Variant = item.get("item_id")
+	return item_id == null or StringName(item_id) != &"multitool"
 
 func apply_damage(info: DamageInfo) -> bool:
 	return support.apply_damage(info)

@@ -145,7 +145,7 @@ func take_one(from_container: StringName, index: int) -> ItemStack:
 	changed.emit()
 	return result
 
-func take_for_theft() -> ItemStack:
+func take_for_theft(can_take_multitool := true) -> ItemStack:
 	var order: Array[Array] = []
 	order.append([&"hotbar", active_hotbar_index])
 	for index in HOTBAR_SIZE:
@@ -159,11 +159,12 @@ func take_for_theft() -> ItemStack:
 		if container[index].is_empty() or container[index].item_id == &"multitool":
 			continue
 		return take_one(entry[0], index)
-	for entry in order:
-		var container := _container(entry[0])
-		var index := int(entry[1])
-		if not container[index].is_empty() and container[index].item_id == &"multitool":
-			return take_one(entry[0], index)
+	if can_take_multitool:
+		for entry in order:
+			var container := _container(entry[0])
+			var index := int(entry[1])
+			if not container[index].is_empty() and container[index].item_id == &"multitool":
+				return take_one(entry[0], index)
 	return ItemStack.new()
 
 func remove_origin(origin: StringName) -> Array[ItemStack]:

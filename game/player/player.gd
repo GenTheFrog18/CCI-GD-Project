@@ -249,8 +249,8 @@ func try_pickup_item(item_id: StringName, quantity: int, state: Dictionary) -> b
 		item_state.origin = "map"
 	return item_controller.inventory.try_add_item(item_id, quantity, item_state)
 
-func take_item_for_theft() -> ItemStack:
-	return item_controller.inventory.take_for_theft()
+func take_item_for_theft(can_take_multitool := true) -> ItemStack:
+	return item_controller.inventory.take_for_theft(can_take_multitool)
 
 func confiscate_map_items() -> Array[ItemStack]:
 	return item_controller.inventory.remove_origin(&"map")

@@ -1,21 +1,21 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://dlsf8c1n8xnel"]
 
-[ext_resource type="Script" path="res://ui/shop_confirmation.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/shopkeeper/panel-confirmation.png" id="2"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/shopkeeper/button-med-yes.png" id="3"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/shopkeeper/button-med-no.png" id="4"]
+[ext_resource type="Script" uid="uid://ci322ikrtumap" path="res://ui/shop_confirmation.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://byg25lnbbvurr" path="res://assets/art/ui/shopkeeper/panel-confirmation.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://w1bqlscajt38" path="res://assets/art/ui/shopkeeper/button-med-yes.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://b1ii2e0qrg3bb" path="res://assets/art/ui/shopkeeper/button-med-no.png" id="4"]
 
-[node name="ShopConfirmation" type="Control"]
-layout_mode = 1
+[node name="ShopConfirmation" type="Control" unique_id=2029210023]
+z_index = 5
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-z_index = 5
 script = ExtResource("1")
 
-[node name="Dimmer" type="ColorRect" parent="."]
+[node name="Dimmer" type="ColorRect" parent="." unique_id=1581763911]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -25,7 +25,8 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.45)
 
-[node name="Panel" type="TextureRect" parent="."]
+[node name="Panel" type="TextureRect" parent="." unique_id=727134138]
+z_index = -1
 layout_mode = 0
 offset_left = 220.0
 offset_top = 116.0
@@ -36,7 +37,7 @@ texture = ExtResource("2")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ItemName" type="Label" parent="Panel"]
+[node name="ItemName" type="Label" parent="Panel" unique_id=1555689658]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 12.0
@@ -47,7 +48,7 @@ theme_override_font_sizes/font_size = 10
 text = "Item"
 horizontal_alignment = 1
 
-[node name="QuantityRow" type="HBoxContainer" parent="Panel"]
+[node name="QuantityRow" type="HBoxContainer" parent="Panel" unique_id=286318520]
 layout_mode = 0
 offset_left = 56.0
 offset_top = 37.0
@@ -55,15 +56,15 @@ offset_right = 144.0
 offset_bottom = 61.0
 theme_override_constants/separation = 4
 
-[node name="Minus" type="Button" parent="Panel/QuantityRow"]
+[node name="Minus" type="Button" parent="Panel/QuantityRow" unique_id=597051603]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 focus_mode = 0
-flat = true
 theme_override_colors/font_color = Color(1, 0.92, 0.82, 1)
 text = "-"
+flat = true
 
-[node name="Quantity" type="Label" parent="Panel/QuantityRow"]
+[node name="Quantity" type="Label" parent="Panel/QuantityRow" unique_id=1304680326]
 custom_minimum_size = Vector2(32, 24)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.92, 0.82, 1)
@@ -72,15 +73,15 @@ text = "[1]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Plus" type="Button" parent="Panel/QuantityRow"]
+[node name="Plus" type="Button" parent="Panel/QuantityRow" unique_id=2000971744]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 focus_mode = 0
-flat = true
 theme_override_colors/font_color = Color(1, 0.92, 0.82, 1)
 text = "+"
+flat = true
 
-[node name="Total" type="Label" parent="Panel"]
+[node name="Total" type="Label" parent="Panel" unique_id=453728471]
 layout_mode = 0
 offset_left = 12.0
 offset_top = 65.0
@@ -91,7 +92,7 @@ theme_override_font_sizes/font_size = 10
 text = "Total: 0g"
 horizontal_alignment = 1
 
-[node name="Actions" type="HBoxContainer" parent="Panel"]
+[node name="Actions" type="HBoxContainer" parent="Panel" unique_id=1633781731]
 layout_mode = 0
 offset_left = 20.0
 offset_top = 91.0
@@ -99,7 +100,7 @@ offset_right = 180.0
 offset_bottom = 123.0
 theme_override_constants/separation = 0
 
-[node name="Yes" type="TextureButton" parent="Panel/Actions"]
+[node name="Yes" type="TextureButton" parent="Panel/Actions" unique_id=1866194179]
 custom_minimum_size = Vector2(80, 32)
 layout_mode = 2
 focus_mode = 0
@@ -107,7 +108,7 @@ mouse_default_cursor_shape = 2
 texture_normal = ExtResource("3")
 ignore_texture_size = true
 
-[node name="No" type="TextureButton" parent="Panel/Actions"]
+[node name="No" type="TextureButton" parent="Panel/Actions" unique_id=680451841]
 custom_minimum_size = Vector2(80, 32)
 layout_mode = 2
 focus_mode = 0
