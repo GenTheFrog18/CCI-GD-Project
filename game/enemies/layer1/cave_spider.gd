@@ -21,12 +21,15 @@ var _target: PlayerController
 var _aim := Vector2.ZERO
 var _timer := 0.0
 var _flee_position := Vector2.ZERO
+var _fleeing := false
+var _last_facing := Vector2.RIGHT
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
 	_origin = global_position
 	up_direction = -gravity_direction.normalized()
 	sight.target_seen.connect(_on_seen)
+	sight.target_lost.connect(_on_target_lost)
 	sound.sound_accepted.connect(_on_sound)
 
 func _physics_process(delta: float) -> void:
@@ -34,7 +37,8 @@ func _physics_process(delta: float) -> void:
 	var light := _nearest_light()
 	if light != null:
 		_target = null
-		_origin = global_position + light.global_position.direction_to(global_position) * 120.0
+		_begin_flee(light.global_position)
+		_cancel_attack()
 	if state == State.ATTACK:
 		velocity = Vector2.ZERO
 		sprite.play(&"shoot")
@@ -48,18 +52,24 @@ func _physics_process(delta: float) -> void:
 		state = State.MOVE
 		sprite.play(&"walk")
 		var tangent := Vector2(-gravity_direction.y, gravity_direction.x)
-		var destination := _target.global_position if _target != null else _origin
+		var destination := _flee_position if _fleeing else (_target.global_position if _target != null else _origin)
 		velocity = tangent * signf(tangent.dot(destination - global_position)) * move_speed * support.status.get_multiplier(&"move_speed")
 		velocity += gravity_direction.normalized() * 80.0
 	move_and_slide()
 	if not is_zero_approx(velocity.x): sprite.flip_h = velocity.x < 0.0
-	sight.facing = velocity.normalized()
+	if velocity.length_squared() > 1.0:
+		_last_facing = velocity.normalized()
+	sight.facing = _last_facing
+	if _fleeing and global_position.distance_to(_flee_position) <= 12.0:
+		_fleeing = false
 
 func _nearest_light() -> Node2D:
 	var best: Node2D
 	var best_distance := attack_range
 	for node in get_tree().get_nodes_in_group(&"light_sources"):
 		if node is not Node2D or node == self or (node is CanvasItem and not node.visible): continue
+		var source := node as LightSource2D
+		if source != null and (not source.enabled or source.light_intensity <= 0.001): continue
 		var distance := global_position.distance_to(node.global_position)
 		if distance < best_distance:
 			best = node
@@ -69,10 +79,28 @@ func _nearest_light() -> Node2D:
 func _on_seen(target: Node2D, _position: Vector2) -> void:
 	if target is PlayerController: _target = target
 
+func _on_target_lost(target: Node2D) -> void:
+	if target == _target:
+		_target = null
+		_cancel_attack()
+
 func _on_sound(event: SoundEvent, _direct: bool) -> void:
 	if event.priority >= 8:
 		_target = null
-		_origin = global_position + global_position.direction_to(event.position) * -120.0
+		_begin_flee(event.position)
+		_cancel_attack()
+
+func _begin_flee(source_position: Vector2) -> void:
+	var away := source_position.direction_to(global_position)
+	if away.is_zero_approx():
+		away = _last_facing
+	_flee_position = global_position + away * 120.0
+	_fleeing = true
+
+func _cancel_attack() -> void:
+	if state == State.ATTACK:
+		state = State.IDLE
+		_timer = 0.0
 
 func _fire() -> void:
 	var projectile := preload("res://game/projectiles/projectile.tscn").instantiate() as Projectile
@@ -97,5 +125,8 @@ func apply_force(force: Vector2) -> void: velocity += support.apply_force(force)
 func apply_status(id: StringName, data: Dictionary = {}) -> bool: return support.apply_status(id, data)
 func capture_state() -> Dictionary: return support.capture_state()
 func restore_state(data: Dictionary) -> void:
-	if support.restore_state(data): global_position = _origin; state = State.IDLE
+	if support.restore_state(data):
+		global_position = _origin
+		state = State.IDLE
+		_fleeing = false
 func handle_world_out_of_bounds() -> void: global_position = _origin; velocity = Vector2.ZERO
