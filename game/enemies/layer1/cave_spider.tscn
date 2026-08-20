@@ -11,6 +11,9 @@
 [sub_resource type="CircleShape2D" id="Shape"]
 radius = 6.0827627
 
+[sub_resource type="CircleShape2D" id="ProbeShape"]
+radius = 8.0
+
 [sub_resource type="AtlasTexture" id="Idle0"]
 atlas = ExtResource("5")
 region = Rect2(0, 0, 48, 48)
@@ -99,6 +102,14 @@ script = ExtResource("1")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1515308104]
 position = Vector2(0, -4)
 shape = SubResource("Shape")
+
+[node name="ForwardSurfaceProbe" type="ShapeCast2D" parent="."]
+shape = SubResource("ProbeShape")
+target_position = Vector2(10, 0)
+
+[node name="SupportSurfaceProbe" type="ShapeCast2D" parent="."]
+shape = SubResource("ProbeShape")
+target_position = Vector2(0, 18)
 
 [node name="Visual" type="Polygon2D" parent="." unique_id=1362583449]
 visible = false
