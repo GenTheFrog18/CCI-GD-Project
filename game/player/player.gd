@@ -40,6 +40,7 @@ signal threat_warning_requested(source: Node2D, duration: float)
 @onready var item_controller: PlayerItemController = $PlayerItemController
 @onready var interaction_sensor: InteractionSensor = $InteractionSensor
 @onready var camera: PlayerCamera = $Camera2D
+@onready var dazzled_overlay: DazzledOverlay = $DazzledOverlay
 
 var locks := ControlLocks.new()
 var inventory_open := false
@@ -63,6 +64,7 @@ var _action_animation := false
 var _combat_safe_zone_count := 0
 var _thorn_spike_iframe_until := 0
 var _hushcap_area_count := 0
+var _dazzled_remaining := 0.0
 
 @onready var hushcap_overlay: HushcapOverlay = $HushcapOverlay
 func _ready() -> void:
@@ -351,6 +353,12 @@ func _on_status_tick(amount: float) -> void:
 	apply_damage(info)
 
 func _on_status_changed() -> void:
+	var dazzled_remaining := status.get_remaining(&"dazzled")
+	if dazzled_remaining > _dazzled_remaining + 0.01:
+		dazzled_overlay.start_flash(dazzled_remaining)
+	elif dazzled_remaining <= 0.0 and _dazzled_remaining > 0.0:
+		dazzled_overlay.stop_flash()
+	_dazzled_remaining = dazzled_remaining
 	if status.has_status(&"incapacitated"):
 		locks.lock(&"status_incapacitated")
 		_detach_rope(true)
