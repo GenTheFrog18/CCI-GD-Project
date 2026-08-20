@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://cmahh3afjs5t1" path="res://game/npcs/shadow/shadow_npc.tscn" id="2_ckure"]
 [ext_resource type="Texture2D" uid="uid://bjcfu7hs2yhob" path="res://assets/art/world/surface/0.png" id="2_rpsi8"]
-[ext_resource type="PackedScene" path="res://game/shops/test_shop_terminal.tscn" id="3_7hsqt"]
+[ext_resource type="PackedScene" uid="uid://bcvevrys1nlrq" path="res://game/shops/test_shop_terminal.tscn" id="3_7hsqt"]
 [ext_resource type="Texture2D" uid="uid://cypfq770cleh6" path="res://assets/art/world/surface/FantasyOverflow_tileset_16x16.png" id="4_fc1rd"]
 [ext_resource type="PackedScene" uid="uid://fa3vq2yqswup" path="res://game/npcs/oldman/old_man.tscn" id="4_rpsi8"]
 [ext_resource type="Texture2D" uid="uid://ceetadl02glc7" path="res://assets/art/world/surface/FantasyOverflow_tileset_16x16 (2).png" id="5_78j1j"]
@@ -9014,7 +9014,7 @@ item_id = &"rope"
 position = Vector2(373, 98)
 
 [node name="LanternSnail" parent="." unique_id=1158744585 instance=ExtResource("18_h2sgq")]
-position = Vector2(611, 121)
+position = Vector2(565, 81)
 adhesion_speed = 30.0
 surface_probe_distance = 12.0
 surface_probe_radius = 12.0

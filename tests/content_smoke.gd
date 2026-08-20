@@ -377,7 +377,12 @@ func _test_item_impacts() -> void:
 func _test_flyer_transfer() -> void:
 	var old_state := SaveManager.loaded_persistent_state.duplicate(true)
 	var old_destroyed := SaveManager.destroyed_ids.duplicate(true)
-	SaveManager.loaded_persistent_state = {"flyer:test": {"_scene_path": "res://game/enemies/layer1/large_flyer.tscn", "_layer_id": "layer_1", "health": {"health": 321.0}}}
+	SaveManager.loaded_persistent_state = {"flyer:test": {
+		"_scene_path": "res://game/enemies/layer1/large_flyer.tscn",
+		"_layer_id": "layer_1",
+		"health": {"health": 321.0},
+		"status": {&"driftseed": {"applications": [{"remaining": 12.0, "provider_id": "", "source_id": "", "modifiers": {}}], "tick_remaining": 1.0}},
+	}}
 	SaveManager.destroyed_ids.clear()
 	var id := SaveManager.transfer_first_scene("res://game/enemies/layer1/large_flyer.tscn", &"layer_2", Vector2(10, 20))
 	_check(id == "flyer:test", "living flyer transfer resolves")
@@ -388,6 +393,13 @@ func _test_flyer_transfer() -> void:
 	SaveManager.restore_registered_objects(&"layer_2")
 	var flyer := root.get_child(0) as LargeLayer1Flyer
 	_check(flyer != null and flyer.global_position == Vector2(10, 20) and flyer.support.health.health == 321.0, "transferred flyer restores health and position")
+	_check(flyer != null and flyer.support.status.has_status(&"driftseed") and flyer.state == LargeLayer1Flyer.State.ROAM and flyer._target == null and flyer._requests.is_empty(), "transferred flyer keeps status but resets transient AI")
+	if flyer != null:
+		flyer._upsert_request(&"ordinary", Vector2.ZERO, null, 20.0, INF, false)
+		flyer._upsert_request(&"snail", Vector2.ZERO, null, 50.0, INF, false)
+		_check(StringName(flyer._select_request().get("request_id", "")) == &"snail", "flyer selects strongest target request")
+		flyer._remove_request(&"snail")
+		_check(StringName(flyer._select_request().get("request_id", "")) == &"ordinary", "flyer falls back to valid lower-priority request")
 	root.free()
 	SaveManager.loaded_persistent_state = old_state
 	SaveManager.destroyed_ids = old_destroyed
