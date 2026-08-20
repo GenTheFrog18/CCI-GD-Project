@@ -1,9 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 [ext_resource type="Script" path="res://game/enemies/layer1/knockback_bird.gd" id="1"]
 [ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
 [ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="3"]
 [sub_resource type="CircleShape2D" id="Shape"]
 radius = 9.0
+[sub_resource type="CircleShape2D" id="SwoopShape"]
+radius = 14.0
 [node name="KnockbackBird" type="CharacterBody2D"]
 collision_layer = 4
 collision_mask = 1
@@ -23,3 +25,13 @@ fall_immune = true
 script = ExtResource("3")
 normal_range = 240.0
 normal_angle_degrees = 160.0
+
+[node name="SwoopHitbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SwoopHitbox"]
+shape = SubResource("SwoopShape")
+disabled = true

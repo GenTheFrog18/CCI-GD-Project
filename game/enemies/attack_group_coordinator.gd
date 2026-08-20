@@ -36,7 +36,7 @@ func has_alert() -> bool:
 	return alert_remaining > 0.0
 
 func request_attack(member: Node) -> bool:
-	if member == null or _spacing_remaining > 0.0 or _active_attackers.size() >= maximum_attackers:
+	if member == null or _spacing_remaining > 0.0 or (maximum_attackers > 0 and _active_attackers.size() >= maximum_attackers):
 		return false
 	_active_attackers[member.get_instance_id()] = true
 	_spacing_remaining = attack_spacing

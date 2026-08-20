@@ -11,6 +11,8 @@ script = ExtResource("1")
 entries = Array[ExtResource("2")]([SubResource("BirdEntry")])
 minimum_quantity = 1
 maximum_quantity = 3
+attack_group_maximum = 0
+attack_group_spacing = 0.8
 patrol_bounds = Rect2(-160, -100, 320, 200)
 [node name="SpawnPoint1" type="Marker2D" parent="."]
 [node name="SpawnPoint2" type="Marker2D" parent="."]
