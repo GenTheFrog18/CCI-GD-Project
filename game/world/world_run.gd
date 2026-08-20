@@ -97,14 +97,15 @@ func request_layer_transition(target_layer_id: StringName, target_route_id: Stri
 	SaveManager.save_run()
 	_transitioning = false
 
-func finish_run() -> void:
+func finish_run(completion_point: StringName = &"layer_3_entrance") -> void:
 	if _transitioning:
 		return
 	_transitioning = true
-	GameSession.progression_flags["reached_layer_3_entrance"] = true
+	var ends_at_layer_2 := completion_point == &"layer_2_gate"
+	GameSession.progression_flags["reached_layer_2_gate" if ends_at_layer_2 else "reached_layer_3_entrance"] = true
 	SaveManager.save_run()
 	loading_layer.visible = true
-	loading_label.text = "Prototype Complete\nLayer 3 entrance reached."
+	loading_label.text = "Demo Complete\nLayer 2 gate reached." if ends_at_layer_2 else "Prototype Complete\nLayer 3 entrance reached."
 	progress_bar.visible = false
 	await get_tree().create_timer(1.5).timeout
 	SceneRouter.go_to("res://ui/main_menu.tscn")

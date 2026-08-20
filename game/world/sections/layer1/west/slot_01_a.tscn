@@ -10,6 +10,9 @@
 [ext_resource type="Script" uid="uid://cffkoem4dm71c" path="res://game/world/lighting/darkness_region_2d.gd" id="7_5wbkw"]
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="8_2j4x8"]
 [ext_resource type="PackedScene" path="res://game/world/placers/bird_nest_placer.tscn" id="10_qy4c4"]
+[ext_resource type="PackedScene" uid="uid://cjwcecup4eqge" path="res://game/enemies/layer1/cave_spider.tscn" id="11_qshq0"]
+[ext_resource type="PackedScene" uid="uid://u1b4ki8jlewf" path="res://game/enemies/layer1/lantern_snail.tscn" id="12_wclnx"]
+[ext_resource type="PackedScene" uid="uid://nes3153cti6e" path="res://game/enemies/layer1/thorn_bloom.tscn" id="13_4i18d"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g8qop"]
 texture = ExtResource("2_dn4ct")
@@ -2293,6 +2296,42 @@ scene = ExtResource("7_5mrea")
 weight = 2
 metadata/_custom_type_script = "uid://dmbspp22qtl7r"
 
+[sub_resource type="Resource" id="Resource_yrrhs"]
+script = ExtResource("4_p5sea")
+content_id = &"cave_spider"
+scene = ExtResource("11_qshq0")
+metadata/_custom_type_script = "uid://dmbspp22qtl7r"
+
+[sub_resource type="Resource" id="Resource_0c1d5"]
+script = ExtResource("4_p5sea")
+content_id = &"lantern_snail"
+scene = ExtResource("12_wclnx")
+metadata/_custom_type_script = "uid://dmbspp22qtl7r"
+
+[sub_resource type="Resource" id="Resource_wj7ke"]
+script = ExtResource("4_p5sea")
+content_id = &"thorn_bloom"
+scene = ExtResource("13_4i18d")
+metadata/_custom_type_script = "uid://dmbspp22qtl7r"
+
+[sub_resource type="Resource" id="Resource_2y2ox"]
+script = ExtResource("4_p5sea")
+content_id = &"cling_resin"
+scene = ExtResource("7_5mrea")
+metadata/_custom_type_script = "uid://dmbspp22qtl7r"
+
+[sub_resource type="Resource" id="Resource_gsclp"]
+script = ExtResource("4_p5sea")
+content_id = &"hushcap"
+scene = ExtResource("7_5mrea")
+metadata/_custom_type_script = "uid://dmbspp22qtl7r"
+
+[sub_resource type="Resource" id="Resource_qshq0"]
+script = ExtResource("4_p5sea")
+content_id = &"rattlepod"
+scene = ExtResource("7_5mrea")
+metadata/_custom_type_script = "uid://dmbspp22qtl7r"
+
 [node name="Layer1West01A" unique_id=885107090 instance=ExtResource("1_n7fo5")]
 slot_id = &"layer1_west_01"
 variation_id = &"layer1_west_01_a"
@@ -2337,14 +2376,21 @@ entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_5mrea")])
 minimum_quantity = 2
 maximum_quantity = 2
 
-[node name="LootPlacer" parent="." index="8" unique_id=469359667 instance=ExtResource("6_3e46b")]
+[node name="EnemyPlacer10" parent="." index="8" unique_id=479905765 instance=ExtResource("3_556nl")]
+position = Vector2(797, 723)
+persistent_id = &"l1w1ae12"
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_5mrea")])
+minimum_quantity = 2
+maximum_quantity = 2
+
+[node name="LootPlacer" parent="." index="9" unique_id=469359667 instance=ExtResource("6_3e46b")]
 position = Vector2(525, 412)
 persistent_id = &"l1w1al1"
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_phjxa")])
 drop_scatter_radius = 7.0
 drop_height_offset = 3.0
 
-[node name="LootPlacer2" parent="." index="9" unique_id=1283425574 instance=ExtResource("6_3e46b")]
+[node name="LootPlacer2" parent="." index="10" unique_id=1283425574 instance=ExtResource("6_3e46b")]
 position = Vector2(609, 328)
 persistent_id = &"l1w1al2"
 spawn_chance = 0.8
@@ -2354,7 +2400,7 @@ maximum_quantity = 2
 drop_scatter_radius = 7.0
 drop_height_offset = 1.0
 
-[node name="LootPlacer3" parent="." index="10" unique_id=451176812 instance=ExtResource("6_3e46b")]
+[node name="LootPlacer3" parent="." index="11" unique_id=451176812 instance=ExtResource("6_3e46b")]
 position = Vector2(889, 313)
 persistent_id = &"l1w1al3"
 spawn_chance = 0.8
@@ -2365,7 +2411,7 @@ drop_scatter_radius = 7.0
 drop_height_offset = 3.0
 facing = -1.0
 
-[node name="LootPlacer6" parent="." index="11" unique_id=509624316 instance=ExtResource("6_3e46b")]
+[node name="LootPlacer6" parent="." index="12" unique_id=509624316 instance=ExtResource("6_3e46b")]
 position = Vector2(974, 523)
 persistent_id = &"l1w1al6"
 spawn_chance = 0.8
@@ -2375,7 +2421,7 @@ drop_scatter_radius = 7.0
 drop_height_offset = 3.0
 facing = -1.0
 
-[node name="LootPlacer4" parent="." index="12" unique_id=1782024711 instance=ExtResource("6_3e46b")]
+[node name="LootPlacer4" parent="." index="13" unique_id=1782024711 instance=ExtResource("6_3e46b")]
 position = Vector2(915, 172)
 persistent_id = &"l1w1al4"
 spawn_chance = 0.8
@@ -2385,7 +2431,7 @@ maximum_quantity = 2
 drop_scatter_radius = 7.0
 drop_height_offset = 3.0
 
-[node name="LootPlacer5" parent="." index="13" unique_id=2005672199 instance=ExtResource("6_3e46b")]
+[node name="LootPlacer5" parent="." index="14" unique_id=2005672199 instance=ExtResource("6_3e46b")]
 position = Vector2(987, 219)
 persistent_id = &"l1w1al5"
 spawn_chance = 0.8
@@ -2418,13 +2464,69 @@ position = Vector2(39, 92)
 target_layer_id = &"surface"
 prompt = "Return to Surface"
 
-[node name="BirdNestPlacer" parent="." index="16" unique_id=1735630079 instance=ExtResource("10_qy4c4")]
+[node name="BirdNestPlacer" parent="." index="17" unique_id=1735630079 instance=ExtResource("10_qy4c4")]
 position = Vector2(986, 215)
 persistent_id = &"1west1birdnest1"
 spawn_chance = 0.75
 spawn_group_id = &"bw111"
 attack_group_spacing = 0.7
-drop_scatter_radius = null
-drop_height_offset = null
 facing = 0.0
-patrol_bounds = 0.0
+
+[node name="BirdNestPlacer2" parent="." index="18" unique_id=2002891930 instance=ExtResource("10_qy4c4")]
+position = Vector2(876, 704)
+persistent_id = &"birdnestwest12"
+spawn_chance = 0.6
+
+[node name="EnemyPlacer2" parent="." index="19" unique_id=1416258891 instance=ExtResource("3_556nl")]
+position = Vector2(36, 514)
+persistent_id = &"enemyspiderwestr11"
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_yrrhs")])
+
+[node name="EnemyPlacer6" parent="." index="20" unique_id=1351294429 instance=ExtResource("3_556nl")]
+position = Vector2(31, 730)
+persistent_id = &"enemyspiderwestr13"
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_yrrhs")])
+
+[node name="EnemyPlacer3" parent="." index="21" unique_id=405137936 instance=ExtResource("3_556nl")]
+position = Vector2(89, 301)
+persistent_id = &"enemyspiderwestr112"
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_yrrhs")])
+
+[node name="EnemyPlacer4" parent="." index="22" unique_id=2052436307 instance=ExtResource("3_556nl")]
+position = Vector2(229, 439)
+persistent_id = &"snailswest1"
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_0c1d5")])
+
+[node name="EnemyPlacer5" parent="." index="23" unique_id=471589046 instance=ExtResource("3_556nl")]
+position = Vector2(57, 403)
+persistent_id = &"snailswest2"
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_0c1d5")])
+
+[node name="EnemyPlacer7" parent="." index="24" unique_id=1532122055 instance=ExtResource("3_556nl")]
+position = Vector2(336, 311)
+persistent_id = &"plante11"
+spawn_chance = 0.6
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_wj7ke")])
+
+[node name="EnemyPlacer8" parent="." index="25" unique_id=1608127682 instance=ExtResource("3_556nl")]
+position = Vector2(351, 519)
+persistent_id = &"plante12"
+spawn_chance = 0.6
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_wj7ke")])
+
+[node name="EnemyPlacer9" parent="." index="26" unique_id=1848544724 instance=ExtResource("3_556nl")]
+position = Vector2(885, 714)
+persistent_id = &"plante122"
+spawn_chance = 0.6
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_wj7ke")])
+
+[node name="LootPlacer7" parent="." index="27" unique_id=1411280891 instance=ExtResource("6_3e46b")]
+position = Vector2(107, 324)
+persistent_id = &"lotoplacerijahsiydfiuas"
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_2y2ox"), SubResource("Resource_gsclp")])
+maximum_quantity = 2
+
+[node name="LootPlacer8" parent="." index="28" unique_id=1797096392 instance=ExtResource("6_3e46b")]
+position = Vector2(31, 744)
+persistent_id = &"ohasoirvyewiuargh"
+entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_qshq0")])

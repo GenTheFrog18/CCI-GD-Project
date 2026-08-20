@@ -16,7 +16,10 @@ func interact(_actor: Node) -> bool:
 	var world_run := _find_world_run()
 	if world_run == null:
 		return false
-	world_run.request_layer_transition(target_layer_id, StringName(target_route_id), target_spawn_id)
+	if target_layer_id == &"layer_2":
+		world_run.finish_run(&"layer_2_gate")
+	else:
+		world_run.request_layer_transition(target_layer_id, StringName(target_route_id), target_spawn_id)
 	return true
 
 func _find_world_run() -> WorldRun:

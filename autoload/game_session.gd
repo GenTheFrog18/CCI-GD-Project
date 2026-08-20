@@ -33,12 +33,15 @@ var world_generation_log: Array[Dictionary] = []
 var master_volume := 1.0
 var fullscreen := false
 var windowed_size := DEFAULT_WINDOWED_SIZE
+var first_launch := false
 var _resize_save_timer: Timer
 var _applying_display := false
 
 func _ready() -> void:
 	_setup_input_map()
-	SaveManager.load_meta()
+	first_launch = not SaveManager.load_meta()
+	if first_launch:
+		SaveManager.save_meta()
 	get_window().size_changed.connect(_on_window_size_changed)
 	get_window().unresizable = false
 	apply_settings()

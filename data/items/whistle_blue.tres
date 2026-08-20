@@ -17,4 +17,5 @@ known_description = "Proves earned rank and emits a very high-priority sound."
 category = &"whistle"
 icon = ExtResource("3")
 weight = 0
+purchase_price = 200
 behavior = SubResource("Behavior")

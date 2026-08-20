@@ -6,9 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://b7yipua6tyu2n" path="res://game/world/sections/layer1/west/slot_02_a.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://xnsshmg5bt6y" path="res://game/world/sections/layer1/west/slot_03_a.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://dbcv7ixchlequ" path="res://game/world/sections/layer1/east/slot_01_a.tscn" id="6"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://bxk3bhnbvmhl8" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://bddta4kbxsboo" path="res://game/world/sections/layer1/east/slot_03_a.tscn" id="8"]
-[ext_resource type="Texture2D" uid="uid://ci8jch0iib7pa" path="res://assets/art/world/bg/windrise-background-4k.png" id="9_6bbwv"]
+[ext_resource type="Texture2D" uid="uid://53g7bbk1hoxf" path="res://assets/art/world/bg/dc6154349939ed3f483591c02be13aa1.png" id="9_6bbwv"]
 
 [sub_resource type="RectangleShape2D" id="OuterWall"]
 size = Vector2(20, 2400)
@@ -108,7 +108,32 @@ shape = SubResource("OuterWall")
 position = Vector2(1280, 960)
 shape = SubResource("MiddleWall")
 
-[node name="WindriseBackground4k" type="Sprite2D" parent="." unique_id=356663620]
-position = Vector2(723, 473.49994)
-scale = Vector2(0.3618164, 0.43272564)
+[node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="." unique_id=1071352017]
+position = Vector2(632.99994, 361.75)
+scale = Vector2(1.0649999, 1.0438336)
+texture = ExtResource("9_6bbwv")
+
+[node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1" unique_id=868980378]
+position = Vector2(0.6878853, 682.0309)
+scale = Vector2(1.0066782, 1.0201375)
+texture = ExtResource("9_6bbwv")
+
+[node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1/Dc6154349939Ed3f483591c02Be13Aa1" unique_id=2045218946]
+position = Vector2(92.080734, 784.1675)
+scale = Vector2(1.1589997, 1.3236638)
+texture = ExtResource("9_6bbwv")
+
+[node name="Dc6154349939Ed3f483591c02Be13Aa2" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1" unique_id=996023732]
+position = Vector2(1241.3147, -2.6345215)
+scale = Vector2(1.0649999, 1.0438336)
+texture = ExtResource("9_6bbwv")
+
+[node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1/Dc6154349939Ed3f483591c02Be13Aa2" unique_id=1221146884]
+position = Vector2(14.106502, 650.70435)
+scale = Vector2(1.0066782, 1.0201375)
+texture = ExtResource("9_6bbwv")
+
+[node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1/Dc6154349939Ed3f483591c02Be13Aa2/Dc6154349939Ed3f483591c02Be13Aa1" unique_id=1132723062]
+position = Vector2(272.3771, 782.70447)
+scale = Vector2(1.1589997, 1.3236638)
 texture = ExtResource("9_6bbwv")

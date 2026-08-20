@@ -34,6 +34,7 @@ func _ready() -> void:
 	GameSession.configure_design_root(design_ui)
 	GameSession.display_settings_changed.connect(func(): GameSession.configure_design_root(design_ui))
 	GameSession.apply_settings()
+	play_intro_toggle.button_pressed = GameSession.first_launch
 	new_run_button.pressed.connect(_confirm_new)
 	continue_button.pressed.connect(_continue_run)
 	settings_button.pressed.connect(_show_settings)

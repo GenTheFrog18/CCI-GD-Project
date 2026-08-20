@@ -8,6 +8,9 @@ shop_id = &"test_shop"
 limited_stock = true
 counts_delivery = true
 stock = {
+"bandage": 10,
 &"multitool": 2,
-"rope": 10
+"numbing pill": 10,
+"rope": 10,
+"whistle_blue": 1
 }
