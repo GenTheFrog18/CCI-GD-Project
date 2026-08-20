@@ -1,3 +1,4 @@
+@tool
 class_name BirdNestPlacer
 extends DeterministicPlacer
 
@@ -6,3 +7,7 @@ extends DeterministicPlacer
 func _configure_spawned_node(node: Node) -> void:
 	if node is KnockbackBird:
 		node.patrol_radius = patrol_radius
+
+func _draw() -> void:
+	if Engine.is_editor_hint():
+		draw_circle(Vector2.ZERO, patrol_radius, Color(0.2, 0.7, 1.0, 0.18), false, 2.0)
