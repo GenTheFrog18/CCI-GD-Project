@@ -12,6 +12,8 @@ extends Marker2D
 @export var spawn_group_id: StringName
 @export_range(0, 16, 1) var attack_group_maximum := 0
 @export_range(0.0, 5.0, 0.05) var attack_group_spacing := 0.8
+@export_range(0.0, 256.0, 1.0) var drop_scatter_radius := 0.0
+@export var drop_height_offset := 0.0
 @export var facing := 1.0
 @export var patrol_bounds := Rect2()
 
@@ -76,6 +78,8 @@ func spawn_resolved(parent: Node) -> void:
 		_set_property_if_present(node, &"nest_position", global_position)
 		_set_property_if_present(node, &"attack_group_maximum", attack_group_maximum)
 		_set_property_if_present(node, &"attack_group_spacing", attack_group_spacing)
+		_set_property_if_present(node, &"drop_scatter_radius", drop_scatter_radius)
+		_set_property_if_present(node, &"drop_height_offset", drop_height_offset)
 		_set_property_if_present(node, &"item_id", entry.content_id)
 		_set_property_if_present(node, &"spawn_position", points[point_index].global_position)
 		_set_property_if_present(node, &"patrol_bounds", patrol_bounds)

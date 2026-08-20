@@ -452,7 +452,7 @@ func is_climbing() -> bool:
 
 func _try_begin_climb(can_control: bool) -> void:
 	_nearby_ropes = _nearby_ropes.filter(func(rope: PlacedRope): return is_instance_valid(rope))
-	if is_instance_valid(_climbing_rope) or not can_control or is_instance_valid(item_controller.prepared_item):
+	if is_instance_valid(_climbing_rope) or not can_control:
 		return
 	if not Input.is_action_pressed(&"move_up") and not Input.is_action_pressed(&"move_down"):
 		_rope_attach_blocked = false

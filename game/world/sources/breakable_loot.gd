@@ -5,6 +5,8 @@ const WORLD_ITEM_SCENE := preload("res://game/items/world/world_item.tscn")
 
 @export var persistent_id := ""
 @export var item_id: StringName = &"multitool"
+@export_range(0.0, 256.0, 1.0) var drop_scatter_radius := 0.0
+@export var drop_height_offset := 12.0
 
 @onready var health: HealthComponent = $HealthComponent
 
@@ -45,5 +47,13 @@ func _spawn_drop(drop_item_id: StringName, drop_id: String) -> void:
 	drop.persistent_id = drop_id
 	drop.item_id = definition.item_id
 	drop.instance_state = {"origin": "map"}
-	drop.global_position = global_position + Vector2(0.0, -12.0)
+	var random := RandomNumberGenerator.new()
+	random.seed = hash(drop_id)
+	var offset := Vector2.ZERO
+	if drop_scatter_radius > 0.0:
+		var angle := random.randf_range(0.0, TAU)
+		var distance := sqrt(random.randf()) * drop_scatter_radius
+		offset = Vector2.from_angle(angle) * distance
+	offset.y -= drop_height_offset
+	drop.global_position = global_position + offset
 	parent.call_deferred(&"add_child", drop)
