@@ -6,6 +6,7 @@ const WALK_SHEET := preload("res://assets/art/enemies/snail/snail_walking.png")
 const HIT_SHEET := preload("res://assets/art/enemies/snail/snail_hit.png")
 
 enum State { MOVE, ATTACK }
+enum SurfaceState { ATTACHED, TRANSITIONING, DETACHED }
 
 @export var persistent_id := "lantern_snail"
 @export var move_speed := 18.0
@@ -18,17 +19,31 @@ enum State { MOVE, ATTACK }
 @export var flash_duration := 4.0
 @export var sound_trigger_radius := 72.0
 @export_range(0.1, 2.0, 0.05) var sprite_scale := 0.65
+@export var adhesion_speed := 60.0
+@export var surface_probe_distance := 10.0
+@export var surface_probe_radius := 8.0
+@export var surface_offset := 1.0
+@export var normal_turn_speed := 12.0
+@export_range(0.0, 45.0, 1.0) var normal_change_epsilon_degrees := 5.0
+@export var detach_grace_seconds := 0.12
+@export_flags_2d_physics var walkable_collision_mask := 1
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sound: SoundListener = $SoundListener
 @onready var light: LightSource2D = $LightSource2D
 @onready var visual: AnimatedSprite2D = $Visual
+@onready var forward_probe: ShapeCast2D = $ForwardSurfaceProbe
+@onready var support_probe: ShapeCast2D = $SupportSurfaceProbe
 var state := State.MOVE
+var surface_state := SurfaceState.ATTACHED
 var _origin := Vector2.ZERO
 var _direction := 1.0
 var _timer := 0.0
 var _cooldown := 0.0
 var _surface_normal := Vector2.UP
+var _target_surface_normal := Vector2.UP
+var _detach_remaining := 0.12
+var _last_surface_position := Vector2.ZERO
 var _hit_remaining := 0.0
 
 func _ready() -> void:
@@ -41,7 +56,9 @@ func _ready() -> void:
 	light.light_intensity = 0.65
 	light.source_type = &"lantern_snail"
 	_origin = global_position
-	up_direction = _surface_normal
+	_reset_surface()
+	forward_probe.collision_mask = walkable_collision_mask
+	support_probe.collision_mask = walkable_collision_mask
 	sound.sound_accepted.connect(func(event: SoundEvent, _direct: bool):
 		if global_position.distance_to(event.position) <= sound_trigger_radius:
 			receive_agitation({"kind": "sound"})
@@ -68,19 +85,106 @@ func _physics_process(delta: float) -> void:
 		_play_animation(&"hit")
 		if _timer <= 0.0: _scream()
 		return
-	var tangent := Vector2(-_surface_normal.y, _surface_normal.x)
+	_move_on_surface(delta)
+
+func _move_on_surface(delta: float) -> void:
+	var tangent := Vector2(-_surface_normal.y, _surface_normal.x).normalized()
+	var walk_direction := tangent * _direction
+	_update_probes(walk_direction)
+	var next_normal := _forward_surface_normal(walk_direction)
+	if not next_normal.is_zero_approx() and _surface_angle(next_normal) > deg_to_rad(normal_change_epsilon_degrees):
+		_target_surface_normal = next_normal
+		surface_state = SurfaceState.TRANSITIONING
+
+	var support_normal := _support_surface_normal()
+	if not support_normal.is_zero_approx():
+		_last_surface_position = global_position
+		_detach_remaining = detach_grace_seconds
+		if surface_state == SurfaceState.DETACHED:
+			_target_surface_normal = support_normal
+			surface_state = SurfaceState.TRANSITIONING
+	else:
+		_detach_remaining = maxf(0.0, _detach_remaining - delta)
+		if _detach_remaining <= 0.0:
+			surface_state = SurfaceState.DETACHED
+
+	if surface_state == SurfaceState.TRANSITIONING:
+		_surface_normal = _rotate_normal_toward(_surface_normal, _target_surface_normal, normal_turn_speed * delta)
+		if _surface_angle(_target_surface_normal) <= deg_to_rad(normal_change_epsilon_degrees):
+			_surface_normal = _target_surface_normal
+			surface_state = SurfaceState.ATTACHED
+
+	if surface_state == SurfaceState.DETACHED:
+		up_direction = Vector2.UP
+		velocity.y += float(ProjectSettings.get_setting("physics/2d/default_gravity", 980.0)) * delta
+		move_and_slide()
+		_play_animation(&"hit" if _hit_remaining > 0.0 else &"walk")
+		return
+
+	up_direction = _surface_normal
+	tangent = Vector2(-_surface_normal.y, _surface_normal.x).normalized()
 	_play_animation(&"hit" if _hit_remaining > 0.0 else &"walk")
-	velocity = tangent * _direction * move_speed * support.status.get_multiplier(&"move_speed") - _surface_normal * 60.0
+	velocity = tangent * _direction * move_speed * support.status.get_multiplier(&"move_speed") - _surface_normal * adhesion_speed
 	move_and_slide()
-	for index in get_slide_collision_count():
-		var normal := get_slide_collision(index).get_normal().normalized()
-		if absf(normal.dot(_surface_normal)) < 0.75 and normal.dot(tangent * _direction) < -0.25:
-			_surface_normal = normal
-			up_direction = normal
-			rotation = normal.angle() + PI * 0.5
-			break
 	visual.flip_h = _direction > 0.0
+	rotation = _surface_normal.angle() + PI * 0.5
 	if global_position.distance_to(_origin) >= roam_distance: _direction *= -1.0
+
+func _update_probes(walk_direction: Vector2) -> void:
+	var probe_origin := global_position + _surface_normal * (surface_probe_radius + surface_offset)
+	forward_probe.global_position = probe_origin
+	forward_probe.global_rotation = 0.0
+	forward_probe.target_position = walk_direction * surface_probe_distance
+	forward_probe.force_shapecast_update()
+	support_probe.global_position = probe_origin
+	support_probe.global_rotation = 0.0
+	support_probe.target_position = -_surface_normal * (surface_probe_radius * 2.0 + surface_offset + 2.0)
+	support_probe.force_shapecast_update()
+
+func _forward_surface_normal(walk_direction: Vector2) -> Vector2:
+	var best := Vector2.ZERO
+	var best_angle := INF
+	for index in forward_probe.get_collision_count():
+		var normal := forward_probe.get_collision_normal(index).normalized()
+		if normal.is_zero_approx() or normal.dot(walk_direction) > -0.1:
+			continue
+		var angle := _surface_angle(normal)
+		if angle > deg_to_rad(45.0) and angle < best_angle:
+			best = normal
+			best_angle = angle
+	return best
+
+func _support_surface_normal() -> Vector2:
+	if not support_probe.is_colliding():
+		return Vector2.ZERO
+	var best := Vector2.ZERO
+	var best_angle := INF
+	for index in support_probe.get_collision_count():
+		var normal := support_probe.get_collision_normal(index).normalized()
+		if normal.is_zero_approx():
+			continue
+		var angle := _surface_angle(normal)
+		if angle < best_angle:
+			best = normal
+			best_angle = angle
+	return best
+
+func _surface_angle(normal: Vector2) -> float:
+	return absf(_surface_normal.angle_to(normal.normalized()))
+
+func _rotate_normal_toward(from: Vector2, to: Vector2, max_angle: float) -> Vector2:
+	var angle := from.angle_to(to)
+	if absf(angle) <= max_angle:
+		return to.normalized()
+	return from.rotated(signf(angle) * max_angle).normalized()
+
+func _reset_surface() -> void:
+	_surface_normal = Vector2.UP
+	_target_surface_normal = Vector2.UP
+	surface_state = SurfaceState.ATTACHED
+	_detach_remaining = detach_grace_seconds
+	up_direction = _surface_normal
+	rotation = _surface_normal.angle() + PI * 0.5
 
 func receive_agitation(_data: Dictionary = {}) -> void:
 	if _cooldown > 0.0 or state == State.ATTACK: return
@@ -147,12 +251,9 @@ func capture_state() -> Dictionary: return support.capture_state()
 func restore_state(data: Dictionary) -> void:
 	if support.restore_state(data):
 		global_position = _origin
-		_surface_normal = Vector2.UP
-		up_direction = _surface_normal
-		rotation = 0.0
+		_reset_surface()
 		state = State.MOVE
 func handle_world_out_of_bounds() -> void:
 	global_position = _origin
 	_surface_normal = Vector2.UP
-	up_direction = _surface_normal
-	rotation = 0.0
+	_reset_surface()

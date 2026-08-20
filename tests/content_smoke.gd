@@ -112,6 +112,11 @@ func _test_enemy_scenes() -> void:
 	_check(spider._nearest_light() == null, "Cave Spider ignores inactive lights")
 	disabled_light.free()
 	spider.free()
+	var snail := preload("res://game/enemies/layer1/lantern_snail.tscn").instantiate() as LanternSnail
+	add_child(snail)
+	_check(snail.forward_probe is ShapeCast2D and snail.support_probe is ShapeCast2D, "Lantern Snail surface probes exist")
+	_check(snail.walkable_collision_mask == 1, "Lantern Snail uses terrain collision mask")
+	snail.free()
 	for id: StringName in ContentCatalog.enemies:
 		var definition := ContentCatalog.get_enemy(id)
 		var enemy := definition.scene.instantiate() as CollisionObject2D
