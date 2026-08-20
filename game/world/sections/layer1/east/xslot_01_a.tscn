@@ -1,11 +1,12 @@
-[gd_scene format=3 uid="uid://sbl5t6mykcwa"]
+[gd_scene format=3 uid="uid://j337lcj3714u"]
 
 [ext_resource type="PackedScene" path="res://game/world/sections/graybox_section_base.tscn" id="1"]
-[ext_resource type="Script" uid="uid://cffkoem4dm71c" path="res://game/world/lighting/darkness_region_2d.gd" id="2_hnfkh"]
-[ext_resource type="Texture2D" uid="uid://d0xljos4bjkc8" path="res://assets/art/world/ground/Tiles1.png" id="3_ktdd0"]
+[ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
+[ext_resource type="Script" uid="uid://cffkoem4dm71c" path="res://game/world/lighting/darkness_region_2d.gd" id="3_xjri2"]
+[ext_resource type="Texture2D" uid="uid://d0xljos4bjkc8" path="res://assets/art/world/ground/Tiles1.png" id="4_nkpfp"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qe362"]
-texture = ExtResource("3_ktdd0")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xjri2"]
+texture = ExtResource("4_nkpfp")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -576,14 +577,14 @@ texture = ExtResource("3_ktdd0")
 18:24/0 = 0
 19:24/0 = 0
 
-[sub_resource type="TileSet" id="TileSet_5esv5"]
+[sub_resource type="TileSet" id="TileSet_sdmo7"]
 terrain_set_0/mode = 0
 terrain_set_0/terrain_0/name = "background walls"
 terrain_set_0/terrain_0/color = Color(0.5019608, 0.9019608, 0.2509804, 1)
-sources/0 = SubResource("TileSetAtlasSource_qe362")
+sources/0 = SubResource("TileSetAtlasSource_xjri2")
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fndov"]
-texture = ExtResource("3_ktdd0")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nkpfp"]
+texture = ExtResource("4_nkpfp")
 0:0/0 = 0
 0:0/0/terrain_set = 0
 0:0/0/terrains_peering_bit/bottom_side = 0
@@ -1313,36 +1314,45 @@ texture = ExtResource("3_ktdd0")
 18:24/0 = 0
 19:24/0 = 0
 
-[sub_resource type="TileSet" id="TileSet_yodaq"]
+[sub_resource type="TileSet" id="TileSet_c3tsr"]
 physics_layer_0/collision_layer = 1
 terrain_set_0/mode = 0
 terrain_set_0/terrain_0/name = "ground"
 terrain_set_0/terrain_0/color = Color(0.5019608, 0.34509805, 0.8980392, 1)
-sources/0 = SubResource("TileSetAtlasSource_fndov")
+sources/0 = SubResource("TileSetAtlasSource_nkpfp")
 
-[node name="Layer1East02A" unique_id=1171739496 instance=ExtResource("1")]
-slot_id = &"layer1_east_02"
-variation_id = &"layer1_east_02_a"
+[node name="Layer1East01A" unique_id=430228716 instance=ExtResource("1")]
+slot_id = &"layer1_east_01"
+variation_id = &"layer1_east_01_a"
 special_tags = PackedStringArray()
 
-[node name="mapping" type="Node2D" parent="." index="8" unique_id=588723557]
+[node name="RespawnAnchor" parent="." index="4"]
+position = Vector2(1120, 90)
 
-[node name="DarknessRegions" type="Node2D" parent="mapping" index="0" unique_id=356220787]
+[node name="ReturnSurface" parent="AuthoredContent" index="0" unique_id=2047194342 instance=ExtResource("2")]
+position = Vector2(1192, 99)
+target_layer_id = &"surface"
+target_route_id = "east"
+prompt = "Return to Surface"
 
-[node name="DepthOneCave" type="Polygon2D" parent="mapping/DarknessRegions" index="0" unique_id=211461269]
+[node name="mapping" type="Node2D" parent="." index="8" unique_id=1525186957]
+
+[node name="DarknessRegions" type="Node2D" parent="mapping" index="0" unique_id=1354786516]
+
+[node name="DepthOneCave" type="Polygon2D" parent="mapping/DarknessRegions" index="0" unique_id=1780676066]
 position = Vector2(1351, -226.00002)
 scale = Vector2(1.0346515, 1.3381217)
 polygon = PackedVector2Array(87.4202, 311.45288, 353.74228, 272.7704, 467.79034, 308.6416, 443.62762, 350.49127, 486.15402, 383.3732, 449.4267, 430.4541, 487.12054, 471.55652, 612.76666, 464.8307, 696.85297, 470.0619, 775.1402, 475.2931, 818.63306, 464.08337, 810.901, 441.66388, 776.1067, 417.74976, 801.2359, 381.87857, 869.85803, 386.36246, 962.64294, 399.81415, 1007.10236, 421.48633, 1018.70044, 468.56726, 977.14056, 511.91156, 893.05426, 449.88434, 770.3076, 510.41693, 701.6855, 535.07837, 652.39355, 526.1106, 626.2978, 498.4599, 606.96765, 480.5243, 545.1111, 491.73407, 521.91486, 519.38477, 501.61816, 529.84717, 540.2785, 558.9925, 569.2738, 590.37976, 600.2021, 625.50366, 515.1493, 641.9446, 394.33566, 627.7456, 317.98145, 628.4929, 273.52203, 637.4607, 234.86168, 623.2617, 216.49802, 656.8909, 120.72313, 720.2348)
-script = ExtResource("2_hnfkh")
-region_id = &"east_02_a_cave"
+script = ExtResource("3_xjri2")
+region_id = &"layer1_east_01_a_cave"
 darkness_strength = 1.0
 edge_falloff_pixels = 51.0
 
-[node name="terrain" type="Node2D" parent="mapping" index="1" unique_id=2096371185]
+[node name="terrain" type="Node2D" parent="mapping" index="1" unique_id=662510391]
 
-[node name="background walls" type="TileMapLayer" parent="mapping/terrain" index="0" unique_id=163461139]
-tile_set = SubResource("TileSet_5esv5")
+[node name="background walls" type="TileMapLayer" parent="mapping/terrain" index="0" unique_id=763897617]
+tile_set = SubResource("TileSet_sdmo7")
 
-[node name="ground" type="TileMapLayer" parent="mapping/terrain" index="1" unique_id=2123387757]
+[node name="ground" type="TileMapLayer" parent="mapping/terrain" index="1" unique_id=546468192]
 z_index = 2
-tile_set = SubResource("TileSet_yodaq")
+tile_set = SubResource("TileSet_c3tsr")

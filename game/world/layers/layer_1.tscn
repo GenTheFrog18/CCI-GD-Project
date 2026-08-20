@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b7yipua6tyu2n" path="res://game/world/sections/layer1/west/slot_02_a.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://xnsshmg5bt6y" path="res://game/world/sections/layer1/west/slot_03_a.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://dbcv7ixchlequ" path="res://game/world/sections/layer1/east/slot_01_a.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://sbl5t6mykcwa" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://bddta4kbxsboo" path="res://game/world/sections/layer1/east/slot_03_a.tscn" id="8"]
 
 [sub_resource type="RectangleShape2D" id="OuterWall"]

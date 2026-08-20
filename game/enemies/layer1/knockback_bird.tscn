@@ -1,36 +1,43 @@
-[gd_scene load_steps=7 format=3]
-[ext_resource type="Script" path="res://game/enemies/layer1/knockback_bird.gd" id="1"]
-[ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
-[ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="3"]
+[gd_scene format=3 uid="uid://dj0wpiej4v4xk"]
+
+[ext_resource type="Script" uid="uid://dro4u3m0n4fjn" path="res://game/enemies/layer1/knockback_bird.gd" id="1"]
+[ext_resource type="Script" uid="uid://ducaowngygpn0" path="res://game/enemies/enemy_support.gd" id="2"]
+[ext_resource type="Script" uid="uid://dedxrelm31xit" path="res://core/sensing/sight_sensor.gd" id="3"]
+
 [sub_resource type="CircleShape2D" id="Shape"]
 radius = 9.0
+
 [sub_resource type="CircleShape2D" id="SwoopShape"]
 radius = 14.0
-[node name="KnockbackBird" type="CharacterBody2D"]
+
+[node name="KnockbackBird" type="CharacterBody2D" unique_id=1978200847]
+z_index = 3
 collision_layer = 4
-collision_mask = 1
 script = ExtResource("1")
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=546365703]
 shape = SubResource("Shape")
-[node name="Visual" type="AnimatedSprite2D" parent="."]
+
+[node name="Visual" type="AnimatedSprite2D" parent="." unique_id=424936183]
 texture_filter = 1
-[node name="EnemySupport" type="Node" parent="."]
+
+[node name="EnemySupport" type="Node" parent="." unique_id=1342836813]
 script = ExtResource("2")
 species_id = &"knockback_bird"
 max_health = 15.0
 tags = Array[StringName]([&"small_enemy", &"flying"])
 fall_immune = true
-[node name="SightSensor" type="Node2D" parent="."]
+
+[node name="SightSensor" type="Node2D" parent="." unique_id=132667486]
 script = ExtResource("3")
-normal_range = 240.0
 normal_angle_degrees = 160.0
 
-[node name="SwoopHitbox" type="Area2D" parent="."]
+[node name="SwoopHitbox" type="Area2D" parent="." unique_id=946152577]
 collision_layer = 0
 collision_mask = 2
 monitoring = false
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SwoopHitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SwoopHitbox" unique_id=1635499427]
 shape = SubResource("SwoopShape")
 disabled = true

@@ -100,14 +100,15 @@ collision_layer = 4
 script = ExtResource("1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1515308104]
+z_index = 3
 position = Vector2(0, -4)
 shape = SubResource("Shape")
 
-[node name="ForwardSurfaceProbe" type="ShapeCast2D" parent="."]
+[node name="ForwardSurfaceProbe" type="ShapeCast2D" parent="." unique_id=1105275168]
 shape = SubResource("ProbeShape")
 target_position = Vector2(10, 0)
 
-[node name="SupportSurfaceProbe" type="ShapeCast2D" parent="."]
+[node name="SupportSurfaceProbe" type="ShapeCast2D" parent="." unique_id=1025904731]
 shape = SubResource("ProbeShape")
 target_position = Vector2(0, 18)
 
