@@ -781,9 +781,10 @@ position = Vector2(39, 92)
 target_layer_id = &"surface"
 prompt = "Return to Surface"
 
-[node name="BirdNestPlacer" parent="." index="15" unique_id=2088869438 instance=ExtResource("9_12xhm")]
-position = Vector2(434, 97)
+[node name="BirdNestPlacer" parent="." index="15" unique_id=444563333 instance=ExtResource("9_12xhm")]
+position = Vector2(432, 131)
+patrol_radius = 305.0
 persistent_id = &"test"
-minimum_quantity = 2
 allocation_group = &"1"
 required_allocation = true
+spawn_group_id = &"1"
