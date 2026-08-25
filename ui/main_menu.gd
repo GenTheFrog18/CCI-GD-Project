@@ -121,8 +121,12 @@ func _build_debug() -> void:
 	debug_panel.add_child(seed_input)
 	var room := _button("Foundation Test Room", func(): GameSession.start_new_run(int(seed_input.value), true); SaveManager.loaded_persistent_state.clear(); SceneRouter.go_to("res://game/world/foundation_test_room.tscn"))
 	debug_panel.add_child(room)
+	var debug_room := _button("Foundation Debug Room", func(): GameSession.start_new_run(int(seed_input.value), true); SaveManager.loaded_persistent_state.clear(); SceneRouter.go_to("res://game/world/foundation_debug_room.tscn"))
+	debug_panel.add_child(debug_room)
 	debug_checkbox.toggled.connect(func(enabled: bool): room.visible = enabled)
+	debug_checkbox.toggled.connect(func(enabled: bool): debug_room.visible = enabled)
 	room.visible = false
+	debug_room.visible = false
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"debug_toggle"):
