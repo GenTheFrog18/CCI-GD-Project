@@ -14,7 +14,6 @@
 [ext_resource type="Texture2D" uid="uid://d0lihqpsgrsgf" path="res://assets/art/world/ground/Pixel_Woods_Tileset.png" id="10_h2sgq"]
 [ext_resource type="Script" uid="uid://bklq5e7ut66ux" path="res://game/story/surface/surface_intro.gd" id="10_y73ex"]
 [ext_resource type="Resource" uid="uid://dpvw3j2w0jiiy" path="res://data/dialogue/surface_intro_dialogue.tres" id="11_t2nio"]
-[ext_resource type="PackedScene" uid="uid://cflctunfjqval" path="res://game/enemies/test/test_amphibian.tscn" id="12_ifvir"]
 [ext_resource type="PackedScene" uid="uid://bxrr7i18qw7gw" path="res://game/world/sources/breakable_loot.tscn" id="16_56uc8"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_78j1j"]
@@ -8821,7 +8820,7 @@ physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_h2sgq")
 
 [sub_resource type="RectangleShape2D" id="GroundShape"]
-size = Vector2(435, 40)
+size = Vector2(275, 40)
 
 [sub_resource type="RectangleShape2D" id="WallShape"]
 size = Vector2(20, 360)
@@ -8947,7 +8946,7 @@ tile_map_data = PackedByteArray("AAD0//3/AAAPAC8AAAD0//7/AAAPADAAAAD4//3/AAAQADI
 tile_set = SubResource("TileSet_ifvir")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground" unique_id=507310755]
-position = Vector2(920.5, 0)
+position = Vector2(840.5, 0)
 shape = SubResource("GroundShape")
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Ground" unique_id=1388247578]
@@ -8978,18 +8977,6 @@ rotation = -0.0018345409
 target_layer_id = &"layer_1"
 target_route_id = "east"
 prompt = "Enter Layer 1 East"
-
-[node name="TestAmphibian" parent="." unique_id=1019356663 instance=ExtResource("12_ifvir")]
-position = Vector2(1375, 302)
-persistent_id = "surface_test_amphibian_01"
-
-[node name="TestAmphibian2" parent="." unique_id=671631084 instance=ExtResource("12_ifvir")]
-position = Vector2(1394, 299)
-persistent_id = "surface_test_amphibian_02"
-
-[node name="TestAmphibian3" parent="." unique_id=49557240 instance=ExtResource("12_ifvir")]
-position = Vector2(1353, 302)
-persistent_id = "surface_test_amphibian_03"
 
 [node name="TestShopTerminal" parent="." unique_id=1368338874 instance=ExtResource("3_7hsqt")]
 position = Vector2(663, 234)

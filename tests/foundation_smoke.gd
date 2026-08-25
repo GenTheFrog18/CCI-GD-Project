@@ -931,6 +931,12 @@ func _test_room_loads() -> void:
 	prologue.free()
 	var room := preload("res://game/world/foundation_test_room.tscn").instantiate()
 	assert(room != null)
+	assert(room.test_curse_layer == "None")
+	assert(room.get_node("Ground").position == Vector2(320.0, 344.0))
+	assert((room.get_node("Ground/CollisionShape2D").shape as RectangleShape2D).size == Vector2(640.0, 32.0))
+	assert(room.get_node("LeftWall").position == Vector2(0.0, 180.0))
+	assert(room.get_node("RightWall").position == Vector2(640.0, 180.0))
+	assert(not room.has_node("Platform") and not room.has_node("TestShopTerminal"))
 	room.free()
 	var world_run := preload("res://game/world/world_run.tscn").instantiate()
 	assert(world_run != null)
@@ -948,7 +954,7 @@ func _test_room_loads() -> void:
 	for child in surface.get_children():
 		if child is TestAmphibian:
 			surface_ids[child.persistent_id] = true
-	assert(surface_ids.size() == 3)
+	assert(surface_ids.is_empty())
 	surface.free()
 
 func _test_world_run_runtime() -> void:

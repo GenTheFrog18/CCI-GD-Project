@@ -1,15 +1,14 @@
 extends Node2D
 
+@export_enum("None", "Layer 1", "Layer 2") var test_curse_layer := "None"
+
 @onready var player: PlayerController = $Player
 @onready var hud: FoundationHUD = $FoundationHUD
-@onready var turret: ProjectileTurret = $ProjectileTurret
 
 func _ready() -> void:
-	turret.target = player
 	hud.set_player(player)
-	var intro := ContentCatalog.get_dialogue(&"foundation_intro")
-	if intro != null and SaveManager.loaded_persistent_state.is_empty():
-		hud.show_dialogue(intro)
+	if test_curse_layer != "None":
+		player.curse_tracker.apply_layer_curse(StringName(test_curse_layer.replace(" ", "_").to_lower()))
 	call_deferred("_restore_loaded_state")
 
 func _restore_loaded_state() -> void:
