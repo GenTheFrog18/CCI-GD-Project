@@ -14,6 +14,7 @@ var _elapsed := 0.0
 var _active := false
 
 func _ready() -> void:
+	visible = true
 	_screenshot.modulate.a = clampf(screenshot_opacity, 0.0, 1.0)
 	_white_fill.modulate.a = clampf(white_opacity, 0.0, 1.0)
 	_layers.modulate.a = 0.0

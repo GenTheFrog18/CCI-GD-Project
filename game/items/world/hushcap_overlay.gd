@@ -16,6 +16,7 @@ extends CanvasLayer
 var _fade_tween: Tween
 
 func _ready() -> void:
+	visible = true
 	_set_layer_opacity(_layer_25, layer_25_opacity)
 	_set_layer_opacity(_layer_50, layer_50_opacity)
 	_set_layer_opacity(_layer_75, layer_75_opacity)
