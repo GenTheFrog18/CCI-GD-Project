@@ -170,7 +170,7 @@ func _bite_windup() -> void:
 		bite_hitbox.position = _bite_direction * bite_reach
 		_set_bite_hitbox(true)
 		state = State.BITE_RESOLVE; _timer = bite_resolution_seconds
-		for body in bite_hitbox.get_overlapping_bodies(): _apply_bite(body)
+		call_deferred(&"_apply_bite_overlaps")
 
 func _bite_resolve() -> void:
 	velocity = Vector2.ZERO
@@ -242,6 +242,10 @@ func _begin_bite() -> void:
 	_timer = bite_windup_seconds; _target.warn_attack(self, bite_windup_seconds)
 
 func _on_bite_body_entered(body: Node) -> void: _apply_bite(body)
+func _apply_bite_overlaps() -> void:
+	if state != State.BITE_RESOLVE or not bite_hitbox.monitoring:
+		return
+	for body in bite_hitbox.get_overlapping_bodies(): _apply_bite(body)
 func _apply_bite(body: Node) -> void:
 	if state != State.BITE_RESOLVE or _bite_hit or body is not PlayerController: return
 	var impact := ImpactData.new()
