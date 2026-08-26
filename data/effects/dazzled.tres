@@ -7,6 +7,8 @@ script = ExtResource("1")
 effect_id = &"dazzled"
 display_name = "Dazzled"
 duration = 7.0
+additive_duration_cap = 10.0
+stack_rule = 1
 persists = true
 modifiers = {
 &"sight_enabled": 0.0

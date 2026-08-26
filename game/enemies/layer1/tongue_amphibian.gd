@@ -13,6 +13,7 @@ enum State { IDLE, MOVE, ATTACK, RETREAT }
 @export var jump_velocity := -280.0
 @export_range(0.0, 1.0, 0.05) var air_control := 0.15
 @export var tongue_range := 150.0
+@export var item_detection_range := 225.0
 @export var tongue_angle_degrees := 0.0
 @export var tongue_width := 16.0
 @export var telegraph_seconds := 0.45
@@ -89,7 +90,8 @@ func _physics_process(delta: float) -> void:
 	else:
 		var air_target := _facing_direction * move_speed * support.status.get_multiplier(&"move_speed")
 		velocity.x = move_toward(velocity.x, air_target, move_speed * air_control * delta)
-	var loose := _nearest_loose_item()
+	var player_interacting := _target != null or _investigation_remaining > 0.0
+	var loose := _nearest_loose_item() if state in [State.IDLE, State.MOVE] and not player_interacting else null
 	var chasing_player := _target != null and sight.current_target == _target
 	var desired: Node2D = _target if chasing_player else loose if loose != null else _target
 	if not carried.is_empty():
@@ -133,7 +135,7 @@ func _nearest_loose_item() -> Node2D:
 	if _theft_cooldown > 0.0:
 		return null
 	var best: Node2D
-	var distance := tongue_range * 1.5
+	var distance := maxf(item_detection_range, 0.0)
 	var best_weight := INF
 	for node in get_tree().get_nodes_in_group(&"loose_items"):
 		if node is not Node2D or node.is_queued_for_deletion() or not node.has_method("can_be_picked_up") or not node.can_be_picked_up() or not _can_steal_item(node): continue
