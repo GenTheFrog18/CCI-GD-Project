@@ -101,7 +101,7 @@ func _physics_process(delta: float) -> void:
 			_timer = cooldown_seconds
 	elif desired != null:
 		var distance := global_position.distance_to(desired.global_position)
-		if distance <= tongue_range and _timer <= 0.0:
+		if distance <= tongue_range and _timer <= 0.0 and _theft_cooldown <= 0.0:
 			state = State.ATTACK
 			_timer = telegraph_seconds
 			if desired.has_method("warn_attack"): desired.warn_attack(self, telegraph_seconds)
