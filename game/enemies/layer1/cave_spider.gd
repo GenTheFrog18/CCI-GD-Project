@@ -134,7 +134,9 @@ func _roam(delta: float) -> void:
 
 func _telegraph() -> void:
 	velocity = Vector2.ZERO; sprite.play(&"shoot")
-	if not _can_see_target(): _enter_investigate()
+	if support.status.has_status(&"electrocuted"):
+		_enter_investigate()
+	elif not _can_see_target(): _enter_investigate()
 	elif _timer <= 0.0: _fire()
 
 func _await_shot() -> void:
@@ -199,6 +201,8 @@ func _flee(delta: float) -> void:
 	sprite.play(&"walk"); _move_on_surface(delta, _destination)
 
 func _begin_shot() -> void:
+	if support.status.has_status(&"electrocuted"):
+		_enter_investigate(); return
 	if not _can_see_target(): _enter_investigate(); return
 	if _must_reach_firing_band and global_position.distance_to(_target.global_position) < firing_distance_min:
 		_enter_scatter(); return
@@ -208,6 +212,8 @@ func _begin_shot() -> void:
 	_target.warn_attack(self, telegraph_seconds)
 
 func _fire() -> void:
+	if support.status.has_status(&"electrocuted"):
+		_enter_investigate(); return
 	var projectile := preload("res://game/projectiles/projectile.tscn").instantiate() as Projectile
 	var impact := ImpactData.new()
 	impact.source_actor = self; impact.source_species_id = support.species_id

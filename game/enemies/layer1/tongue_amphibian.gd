@@ -138,7 +138,7 @@ func _physics_process(delta: float) -> void:
 		queue_redraw()
 
 func _nearest_loose_item() -> Node2D:
-	if _theft_cooldown > 0.0:
+	if _theft_cooldown > 0.0 or support.status.has_status(&"electrocuted"):
 		return null
 	var best: Node2D
 	var distance := maxf(item_detection_range, 0.0)
@@ -158,7 +158,7 @@ func _nearest_loose_item() -> Node2D:
 func _perform_tongue(target: Node2D) -> void:
 	if target == null or not target.has_method("can_be_picked_up") and not target.has_method("take_item_for_theft"):
 		return
-	if _theft_cooldown > 0.0:
+	if _theft_cooldown > 0.0 or support.status.has_status(&"electrocuted"):
 		return
 	if global_position.distance_to(target.global_position) > tongue_range or not _tongue_reaches(target):
 		return
