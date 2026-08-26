@@ -1408,11 +1408,11 @@ tile_map_data = PackedByteArray("AAA2AA8AAAAAAAEAAAA2AA4AAAACAAAAAAA3AA8AAAABAAE
 tile_set = SubResource("TileSet_l7r7e")
 
 [node name="EnemyPlacer" parent="mapping/terrain" unique_id=1751430608 instance=ExtResource("6_3xomg")]
-position = Vector2(1149, 213)
+position = Vector2(1140, 181)
 persistent_id = &"teste1"
 entries = Array[ExtResource("7_6wnfj")]([SubResource("Resource_dw1l8")])
 
 [node name="EnemyPlacer" parent="." unique_id=204440796 instance=ExtResource("6_3xomg")]
-position = Vector2(1254, 313)
+position = Vector2(1137, 214)
 persistent_id = &"test2"
 entries = Array[ExtResource("7_6wnfj")]([SubResource("Resource_txaoi")])

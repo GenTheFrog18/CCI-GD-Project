@@ -283,7 +283,7 @@ func _drop_crystal(_source: Node) -> void:
 	drop.persistent_id = "%s:crystal" % persistent_id
 	drop.configure(definition, {"origin": "enemy_drop"}, self, global_position + _surface_normal * 12.0, _surface_normal * 80.0)
 	drop.set_meta(&"effect_deployed", true)
-	get_parent().add_child(drop)
+	get_parent().call_deferred(&"add_child", drop)
 
 func _setup_visual() -> void:
 	var frames := SpriteFrames.new()
