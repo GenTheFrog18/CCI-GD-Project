@@ -122,6 +122,11 @@ func _test_enemy_scenes() -> void:
 	flyer.support.status.active.clear()
 	flyer.support.health._invulnerable_until = 0
 	_check(flyer.apply_damage(DamageInfo.new(1.0)) and flyer.state == LargeLayer1Flyer.State.RECOVER, "Large Flyer damage triggers recovery")
+	var flyer_attacker := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	add_child(flyer_attacker)
+	flyer.support.health._invulnerable_until = 0
+	_check(flyer.apply_damage(DamageInfo.new(1.0, flyer_attacker, &"player")) and flyer.state == LargeLayer1Flyer.State.ATTACK_SETUP and flyer._target == flyer_attacker, "Large Flyer retaliates against player damage")
+	flyer_attacker.free()
 	flyer.free()
 	var spider := preload("res://game/enemies/layer1/cave_spider.tscn").instantiate() as CaveSpider
 	add_child(spider)

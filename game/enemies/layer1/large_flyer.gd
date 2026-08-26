@@ -576,7 +576,12 @@ func _draw() -> void:
 		draw_arc(Vector2(0.0, half_segment), capsule.radius, 0.0, PI, 16, color, 2.0)
 func apply_damage(info: DamageInfo) -> bool:
 	var applied := support.apply_damage(info)
-	if applied and not support.health.is_dead and state not in [State.ATTACK_SETUP, State.DIVE]: _begin_recovery()
+	if applied and not support.health.is_dead:
+		var attacker := info.source as PlayerController
+		if attacker != null and is_instance_valid(attacker) and attacker.is_alive():
+			_begin_attack(attacker)
+		elif state not in [State.ATTACK_SETUP, State.DIVE]:
+			_begin_recovery()
 	return applied
 func apply_force(_force: Vector2) -> void: pass
 func apply_status(id: StringName, data: Dictionary = {}) -> bool: return support.apply_status(id, data)
