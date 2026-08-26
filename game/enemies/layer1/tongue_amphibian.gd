@@ -47,7 +47,6 @@ var _roam_stuck_seconds := 0.0
 var _random := RandomNumberGenerator.new()
 var _knockback := Vector2.ZERO
 var _investigation_remaining := 0.0
-var _investigation_position := Vector2.ZERO
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
@@ -69,7 +68,8 @@ func _ready() -> void:
 	)
 	sound.sound_accepted.connect(func(event: SoundEvent, _direct: bool):
 		_investigation_remaining = 2.0
-		_investigation_position = event.position
+		_roam_target = event.position
+		_has_roam_target = true
 		$AwarenessIndicator.text = "?"
 		$AwarenessIndicator.show()
 		_move_toward(event.position)
@@ -107,12 +107,8 @@ func _physics_process(delta: float) -> void:
 			state = State.IDLE
 			_timer = cooldown_seconds
 	elif investigating_sound:
-		state = State.IDLE
-		if global_position.distance_to(_investigation_position) <= 8.0:
-			_roam_stuck_seconds = 0.0
-		else:
-			state = State.MOVE
-			_move_toward(_investigation_position)
+		state = State.MOVE
+		_move_toward(_roam_target)
 	elif desired != null:
 		var distance := global_position.distance_to(desired.global_position)
 		if distance <= tongue_range and _timer <= 0.0 and _theft_cooldown <= 0.0:
@@ -127,7 +123,7 @@ func _physics_process(delta: float) -> void:
 		_roam()
 	if state == State.ATTACK:
 		velocity.x = 0.0
-	if state != State.ATTACK and not investigating_sound and grounded and _jump_timer <= 0.0 and not support.status.has_status(&"electro_stunned"):
+	if state != State.ATTACK and grounded and _jump_timer <= 0.0 and not support.status.has_status(&"electro_stunned"):
 		velocity.x = _facing_direction * move_speed * support.status.get_multiplier(&"move_speed")
 		velocity.y = jump_velocity * _random_jump_height() * support.status.get_multiplier(&"jump_strength")
 		_jump_timer = _random_jump_cooldown()
