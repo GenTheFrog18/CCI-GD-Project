@@ -18,6 +18,7 @@ var status: StatusController
 var effect_label: Label
 var hit_flash: HitFlash
 var _flight_fall_speed := 0.0
+var _was_airborne_during_disabled_flight := false
 
 func _ready() -> void:
 	var definition := ContentCatalog.get_enemy(species_id)
@@ -110,16 +111,25 @@ func request_interrupt(strength: float, reason: StringName = &"impact") -> bool:
 func process_disabled_flight(actor: CharacterBody2D, delta: float, gravity := 900.0) -> bool:
 	if actor == null or not actor.is_in_group(&"flying") or not status.has_status(&"electro_stunned"):
 		_flight_fall_speed = 0.0
+		_was_airborne_during_disabled_flight = false
 		return false
+	if actor.is_on_floor():
+		actor.velocity.y = 0.0
+		actor.move_and_slide()
+		_flight_fall_speed = 0.0
+		_was_airborne_during_disabled_flight = false
+		return true
+	_was_airborne_during_disabled_flight = true
 	actor.velocity.x = move_toward(actor.velocity.x, 0.0, gravity * delta)
 	actor.velocity.y += gravity * delta
 	_flight_fall_speed = maxf(_flight_fall_speed, actor.velocity.y)
 	actor.move_and_slide()
-	if actor.is_on_floor() and _flight_fall_speed > 0.0:
+	if actor.is_on_floor() and _was_airborne_during_disabled_flight and _flight_fall_speed > 0.0:
 		var info := DamageInfo.new(fall_damage)
 		info.tags = [&"fall"]
-		health.apply_damage(info, species_id)
+		if not fall_immune: health.apply_damage(info, species_id)
 		_flight_fall_speed = 0.0
+		_was_airborne_during_disabled_flight = false
 	return true
 
 func capture_state() -> Dictionary:
