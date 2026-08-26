@@ -138,6 +138,12 @@ func _process_committed(delta: float) -> bool:
 	return false
 
 func _process_request(delta: float) -> void:
+	if state == State.CHASE and is_instance_valid(_target) and _target.is_alive():
+		if _target.status.has_status(&"tracking_mark") or _can_see_with_active_detectors(_target):
+			_process_chase(_target, delta)
+		else:
+			_process_background(delta)
+		return
 	var request := _select_request()
 	var player := request.get("target_actor") as PlayerController if not request.is_empty() else null
 	if player != null:
