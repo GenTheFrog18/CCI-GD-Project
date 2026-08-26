@@ -11,7 +11,7 @@ extends Node
 @export var interrupt_resistance := 0.0
 @export var electric_stun_duration_multiplier := 1.0
 @export var detector_suppression_duration_multiplier := 1.0
-@export var hit_flash_duration := 0.08
+@export var hit_flash_duration := 0.15
 
 var health: HealthComponent
 var status: StatusController
