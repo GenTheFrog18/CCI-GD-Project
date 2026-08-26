@@ -176,7 +176,11 @@ func _process_background(delta: float) -> void:
 			if _blocker_remaining <= 0.0: _begin_poi_travel()
 			else: _process_local(delta, State.BLOCKER_POI)
 		State.COOLDOWN_PATROL:
-			if _cooldown_remaining <= 0.0: _begin_poi_travel()
+			if _cooldown_remaining <= 0.0:
+				if is_instance_valid(_target) and _target.is_alive() and (_target.status.has_status(&"tracking_mark") or _can_see_with_active_detectors(_target)):
+					_process_chase(_target, delta)
+				else:
+					_begin_poi_travel()
 			else: _process_local(delta, State.COOLDOWN_PATROL)
 		_: _process_poi(delta)
 
@@ -267,12 +271,13 @@ func _recovery_point(player_position: Vector2, away: Vector2) -> Vector2:
 
 func _begin_cooldown_patrol() -> void:
 	_start_local_patrol(_patrol_center)
+	_cooldown_remaining = attack_cooldown
 	state = State.COOLDOWN_PATROL
 
-func _begin_search(position: Vector2) -> void:
-	_search_point = position
+func _begin_search(_position: Vector2) -> void:
+	_search_point = global_position
 	_search_remaining = search_seconds
-	_start_local_patrol(position)
+	_start_local_patrol(global_position)
 	state = State.SEARCH
 
 func _begin_blocker_poi(position: Vector2) -> void:

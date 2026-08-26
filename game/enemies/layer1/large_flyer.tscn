@@ -5,8 +5,9 @@
 [ext_resource type="Script" uid="uid://dedxrelm31xit" path="res://core/sensing/sight_sensor.gd" id="3"]
 [ext_resource type="Script" uid="uid://ctpy5jx0wglna" path="res://core/sensing/sound_listener.gd" id="4"]
 
-[sub_resource type="RectangleShape2D" id="Shape"]
-size = Vector2(52, 28)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yfnlj"]
+radius = 11.0
+height = 54.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames"]
 animations = []
@@ -15,10 +16,14 @@ animations = []
 collision_layer = 4
 collision_mask = 513
 script = ExtResource("1")
-sight_lock_seconds = 2.0
+chase_speed = 140.0
+dive_speed = 300.0
+sight_lock_seconds = 1.0
+attack_force = 400.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1115403358]
-shape = SubResource("Shape")
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_yfnlj")
 
 [node name="Visual" type="AnimatedSprite2D" parent="." unique_id=1237829731]
 sprite_frames = SubResource("SpriteFrames")
