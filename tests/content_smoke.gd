@@ -130,7 +130,7 @@ func _test_enemy_scenes() -> void:
 	flyer.support.health._invulnerable_until = 0
 	var melee_hit := DamageInfo.new(1.0, flyer_attacker, &"player")
 	melee_hit.tags = [&"player_melee"]
-	_check(flyer.apply_damage(melee_hit) and flyer.state == LargeLayer1Flyer.State.ATTACK_SETUP and flyer._target == flyer_attacker and flyer_attacker._knockback.x > 0.0, "Large Flyer retaliates and knocks back player melee hits")
+	_check(flyer.apply_damage(melee_hit) and flyer.state == LargeLayer1Flyer.State.DIVE and flyer._target == flyer_attacker and flyer._state_timer == flyer.dive_seconds and flyer_attacker._knockback.x > 0.0, "Large Flyer immediately retaliates and knocks back player melee hits")
 	flyer_attacker.free()
 	flyer.free()
 	var spider := preload("res://game/enemies/layer1/cave_spider.tscn").instantiate() as CaveSpider

@@ -241,13 +241,20 @@ func _process_local(delta: float, patrol_state: State) -> void:
 	if _patrol_timer <= 0.0 or global_position.distance_to(_patrol_destination) <= 12.0: _choose_local_destination()
 	if not _patrol_hover: _move_toward(_patrol_destination, roam_speed, delta)
 
-func _begin_attack(player: PlayerController) -> void:
-	state = State.ATTACK_SETUP
+func _begin_attack(player: PlayerController, immediate := false) -> void:
 	_target = player
 	_search_after_recovery = false
 	_aim = player.global_position
-	_state_timer = telegraph_seconds
 	_finishing_attack_animation = false
+	if immediate:
+		state = State.DIVE
+		_state_timer = dive_seconds
+		_dive_hit = false
+		_play_attack_from_start()
+		_hold_attack_swoop_frame()
+		return
+	state = State.ATTACK_SETUP
+	_state_timer = telegraph_seconds
 	_play_attack_from_start()
 	player.warn_attack(self, telegraph_seconds)
 
@@ -582,7 +589,9 @@ func apply_damage(info: DamageInfo) -> bool:
 		if attacker != null and is_instance_valid(attacker) and attacker.is_alive():
 			if info.tags.has(&"player_melee"):
 				attacker.apply_force(global_position.direction_to(attacker.global_position) * player_hit_knockback)
-			_begin_attack(attacker)
+				_begin_attack(attacker, true)
+			else:
+				_begin_attack(attacker)
 		elif state not in [State.ATTACK_SETUP, State.DIVE]:
 			_begin_recovery()
 	return applied
