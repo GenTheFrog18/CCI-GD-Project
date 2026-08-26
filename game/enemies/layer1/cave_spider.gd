@@ -74,6 +74,7 @@ var _bite_direction := Vector2.RIGHT
 var _bite_hit := false
 var _active_projectile: Projectile
 var _last_facing := Vector2.RIGHT
+var _scatter_direction := 1.0
 var _random := RandomNumberGenerator.new()
 
 func _ready() -> void:
@@ -175,11 +176,14 @@ func _bite_resolve() -> void:
 	if _timer <= 0.0: _set_bite_hitbox(false); _enter_scatter()
 
 func _scatter(delta: float) -> void:
-	if not _can_see_target(): _enter_investigate(); return
+	if not is_instance_valid(_target): _enter_idle(); return
 	var distance := global_position.distance_to(_target.global_position)
-	if _timer <= 0.0 and distance >= firing_distance_min and distance <= firing_distance_max: _begin_shot(); return
-	sprite.play(&"walk"); _move_on_surface(delta, _destination)
-	if _timer <= 0.0: _set_scatter_destination()
+	if _timer <= 0.0 and distance >= firing_distance_min and distance <= firing_distance_max:
+		if _can_see_target(): _begin_shot()
+		else: _enter_investigate()
+		return
+	sprite.play(&"walk"); _move_on_surface(delta, _destination, _scatter_direction)
+	if _timer <= 0.0: _timer = scatter_minimum_seconds
 
 func _investigate(delta: float) -> void:
 	if _can_see_target(): _begin_shot(); return
@@ -249,6 +253,9 @@ func _enter_scatter() -> void:
 func _set_scatter_destination() -> void:
 	var away := _target.global_position.direction_to(global_position)
 	if away.is_zero_approx(): away = _last_facing
+	var tangent := Vector2(-_surface_normal.y, _surface_normal.x).normalized()
+	_scatter_direction = signf(tangent.dot(away))
+	if is_zero_approx(_scatter_direction): _scatter_direction = _direction if not is_zero_approx(_direction) else 1.0
 	_destination = _target.global_position + away * ((firing_distance_min + firing_distance_max) * 0.5); _timer = scatter_minimum_seconds
 func _enter_investigate() -> void:
 	_clear_projectile(); _set_bite_hitbox(false)
