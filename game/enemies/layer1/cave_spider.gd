@@ -195,7 +195,7 @@ func _flee(delta: float) -> void:
 func _begin_shot() -> void:
 	if not _can_see_target(): _enter_investigate(); return
 	state = State.SHOT_TELEGRAPH
-	_aim = _target.global_position; _last_known = _aim; _timer = telegraph_seconds
+	_aim = sight.last_ray_end; _last_known = _aim; _timer = telegraph_seconds
 	_target.warn_attack(self, telegraph_seconds)
 
 func _fire() -> void:
