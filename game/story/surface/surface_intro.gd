@@ -4,6 +4,7 @@ extends Node
 
 var player: PlayerController
 var dialogue_box: DialogueBox
+var dialogue_controller: DialogueController
 
 func start_intro(player_controller: PlayerController, dialogue_parent: Control) -> void:
 	print("=== SURFACE INTRO START ===")
@@ -27,12 +28,15 @@ func start_intro(player_controller: PlayerController, dialogue_parent: Control) 
 	dialogue_box = DialogueBox.new()
 	dialogue_parent.add_child(dialogue_box)
 	dialogue_box.position = Vector2(60, 245)
+	dialogue_controller = DialogueController.new()
+	dialogue_parent.add_child(dialogue_controller)
+	dialogue_controller.setup(dialogue_box)
 
-	dialogue_box.dialogue_finished.connect(_on_dialogue_finished)
+	dialogue_controller.sequence_finished.connect(_on_dialogue_finished)
 
 	print("Menampilkan Surface Intro...")
 
-	dialogue_box.show_sequence(dialogue_sequence, null, player)
+	dialogue_controller.start_sequence(dialogue_sequence, null, player)
 
 func _on_dialogue_finished() -> void:
 	print("=== SURFACE INTRO SELESAI ===")

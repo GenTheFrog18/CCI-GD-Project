@@ -33,6 +33,7 @@ var debug_panel: PanelContainer
 var pause_panel: SettingsPopup
 var death_panel: PanelContainer
 var dialogue_box: DialogueBox
+var dialogue_controller: DialogueController
 var crosshair: Node2D
 var performance_label: Label
 var world_debug_label: Label
@@ -115,7 +116,12 @@ func open_shop(service: ShopService, shop_player: PlayerController) -> void:
 	shop_ui.open_shop(service, shop_player)
 
 func show_dialogue(sequence: DialogueSequence, actor: Node = null) -> void:
-	dialogue_box.show_sequence(sequence, actor, player)
+	dialogue_controller.start_sequence(sequence, actor, player)
+
+func open_how_to_from_dialogue() -> void:
+	get_tree().paused = true
+	pause_panel.show_popup()
+	pause_panel.show_how_to_page()
 
 func _input(event: InputEvent) -> void:
 	if player == null:
@@ -216,6 +222,9 @@ func _build_ui() -> void:
 	dialogue_box = DialogueBox.new()
 	dialogue_box.position = Vector2(60, 245)
 	logical_ui.add_child(dialogue_box)
+	dialogue_controller = DialogueController.new()
+	logical_ui.add_child(dialogue_controller)
+	dialogue_controller.setup(dialogue_box)
 	pause_panel = SETTINGS_POPUP_SCENE.instantiate() as SettingsPopup
 	pause_panel.configure(true, "Save & Menu")
 	pause_panel.resume_requested.connect(_resume_pause_menu)
@@ -606,7 +615,8 @@ func _update_location() -> void:
 
 func _on_player_died(_source: Node) -> void:
 	player.set_inventory_open(false)
-	dialogue_box.close()
+	if dialogue_controller != null:
+		dialogue_controller.close()
 	GameSession.run_active = false
 	SaveManager.delete_run()
 	SaveManager.save_meta()

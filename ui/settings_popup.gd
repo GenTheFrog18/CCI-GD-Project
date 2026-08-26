@@ -146,6 +146,9 @@ func _show_info(title: String, body: String) -> void:
 	info_body.text = body
 	close_button.grab_focus()
 
+func show_how_to_page() -> void:
+	_show_info("How to Play", "A/D or arrows: move\nSpace: jump\nE: interact\n1/2 or mouse wheel: hotbar\nLeft click: use\nRight click: throw / secondary\nTab: inventory\nEsc: pause\nF11: fullscreen\nW/S: climb rope")
+
 func _run_main_action() -> void:
 	if include_resume:
 		main_action_requested.emit()
