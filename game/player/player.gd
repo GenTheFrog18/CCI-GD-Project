@@ -79,7 +79,7 @@ func _ready() -> void:
 	_hit_flash = HitFlash.new()
 	add_child(_hit_flash)
 	_hit_flash.setup(self)
-	health.damaged.connect(func(_info: DamageInfo): _hit_flash.play(2))
+	health.damaged.connect(func(info: DamageInfo): _hit_flash.play(2 if info.causes_hit_reaction else 1))
 	curse_tracker = CurseTracker.new()
 	add_child(curse_tracker)
 	curse_tracker.setup(self)

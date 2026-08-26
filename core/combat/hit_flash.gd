@@ -26,7 +26,7 @@ func setup(actor: Node) -> bool:
 	_white_material.shader = shader
 	return true
 
-func play(pulses: int) -> void:
+func play(pulses: int, flash_seconds := FLASH_SECONDS) -> void:
 	if _visual == null or pulses <= 0:
 		return
 	if _sequence != null and _sequence.is_valid():
@@ -36,7 +36,7 @@ func play(pulses: int) -> void:
 	_visual.material = _white_material
 	_sequence = create_tween()
 	for index in pulses:
-		_sequence.tween_interval(FLASH_SECONDS)
+		_sequence.tween_interval(flash_seconds)
 		_sequence.tween_callback(func(): _visual.material = _normal_material)
 		if index + 1 < pulses:
 			_sequence.tween_interval(GAP_SECONDS)

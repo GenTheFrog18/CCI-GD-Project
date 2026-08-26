@@ -141,7 +141,7 @@ func restore_state(data: Dictionary) -> bool:
 	return true
 
 func _on_damaged(_info: DamageInfo) -> void:
-	hit_flash.play(1)
+	hit_flash.play(1, 0.08)
 
 func _on_status_damage(amount: float) -> void:
 	var info := DamageInfo.new(amount)
