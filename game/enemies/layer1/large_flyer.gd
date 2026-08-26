@@ -1,6 +1,11 @@
 class_name LargeLayer1Flyer
 extends CharacterBody2D
 
+const IDLE_SHEET := preload("res://assets/art/enemies/big_flyer/flyer_idle.png")
+const SEE_PLAYER_SHEET := preload("res://assets/art/enemies/big_flyer/flyer_see_player.png")
+const ATTACK_SHEET := preload("res://assets/art/enemies/big_flyer/flyer_attack.png")
+const SWOOP_ATTACK_FRAME := 7 # Frame 8 in the authored one-based sheet.
+
 # ROAM/RECOVER retain previous public state names used by transfer checks.
 enum State { ROAM, POI_PATROL, POI_IDLE, INVESTIGATE, CHASE, ATTACK_SETUP, DIVE, RECOVER, RECOVERY_TRAVEL, COOLDOWN_PATROL, SEARCH, BLOCKER_POI, DISABLED_FLIGHT }
 
@@ -51,6 +56,7 @@ enum State { ROAM, POI_PATROL, POI_IDLE, INVESTIGATE, CHASE, ATTACK_SETUP, DIVE,
 @onready var support: EnemySupport = $EnemySupport
 @onready var sight: SightSensor = $SightSensor
 @onready var sound: SoundListener = $SoundListener
+@onready var visual: AnimatedSprite2D = $Visual
 var state := State.ROAM
 var _origin := Vector2.ZERO
 var _target: PlayerController
@@ -71,9 +77,11 @@ var _patrol_timer := 0.0
 var _patrol_hover := false
 var _blocker_remaining := 0.0
 var _blocker_cooldown_remaining := 0.0
+var _finishing_attack_animation := false
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
+	_setup_visual()
 	add_to_group(&"large_flyer")
 	_origin = global_position
 	sight.target_seen.connect(_on_seen)
@@ -95,6 +103,7 @@ func _physics_process(delta: float) -> void:
 	_refresh_sight_request(delta)
 	if not _process_committed(delta): _process_request(delta)
 	if not velocity.is_zero_approx(): sight.facing = velocity.normalized()
+	_update_visual()
 
 func _process_committed(delta: float) -> bool:
 	match state:
@@ -104,6 +113,7 @@ func _process_committed(delta: float) -> bool:
 				state = State.DIVE
 				_state_timer = dive_seconds
 				_dive_hit = false
+				_hold_attack_swoop_frame()
 			return true
 		State.DIVE:
 			_move_toward(_aim, dive_speed, delta)
@@ -204,6 +214,8 @@ func _begin_attack(player: PlayerController) -> void:
 	_target = player
 	_aim = player.global_position
 	_state_timer = telegraph_seconds
+	_finishing_attack_animation = false
+	_play_attack_from_start()
 	player.warn_attack(self, telegraph_seconds)
 
 func _begin_recovery() -> void:
@@ -215,6 +227,11 @@ func _begin_recovery() -> void:
 	_state_timer = recovery_seconds
 	_cooldown_remaining = attack_cooldown
 	_sight_time = 0.0
+	if _dive_hit:
+		_finishing_attack_animation = true
+		visual.frame = SWOOP_ATTACK_FRAME
+		visual.frame_progress = 0.0
+		visual.play(&"attack")
 
 func _recovery_point(player_position: Vector2, away: Vector2) -> Vector2:
 	for _attempt in max_destination_attempts:
@@ -408,6 +425,52 @@ func _remove_request(request_id: StringName) -> void:
 
 func _flight_speed_multiplier() -> float: return support.status.get_multiplier(&"flight_speed")
 func _clock() -> float: return float(Time.get_ticks_msec()) / 1000.0
+
+func _setup_visual() -> void:
+	var frames := SpriteFrames.new()
+	frames.remove_animation(&"default")
+	_add_animation(frames, &"idle", IDLE_SHEET, 6, 8.0, true)
+	_add_animation(frames, &"see_player", SEE_PLAYER_SHEET, 8, 10.0, true)
+	_add_animation(frames, &"attack", ATTACK_SHEET, 11, 8.0, false)
+	visual.sprite_frames = frames
+	visual.play(&"idle")
+
+func _add_animation(frames: SpriteFrames, animation: StringName, sheet: Texture2D, count: int, speed: float, loop: bool) -> void:
+	frames.add_animation(animation)
+	frames.set_animation_speed(animation, speed)
+	frames.set_animation_loop(animation, loop)
+	for index in count:
+		var frame := AtlasTexture.new()
+		frame.atlas = sheet
+		frame.region = Rect2(index * 128, 0, 128, 128)
+		frames.add_frame(animation, frame)
+
+func _play_attack_from_start() -> void:
+	visual.play(&"attack")
+	visual.frame = 0
+	visual.frame_progress = 0.0
+
+func _hold_attack_swoop_frame() -> void:
+	visual.pause()
+	visual.frame = SWOOP_ATTACK_FRAME
+	visual.frame_progress = 0.0
+
+func _update_visual() -> void:
+	if not velocity.is_zero_approx():
+		visual.flip_h = velocity.x < 0.0
+	if _finishing_attack_animation:
+		if visual.is_playing():
+			return
+		_finishing_attack_animation = false
+	if state == State.ATTACK_SETUP:
+		return
+	if state == State.DIVE:
+		_hold_attack_swoop_frame()
+		return
+	if is_instance_valid(_target) and (state in [State.CHASE, State.RECOVER, State.RECOVERY_TRAVEL, State.COOLDOWN_PATROL] or sight.can_see(_target)):
+		if visual.animation != &"see_player": visual.play(&"see_player")
+	elif visual.animation != &"idle":
+		visual.play(&"idle")
 func apply_damage(info: DamageInfo) -> bool:
 	var applied := support.apply_damage(info)
 	if applied and support.is_alive() and state not in [State.ATTACK_SETUP, State.DIVE]: _begin_recovery()
