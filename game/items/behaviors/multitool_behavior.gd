@@ -6,6 +6,7 @@ extends ItemBehavior
 @export var extension := 8.0
 @export var active_seconds := 0.12
 @export var recovery_seconds := 0.18
+@export var enemy_recovery_seconds := 0.5
 @export var movement_multiplier := 0.6
 @export var visual_rotation_offset := PI / 4.0
 @export_flags_2d_physics var target_mask := 68
@@ -27,6 +28,7 @@ func primary(context: ItemContext, state: Dictionary) -> ItemActionResult:
 		extension,
 		active_seconds,
 		recovery_seconds,
+		enemy_recovery_seconds,
 		target_mask,
 		visual_rotation_offset,
 		movement_multiplier
