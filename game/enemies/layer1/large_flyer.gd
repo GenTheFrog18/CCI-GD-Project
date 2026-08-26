@@ -211,8 +211,6 @@ func _process_investigate(position: Vector2, request: Dictionary, delta: float) 
 func _process_search(delta: float) -> void:
 	if _search_remaining <= 0.0:
 		_begin_poi_travel()
-	elif global_position.distance_to(_search_point) > attack_hit_radius:
-		_move_toward(_search_point, roam_speed, delta)
 	else:
 		_process_local(delta, State.SEARCH)
 
