@@ -34,7 +34,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="Portrait" type="TextureRect" parent="Content/Row" unique_id=1550535261]
-custom_minimum_size = Vector2(101, 72)
+custom_minimum_size = Vector2(95, 72)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
