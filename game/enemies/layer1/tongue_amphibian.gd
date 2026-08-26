@@ -47,6 +47,7 @@ var _roam_stuck_seconds := 0.0
 var _random := RandomNumberGenerator.new()
 var _knockback := Vector2.ZERO
 var _investigation_remaining := 0.0
+var _investigation_position := Vector2.ZERO
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
@@ -68,6 +69,7 @@ func _ready() -> void:
 	)
 	sound.sound_accepted.connect(func(event: SoundEvent, _direct: bool):
 		_investigation_remaining = 2.0
+		_investigation_position = event.position
 		$AwarenessIndicator.text = "?"
 		$AwarenessIndicator.show()
 		_move_toward(event.position)
@@ -93,6 +95,7 @@ func _physics_process(delta: float) -> void:
 	var player_interacting := _target != null or _investigation_remaining > 0.0
 	var loose := _nearest_loose_item() if state in [State.IDLE, State.MOVE] and not player_interacting else null
 	var chasing_player := _target != null and sight.current_target == _target
+	var investigating_sound := _target == null and _investigation_remaining > 0.0
 	var desired: Node2D = _target if chasing_player else loose if loose != null else _target
 	if not carried.is_empty():
 		state = State.RETREAT
@@ -103,6 +106,13 @@ func _physics_process(delta: float) -> void:
 			_perform_tongue(desired)
 			state = State.IDLE
 			_timer = cooldown_seconds
+	elif investigating_sound:
+		state = State.MOVE
+		if global_position.distance_to(_investigation_position) <= 8.0:
+			_investigation_remaining = 0.0
+			$AwarenessIndicator.hide()
+		else:
+			_move_toward(_investigation_position)
 	elif desired != null:
 		var distance := global_position.distance_to(desired.global_position)
 		if distance <= tongue_range and _timer <= 0.0 and _theft_cooldown <= 0.0:
