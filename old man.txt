@@ -1,0 +1,253 @@
+## Old Man — Interaksi Utama
+
+**Old Man:**
+Nah, nah. Lihat siapa yang akhirnya datang.
+
+*dialogue cut off for implementation later*
+
+**Pilihan:**\
+
+* Bicara\
+
+* Tutorial
+
+### Pilihan: Bicara
+
+**Elenara:**
+Aku tidak terlambat kok.
+
+**Old Man:**
+Aku tidak bilang terlambat. Aku bilang akhirnya datang. Itu berbeda.
+
+**Elenara:**
+Aku sudah sering turun sebelumnya.
+
+**Old Man:**
+Iya benar. Tapi hari ini kau turun sendirian.
+
+**Elenara:**
+Aku bisa mengurus diriku sendiri kok.
+
+**Old Man:**
+Aku tahu. Kalau tidak, aku tidak akan membiarkanmu membawa tas itu.
+
+**Old Man:**
+Aku sudah mencoba selama bertahun-tahun. Kau hanya terlalu mirip ibumu untuk mau mendengarkan.
+
+**Elenara:**
+Aku pasti akan kembali sebelum malam.
+
+**Old Man:**
+Oke ya, kalau kau masih belum kembali aku akan mengejarmu.
+
+**Elenara:**
+Kalau begitu aku harus cepat! Aku ingin melihat apakah ada sesuatu yang berbeda hari ini.
+
+**Old Man:**
+Aku sudah cukup lama menjadi Delver untuk tahu bahwa rencana biasanya berubah begitu seseorang menginjakkan kaki di Abyss.
+
+**Elenara:**
+Iya, iya, aku bakal kembali. Tapi kalau aku menemukan sesuatu yang menarik, aku boleh melihatnya sebentar, kan?
+
+**Old Man:**
+Sebentar saja.
+
+**Elenara:**
+Dan kalau sesuatu itu sangat menarik?
+
+**Old Man:**
+Dan kalau begitu kau tetap kembali.
+
+**Elenara:**
+Baik! Aku akan mengingatnya.
+
+**Old Man:**
+Bagus. Ternyata masih ada sedikit harapan.
+
+**Elenara:**
+Kau akan tetap di sini?
+
+**Old Man:**
+Seseorang harus menjaga gate itu. Dan memastikan kau tidak membawa pulang sesuatu yang mencoba memakan kita.
+
+**Elenara:**
+Kalau aku menemukan sesuatu yang belum pernah kita lihat, aku akan menunjukkannya padamu dulu!
+
+**Old Man:**
+Hm... Iya baiklah.
+
+**Elenara:**
+Kau terdengar khawatir.
+
+**Old Man:**
+Karena aku tahu kau akan menemukan sesuatu.
+
+**Elenara:**
+Bukankah itu bagus?
+
+**Old Man:**
+Itulah yang membuatku khawatir.
+
+### Pilihan: Tutorial
+
+**Old Man:**
+Baik. Apa yang ingin kau pelajari?
+
+**Pilihan:**
+
+* Getting Started
+* Item
+* Multitool dan Breakable Loot Spawner
+* Menyerang dan Melempar
+* Rope
+* Relic
+* Berat Barang
+* Perilaku Makhluk
+* Ascension Curse
+* Siklus Penyelaman
+
+### Tutorial: Getting Started
+
+**Old Man:**
+Bawa perlengkapan yang berguna, perhatikan sekelilingmu, dan rencanakan jalan pulang.
+
+**Old Man:**
+Gunakan relik yang kau temukan, hindari pertarungan yang tidak perlu, dan jangan membawa terlalu banyak barang.
+
+**Elenara:**
+Kedengarannya gampang.
+
+**Old Man:**
+Turun ke Abyss memang mudah. Kembali dengan selamat itu yang sulit.
+
+### Tutorial: Item
+
+**Old Man:**
+Pilih item dari tasmu untuk menggunakannya, bisa click and swap, atau drag and drop.
+
+**Old Man:**
+Gunakan item sebelum kau benar-benar membutuhkannya. Kau tidak bisa berpikir dengan benar saat panik.
+
+**Elenara:**
+Aku tidak pernah panik kok.
+
+**Old Man:**
+Oh iya. Bukan panik, hanya berteriak dengan sangat tenang.
+
+### Tutorial: Multitool dan Breakable Loot Spawner
+
+**Old Man:**
+Gunakan multitool pada batu seperti itu disebelah rumah.
+
+**Old Man:**
+Beberapa benda mungkin menyembunyikan relic atau item lain.
+
+### Tutorial: Menyerang dan Melempar
+
+**Old Man:**
+Kau bisa menyerang apapun dari jarak dekat atau melempar item dari jauh.
+
+**Old Man:**
+Namun, lebih baik lari daripada menghadapi. Jangan berharap kau bisa membunuh mereka.
+
+**Old Man:**
+Gunakan item untuk mengalihkan perhatian, menciptakan jarak, atau melarikan diri.
+
+**Elenara:**
+Jadi aku tidak harus melawan semuanya?
+
+**Old Man:**
+Justru sebaiknya tidak.
+
+### Tutorial: Rope
+
+**Old Man:**
+Beli rope dari shop dan pasang untuk menandai atau mengamankan jalur.
+
+**Old Man:**
+Jangan menunggu sampai tersesat atau terjebak.
+
+**Old Man:**
+Rope adalah jalanmu kembali, ingat itu.
+
+### Tutorial: Relic
+
+**Old Man:**
+Relik tidak selalu menjelaskan cara kerjanya.
+
+**Old Man:**
+Amati, gunakan, dan eksperimentasi lah dengan hati-hati.
+
+**Elenara:**
+Kalau tidak berhasil?
+
+**Old Man:**
+Simpan. Kadang-kadang kau baru memahami sebuah relic setelah menemukan kegunaannya.
+
+### Tutorial: Berat Barang
+
+**Old Man:**
+Semua barang memiliki berat.
+
+**Old Man:**
+Jika tasmu terlalu penuh, gerakanmu akan melambat.
+
+**Elenara:**
+Tapi kan semua hal ada gunanya.
+
+**Old Man:**
+Ya pilihlah benar-benar. Barang apapun tidak akan berguna jika kamu terjebak.
+
+### Tutorial: Perilaku Makhluk
+
+**Old Man:**
+Amati makhluk sebelum bertindak.
+
+**Old Man:**
+Sebagian akan menyerang saat melihatmu. Sebagian lain bereaksi terhadap suara, jarak, atau wilayahnya.
+
+**Old Man:**
+Perhatikan gerakannya, gunakan lingkungan, dan jangan malu untuk berlari.
+
+**Elenara:**
+Aku bisa menghindari mereka?
+
+**Old Man:**
+Menghindari pertarungan sering kali merupakan pilihan terbaik.
+
+### Tutorial: Ascension Curse
+
+**Old Man:**
+Semakin dalam kau pergi, semakin berbahaya perjalananmu kembali.
+
+**Old Man:**
+Rencanakan jalur pulang sebelum turun dan jangan menunggu sampai tubuhmu yang membuat keputusan.
+
+**Elenara:**
+Kalau sudah terkena Curse?
+
+**Old Man:**
+Gunakan Numbing Pill jika perlu.
+
+**Old Man:**
+Tapi ingat, hilangnya rasa sakit bukan berarti bahayanya hilang.
+
+### Tutorial: Siklus Penyelaman
+
+**Old Man:**
+Turun, temukan sesuatu, lalu kembali dengan selamat.
+
+**Old Man:**
+Setelah itu, jual barang yang tidak kau perlukan, pelajari relic yang kau temukan, dan bersiap untuk penyelaman berikutnya.
+
+**Elenara:**
+Kedengarannya sederhana.
+
+**Old Man:**
+Kedengarannya memang sederhana.
+
+**Elenara:**
+Baiklah, aku akan kembali dengan sesuatu yang menarik.
+
+**Old Man:**
+Pastikan kau masih hidup untuk menceritakannya.
