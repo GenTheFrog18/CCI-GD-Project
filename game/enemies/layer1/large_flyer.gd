@@ -144,11 +144,16 @@ func _process_request(delta: float) -> void:
 			_process_local(delta, State.COOLDOWN_PATROL)
 		elif _can_chase(player, marked):
 			_process_chase(player, delta)
+		else:
+			_process_background(delta)
 		return
 	if not request.is_empty():
 		_process_investigate(Vector2(request.get("target_position", global_position)), request, delta)
 		return
 	_target = null
+	_process_background(delta)
+
+func _process_background(delta: float) -> void:
 	match state:
 		State.SEARCH: _process_search(delta)
 		State.BLOCKER_POI:
