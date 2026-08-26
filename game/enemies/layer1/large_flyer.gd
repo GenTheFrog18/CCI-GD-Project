@@ -10,6 +10,7 @@ const SWOOP_ATTACK_FRAME := 7 # Frame 8 in the authored one-based sheet.
 enum State { ROAM, POI_PATROL, POI_IDLE, INVESTIGATE, CHASE, ATTACK_SETUP, DIVE, RECOVER, RECOVERY_TRAVEL, COOLDOWN_PATROL, SEARCH, BLOCKER_POI, DISABLED_FLIGHT }
 
 @export var persistent_id := "large_layer1_flyer"
+@export_range(1.0, 10000.0, 1.0) var max_health := 500.0
 @export var roam_speed := 65.0
 @export var chase_speed := 115.0
 @export var dive_speed := 250.0
@@ -86,6 +87,9 @@ var _search_after_recovery := false
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
+	support.max_health = max_health
+	support.health.max_health = max_health
+	support.health.health = max_health
 	_setup_visual()
 	_setup_surround_sight()
 	add_to_group(&"large_flyer")
