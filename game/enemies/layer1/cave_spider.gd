@@ -218,7 +218,7 @@ func _on_projectile_result(result: StringName, body: Node, projectile: Projectil
 	if projectile != _active_projectile: return
 	_active_projectile = null
 	if state != State.AWAIT_SHOT: return
-	if result == &"hit_actor" and (body == _target or body is PlayerController):
+	if result == &"hit_player":
 		_misses = 0; _target = body as PlayerController if body is PlayerController else _target; state = State.CHASE; _warning_timer = 0.0; return
 	_misses += 1
 	if _misses == 1:
@@ -345,10 +345,14 @@ func _on_lost(target: Node2D) -> void:
 func _on_sound(event: SoundEvent, _direct: bool) -> void:
 	if event.priority >= 8: _enter_flee(event.position)
 func _on_damaged(info: DamageInfo) -> void:
-	if info.source is PlayerController:
-		_target = info.source as PlayerController
+	var attacker := info.source as PlayerController
+	if attacker != null:
+		_target = attacker
+	if is_instance_valid(_target):
 		_last_known = _target.global_position
 		_enter_scatter()
+	else:
+		_clear_projectile(); _set_bite_hitbox(false); _enter_idle()
 func _set_bite_hitbox(active: bool) -> void:
 	bite_hitbox.set_deferred(&"monitoring", active); bite_shape.set_deferred(&"disabled", not active)
 func _update_facing() -> void:

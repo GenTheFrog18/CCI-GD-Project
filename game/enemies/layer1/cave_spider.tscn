@@ -107,6 +107,7 @@ projectile_spawn_height = 10.0
 roam_distance = 120.0
 surface_probe_distance = 12.0
 surface_probe_radius = 12.0
+normal_turn_speed = 2.0
 normal_change_epsilon_degrees = 2.0
 detach_grace_seconds = 0.25
 

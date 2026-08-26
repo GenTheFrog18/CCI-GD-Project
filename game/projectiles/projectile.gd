@@ -43,7 +43,13 @@ func _handle_collision(body: Node) -> void:
 	impact.force = velocity.normalized() * impact.mass * minf(velocity.length(), 300.0)
 	impact.apply_to(body)
 	if _hit_ids.size() >= impact.max_hits:
-		var result := &"hit_terrain" if body is StaticBody2D or body is TileMapLayer else &"hit_actor"
+		var result: StringName
+		if body is StaticBody2D or body is TileMapLayer:
+			result = &"hit_terrain"
+		elif body is PlayerController:
+			result = &"hit_player"
+		else:
+			result = &"hit_other_actor"
 		_resolve_terminal(result, body)
 
 func cancel() -> void:
