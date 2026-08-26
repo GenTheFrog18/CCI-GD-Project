@@ -1388,7 +1388,7 @@ position = Vector2(722, 312)
 [node name="DarknessRegions" type="Node2D" parent="mapping" unique_id=1032772556]
 
 [node name="DepthOneCave" type="Polygon2D" parent="mapping/DarknessRegions" unique_id=405292361]
-position = Vector2(1215, -321)
+position = Vector2(1227, -330)
 scale = Vector2(1.0346515, 1.3381217)
 polygon = PackedVector2Array(48.32544, 378.142, -2.8995361, 446.89508, -172.03857, 449.88434, -144.00977, 325.82986)
 script = ExtResource("4_mt4mp")
@@ -1411,9 +1411,6 @@ tile_set = SubResource("TileSet_l7r7e")
 position = Vector2(1149, 213)
 persistent_id = &"teste1"
 entries = Array[ExtResource("7_6wnfj")]([SubResource("Resource_dw1l8")])
-
-[node name="TongueAmphibian" parent="mapping/terrain" unique_id=2067116479 instance=ExtResource("9_queam")]
-position = Vector2(1259, 312)
 
 [node name="EnemyPlacer" parent="." unique_id=204440796 instance=ExtResource("6_3xomg")]
 position = Vector2(1254, 313)
