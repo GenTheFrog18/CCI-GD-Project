@@ -11,6 +11,7 @@ extends Node
 @export var interrupt_resistance := 0.0
 @export var electric_stun_duration_multiplier := 1.0
 @export var detector_suppression_duration_multiplier := 1.0
+@export var hit_flash_duration := 0.08
 
 var health: HealthComponent
 var status: StatusController
@@ -141,7 +142,7 @@ func restore_state(data: Dictionary) -> bool:
 	return true
 
 func _on_damaged(_info: DamageInfo) -> void:
-	hit_flash.play(1, 0.08)
+	hit_flash.play(1, hit_flash_duration)
 
 func _on_status_damage(amount: float) -> void:
 	var info := DamageInfo.new(amount)

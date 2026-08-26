@@ -12,6 +12,19 @@ enum State { ROAM, CHASE, ATTACK_SETUP, DIVE, RECOVER, SEARCH, DISABLED_FLIGHT }
 @export var poi_interval := 15.0
 @export var poi_recency_weight := 1.0
 @export var poi_distance_weight := 1.0
+@export_range(1.0, 1000.0, 1.0) var poi_patrol_radius := 160.0
+@export var poi_inner_flight_radius := 130.0
+@export var local_destination_refresh_min := 1.5
+@export var local_destination_refresh_max := 2.5
+@export var local_destination_min_distance := 50.0
+@export var local_destination_max_distance := 120.0
+@export_range(0.0, 180.0, 1.0) var local_direction_variance_degrees := 60.0
+@export_range(0.0, 1.0, 0.01) var local_steering_strength := 0.04
+@export_range(0.0, 1.0, 0.01) var local_idle_chance := 1.0 / 6.0
+@export var local_idle_min_seconds := 1.0
+@export var local_idle_max_seconds := 2.0
+@export_range(1, 32, 1) var max_destination_attempts := 10
+@export_flags_2d_physics var flight_blocking_collision_mask := 513
 @export var telegraph_seconds := 0.9
 @export var dive_seconds := 1.5
 @export var attack_damage := 75.0
@@ -45,6 +58,11 @@ var _search_remaining := 0.0
 var _dive_hit := false
 var _poi_last_used: Dictionary = {}
 var _requests: Array[Dictionary] = []
+var _patrol_center := Vector2.ZERO
+var _patrol_destination := Vector2.ZERO
+var _patrol_timer := 0.0
+var _patrol_hover := false
+var _poi_patrolling := false
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
@@ -127,14 +145,37 @@ func _process_committed_state(delta: float) -> bool:
 func _process_roaming(delta: float) -> void:
 	if _search_remaining > 0.0:
 		state = State.SEARCH
-		velocity = global_position.direction_to(_search_point) * roam_speed * _flight_speed_multiplier()
-	else:
-		state = State.ROAM
-		_poi_time -= delta
-		if _poi_time <= 0.0 or not is_instance_valid(_poi):
-			_choose_poi()
-		var destination := _poi.global_position if is_instance_valid(_poi) else _origin
-		velocity = global_position.direction_to(destination) * roam_speed * _flight_speed_multiplier()
+		_poi_patrolling = false
+		var search_velocity := global_position.direction_to(_search_point) * roam_speed * _flight_speed_multiplier()
+		velocity = velocity.lerp(search_velocity, _steering_alpha(delta))
+		move_and_slide()
+		sight.facing = velocity.normalized() if not velocity.is_zero_approx() else sight.facing
+		return
+
+	state = State.ROAM
+	_poi_time -= delta
+	_patrol_timer -= delta
+	if _poi_time <= 0.0 or not is_instance_valid(_poi):
+		_choose_poi()
+	var destination_center := _poi.global_position if is_instance_valid(_poi) else _origin
+	if not _poi_patrolling:
+		if global_position.distance_to(destination_center) <= attack_hit_radius:
+			_patrol_center = destination_center
+			_poi_patrolling = true
+			_choose_local_destination()
+		else:
+			var poi_velocity := global_position.direction_to(destination_center) * roam_speed * _flight_speed_multiplier()
+			velocity = velocity.lerp(poi_velocity, _steering_alpha(delta))
+			move_and_slide()
+			sight.facing = velocity.normalized() if not velocity.is_zero_approx() else sight.facing
+			return
+	if _patrol_hover:
+		velocity = velocity.lerp(Vector2.ZERO, _steering_alpha(delta))
+	elif _patrol_timer <= 0.0 or global_position.distance_to(_patrol_destination) <= 12.0:
+		_choose_local_destination()
+	if not _patrol_hover:
+		var patrol_velocity := global_position.direction_to(_patrol_destination) * roam_speed * _flight_speed_multiplier()
+		velocity = velocity.lerp(patrol_velocity, _steering_alpha(delta))
 	move_and_slide()
 	sight.facing = velocity.normalized() if not velocity.is_zero_approx() else sight.facing
 
@@ -223,6 +264,7 @@ func receive_agitation(data: Dictionary = {}) -> void:
 func _begin_search(position: Vector2) -> void:
 	_search_point = position
 	_search_remaining = search_seconds
+	_poi_patrolling = false
 	state = State.SEARCH
 
 func _choose_poi() -> void:
@@ -241,8 +283,60 @@ func _choose_poi() -> void:
 			best = point
 	_poi = best
 	_poi_time = poi_interval
+	_poi_patrolling = false
 	if _poi != null:
 		_poi_last_used[_poi.get_instance_id()] = now
+
+func _choose_local_destination() -> void:
+	_patrol_hover = false
+	for _attempt in max_destination_attempts:
+		var candidate := _generate_local_candidate()
+		if not _valid_local_candidate(candidate):
+			continue
+		_patrol_destination = candidate
+		if randf() < local_idle_chance:
+			_patrol_hover = true
+			_patrol_timer = randf_range(local_idle_min_seconds, local_idle_max_seconds)
+		else:
+			_patrol_timer = randf_range(local_destination_refresh_min, local_destination_refresh_max)
+		return
+	var center := _patrol_center
+	if _is_destination_path_clear(center):
+		_patrol_destination = center
+		_patrol_timer = 0.25
+		return
+	_patrol_destination = global_position
+	_patrol_hover = true
+	_patrol_timer = 0.25
+
+func _generate_local_candidate() -> Vector2:
+	var forward := velocity.normalized()
+	if velocity.length_squared() < 1.0:
+		forward = Vector2.RIGHT.rotated(randf_range(0.0, TAU))
+	var angle := deg_to_rad(randf_range(-local_direction_variance_degrees, local_direction_variance_degrees))
+	var distance := randf_range(local_destination_min_distance, local_destination_max_distance)
+	return global_position + forward.rotated(angle) * distance
+
+func _valid_local_candidate(candidate: Vector2) -> bool:
+	var maximum_radius := minf(poi_patrol_radius, poi_inner_flight_radius)
+	if candidate.distance_to(_patrol_center) > maximum_radius:
+		return false
+	if candidate.distance_to(global_position) < local_destination_min_distance:
+		return false
+	var direction := global_position.direction_to(candidate)
+	if velocity.length_squared() >= 1.0 and velocity.normalized().dot(direction) < -0.25:
+		return false
+	return _is_destination_path_clear(candidate)
+
+func _is_destination_path_clear(candidate: Vector2) -> bool:
+	if candidate.is_equal_approx(global_position):
+		return true
+	var query := PhysicsRayQueryParameters2D.create(global_position, candidate, flight_blocking_collision_mask)
+	query.exclude = [get_rid()]
+	return get_world_2d().direct_space_state.intersect_ray(query).is_empty()
+
+func _steering_alpha(delta: float) -> float:
+	return clampf(local_steering_strength * delta * 60.0, 0.0, 1.0)
 
 func _upsert_request(request_id: StringName, position: Vector2, target: Node2D, priority: float, expires_at: float, requires_sight: bool, source: Node = null) -> void:
 	var now := _clock()
@@ -354,6 +448,11 @@ func _reset_transient_ai() -> void:
 	_cooldown_remaining = 0.0
 	_search_point = Vector2.ZERO
 	_search_remaining = 0.0
+	_patrol_center = Vector2.ZERO
+	_patrol_destination = Vector2.ZERO
+	_patrol_timer = 0.0
+	_patrol_hover = false
+	_poi_patrolling = false
 	_requests.clear()
 	_choose_poi()
 
