@@ -75,6 +75,7 @@ var _bite_hit := false
 var _active_projectile: Projectile
 var _last_facing := Vector2.RIGHT
 var _scatter_direction := 1.0
+var _must_reach_firing_band := false
 var _random := RandomNumberGenerator.new()
 
 func _ready() -> void:
@@ -199,6 +200,9 @@ func _flee(delta: float) -> void:
 
 func _begin_shot() -> void:
 	if not _can_see_target(): _enter_investigate(); return
+	if _must_reach_firing_band and global_position.distance_to(_target.global_position) < firing_distance_min:
+		_enter_scatter(); return
+	_must_reach_firing_band = false
 	state = State.SHOT_TELEGRAPH
 	_aim = sight.last_ray_end; _last_known = _aim; _timer = telegraph_seconds
 	_target.warn_attack(self, telegraph_seconds)
@@ -249,7 +253,7 @@ func _apply_bite(body: Node) -> void:
 func _enter_scatter() -> void:
 	_clear_projectile(); _set_bite_hitbox(false)
 	if not is_instance_valid(_target): _enter_investigate(); return
-	state = State.SCATTER; _set_scatter_destination()
+	_must_reach_firing_band = true; state = State.SCATTER; _set_scatter_destination()
 func _set_scatter_destination() -> void:
 	var away := _target.global_position.direction_to(global_position)
 	if away.is_zero_approx(): away = _last_facing
@@ -272,7 +276,7 @@ func _enter_idle() -> void:
 func _interrupt() -> void:
 	_clear_target(); _clear_projectile(); _set_bite_hitbox(false); state = State.IDLE_PAUSE; _timer = 0.0
 func _clear_target() -> void:
-	_target = null; _misses = 0; _investigating = false; _warning_timer = 0.0
+	_target = null; _misses = 0; _investigating = false; _warning_timer = 0.0; _must_reach_firing_band = false
 func _clear_projectile() -> void:
 	var projectile := _active_projectile; _active_projectile = null
 	if is_instance_valid(projectile): projectile.cancel()
