@@ -1,55 +1,63 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://qdj0vfkmcgi3"]
 
-[ext_resource type="Script" path="res://ui/dialogue_box.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/shopkeeper/bubble-speech.png" id="2_bubble"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/main_menu/button-long.png" id="3_button"]
-[ext_resource type="AudioStream" path="res://assets/audio/dialogue/dialogue_blip.wav" id="4_typing"]
+[ext_resource type="Script" uid="uid://dwwrwx4endd2i" path="res://ui/dialogue_box.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dosg8hto07l7y" path="res://assets/art/ui/shopkeeper/bubble-speech.png" id="2_bubble"]
+[ext_resource type="Texture2D" uid="uid://d1j21e86b6cdw" path="res://assets/art/ui/main_menu/button-long.png" id="3_button"]
+[ext_resource type="AudioStream" uid="uid://bv6ats2u2qtks" path="res://assets/audio/dialogue/dialogue_blip.wav" id="4_typing"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bubble"]
 atlas = ExtResource("2_bubble")
 region = Rect2(0, 0, 128, 64)
 
-[node name="DialogueBox" type="PanelContainer"]
+[node name="DialogueBox" type="PanelContainer" unique_id=1869171244]
 custom_minimum_size = Vector2(520, 104)
 script = ExtResource("1_script")
 choice_button_texture = ExtResource("3_button")
 
-[node name="Backdrop" type="TextureRect" parent="."]
+[node name="Backdrop" type="TextureRect" parent="." unique_id=887845247]
+visible = false
 layout_mode = 2
 mouse_filter = 2
 texture = SubResource("AtlasTexture_bubble")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Row" type="HBoxContainer" parent="."]
+[node name="Content" type="MarginContainer" parent="." unique_id=2086596820]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="Row" type="HBoxContainer" parent="Content" unique_id=1685019055]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Portrait" type="TextureRect" parent="Row"]
-custom_minimum_size = Vector2(72, 72)
+[node name="Portrait" type="TextureRect" parent="Content/Row" unique_id=1550535261]
+custom_minimum_size = Vector2(101, 72)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Column" type="VBoxContainer" parent="Row"]
+[node name="Column" type="VBoxContainer" parent="Content/Row" unique_id=1926194234]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Speaker" type="Label" parent="Row/Column"]
+[node name="Speaker" type="Label" parent="Content/Row/Column" unique_id=513770727]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 
-[node name="Text" type="Label" parent="Row/Column"]
+[node name="Text" type="Label" parent="Content/Row/Column" unique_id=2011860079]
 layout_mode = 2
 autowrap_mode = 3
 
-[node name="Choices" type="VBoxContainer" parent="Row/Column"]
+[node name="Choices" type="VBoxContainer" parent="Content/Row/Column" unique_id=731240834]
 layout_mode = 2
 
-[node name="Continue" type="Label" parent="Row/Column"]
+[node name="Continue" type="Label" parent="Content/Row/Column" unique_id=1738252982]
 layout_mode = 2
 text = "[E]"
 horizontal_alignment = 2
 
-[node name="TypingSfx" type="AudioStreamPlayer" parent="."]
+[node name="TypingSfx" type="AudioStreamPlayer" parent="." unique_id=781426871]
 stream = ExtResource("4_typing")
