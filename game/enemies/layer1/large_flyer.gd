@@ -48,6 +48,7 @@ var _requests: Array[Dictionary] = []
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
+	add_to_group(&"large_flyer")
 	_origin = global_position
 	sight.target_seen.connect(_on_seen)
 	sight.target_lost.connect(_on_lost)
@@ -154,7 +155,7 @@ func _recover() -> void:
 func _refresh_tracking_mark() -> void:
 	var player := get_tree().get_first_node_in_group(&"player") as PlayerController
 	if player != null and player.status.has_status(&"tracking_mark"):
-		_upsert_request(&"tracking_mark", player.global_position, player, tracking_mark_priority, INF, false)
+		_upsert_request(&"tracking_mark", player.global_position, player, tracking_mark_priority, INF, false, player)
 	else:
 		_remove_request(&"tracking_mark")
 
@@ -168,11 +169,11 @@ func _refresh_sight_request(delta: float) -> void:
 		return
 	_sight_time += delta
 	_search_point = target.global_position
-	_upsert_request(&"sight", target.global_position, target, sight_priority, _clock() + sight_request_seconds, true)
+	_upsert_request(&"sight", target.global_position, target, sight_priority, _clock() + sight_request_seconds, true, target)
 
 func _on_seen(target: Node2D, _position: Vector2) -> void:
 	if target is PlayerController:
-		_upsert_request(&"sight", target.global_position, target, sight_priority, _clock() + sight_request_seconds, true)
+		_upsert_request(&"sight", target.global_position, target, sight_priority, _clock() + sight_request_seconds, true, target)
 
 func _on_lost(target: Node2D) -> void:
 	if target is PlayerController:
@@ -192,7 +193,8 @@ func _on_sound(event: SoundEvent, _direct: bool) -> void:
 		null,
 		priority,
 		_clock() + sound_request_seconds,
-		false
+		false,
+		event.source
 	)
 
 func _sound_priority(event: SoundEvent) -> float:
@@ -214,7 +216,8 @@ func receive_agitation(data: Dictionary = {}) -> void:
 		null,
 		float(data.get("priority", distraction_priority)),
 		_clock() + float(data.get("duration", sound_request_seconds)),
-		false
+		false,
+		data.get("source") as Node
 	)
 
 func _begin_search(position: Vector2) -> void:
@@ -241,23 +244,28 @@ func _choose_poi() -> void:
 	if _poi != null:
 		_poi_last_used[_poi.get_instance_id()] = now
 
-func _upsert_request(request_id: StringName, position: Vector2, target: Node2D, priority: float, expires_at: float, requires_sight: bool) -> void:
+func _upsert_request(request_id: StringName, position: Vector2, target: Node2D, priority: float, expires_at: float, requires_sight: bool, source: Node = null) -> void:
 	var now := _clock()
 	for request in _requests:
 		if StringName(request.get("request_id", "")) != request_id:
 			continue
-		request.target_position = position
-		request.target_actor = target
-		request.base_priority = priority
-		request.last_updated_at = now
-		request.expires_at = expires_at
-		request.requires_sight = requires_sight
+		request["source"] = source
+		request["source_id"] = source.get_instance_id() if source != null else 0
+		request["target_position"] = position
+		request["target_actor"] = target
+		request["target_id"] = target.get_instance_id() if target != null else 0
+		request["base_priority"] = priority
+		request["last_updated_at"] = now
+		request["expires_at"] = expires_at
+		request["requires_sight"] = requires_sight
 		return
 	_requests.append({
 		"request_id": request_id,
-		"source": null,
+		"source": source,
+		"source_id": source.get_instance_id() if source != null else 0,
 		"target_position": position,
 		"target_actor": target,
+		"target_id": target.get_instance_id() if target != null else 0,
 		"base_priority": priority,
 		"created_at": now,
 		"last_updated_at": now,
@@ -284,8 +292,14 @@ func _select_request() -> Dictionary:
 func _request_valid(request: Dictionary, now: float) -> bool:
 	if float(request.get("expires_at", now)) < now:
 		return false
+	var source_id := int(request.get("source_id", 0))
+	if source_id > 0 and not is_instance_valid(instance_from_id(source_id)):
+		return false
+	var target_id := int(request.get("target_id", 0))
+	if target_id > 0 and not is_instance_valid(instance_from_id(target_id)):
+		return false
 	var target := request.get("target_actor") as Node2D
-	if target != null and (not is_instance_valid(target) or not target.is_inside_tree()):
+	if target != null and not target.is_inside_tree():
 		return false
 	if target != null and target.has_method("is_alive") and not target.is_alive():
 		return false
@@ -316,6 +330,12 @@ func apply_force(_force: Vector2) -> void:
 
 func apply_status(id: StringName, data: Dictionary = {}) -> bool:
 	return support.apply_status(id, data)
+
+func interrupt_action(_reason: StringName) -> bool:
+	if state not in [State.ATTACK_SETUP, State.DIVE]:
+		return false
+	_recover()
+	return true
 
 func capture_state() -> Dictionary:
 	return support.capture_state()

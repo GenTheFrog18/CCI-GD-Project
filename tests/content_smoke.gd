@@ -207,9 +207,16 @@ func _test_layer2_enemies() -> void:
 	_check((saved.get("members", {}) as Dictionary).size() == flock.starting_member_count and flock.is_in_group(&"persistent_objects") and flock.process_mode == Node.PROCESS_MODE_DISABLED, "Sky Hunter flock owns stable inactive members")
 	flock.activate_near(Vector2(1900, 400))
 	_check(flock.process_mode == Node.PROCESS_MODE_INHERIT and flock.global_position.x == 1920.0, "flock activation selects the current route")
+	var flyer_probe := Node2D.new()
+	flyer_probe.add_to_group(&"large_flyer")
+	add_child(flyer_probe)
+	var hunter: SkyHunter = flock._living_members()[0] as SkyHunter
+	flyer_probe.global_position = hunter.global_position - Vector2.RIGHT * 20.0
+	_check(hunter._separation_velocity().x > 0.0, "Sky Hunter avoids the Large Flyer")
 	if had_flock_flag: GameSession.progression_flags["layer_2_sky_hunter_active"] = old_flock_flag
 	else: GameSession.progression_flags.erase("layer_2_sky_hunter_active")
 
+	flyer_probe.free()
 	flock.free()
 	bulwark.free()
 	attacker.free()
@@ -437,13 +444,20 @@ func _test_flyer_transfer() -> void:
 	SaveManager.restore_registered_objects(&"layer_2")
 	var flyer := root.get_child(0) as LargeLayer1Flyer
 	_check(flyer != null and flyer.global_position == Vector2(10, 20) and flyer.support.health.health == 321.0, "transferred flyer restores health and position")
-	_check(flyer != null and flyer.support.status.has_status(&"driftseed") and flyer.state == LargeLayer1Flyer.State.ROAM and flyer._target == null and flyer._requests.is_empty(), "transferred flyer keeps status but resets transient AI")
+	_check(flyer != null and flyer.support.status.has_status(&"driftseed") and flyer.state == LargeLayer1Flyer.State.ROAM and flyer._target == null and flyer._requests.is_empty() and flyer.is_in_group(&"large_flyer"), "transferred flyer keeps status but resets transient AI")
 	if flyer != null:
 		flyer._upsert_request(&"ordinary", Vector2.ZERO, null, 20.0, INF, false)
 		flyer._upsert_request(&"snail", Vector2.ZERO, null, 50.0, INF, false)
 		_check(StringName(flyer._select_request().get("request_id", "")) == &"snail", "flyer selects strongest target request")
 		flyer._remove_request(&"snail")
 		_check(StringName(flyer._select_request().get("request_id", "")) == &"ordinary", "flyer falls back to valid lower-priority request")
+		var stale_source := Node2D.new()
+		root.add_child(stale_source)
+		flyer._upsert_request(&"stale", Vector2.ZERO, null, 90.0, INF, false, stale_source)
+		stale_source.free()
+		_check(StringName(flyer._select_request().get("request_id", "")) == &"ordinary", "flyer removes requests from freed sources")
+		flyer.state = LargeLayer1Flyer.State.ATTACK_SETUP
+		_check(flyer.interrupt_action(&"electric") and flyer.state == LargeLayer1Flyer.State.RECOVER, "Bolt Shock interrupts flyer attacks")
 	root.free()
 	SaveManager.loaded_persistent_state = old_state
 	SaveManager.destroyed_ids = old_destroyed

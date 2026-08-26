@@ -1,6 +1,9 @@
 class_name WorldDebugDraw
 extends Node2D
 
+const RANGE_COLOR := Color(0.95, 0.35, 0.9, 0.8)
+const RANGE_FILL := Color(0.95, 0.35, 0.9, 0.08)
+
 var world_layer: WorldLayer
 var enabled := false
 
@@ -8,6 +11,10 @@ func refresh(layer: WorldLayer, show: bool) -> void:
 	world_layer = layer
 	enabled = show
 	queue_redraw()
+
+func _process(_delta: float) -> void:
+	if enabled:
+		queue_redraw()
 
 func _draw() -> void:
 	if not enabled or world_layer == null:
@@ -21,3 +28,89 @@ func _draw() -> void:
 		draw_rect(bounds, color, false, 2.0)
 		draw_rect(Rect2(section.global_position + section.entry_clearance.position, section.entry_clearance.size), Color.CYAN, false, 2.0)
 		draw_rect(Rect2(section.global_position + section.exit_clearance.position, section.exit_clearance.size), Color.CYAN, false, 2.0)
+	_draw_enemy_ranges()
+	_draw_enemy_placer_ranges()
+
+func _draw_enemy_ranges() -> void:
+	for node in get_tree().get_nodes_in_group(&"effect_receivers"):
+		if not node is Node2D or node.is_in_group(&"player"):
+			continue
+		var actor := node as Node2D
+		_draw_range_for_actor(actor, _actor_range_center(actor))
+
+func _draw_enemy_placer_ranges() -> void:
+	for slot in world_layer.get_slots():
+		var section := world_layer.instantiated_sections.get(String(slot.slot_id)) as WorldSection
+		if section == null:
+			continue
+		for placer in world_layer._collect_placers(section):
+			if not _is_enemy_placer(placer):
+				continue
+			var centers := _placer_centers(placer)
+			for entry in placer.entries:
+				if entry == null or entry.scene == null or ContentCatalog.get_enemy(entry.content_id) == null:
+					continue
+				var preview := entry.scene.instantiate() as Node2D
+				if preview == null:
+					continue
+				for center in centers:
+					_draw_range_for_actor(preview, center)
+				preview.free()
+
+func _is_enemy_placer(placer: DeterministicPlacer) -> bool:
+	if placer is BirdNestPlacer:
+		return true
+	for entry in placer.entries:
+		if entry != null and ContentCatalog.get_enemy(entry.content_id) != null:
+			return true
+	return false
+
+func _placer_centers(placer: DeterministicPlacer) -> Array[Vector2]:
+	var centers: Array[Vector2] = []
+	for child in placer.get_children():
+		if child is Marker2D:
+			centers.append((child as Marker2D).global_position)
+	if centers.is_empty():
+		centers.append(placer.global_position)
+	return centers
+
+func _draw_range_for_actor(actor: Node2D, center: Vector2) -> void:
+	var bounds: Variant = _property_value(actor, &"patrol_bounds")
+	if bounds is Rect2 and (bounds as Rect2).size != Vector2.ZERO:
+		var local_center := to_local(center)
+		draw_set_transform(local_center, actor.global_rotation, Vector2.ONE)
+		draw_rect(bounds, RANGE_FILL, true)
+		draw_rect(bounds, RANGE_COLOR, false, 2.0)
+		draw_string(ThemeDB.fallback_font, bounds.position + Vector2(4.0, 14.0), "patrol %.0fx%.0f" % [bounds.size.x, bounds.size.y], HORIZONTAL_ALIGNMENT_LEFT, -1.0, 11, RANGE_COLOR)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		return
+	var radius_property := &""
+	for property_name in [&"roam_distance", &"leash_distance", &"patrol_radius", &"patrol_distance"]:
+		if _has_property(actor, property_name):
+			radius_property = property_name
+			break
+	if radius_property.is_empty():
+		return
+	var radius := maxf(0.0, float(_property_value(actor, radius_property)))
+	if radius <= 0.0:
+		return
+	var local_center := to_local(center)
+	draw_circle(local_center, radius, RANGE_FILL)
+	draw_arc(local_center, radius, 0.0, TAU, 48, RANGE_COLOR, 2.0)
+	draw_string(ThemeDB.fallback_font, local_center + Vector2(4.0, -radius - 4.0), "%s %.0f" % [radius_property, radius], HORIZONTAL_ALIGNMENT_LEFT, -1.0, 11, RANGE_COLOR)
+
+func _actor_range_center(actor: Node2D) -> Vector2:
+	for property_name in [&"_nest", &"_origin"]:
+		var value: Variant = _property_value(actor, property_name)
+		if value is Vector2:
+			return value
+	return actor.global_position
+
+func _has_property(object: Object, property_name: StringName) -> bool:
+	for property in object.get_property_list():
+		if StringName(property.name) == property_name:
+			return true
+	return false
+
+func _property_value(object: Object, property_name: StringName) -> Variant:
+	return object.get(property_name) if _has_property(object, property_name) else null

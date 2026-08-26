@@ -13,6 +13,7 @@ enum State { ROAM, CHASE, TELEGRAPH, ATTACK, RECOVER }
 @export var attack_force := 160.0
 @export var recovery_duration := 1.5
 @export var preferred_member_separation := 44.0
+@export var preferred_flyer_separation := 180.0
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sight: SightSensor = $SightSensor
@@ -100,6 +101,12 @@ func _separation_velocity() -> Vector2:
 			var distance := global_position.distance_to(sibling.global_position)
 			if distance > 0.0 and distance < preferred_member_separation:
 				result += sibling.global_position.direction_to(global_position) * (preferred_member_separation - distance)
+	for flyer in get_tree().get_nodes_in_group(&"large_flyer"):
+		if not flyer is Node2D or not is_instance_valid(flyer) or not flyer.is_inside_tree():
+			continue
+		var distance := global_position.distance_to(flyer.global_position)
+		if distance > 0.0 and distance < preferred_flyer_separation:
+			result += flyer.global_position.direction_to(global_position) * (preferred_flyer_separation - distance)
 	return result
 
 func _try_hit() -> void:

@@ -7,9 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://d0xljos4bjkc8" path="res://assets/art/world/ground/Tiles1.png" id="5_lc0jv"]
 [ext_resource type="PackedScene" uid="uid://c2bqm1i7s12tp" path="res://game/world/placers/enemy_placer.tscn" id="6_3xomg"]
 [ext_resource type="Script" uid="uid://dmbspp22qtl7r" path="res://game/world/world_spawn_entry.gd" id="7_6wnfj"]
-[ext_resource type="PackedScene" uid="uid://u1b4ki8jlewf" path="res://game/enemies/layer1/lantern_snail.tscn" id="8_mt4mp"]
+[ext_resource type="PackedScene" uid="uid://dj0wpiej4v4xk" path="res://game/enemies/layer1/knockback_bird.tscn" id="8_lc0jv"]
 [ext_resource type="PackedScene" uid="uid://b4lo51iq316d1" path="res://game/enemies/layer1/tongue_amphibian.tscn" id="9_queam"]
-[ext_resource type="PackedScene" path="res://game/world/placers/large_flyer_placer.tscn" id="10_lc0jv"]
 [ext_resource type="PackedScene" path="res://game/world/large_flyer_poi.tscn" id="11_3xomg"]
 
 [sub_resource type="RectangleShape2D" id="GroundShape"]
@@ -1336,8 +1335,8 @@ sources/0 = SubResource("TileSetAtlasSource_5s57x")
 
 [sub_resource type="Resource" id="Resource_dw1l8"]
 script = ExtResource("7_6wnfj")
-content_id = &"lantern_snail"
-scene = ExtResource("8_mt4mp")
+content_id = &"knockback_bird"
+scene = ExtResource("8_lc0jv")
 metadata/_custom_type_script = "uid://dmbspp22qtl7r"
 
 [sub_resource type="Resource" id="Resource_txaoi"]
@@ -1410,7 +1409,7 @@ tile_map_data = PackedByteArray("AAA2AA8AAAAAAAEAAAA2AA4AAAACAAAAAAA3AA8AAAABAAE
 tile_set = SubResource("TileSet_l7r7e")
 
 [node name="EnemyPlacer" parent="mapping/terrain" unique_id=1751430608 instance=ExtResource("6_3xomg")]
-position = Vector2(1140, 181)
+position = Vector2(783, 214)
 persistent_id = &"teste1"
 entries = Array[ExtResource("7_6wnfj")]([SubResource("Resource_dw1l8")])
 
@@ -1418,10 +1417,6 @@ entries = Array[ExtResource("7_6wnfj")]([SubResource("Resource_dw1l8")])
 position = Vector2(1137, 214)
 persistent_id = &"test2"
 entries = Array[ExtResource("7_6wnfj")]([SubResource("Resource_txaoi")])
-
-[node name="LargeFlyerPlacer" parent="." unique_id=1092054220 instance=ExtResource("10_lc0jv")]
-position = Vector2(851, 51)
-persistent_id = &"testlarge1"
 
 [node name="LargeFlyerPOI" parent="." unique_id=145882850 instance=ExtResource("11_3xomg")]
 position = Vector2(744, 105)
