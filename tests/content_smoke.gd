@@ -26,6 +26,7 @@ func _ready() -> void:
 	_test_layer2_quest()
 	_test_effects_and_curse()
 	_test_player_item_regressions()
+	await _test_hit_flash()
 	await _test_item_impacts()
 	await _test_layer2_relics()
 	_test_flyer_transfer()
@@ -346,6 +347,22 @@ func _test_player_item_regressions() -> void:
 	loose_item.free()
 	resin_area.free()
 	world.free()
+
+func _test_hit_flash() -> void:
+	var actor := Node2D.new()
+	var visual := Sprite2D.new()
+	var original := CanvasItemMaterial.new()
+	visual.material = original
+	actor.add_child(visual)
+	add_child(actor)
+	var flash := HitFlash.new()
+	actor.add_child(flash)
+	_check(flash.setup(actor), "Hit flash finds actor visual")
+	flash.play(2)
+	_check(visual.material is ShaderMaterial, "Hit flash turns visual white immediately")
+	await get_tree().create_timer(0.25).timeout
+	_check(visual.material == original, "Hit flash restores original material")
+	actor.free()
 
 func _test_item_impacts() -> void:
 	var probe := ReceiverProbe.new()

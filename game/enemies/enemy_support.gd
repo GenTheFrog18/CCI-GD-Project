@@ -15,6 +15,7 @@ extends Node
 var health: HealthComponent
 var status: StatusController
 var effect_label: Label
+var hit_flash: HitFlash
 var _flight_fall_speed := 0.0
 
 func _ready() -> void:
@@ -28,6 +29,9 @@ func _ready() -> void:
 	status = StatusController.new()
 	add_child(status)
 	var actor := get_parent()
+	hit_flash = HitFlash.new()
+	add_child(hit_flash)
+	hit_flash.setup(actor)
 	if actor != null:
 		if actor is Node2D:
 			effect_label = Label.new()
@@ -136,13 +140,8 @@ func restore_state(data: Dictionary) -> bool:
 		actor.global_position = Vector2(float(position_data[0]), float(position_data[1]))
 	return true
 
-func _on_damaged(info: DamageInfo) -> void:
-	if not info.causes_hit_reaction:
-		return
-	var actor := get_parent() as CanvasItem
-	if actor != null:
-		actor.modulate = Color(1.0, 0.55, 0.55, 1.0)
-		actor.create_tween().tween_property(actor, "modulate", Color(1, 1, 1, 1), 0.12)
+func _on_damaged(_info: DamageInfo) -> void:
+	hit_flash.play(1)
 
 func _on_status_damage(amount: float) -> void:
 	var info := DamageInfo.new(amount)

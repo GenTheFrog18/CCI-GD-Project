@@ -65,6 +65,7 @@ var _combat_safe_zone_count := 0
 var _thorn_spike_iframe_until := 0
 var _hushcap_area_count := 0
 var _dazzled_remaining := 0.0
+var _hit_flash: HitFlash
 
 @onready var hushcap_overlay: HushcapOverlay = $HushcapOverlay
 func _ready() -> void:
@@ -75,6 +76,10 @@ func _ready() -> void:
 	status.tick_damage_requested.connect(_on_status_tick)
 	status.tick_healing_requested.connect(heal)
 	status.status_changed.connect(_on_status_changed)
+	_hit_flash = HitFlash.new()
+	add_child(_hit_flash)
+	_hit_flash.setup(self)
+	health.damaged.connect(func(_info: DamageInfo): _hit_flash.play(2))
 	curse_tracker = CurseTracker.new()
 	add_child(curse_tracker)
 	curse_tracker.setup(self)
