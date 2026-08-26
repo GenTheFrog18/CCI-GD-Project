@@ -82,6 +82,7 @@ var _blocker_cooldown_remaining := 0.0
 var _finishing_attack_animation := false
 var _surround_sight: SightSensor
 var _surround_sight_active := false
+var _search_after_recovery := false
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
@@ -240,6 +241,7 @@ func _process_local(delta: float, patrol_state: State) -> void:
 func _begin_attack(player: PlayerController) -> void:
 	state = State.ATTACK_SETUP
 	_target = player
+	_search_after_recovery = false
 	_aim = player.global_position
 	_state_timer = telegraph_seconds
 	_finishing_attack_animation = false
@@ -270,14 +272,18 @@ func _recovery_point(player_position: Vector2, away: Vector2) -> Vector2:
 	return global_position
 
 func _begin_cooldown_patrol() -> void:
+	if _search_after_recovery:
+		_begin_search(_search_point)
+		return
 	_start_local_patrol(_patrol_center)
 	_cooldown_remaining = attack_cooldown
 	state = State.COOLDOWN_PATROL
 
-func _begin_search(_position: Vector2) -> void:
-	_search_point = global_position
+func _begin_search(position: Vector2) -> void:
+	_search_after_recovery = false
+	_search_point = position
 	_search_remaining = search_seconds
-	_start_local_patrol(global_position)
+	_start_local_patrol(position)
 	state = State.SEARCH
 
 func _begin_blocker_poi(position: Vector2) -> void:
@@ -287,6 +293,7 @@ func _begin_blocker_poi(position: Vector2) -> void:
 	state = State.BLOCKER_POI
 
 func _begin_poi_travel() -> void:
+	_search_after_recovery = false
 	_set_surround_sight_active(false)
 	_choose_poi()
 	state = State.ROAM
@@ -316,6 +323,7 @@ func _refresh_sight_request(delta: float) -> void:
 
 func _on_seen(target: Node2D, _position: Vector2) -> void:
 	if target is PlayerController:
+		_search_after_recovery = false
 		_set_surround_sight_active(true)
 		_upsert_request(&"sight", target.global_position, target, sight_priority, _clock() + sight_request_seconds, true, target)
 
@@ -327,11 +335,22 @@ func _on_lost(target: Node2D) -> void:
 	if target is PlayerController:
 		_remove_request(&"sight")
 		_sight_time = 0.0
-		if state not in [State.CHASE, State.ATTACK_SETUP, State.DIVE, State.RECOVER, State.RECOVERY_TRAVEL, State.COOLDOWN_PATROL]: _set_surround_sight_active(false)
-		if state == State.CHASE and not target.status.has_status(&"tracking_mark"): _begin_search(_search_point)
+		_handle_player_lost(target)
 
 func _on_surround_lost(target: Node2D) -> void:
-	if target is PlayerController: _remove_request(&"surround_sight")
+	if target is PlayerController:
+		_remove_request(&"surround_sight")
+		_handle_player_lost(target)
+
+func _handle_player_lost(target: PlayerController) -> void:
+	if target.status.has_status(&"tracking_mark") or _can_see_with_active_detectors(target):
+		return
+	if state in [State.CHASE, State.COOLDOWN_PATROL]:
+		_begin_search(_search_point)
+	elif state in [State.ATTACK_SETUP, State.DIVE, State.RECOVER, State.RECOVERY_TRAVEL]:
+		_search_after_recovery = true
+	else:
+		_set_surround_sight_active(false)
 
 func _setup_surround_sight() -> void:
 	_surround_sight = sight.duplicate() as SightSensor
@@ -574,6 +593,7 @@ func _reset_transient_ai() -> void:
 	_patrol_hover = false
 	_blocker_remaining = 0.0
 	_blocker_cooldown_remaining = 0.0
+	_search_after_recovery = false
 	_requests.clear()
 	_choose_poi()
 func handle_world_out_of_bounds() -> void:

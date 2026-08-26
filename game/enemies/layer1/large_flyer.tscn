@@ -17,8 +17,8 @@ collision_layer = 4
 collision_mask = 513
 script = ExtResource("1")
 chase_speed = 140.0
-dive_speed = 300.0
-sight_lock_seconds = 1.0
+dive_speed = 360.0
+sight_lock_seconds = 2.0
 attack_force = 400.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1115403358]

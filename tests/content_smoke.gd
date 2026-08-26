@@ -111,6 +111,8 @@ func _test_enemy_scenes() -> void:
 	_check(flyer.poi_change_min_seconds == 12.0 and flyer.poi_change_max_seconds == 18.0 and flyer.engagement_distance == 80.0, "Large Flyer route and engagement settings are adjustable")
 	_check(flyer.poi_patrol_radius == 160.0 and flyer.poi_inner_flight_radius == 130.0 and flyer.max_destination_attempts == 10, "Large Flyer local patrol is adjustable")
 	_check(flyer._steering_alpha(1.0 / 60.0) > 0.0, "Large Flyer patrol steering preserves momentum")
+	flyer._begin_search(Vector2(96.0, 48.0))
+	_check(flyer.state == LargeLayer1Flyer.State.SEARCH and flyer._search_point == Vector2(96.0, 48.0) and flyer._patrol_center == Vector2(96.0, 48.0), "Large Flyer search patrol centers on last known player position")
 	flyer.free()
 	var spider := preload("res://game/enemies/layer1/cave_spider.tscn").instantiate() as CaveSpider
 	add_child(spider)
