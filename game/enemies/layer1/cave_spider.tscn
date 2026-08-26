@@ -14,9 +14,6 @@ radius = 6.0827627
 [sub_resource type="CircleShape2D" id="ProbeShape"]
 radius = 8.0
 
-[sub_resource type="CircleShape2D" id="BiteShape"]
-radius = 8.0
-
 [sub_resource type="AtlasTexture" id="Idle0"]
 atlas = ExtResource("5")
 region = Rect2(0, 0, 48, 48)
@@ -98,9 +95,15 @@ animations = [{
 "speed": 8.0
 }]
 
+[sub_resource type="CircleShape2D" id="BiteShape"]
+radius = 8.0
+
 [node name="CaveSpider" type="CharacterBody2D" unique_id=1685837486]
 collision_layer = 4
 script = ExtResource("1")
+bite_damage = 5.0
+projectile_speed = 240.0
+projectile_spawn_height = 10.0
 roam_distance = 120.0
 surface_probe_distance = 12.0
 surface_probe_radius = 12.0
@@ -146,12 +149,12 @@ scan_interval = 0.5
 [node name="SoundListener" type="Node2D" parent="." unique_id=996928785]
 script = ExtResource("4")
 
-[node name="BiteHitbox" type="Area2D" parent="."]
+[node name="BiteHitbox" type="Area2D" parent="." unique_id=362734281]
 collision_layer = 0
 collision_mask = 2
 monitoring = false
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="BiteHitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BiteHitbox" unique_id=21875340]
 shape = SubResource("BiteShape")
 disabled = true
