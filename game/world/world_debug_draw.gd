@@ -4,21 +4,30 @@ extends Node2D
 const RANGE_COLOR := Color(0.95, 0.35, 0.9, 0.8)
 const RANGE_FILL := Color(0.95, 0.35, 0.9, 0.08)
 
-var world_layer: WorldLayer
-var enabled := false
+var world_root: Node2D
+var show_ranges := false
+var show_bounds := false
 
-func refresh(layer: WorldLayer, show: bool) -> void:
-	world_layer = layer
-	enabled = show
+func refresh(root: Node2D, ranges_visible: bool, bounds_visible := false) -> void:
+	world_root = root
+	show_ranges = ranges_visible
+	show_bounds = bounds_visible
 	queue_redraw()
 
 func _process(_delta: float) -> void:
-	if enabled:
+	if show_ranges or show_bounds:
 		queue_redraw()
 
 func _draw() -> void:
-	if not enabled or world_layer == null:
+	if world_root == null:
 		return
+	if show_bounds and world_root is WorldLayer:
+		_draw_world_bounds(world_root as WorldLayer)
+	if show_ranges:
+		_draw_enemy_ranges()
+		_draw_enemy_placer_ranges()
+
+func _draw_world_bounds(world_layer: WorldLayer) -> void:
 	for slot in world_layer.get_slots():
 		var section := world_layer.instantiated_sections.get(String(slot.slot_id)) as WorldSection
 		if section == null:
@@ -28,8 +37,6 @@ func _draw() -> void:
 		draw_rect(bounds, color, false, 2.0)
 		draw_rect(Rect2(section.global_position + section.entry_clearance.position, section.entry_clearance.size), Color.CYAN, false, 2.0)
 		draw_rect(Rect2(section.global_position + section.exit_clearance.position, section.exit_clearance.size), Color.CYAN, false, 2.0)
-	_draw_enemy_ranges()
-	_draw_enemy_placer_ranges()
 
 func _draw_enemy_ranges() -> void:
 	for node in get_tree().get_nodes_in_group(&"effect_receivers"):
@@ -39,23 +46,20 @@ func _draw_enemy_ranges() -> void:
 		_draw_range_for_actor(actor, _actor_range_center(actor))
 
 func _draw_enemy_placer_ranges() -> void:
-	for slot in world_layer.get_slots():
-		var section := world_layer.instantiated_sections.get(String(slot.slot_id)) as WorldSection
-		if section == null:
+	for placer_node in world_root.find_children("*", "DeterministicPlacer", true, false):
+		var placer := placer_node as DeterministicPlacer
+		if placer == null or not _is_enemy_placer(placer):
 			continue
-		for placer in world_layer._collect_placers(section):
-			if not _is_enemy_placer(placer):
+		var centers := _placer_centers(placer)
+		for entry in placer.entries:
+			if entry == null or entry.scene == null or ContentCatalog.get_enemy(entry.content_id) == null:
 				continue
-			var centers := _placer_centers(placer)
-			for entry in placer.entries:
-				if entry == null or entry.scene == null or ContentCatalog.get_enemy(entry.content_id) == null:
-					continue
-				var preview := entry.scene.instantiate() as Node2D
-				if preview == null:
-					continue
-				for center in centers:
-					_draw_range_for_actor(preview, center)
-				preview.free()
+			var preview := entry.scene.instantiate() as Node2D
+			if preview == null:
+				continue
+			for center in centers:
+				_draw_range_for_actor(preview, center)
+			preview.free()
 
 func _is_enemy_placer(placer: DeterministicPlacer) -> bool:
 	if placer is BirdNestPlacer:
