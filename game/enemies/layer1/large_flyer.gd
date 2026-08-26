@@ -43,6 +43,7 @@ enum State { ROAM, POI_PATROL, POI_IDLE, INVESTIGATE, CHASE, ATTACK_SETUP, DIVE,
 @export var attack_force := 180.0
 @export var attack_hit_radius := 28.0
 @export var attack_cooldown := 4.0
+@export var player_hit_knockback := 180.0
 @export var recovery_seconds := 0.2
 @export var recovery_distance := 80.0
 @export_range(0.0, 180.0, 1.0) var recovery_angle_variance_degrees := 25.0
@@ -579,6 +580,8 @@ func apply_damage(info: DamageInfo) -> bool:
 	if applied and not support.health.is_dead:
 		var attacker := info.source as PlayerController
 		if attacker != null and is_instance_valid(attacker) and attacker.is_alive():
+			if info.tags.has(&"player_melee"):
+				attacker.apply_force(global_position.direction_to(attacker.global_position) * player_hit_knockback)
 			_begin_attack(attacker)
 		elif state not in [State.ATTACK_SETUP, State.DIVE]:
 			_begin_recovery()

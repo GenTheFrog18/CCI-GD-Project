@@ -98,7 +98,9 @@ func _apply_target(target: Node) -> void:
 		return
 	var species = _actor.get("species_id")
 	if target.has_method("apply_damage"):
-		target.apply_damage(DamageInfo.new(_damage, _actor, StringName(species) if species != null else &""))
+		var info := DamageInfo.new(_damage, _actor, StringName(species) if species != null else &"")
+		info.tags = [&"player_melee"]
+		target.apply_damage(info)
 	if target.has_method("apply_force"):
 		target.apply_force(Vector2.RIGHT.rotated(global_rotation) * _force)
 
