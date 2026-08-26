@@ -46,9 +46,8 @@ func start_sequence(sequence: DialogueSequence, speaker: Node = null, actor: Nod
 		return false
 	_step_index = 0
 	_resolving_choice = false
-	_locked = sequence.locks_gameplay and player != null
-	if _locked:
-		player.locks.lock(&"dialogue")
+	# Dialogue is non-blocking: the player can move and jump while reading.
+	_locked = false
 	dialogue_box.open_dialogue(speaker)
 	_show_step()
 	return true

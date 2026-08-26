@@ -127,6 +127,13 @@ func open_how_to_from_dialogue() -> void:
 func _input(event: InputEvent) -> void:
 	if player == null:
 		return
+	if dialogue_box != null and dialogue_box.visible:
+		if event.is_action_pressed(&"ui_cancel"):
+			dialogue_controller.close()
+			get_viewport().set_input_as_handled()
+		elif event.is_action_pressed(&"inventory") or event.is_action_pressed(&"pause"):
+			get_viewport().set_input_as_handled()
+		return
 	if shop_ui != null and shop_ui.visible:
 		if event.is_action_pressed(&"ui_cancel") or event.is_action_pressed(&"inventory") or event.is_action_pressed(&"pause"):
 			shop_ui.close_shop()

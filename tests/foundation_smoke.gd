@@ -471,7 +471,18 @@ func _test_ui_input_and_debug() -> void:
 	get_tree().paused = false
 	var dialogue := ContentCatalog.get_dialogue(&"foundation_intro")
 	hud.show_dialogue(dialogue)
-	assert(hud.dialogue_box.visible and player.locks.is_locked())
+	assert(hud.dialogue_box.visible and not player.locks.is_locked())
+	var inventory_event := InputEventAction.new()
+	inventory_event.action = &"inventory"
+	inventory_event.pressed = true
+	hud._input(inventory_event)
+	assert(not player.inventory_open)
+	var cancel_dialogue_event := InputEventAction.new()
+	cancel_dialogue_event.action = &"ui_cancel"
+	cancel_dialogue_event.pressed = true
+	hud._input(cancel_dialogue_event)
+	assert(not hud.dialogue_box.visible and not hud.dialogue_controller.is_active())
+	hud.show_dialogue(dialogue)
 	var interact_event := InputEventAction.new()
 	interact_event.action = &"interact"
 	interact_event.pressed = true
@@ -494,7 +505,7 @@ func _test_ui_input_and_debug() -> void:
 	choice_step.choices.append(choice)
 	choice_sequence.steps.append(choice_step)
 	hud.show_dialogue(choice_sequence)
-	assert(hud.dialogue_box.visible and player.locks.is_locked())
+	assert(hud.dialogue_box.visible and not player.locks.is_locked())
 	(hud.dialogue_box._choices.get_child(0) as Button).pressed.emit()
 	assert(bool(GameSession.progression_flags.get("dialogue_smoke_choice", false)) and not hud.dialogue_controller.is_active() and not player.locks.is_locked())
 	GameSession.progression_flags.erase("dialogue_smoke_choice")
