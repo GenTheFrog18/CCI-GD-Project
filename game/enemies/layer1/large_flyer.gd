@@ -225,7 +225,8 @@ func _begin_attack(player: PlayerController) -> void:
 
 func _begin_recovery() -> void:
 	var player_position := _target.global_position if is_instance_valid(_target) else _aim
-	var away := player_position.direction_to(global_position)
+	var away := -velocity.normalized()
+	if away.is_zero_approx(): away = player_position.direction_to(global_position)
 	if away.is_zero_approx(): away = Vector2.RIGHT.rotated(randf_range(0.0, TAU))
 	_patrol_center = _recovery_point(player_position, away)
 	state = State.RECOVER
