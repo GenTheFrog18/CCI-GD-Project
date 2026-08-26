@@ -29,6 +29,7 @@ enum SurfaceState { ATTACHED, TRANSITIONING, DETACHED }
 @export var roam_return_buffer := 20.0
 @export var projectile_speed := 170.0
 @export var projectile_damage := 3.0
+@export var projectile_spawn_height := 12.0
 @export var spider_slow_duration := 3.0
 @export var poison_duration := 10.0
 @export var tracking_mark_duration := 20.0
@@ -194,7 +195,7 @@ func _flee(delta: float) -> void:
 func _begin_shot() -> void:
 	if not _can_see_target(): _enter_investigate(); return
 	state = State.SHOT_TELEGRAPH
-	_aim = _target.global_position; _last_known = _aim; _timer = telegraph_seconds
+	_aim = _target.get_detection_origin(); _last_known = _aim; _timer = telegraph_seconds
 	_target.warn_attack(self, telegraph_seconds)
 
 func _fire() -> void:
@@ -204,9 +205,11 @@ func _fire() -> void:
 	impact.base_damage = projectile_damage; impact.reference_speed = projectile_speed
 	impact.attack_kind = &"projectile"; impact.max_hits = 1
 	impact.status_effects = [{"effect_id": &"spider_slow", "duration": spider_slow_duration}, {"effect_id": &"poison", "duration": poison_duration}, {"effect_id": &"tracking_mark", "duration": tracking_mark_duration}]
-	projectile.configure(impact, global_position.direction_to(_aim) * projectile_speed, preload("res://assets/art/enemies/cave_spider/projectile.png"))
+	var launch_velocity := global_position.direction_to(_aim) * projectile_speed
+	projectile.configure(impact, launch_velocity, preload("res://assets/art/enemies/cave_spider/projectile.png"))
 	projectile.terminal_resolved.connect(_on_projectile_result.bind(projectile))
-	get_parent().add_child(projectile); projectile.global_position = global_position
+	get_parent().add_child(projectile)
+	projectile.global_position = global_position + Vector2.UP.rotated(rotation) * projectile_spawn_height
 	_active_projectile = projectile; state = State.AWAIT_SHOT
 	if _misses >= 2: _misses = 0
 
