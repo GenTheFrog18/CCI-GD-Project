@@ -5,69 +5,29 @@ signal advance_requested
 signal choice_requested(index: int)
 signal closed
 
-const TYPING_SFX := preload("res://assets/audio/dialogue/dialogue_blip.wav")
-const BUBBLE_SHEET := preload("res://assets/art/ui/shopkeeper/bubble-speech.png")
-const CHOICE_BUTTON := preload("res://assets/art/ui/main_menu/button-long.png")
-
 @export_range(0.005, 0.2, 0.005) var typing_speed := 0.03
 @export_range(0.1, 3.0, 0.1) var hold_to_fast_forward_seconds := 1.0
 @export_range(0.03, 1.0, 0.01) var fast_forward_advance_seconds := 0.15
 @export_range(1, 12, 1) var typing_sfx_every_characters := 3
+@export var choice_button_texture: Texture2D
 
 var _typing := false
 var _full_text := ""
 var _visible_characters := 0.0
 var _hold_seconds := 0.0
 var _auto_advance_seconds := 0.0
-var _portrait: TextureRect
-var _speaker_label: Label
-var _text_label: Label
-var _continue_label: Label
-var _choices: VBoxContainer
-var _typing_sfx: AudioStreamPlayer
+@onready var _portrait: TextureRect = $Row/Portrait
+@onready var _speaker_label: Label = $Row/Column/Speaker
+@onready var _text_label: Label = $Row/Column/Text
+@onready var _continue_label: Label = $Row/Column/Continue
+@onready var _choices: VBoxContainer = $Row/Column/Choices
+@onready var _typing_sfx: AudioStreamPlayer = $TypingSfx
 var _sfx_visible_characters := 0
 var _sfx_character_count := 0
 
 func _ready() -> void:
 	add_to_group(&"dialogue_box")
 	visible = false
-	custom_minimum_size = Vector2(520.0, 104.0)
-	var bubble := TextureRect.new()
-	var frame := AtlasTexture.new()
-	frame.atlas = BUBBLE_SHEET
-	frame.region = Rect2(0.0, 0.0, 128.0, 64.0)
-	bubble.texture = frame
-	bubble.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	bubble.stretch_mode = TextureRect.STRETCH_SCALE
-	bubble.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bubble)
-	var row := HBoxContainer.new()
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(row)
-	_portrait = TextureRect.new()
-	_portrait.custom_minimum_size = Vector2(72.0, 72.0)
-	_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	row.add_child(_portrait)
-	var column := VBoxContainer.new()
-	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(column)
-	_speaker_label = Label.new()
-	_speaker_label.add_theme_font_size_override(&"font_size", 16)
-	column.add_child(_speaker_label)
-	_text_label = Label.new()
-	_text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	column.add_child(_text_label)
-	_choices = VBoxContainer.new()
-	column.add_child(_choices)
-	_continue_label = Label.new()
-	_continue_label.text = "[E]"
-	_continue_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	column.add_child(_continue_label)
-	_typing_sfx = AudioStreamPlayer.new()
-	_typing_sfx.stream = TYPING_SFX
-	add_child(_typing_sfx)
 
 func open_dialogue(_speaker: Node = null) -> void:
 	_hold_seconds = 0.0
@@ -100,7 +60,7 @@ func show_choices(choices: Array[DialogueChoice], available: Array[bool]) -> voi
 		button.disabled = not available[index]
 		button.custom_minimum_size = Vector2(144.0, 32.0)
 		var style := StyleBoxTexture.new()
-		style.texture = CHOICE_BUTTON
+		style.texture = choice_button_texture
 		button.add_theme_stylebox_override(&"normal", style)
 		button.add_theme_stylebox_override(&"hover", style)
 		button.add_theme_stylebox_override(&"pressed", style)

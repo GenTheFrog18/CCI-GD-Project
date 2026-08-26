@@ -1,5 +1,7 @@
 extends Node
 
+const DIALOGUE_BOX_SCENE := preload("res://ui/dialogue_box.tscn")
+
 @export var dialogue_sequence: DialogueSequence
 
 var player: PlayerController
@@ -25,7 +27,7 @@ func start_intro(player_controller: PlayerController, dialogue_parent: Control) 
 
 	player.locks.lock(&"surface_intro")
 
-	dialogue_box = DialogueBox.new()
+	dialogue_box = DIALOGUE_BOX_SCENE.instantiate() as DialogueBox
 	dialogue_parent.add_child(dialogue_box)
 	dialogue_box.position = Vector2(60, 245)
 	dialogue_controller = DialogueController.new()

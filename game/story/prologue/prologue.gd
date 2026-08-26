@@ -1,5 +1,7 @@
 extends Control
 
+const DIALOGUE_BOX_SCENE := preload("res://ui/dialogue_box.tscn")
+
 @export var fade_seconds := 1.5
 @export var dialogue_sequence: DialogueSequence
 
@@ -15,7 +17,7 @@ func _ready() -> void:
 	GameSession.use_menu_cursor()
 	GameSession.configure_design_root(design_ui)
 	GameSession.display_settings_changed.connect(func(): GameSession.configure_design_root(design_ui))
-	dialogue_box = DialogueBox.new()
+	dialogue_box = DIALOGUE_BOX_SCENE.instantiate() as DialogueBox
 	dialogue_box.position = Vector2(60, 245)
 	design_ui.add_child(dialogue_box)
 	dialogue_controller = DialogueController.new()

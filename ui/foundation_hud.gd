@@ -12,6 +12,7 @@ const ENEMY_POINTER_ICON := preload("res://assets/art/characters/player/enemy_po
 const SETTINGS_POPUP_SCENE := preload("res://ui/settings_popup.tscn")
 const INVENTORY_MENU_SCENE := preload("res://ui/inventory_menu.tscn")
 const SHOP_UI_SCENE := preload("res://ui/shop_ui.tscn")
+const DIALOGUE_BOX_SCENE := preload("res://ui/dialogue_box.tscn")
 
 signal world_debug_action_requested(action: StringName)
 
@@ -219,7 +220,7 @@ func _build_ui() -> void:
 		button.gui_input.connect(_slot_gui_input.bind(index))
 		inventory_buttons.append(button)
 	(inventory_menu.get_node("BookContent/Whistle") as TextureButton).pressed.connect(func(): player.use_whistle() if player != null else false)
-	dialogue_box = DialogueBox.new()
+	dialogue_box = DIALOGUE_BOX_SCENE.instantiate() as DialogueBox
 	dialogue_box.position = Vector2(60, 245)
 	logical_ui.add_child(dialogue_box)
 	dialogue_controller = DialogueController.new()
