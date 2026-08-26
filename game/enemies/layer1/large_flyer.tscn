@@ -6,8 +6,8 @@
 [ext_resource type="Script" uid="uid://ctpy5jx0wglna" path="res://core/sensing/sound_listener.gd" id="4"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yfnlj"]
-radius = 12.0
-height = 70.0
+radius = 15.0
+height = 110.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames"]
 animations = []
@@ -22,6 +22,7 @@ sight_lock_seconds = 2.0
 attack_force = 400.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1115403358]
+position = Vector2(0, -3)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_yfnlj")
 

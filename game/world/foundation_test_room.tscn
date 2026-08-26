@@ -1412,4 +1412,4 @@ position = Vector2(959, 125)
 position = Vector2(868, 247)
 
 [node name="CaveSpider" parent="." unique_id=1685837486 instance=ExtResource("9_mt4mp")]
-position = Vector2(1020, 311)
+position = Vector2(1108, 214)

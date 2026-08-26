@@ -66,6 +66,8 @@ func _refresh_effect_label() -> void:
 	if effect_label == null or status == null:
 		return
 	var lines := PackedStringArray()
+	if GameSession.debug_gameplay_draw:
+		lines.append("%d/%d" % [int(health.health), int(health.max_health)])
 	for id: StringName in status.active:
 		var definition := ContentCatalog.get_effect(id)
 		var name := definition.display_name if definition != null else String(id)
