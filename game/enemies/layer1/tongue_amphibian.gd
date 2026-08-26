@@ -23,6 +23,7 @@ enum State { IDLE, MOVE, ATTACK, RETREAT }
 @export var theft_cooldown_seconds := 3.0
 @export var can_steal_multitool := false
 @export var leash_distance := 180.0
+@export var stuck_direction_seconds := 4.0
 @export var carried_drop_offset := Vector2(0.0, -16.0)
 
 @onready var support: EnemySupport = $EnemySupport
@@ -41,6 +42,7 @@ var _theft_cooldown := 0.0
 var _roam_target := Vector2.ZERO
 var _has_roam_target := false
 var _facing_direction := 1.0
+var _roam_stuck_seconds := 0.0
 var _random := RandomNumberGenerator.new()
 var _knockback := Vector2.ZERO
 var _investigation_remaining := 0.0
@@ -119,7 +121,9 @@ func _physics_process(delta: float) -> void:
 		_jump_timer = _random_jump_cooldown()
 	velocity += _knockback
 	_knockback = Vector2.ZERO
+	var horizontal_position := global_position.x
 	move_and_slide()
+	_update_roam_stuck(delta, desired, horizontal_position)
 	_update_visual(grounded)
 	sight.facing = Vector2(_facing_direction, 0.0)
 	if GameSession.debug_gameplay_draw:
@@ -197,6 +201,21 @@ func _roam() -> void:
 		_roam_target = _origin + Vector2(_random.randf_range(-leash_distance, leash_distance), 0.0)
 		_has_roam_target = true
 	_move_toward(_roam_target)
+
+func _update_roam_stuck(delta: float, desired: Node2D, previous_x: float) -> void:
+	if state != State.MOVE or desired != null:
+		_roam_stuck_seconds = 0.0
+		return
+	if absf(global_position.x - previous_x) > 0.5:
+		_roam_stuck_seconds = 0.0
+		return
+	_roam_stuck_seconds += delta
+	if _roam_stuck_seconds < maxf(stuck_direction_seconds, 0.0):
+		return
+	_roam_stuck_seconds = 0.0
+	_set_facing(-_facing_direction)
+	_roam_target = _origin + Vector2(_facing_direction * maxf(leash_distance, 1.0), 0.0)
+	_has_roam_target = true
 
 func _set_facing(direction: float) -> void:
 	if is_zero_approx(direction):
