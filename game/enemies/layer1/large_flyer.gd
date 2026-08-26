@@ -433,6 +433,7 @@ func _setup_visual() -> void:
 	_add_animation(frames, &"see_player", SEE_PLAYER_SHEET, 8, 10.0, true)
 	_add_animation(frames, &"attack", ATTACK_SHEET, 11, 8.0, false)
 	visual.sprite_frames = frames
+	visual.flip_h = true
 	visual.play(&"idle")
 
 func _add_animation(frames: SpriteFrames, animation: StringName, sheet: Texture2D, count: int, speed: float, loop: bool) -> void:
@@ -457,7 +458,7 @@ func _hold_attack_swoop_frame() -> void:
 
 func _update_visual() -> void:
 	if not velocity.is_zero_approx():
-		visual.flip_h = velocity.x < 0.0
+		visual.flip_h = velocity.x > 0.0
 	if _finishing_attack_animation:
 		if visual.is_playing():
 			return
