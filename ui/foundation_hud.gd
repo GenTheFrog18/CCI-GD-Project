@@ -146,7 +146,6 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"debug_toggle"):
 		debug_panel.visible = not debug_panel.visible
-		GameSession.debug_gameplay_draw = debug_panel.visible
 		_set_debug_text_visible(debug_panel.visible)
 		if debug_panel.visible:
 			_update_performance()
