@@ -142,7 +142,7 @@ func _process_request(delta: float) -> void:
 		if state == State.BLOCKER_POI and _can_chase(player, marked) and _path_to(player.global_position): state = State.CHASE
 		if state == State.COOLDOWN_PATROL and _cooldown_remaining > 0.0 and not marked:
 			_process_local(delta, State.COOLDOWN_PATROL)
-		elif _can_chase(player, marked):
+		elif _can_chase(player, marked) or (state in [State.CHASE, State.SEARCH] and sight.can_see(player)):
 			_process_chase(player, delta)
 		else:
 			_process_background(delta)
@@ -155,6 +155,9 @@ func _process_request(delta: float) -> void:
 
 func _process_background(delta: float) -> void:
 	match state:
+		State.CHASE:
+			_begin_search(_search_point)
+			_process_search(delta)
 		State.SEARCH: _process_search(delta)
 		State.BLOCKER_POI:
 			if _blocker_remaining <= 0.0: _begin_poi_travel()
