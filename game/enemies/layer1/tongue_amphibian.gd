@@ -111,6 +111,8 @@ func _physics_process(delta: float) -> void:
 	else:
 		state = State.MOVE
 		_roam()
+	if state == State.ATTACK:
+		velocity.x = 0.0
 	if state != State.ATTACK and grounded and _jump_timer <= 0.0 and not support.status.has_status(&"electro_stunned"):
 		velocity.x = _facing_direction * move_speed * support.status.get_multiplier(&"move_speed")
 		velocity.y = jump_velocity * _random_jump_height() * support.status.get_multiplier(&"jump_strength")
