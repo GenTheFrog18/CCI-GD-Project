@@ -113,6 +113,7 @@ func _test_enemy_scenes() -> void:
 	_check(flyer._steering_alpha(1.0 / 60.0) > 0.0, "Large Flyer patrol steering preserves momentum")
 	flyer._begin_search(Vector2(96.0, 48.0))
 	_check(flyer.state == LargeLayer1Flyer.State.SEARCH and flyer._search_point == Vector2(96.0, 48.0) and flyer._patrol_center == Vector2(96.0, 48.0), "Large Flyer search patrol centers on last known player position")
+	_check(flyer.apply_damage(DamageInfo.new(1.0)) and flyer.state == LargeLayer1Flyer.State.RECOVER, "Large Flyer damage triggers recovery")
 	flyer.free()
 	var spider := preload("res://game/enemies/layer1/cave_spider.tscn").instantiate() as CaveSpider
 	add_child(spider)

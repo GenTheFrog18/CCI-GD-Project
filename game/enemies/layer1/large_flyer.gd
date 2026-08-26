@@ -563,7 +563,7 @@ func _draw() -> void:
 		draw_rect(Rect2(-size * 0.5, size), Color(1.0, 0.2, 0.2, 0.9), false, 2.0)
 func apply_damage(info: DamageInfo) -> bool:
 	var applied := support.apply_damage(info)
-	if applied and support.is_alive() and state not in [State.ATTACK_SETUP, State.DIVE]: _begin_recovery()
+	if applied and not support.health.is_dead and state not in [State.ATTACK_SETUP, State.DIVE]: _begin_recovery()
 	return applied
 func apply_force(_force: Vector2) -> void: pass
 func apply_status(id: StringName, data: Dictionary = {}) -> bool: return support.apply_status(id, data)
