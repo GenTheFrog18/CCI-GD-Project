@@ -107,6 +107,7 @@ func _test_enemy_scenes() -> void:
 	var flyer := preload("res://game/enemies/layer1/large_flyer.tscn").instantiate() as LargeLayer1Flyer
 	add_child(flyer)
 	_check(flyer.support.hit_flash_duration > 0.0, "Enemy hit flash duration is adjustable")
+	_check(flyer._surround_sight != null and flyer._surround_sight.normal_angle_degrees == 360.0 and flyer._surround_sight.process_mode == Node.PROCESS_MODE_DISABLED, "Large Flyer surround sight is configured and idle")
 	_check(flyer.poi_change_min_seconds == 12.0 and flyer.poi_change_max_seconds == 18.0 and flyer.engagement_distance == 80.0, "Large Flyer route and engagement settings are adjustable")
 	_check(flyer.poi_patrol_radius == 160.0 and flyer.poi_inner_flight_radius == 130.0 and flyer.max_destination_attempts == 10, "Large Flyer local patrol is adjustable")
 	_check(flyer._steering_alpha(1.0 / 60.0) > 0.0, "Large Flyer patrol steering preserves momentum")

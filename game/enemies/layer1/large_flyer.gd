@@ -50,6 +50,7 @@ enum State { ROAM, POI_PATROL, POI_IDLE, INVESTIGATE, CHASE, ATTACK_SETUP, DIVE,
 @export var snail_priority := 50.0
 @export var distraction_priority := 40.0
 @export var sight_priority := 20.0
+@export var surround_sight_priority := 25.0
 @export var sight_request_seconds := 0.25
 @export var sound_request_seconds := 10.0
 
@@ -78,10 +79,13 @@ var _patrol_hover := false
 var _blocker_remaining := 0.0
 var _blocker_cooldown_remaining := 0.0
 var _finishing_attack_animation := false
+var _surround_sight: SightSensor
+var _surround_sight_active := false
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
 	_setup_visual()
+	_setup_surround_sight()
 	add_to_group(&"large_flyer")
 	_origin = global_position
 	sight.target_seen.connect(_on_seen)
@@ -139,10 +143,11 @@ func _process_request(delta: float) -> void:
 	if player != null:
 		_target = player
 		var marked := StringName(request.get("request_id", "")) == &"tracking_mark"
-		if state == State.BLOCKER_POI and _can_chase(player, marked) and _path_to(player.global_position): state = State.CHASE
+		var surround := StringName(request.get("request_id", "")) == &"surround_sight"
+		if state == State.BLOCKER_POI and _can_chase(player, marked, surround) and _path_to(player.global_position): state = State.CHASE
 		if state == State.COOLDOWN_PATROL and _cooldown_remaining > 0.0 and not marked:
 			_process_local(delta, State.COOLDOWN_PATROL)
-		elif _can_chase(player, marked) or (state in [State.CHASE, State.SEARCH] and sight.can_see(player)):
+		elif _can_chase(player, marked, surround) or (state in [State.CHASE, State.SEARCH] and (_can_see_with_active_detectors(player))):
 			_process_chase(player, delta)
 		else:
 			_process_background(delta)
@@ -167,12 +172,15 @@ func _process_background(delta: float) -> void:
 			else: _process_local(delta, State.COOLDOWN_PATROL)
 		_: _process_poi(delta)
 
-func _can_chase(player: PlayerController, marked: bool) -> bool:
-	return marked or (sight.can_see(player) and (_sight_time >= sight_lock_seconds or global_position.distance_to(player.global_position) <= engagement_distance))
+func _can_chase(player: PlayerController, marked: bool, surround: bool = false) -> bool:
+	return marked or ((surround or sight.can_see(player)) and (_sight_time >= sight_lock_seconds or global_position.distance_to(player.global_position) <= engagement_distance))
+
+func _can_see_with_active_detectors(player: PlayerController) -> bool:
+	return sight.can_see(player) or (_surround_sight_active and _surround_sight != null and _surround_sight.can_see(player))
 
 func _process_chase(player: PlayerController, delta: float) -> void:
 	state = State.CHASE
-	if sight.can_see(player): _search_point = player.global_position
+	if _can_see_with_active_detectors(player): _search_point = player.global_position
 	if global_position.distance_to(player.global_position) <= engagement_distance:
 		_begin_attack(player)
 		return
@@ -266,6 +274,7 @@ func _begin_blocker_poi(position: Vector2) -> void:
 	state = State.BLOCKER_POI
 
 func _begin_poi_travel() -> void:
+	_set_surround_sight_active(false)
 	_choose_poi()
 	state = State.ROAM
 
@@ -281,23 +290,53 @@ func _refresh_tracking_mark() -> void:
 
 func _refresh_sight_request(delta: float) -> void:
 	var request := _find_request(&"sight")
-	if request.is_empty(): return
-	var target := request.get("target_actor") as PlayerController
-	if target == null or not sight.can_see(target):
+	var target := request.get("target_actor") as PlayerController if not request.is_empty() else _target
+	if target == null or not _can_see_with_active_detectors(target):
 		_sight_time = 0.0
 		return
 	_sight_time += delta
 	_search_point = target.global_position
-	_upsert_request(&"sight", target.global_position, target, sight_priority, _clock() + sight_request_seconds, true, target)
+	if sight.can_see(target):
+		_upsert_request(&"sight", target.global_position, target, sight_priority, _clock() + sight_request_seconds, true, target)
+	if _surround_sight_active and _surround_sight.can_see(target):
+		_upsert_request(&"surround_sight", target.global_position, target, surround_sight_priority, _clock() + sight_request_seconds, false, target)
 
 func _on_seen(target: Node2D, _position: Vector2) -> void:
-	if target is PlayerController: _upsert_request(&"sight", target.global_position, target, sight_priority, _clock() + sight_request_seconds, true, target)
+	if target is PlayerController:
+		_set_surround_sight_active(true)
+		_upsert_request(&"sight", target.global_position, target, sight_priority, _clock() + sight_request_seconds, true, target)
+
+func _on_surround_seen(target: Node2D, _position: Vector2) -> void:
+	if target is PlayerController and _surround_sight_active:
+		_upsert_request(&"surround_sight", target.global_position, target, surround_sight_priority, _clock() + sight_request_seconds, false, target)
 
 func _on_lost(target: Node2D) -> void:
 	if target is PlayerController:
 		_remove_request(&"sight")
 		_sight_time = 0.0
+		if state not in [State.CHASE, State.ATTACK_SETUP, State.DIVE, State.RECOVER, State.RECOVERY_TRAVEL, State.COOLDOWN_PATROL]: _set_surround_sight_active(false)
 		if state == State.CHASE and not target.status.has_status(&"tracking_mark"): _begin_search(_search_point)
+
+func _on_surround_lost(target: Node2D) -> void:
+	if target is PlayerController: _remove_request(&"surround_sight")
+
+func _setup_surround_sight() -> void:
+	_surround_sight = sight.duplicate() as SightSensor
+	_surround_sight.name = &"SurroundSight"
+	_surround_sight.normal_angle_degrees = 360.0
+	_surround_sight.aggravated_angle_degrees = 360.0
+	_surround_sight.process_mode = Node.PROCESS_MODE_DISABLED
+	add_child(_surround_sight)
+	_surround_sight.target_seen.connect(_on_surround_seen)
+	_surround_sight.target_lost.connect(_on_surround_lost)
+
+func _set_surround_sight_active(active: bool) -> void:
+	if _surround_sight == null or _surround_sight_active == active: return
+	_surround_sight_active = active
+	_surround_sight.process_mode = Node.PROCESS_MODE_INHERIT if active else Node.PROCESS_MODE_DISABLED
+	if not active:
+		_surround_sight.current_target = null
+		_remove_request(&"surround_sight")
 
 func _on_sound(event: SoundEvent, _direct: bool) -> void:
 	if event == null or event.priority < sound.minimum_priority: return
@@ -497,6 +536,7 @@ func restore_state(data: Dictionary) -> void:
 		_origin = global_position
 		_reset_transient_ai()
 func _reset_transient_ai() -> void:
+	_set_surround_sight_active(false)
 	state = State.ROAM
 	_target = null
 	_aim = Vector2.ZERO
