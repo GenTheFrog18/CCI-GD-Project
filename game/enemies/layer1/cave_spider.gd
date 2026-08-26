@@ -21,6 +21,7 @@ enum SurfaceState { ATTACHED, TRANSITIONING, DETACHED }
 @export var chase_warning_refresh_seconds := 0.5
 @export var firing_distance_min := 110.0
 @export var firing_distance_max := 140.0
+@export var scatter_minimum_seconds := 0.6
 @export var investigate_wait_seconds := 3.0
 @export var idle_pause_min_seconds := 1.0
 @export var idle_pause_max_seconds := 2.5
@@ -176,7 +177,7 @@ func _bite_resolve() -> void:
 func _scatter(delta: float) -> void:
 	if not _can_see_target(): _enter_investigate(); return
 	var distance := global_position.distance_to(_target.global_position)
-	if distance >= firing_distance_min and distance <= firing_distance_max: _begin_shot(); return
+	if _timer <= 0.0 and distance >= firing_distance_min and distance <= firing_distance_max: _begin_shot(); return
 	sprite.play(&"walk"); _move_on_surface(delta, _destination)
 	if _timer <= 0.0: _set_scatter_destination()
 
@@ -248,7 +249,7 @@ func _enter_scatter() -> void:
 func _set_scatter_destination() -> void:
 	var away := _target.global_position.direction_to(global_position)
 	if away.is_zero_approx(): away = _last_facing
-	_destination = _target.global_position + away * ((firing_distance_min + firing_distance_max) * 0.5); _timer = 0.6
+	_destination = _target.global_position + away * ((firing_distance_min + firing_distance_max) * 0.5); _timer = scatter_minimum_seconds
 func _enter_investigate() -> void:
 	_clear_projectile(); _set_bite_hitbox(false)
 	if is_instance_valid(_target): _last_known = _target.global_position

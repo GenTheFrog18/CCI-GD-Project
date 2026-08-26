@@ -12,6 +12,8 @@ var _terminal_resolved := false
 
 func configure(data: ImpactData, initial_velocity: Vector2, visual_texture: Texture2D = null) -> void:
 	impact = data
+	if impact.source_actor is CollisionObject2D:
+		collision_mask &= ~(impact.source_actor as CollisionObject2D).collision_layer
 	velocity = initial_velocity
 	impact.velocity = initial_velocity
 	_update_visual_rotation()
