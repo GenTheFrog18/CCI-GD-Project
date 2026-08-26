@@ -1,11 +1,14 @@
 class_name Projectile
 extends CharacterBody2D
 
+signal terminal_resolved(result: StringName, body: Node)
+
 @export var lifetime := 6.0
 @export var gravity_scale := 0.0
 
 var impact := ImpactData.new()
 var _hit_ids: Dictionary = {}
+var _terminal_resolved := false
 
 func configure(data: ImpactData, initial_velocity: Vector2, visual_texture: Texture2D = null) -> void:
 	impact = data
@@ -19,7 +22,7 @@ func configure(data: ImpactData, initial_velocity: Vector2, visual_texture: Text
 func _physics_process(delta: float) -> void:
 	lifetime -= delta
 	if lifetime <= 0.0:
-		queue_free()
+		_resolve_terminal(&"expired")
 		return
 	if gravity_scale != 0.0:
 		velocity.y += float(ProjectSettings.get_setting("physics/2d/default_gravity", 980.0)) * gravity_scale * delta
@@ -38,4 +41,15 @@ func _handle_collision(body: Node) -> void:
 	impact.force = velocity.normalized() * impact.mass * minf(velocity.length(), 300.0)
 	impact.apply_to(body)
 	if _hit_ids.size() >= impact.max_hits:
-		queue_free()
+		var result := &"hit_terrain" if body is StaticBody2D or body is TileMapLayer else &"hit_actor"
+		_resolve_terminal(result, body)
+
+func cancel() -> void:
+	_resolve_terminal(&"cancelled")
+
+func _resolve_terminal(result: StringName, body: Node = null) -> void:
+	if _terminal_resolved:
+		return
+	_terminal_resolved = true
+	terminal_resolved.emit(result, body)
+	queue_free()

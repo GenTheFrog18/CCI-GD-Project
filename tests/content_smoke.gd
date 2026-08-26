@@ -107,6 +107,8 @@ func _test_enemy_scenes() -> void:
 	add_child(spider)
 	_check(spider.sprite.sprite_frames.has_animation(&"walk") and spider.sprite.sprite_frames.has_animation(&"shoot"), "Cave Spider finished animations missing")
 	_check(is_equal_approx(spider.projectile_damage, 3.0), "Cave Spider projectile damage is adjustable with 3 default")
+	_check(spider.state == CaveSpider.State.IDLE_PAUSE and spider.bite_hitbox != null, "Cave Spider starts in pause state with a dedicated bite hitbox")
+	_check(is_equal_approx(spider.miss_retry_cooldown_seconds, 2.0) and is_equal_approx(spider.bite_windup_seconds, 0.4), "Cave Spider retry and bite timings are adjustable")
 	var disabled_light := LightSource2D.new()
 	disabled_light.enabled = false
 	disabled_light.light_intensity = 0.0
