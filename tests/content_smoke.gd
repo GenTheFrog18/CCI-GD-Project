@@ -289,6 +289,15 @@ func _test_effects_and_curse() -> void:
 	player.curse_tracker.crossed_band = 0
 	player.curse_tracker._physics_process(0.0)
 	_check(is_equal_approx(player.status.get_remaining(&"curse_suppression"), 80.0), "suppression resets ascent reference after one threshold")
+	player.apply_status(&"poison", {"duration": 10.0})
+	player.apply_status(&"poison", {"duration": 10.0})
+	_check(is_equal_approx(player.status.get_remaining(&"poison"), 15.0), "Poison duration stacks to its cap")
+	player.apply_status(&"spider_slow", {"duration": 3.0})
+	player.apply_status(&"spider_slow", {"duration": 3.0})
+	_check(is_equal_approx(player.status.get_remaining(&"spider_slow"), 6.0), "Spider slow duration stacks additively")
+	player.apply_status(&"tracking_mark", {"duration": 20.0})
+	player.apply_status(&"tracking_mark", {"duration": 20.0})
+	_check(is_equal_approx(player.status.get_remaining(&"tracking_mark"), 20.0), "Tracking mark duration respects its cap")
 	GameSession.current_layer_id = &"layer_2"
 	player.curse_tracker.apply_current_layer_curse()
 	_check(not player.status.has_status(&"curse_layer_1") and player.status.has_status(&"curse_layer_2_penalty") and player.status.get_stack_count(&"curse_layer_2_health_cap") == 1, "Layer 2 Curse replaces Layer 1 package")

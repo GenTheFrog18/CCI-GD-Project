@@ -5,6 +5,7 @@ script = ExtResource("1")
 effect_id = &"poison"
 display_name = "Poisoned"
 duration = 10.0
+additive_duration_cap = 15.0
 tick_interval = 2.0
 tick_damage = 5.0
 persists = true
