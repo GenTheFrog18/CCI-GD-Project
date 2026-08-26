@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://d3o6v8awj7dcx" path="res://ui/foundation_hud.tscn" id="3"]
 [ext_resource type="Script" uid="uid://cffkoem4dm71c" path="res://game/world/lighting/darkness_region_2d.gd" id="4_mt4mp"]
 [ext_resource type="Texture2D" uid="uid://d0xljos4bjkc8" path="res://assets/art/world/ground/Tiles1.png" id="5_lc0jv"]
+[ext_resource type="PackedScene" uid="uid://cjwcecup4eqge" path="res://game/enemies/layer1/cave_spider.tscn" id="9_mt4mp"]
 [ext_resource type="PackedScene" path="res://game/world/placers/large_flyer_placer.tscn" id="10_lc0jv"]
 [ext_resource type="PackedScene" path="res://game/world/large_flyer_poi.tscn" id="11_3xomg"]
 [ext_resource type="PackedScene" path="res://game/world/large_flyer_blocker.tscn" id="12_6wnfj"]
@@ -1409,3 +1410,6 @@ position = Vector2(959, 125)
 
 [node name="LargeFlyerBlocker2" parent="." unique_id=360315763 instance=ExtResource("12_6wnfj")]
 position = Vector2(868, 247)
+
+[node name="CaveSpider" parent="." unique_id=1685837486 instance=ExtResource("9_mt4mp")]
+position = Vector2(1020, 311)

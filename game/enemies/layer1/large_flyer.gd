@@ -58,6 +58,7 @@ enum State { ROAM, POI_PATROL, POI_IDLE, INVESTIGATE, CHASE, ATTACK_SETUP, DIVE,
 @onready var sight: SightSensor = $SightSensor
 @onready var sound: SoundListener = $SoundListener
 @onready var visual: AnimatedSprite2D = $Visual
+@onready var body_collision: CollisionShape2D = $CollisionShape2D
 var state := State.ROAM
 var _origin := Vector2.ZERO
 var _target: PlayerController
@@ -108,6 +109,7 @@ func _physics_process(delta: float) -> void:
 	if not _process_committed(delta): _process_request(delta)
 	if not velocity.is_zero_approx(): sight.facing = velocity.normalized()
 	_update_visual()
+	if GameSession.debug_gameplay_draw: queue_redraw()
 
 func _process_committed(delta: float) -> bool:
 	match state:
@@ -526,6 +528,17 @@ func _update_visual() -> void:
 		if visual.animation != &"see_player": visual.play(&"see_player")
 	elif visual.animation != &"idle":
 		visual.play(&"idle")
+
+func _draw() -> void:
+	if not GameSession.debug_gameplay_draw:
+		return
+	var state_names := ["ROAM", "POI_PATROL", "POI_IDLE", "INVESTIGATE", "CHASE", "ATTACK_SETUP", "DIVE", "RECOVER", "RECOVERY_TRAVEL", "COOLDOWN_PATROL", "SEARCH", "BLOCKER_POI", "DISABLED_FLIGHT"]
+	draw_string(ThemeDB.fallback_font, Vector2(-96.0, -72.0), "State: %s" % state_names[state], HORIZONTAL_ALIGNMENT_CENTER, 192.0, 12, Color(1.0, 0.9, 0.35, 1.0))
+	if body_collision == null or body_collision.shape == null:
+		return
+	if body_collision.shape is RectangleShape2D:
+		var size := (body_collision.shape as RectangleShape2D).size
+		draw_rect(Rect2(-size * 0.5, size), Color(1.0, 0.2, 0.2, 0.9), false, 2.0)
 func apply_damage(info: DamageInfo) -> bool:
 	var applied := support.apply_damage(info)
 	if applied and support.is_alive() and state not in [State.ATTACK_SETUP, State.DIVE]: _begin_recovery()
