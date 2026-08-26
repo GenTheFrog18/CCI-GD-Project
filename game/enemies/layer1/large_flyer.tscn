@@ -12,13 +12,6 @@ size = Vector2(52, 28)
 collision_layer = 4
 collision_mask = 513
 script = ExtResource("1")
-roam_speed = 65.0
-chase_speed = 115.0
-dive_speed = 250.0
-sight_lock_seconds = 4.0
-telegraph_seconds = 0.9
-attack_cooldown = 4.0
-recovery_seconds = 0.2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1115403358]
 shape = SubResource("Shape")
@@ -37,7 +30,7 @@ fall_immune = true
 [node name="SightSensor" type="Node2D" parent="." unique_id=1794926764]
 script = ExtResource("3")
 normal_range = 520.0
-normal_angle_degrees = 150.0
+normal_angle_degrees = 120.0
 aggravated_range = 650.0
 
 [node name="SoundListener" type="Node2D" parent="." unique_id=2088832680]

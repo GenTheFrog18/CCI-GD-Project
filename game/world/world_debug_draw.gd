@@ -85,7 +85,7 @@ func _draw_range_for_actor(actor: Node2D, center: Vector2) -> void:
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		return
 	var radius_property := &""
-	for property_name in [&"roam_distance", &"leash_distance", &"patrol_radius", &"patrol_distance"]:
+	for property_name in [&"roam_distance", &"leash_distance", &"patrol_radius", &"patrol_distance", &"restricted_radius", &"poi_patrol_radius"]:
 		if _has_property(actor, property_name):
 			radius_property = property_name
 			break
@@ -100,6 +100,13 @@ func _draw_range_for_actor(actor: Node2D, center: Vector2) -> void:
 	draw_string(ThemeDB.fallback_font, local_center + Vector2(4.0, -radius - 4.0), "%s %.0f" % [radius_property, radius], HORIZONTAL_ALIGNMENT_LEFT, -1.0, 11, RANGE_COLOR)
 
 func _actor_range_center(actor: Node2D) -> Vector2:
+	if actor is LargeLayer1Flyer:
+		var patrol_center: Variant = _property_value(actor, &"_patrol_center")
+		if patrol_center is Vector2 and not (patrol_center as Vector2).is_zero_approx():
+			return patrol_center
+		var poi: Variant = _property_value(actor, &"_poi")
+		if poi is Node2D and is_instance_valid(poi):
+			return (poi as Node2D).global_position
 	for property_name in [&"_nest", &"_origin"]:
 		var value: Variant = _property_value(actor, property_name)
 		if value is Vector2:

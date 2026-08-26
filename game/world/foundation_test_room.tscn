@@ -1429,3 +1429,15 @@ position = Vector2(718, 238)
 
 [node name="LargeFlyerPOI" parent="." unique_id=983970481 instance=ExtResource("11_3xomg")]
 position = Vector2(781, 134)
+
+[node name="LargeFlyerPOI2" parent="." unique_id=2073742952 instance=ExtResource("11_3xomg")]
+position = Vector2(959, 125)
+
+[node name="LargeFlyerPOI3" parent="." unique_id=470467797 instance=ExtResource("11_3xomg")]
+position = Vector2(696, -40)
+
+[node name="LargeFlyerPOI4" parent="." unique_id=761959367 instance=ExtResource("11_3xomg")]
+position = Vector2(544, 80)
+
+[node name="LargeFlyerBlocker2" parent="." unique_id=360315763 instance=ExtResource("12_6wnfj")]
+position = Vector2(868, 247)
