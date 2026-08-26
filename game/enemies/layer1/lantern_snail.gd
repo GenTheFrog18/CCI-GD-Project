@@ -5,12 +5,17 @@ const IDLE_SHEET := preload("res://assets/art/enemies/snail/snail_idle.png")
 const WALK_SHEET := preload("res://assets/art/enemies/snail/snail_walking.png")
 const HIT_SHEET := preload("res://assets/art/enemies/snail/snail_hit.png")
 
-enum State { MOVE, FLEE, ATTACK }
+enum State { IDLE_PAUSE, ROAM_CRAWL, FLEE, ATTACK }
 enum SurfaceState { ATTACHED, TRANSITIONING, DETACHED }
 
 @export var persistent_id := "lantern_snail"
 @export var move_speed := 18.0
 @export var roam_distance := 90.0
+@export var idle_pause_min_seconds := 1.0
+@export var idle_pause_max_seconds := 2.5
+@export var roam_crawl_min_seconds := 0.6
+@export var roam_crawl_max_seconds := 1.4
+@export var roam_return_buffer := 20.0
 @export var trigger_radius := 42.0
 @export var telegraph_seconds := 0.8
 @export var scream_cooldown := 8.0
@@ -36,7 +41,7 @@ enum SurfaceState { ATTACHED, TRANSITIONING, DETACHED }
 @onready var visual: AnimatedSprite2D = $Visual
 @onready var forward_probe: ShapeCast2D = $ForwardSurfaceProbe
 @onready var support_probe: ShapeCast2D = $SupportSurfaceProbe
-var state := State.MOVE
+var state := State.IDLE_PAUSE
 var surface_state := SurfaceState.ATTACHED
 var _origin := Vector2.ZERO
 var _direction := 1.0
@@ -48,6 +53,7 @@ var _detach_remaining := 0.12
 var _last_surface_position := Vector2.ZERO
 var _hit_remaining := 0.0
 var _flee_target: Node2D
+var _random := RandomNumberGenerator.new()
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
@@ -59,6 +65,7 @@ func _ready() -> void:
 	light.light_intensity = 0.65
 	light.source_type = &"lantern_snail"
 	_origin = global_position
+	_random.randomize()
 	_reset_surface()
 	forward_probe.collision_mask = walkable_collision_mask
 	support_probe.collision_mask = walkable_collision_mask
@@ -68,7 +75,7 @@ func _ready() -> void:
 	sight.target_lost.connect(func(target: Node2D):
 		if target == _flee_target:
 			_flee_target = null
-			if state == State.FLEE: state = State.MOVE
+			if state == State.FLEE: _enter_idle()
 	)
 	sound.sound_accepted.connect(func(event: SoundEvent, _direct: bool):
 		if global_position.distance_to(event.position) <= sound_trigger_radius:
@@ -79,6 +86,7 @@ func _ready() -> void:
 		_hit_remaining = 0.5
 		_play_animation(&"hit")
 	)
+	_enter_idle()
 
 func _on_died(source: Node) -> void:
 	light.enabled = false
@@ -96,7 +104,18 @@ func _physics_process(delta: float) -> void:
 		_play_animation(&"hit")
 		if _timer <= 0.0: _scream()
 		return
-	_move_on_surface(delta)
+	match state:
+		State.IDLE_PAUSE:
+			velocity = Vector2.ZERO
+			_play_animation(&"idle")
+			if _timer <= 0.0:
+				state = State.ROAM_CRAWL
+				_direction = _surface_direction(_origin) if _outside_leash() else (-1.0 if _random.randf() < 0.5 else 1.0)
+				_timer = _random.randf_range(minf(roam_crawl_min_seconds, roam_crawl_max_seconds), maxf(roam_crawl_min_seconds, roam_crawl_max_seconds))
+		State.ROAM_CRAWL, State.FLEE:
+			_move_on_surface(delta)
+			if state == State.ROAM_CRAWL and (_timer <= 0.0 or _outside_leash()):
+				_enter_idle()
 
 func _move_on_surface(delta: float) -> void:
 	var tangent := Vector2(-_surface_normal.y, _surface_normal.x).normalized()
@@ -109,8 +128,6 @@ func _move_on_surface(delta: float) -> void:
 		if is_zero_approx(travel_direction): travel_direction = _direction
 		_direction = travel_direction
 		speed_multiplier *= flee_speed_multiplier
-	else:
-		state = State.MOVE
 	var walk_direction := tangent * travel_direction
 	_update_probes(walk_direction)
 	var next_normal := _forward_surface_normal(walk_direction)
@@ -153,10 +170,14 @@ func _move_on_surface(delta: float) -> void:
 	_update_surface_from_collision(walk_velocity)
 	visual.flip_h = _direction > 0.0
 	rotation = _surface_normal.angle() + PI * 0.5
-	var from_origin := global_position - _origin
-	var moving_away := not from_origin.is_zero_approx() and from_origin.normalized().dot(walk_velocity) > 0.0
-	if from_origin.length() >= roam_distance and moving_away:
-		_direction *= -1.0
+
+func _outside_leash() -> bool:
+	return global_position.distance_to(_origin) > maxf(0.0, roam_distance - roam_return_buffer)
+
+func _surface_direction(destination: Vector2) -> float:
+	var tangent := Vector2(-_surface_normal.y, _surface_normal.x).normalized()
+	var direction := signf(tangent.dot(destination - global_position))
+	return direction if not is_zero_approx(direction) else _direction
 
 func _update_surface_from_collision(walk_velocity: Vector2) -> void:
 	if surface_state != SurfaceState.ATTACHED:
@@ -234,6 +255,11 @@ func receive_agitation(_data: Dictionary = {}) -> void:
 	var player := get_tree().get_first_node_in_group(&"player")
 	if player != null and player.has_method("warn_attack"): player.warn_attack(self, telegraph_seconds)
 
+func _enter_idle() -> void:
+	state = State.IDLE_PAUSE
+	_timer = _random.randf_range(minf(idle_pause_min_seconds, idle_pause_max_seconds), maxf(idle_pause_min_seconds, idle_pause_max_seconds))
+	velocity = Vector2.ZERO
+
 func _start_flee(target: Node2D) -> void:
 	if target == null or not target.is_in_group(&"player") or state == State.ATTACK:
 		return
@@ -247,7 +273,7 @@ func _scream() -> void:
 	flash.configure(&"crystal", &"dazzled", flash_duration, shape, self, scream_priority, scream_radius * 2.0)
 	flash.global_position = global_position
 	get_parent().call_deferred(&"add_child", flash)
-	state = State.MOVE
+	_enter_idle()
 	_cooldown = scream_cooldown
 
 func _drop_crystal(_source: Node) -> void:
@@ -296,7 +322,7 @@ func restore_state(data: Dictionary) -> void:
 	if support.restore_state(data):
 		global_position = _origin
 		_reset_surface()
-		state = State.MOVE
+		_enter_idle()
 func handle_world_out_of_bounds() -> void:
 	global_position = _origin
 	_surface_normal = Vector2.UP
