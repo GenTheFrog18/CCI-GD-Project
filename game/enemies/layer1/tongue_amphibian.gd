@@ -107,11 +107,11 @@ func _physics_process(delta: float) -> void:
 			state = State.IDLE
 			_timer = cooldown_seconds
 	elif investigating_sound:
-		state = State.MOVE
+		state = State.IDLE
 		if global_position.distance_to(_investigation_position) <= 8.0:
-			_investigation_remaining = 0.0
-			$AwarenessIndicator.hide()
+			_roam_stuck_seconds = 0.0
 		else:
+			state = State.MOVE
 			_move_toward(_investigation_position)
 	elif desired != null:
 		var distance := global_position.distance_to(desired.global_position)
@@ -127,7 +127,7 @@ func _physics_process(delta: float) -> void:
 		_roam()
 	if state == State.ATTACK:
 		velocity.x = 0.0
-	if state != State.ATTACK and grounded and _jump_timer <= 0.0 and not support.status.has_status(&"electro_stunned"):
+	if state != State.ATTACK and not investigating_sound and grounded and _jump_timer <= 0.0 and not support.status.has_status(&"electro_stunned"):
 		velocity.x = _facing_direction * move_speed * support.status.get_multiplier(&"move_speed")
 		velocity.y = jump_velocity * _random_jump_height() * support.status.get_multiplier(&"jump_strength")
 		_jump_timer = _random_jump_cooldown()
