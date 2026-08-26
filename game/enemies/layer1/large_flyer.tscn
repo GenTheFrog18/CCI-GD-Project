@@ -6,8 +6,8 @@
 [ext_resource type="Script" uid="uid://ctpy5jx0wglna" path="res://core/sensing/sound_listener.gd" id="4"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yfnlj"]
-radius = 11.0
-height = 54.0
+radius = 12.0
+height = 70.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames"]
 animations = []

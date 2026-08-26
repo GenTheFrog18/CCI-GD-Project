@@ -562,9 +562,18 @@ func _draw() -> void:
 	draw_string(ThemeDB.fallback_font, Vector2(-96.0, -72.0), "State: %s" % state_names[state], HORIZONTAL_ALIGNMENT_CENTER, 192.0, 12, Color(1.0, 0.9, 0.35, 1.0))
 	if body_collision == null or body_collision.shape == null:
 		return
+	draw_set_transform(body_collision.position, body_collision.rotation, body_collision.scale)
 	if body_collision.shape is RectangleShape2D:
 		var size := (body_collision.shape as RectangleShape2D).size
 		draw_rect(Rect2(-size * 0.5, size), Color(1.0, 0.2, 0.2, 0.9), false, 2.0)
+	elif body_collision.shape is CapsuleShape2D:
+		var capsule := body_collision.shape as CapsuleShape2D
+		var half_segment := maxf(0.0, (capsule.height - capsule.radius * 2.0) * 0.5)
+		var color := Color(1.0, 0.2, 0.2, 0.9)
+		draw_line(Vector2(-capsule.radius, -half_segment), Vector2(-capsule.radius, half_segment), color, 2.0)
+		draw_line(Vector2(capsule.radius, -half_segment), Vector2(capsule.radius, half_segment), color, 2.0)
+		draw_arc(Vector2(0.0, -half_segment), capsule.radius, PI, TAU, 16, color, 2.0)
+		draw_arc(Vector2(0.0, half_segment), capsule.radius, 0.0, PI, 16, color, 2.0)
 func apply_damage(info: DamageInfo) -> bool:
 	var applied := support.apply_damage(info)
 	if applied and not support.health.is_dead and state not in [State.ATTACK_SETUP, State.DIVE]: _begin_recovery()
