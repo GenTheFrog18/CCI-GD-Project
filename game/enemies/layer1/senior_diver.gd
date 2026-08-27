@@ -116,7 +116,7 @@ func _physics_process(delta: float) -> void:
 			_was_restricted = false
 			_apply_motion(delta)
 			return
-		if not _aggravated:
+		if inside_restricted and not _aggravated:
 			if _dialogue_is_active():
 				state = State.POST
 				velocity.x = 0.0
