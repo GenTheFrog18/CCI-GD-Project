@@ -32,8 +32,6 @@ enum State { SPAWN, ROAM, INVESTIGATE, SEARCH, CONFIRMED_TARGET, PREPARE_POUNCE,
 @export var investigation_arrival_tolerance := 18.0
 @export var search_radius := 64.0
 @export var search_duration := 2.5
-@export var search_pause_min_seconds := 0.25
-@export var search_pause_max_seconds := 0.8
 @export var pounce_engagement_distance := 42.0
 @export var pounce_prepare_duration := 0.75
 @export var pounce_speed := 250.0
@@ -139,6 +137,9 @@ func _physics_process(delta: float) -> void:
 		queue_redraw()
 
 func _process_roam(delta: float) -> void:
+	_process_flat_roam(delta, roam_speed)
+
+func _process_flat_roam(delta: float, speed: float, boundary_center: Vector2 = Vector2.ZERO, boundary_radius: float = -1.0) -> void:
 	if _pause_timer > 0.0:
 		visual.play(&"idle")
 		velocity.x = move_toward(velocity.x, 0.0, ground_acceleration * delta)
@@ -148,9 +149,13 @@ func _process_roam(delta: float) -> void:
 	if _roam_timer <= 0.0:
 		_roam_direction = _random_direction()
 		_roam_timer = _random.randf_range(roam_burst_min_seconds, roam_burst_max_seconds)
+	if boundary_radius > 0.0:
+		var horizontal_offset := global_position.x - boundary_center.x
+		if absf(horizontal_offset) >= boundary_radius and signf(horizontal_offset) == _roam_direction:
+			_roam_direction = -signf(horizontal_offset)
 	visual.play(&"run")
 	_roam_timer -= delta
-	velocity.x = move_toward(velocity.x, _roam_direction * roam_speed, ground_acceleration * delta)
+	velocity.x = move_toward(velocity.x, _roam_direction * speed, ground_acceleration * delta)
 	_ground_motion(delta)
 	if is_on_wall():
 		_roam_direction *= -1.0
@@ -195,23 +200,7 @@ func _process_search(delta: float) -> void:
 			_last_known_position = next_event.position
 			_enter_investigate()
 		return
-	if traversal.is_active():
-		visual.play(&"run")
-		traversal.physics_step(delta)
-		return
-	if _pause_timer > 0.0:
-		_pause_timer -= delta
-		_ground_motion(delta)
-		return
-	_movement_speed = investigation_speed
-	var offset := Vector2.from_angle(_random.randf_range(0.0, TAU)) * _random.randf_range(8.0, search_radius)
-	var result: GroundTraversal2D.RouteResult = traversal.request_move_to(_search_center + offset, &"search")
-	_pause_timer = _random.randf_range(search_pause_min_seconds, search_pause_max_seconds)
-	if result != GroundTraversal2D.RouteResult.SUCCESS:
-		_ground_motion(delta)
-	else:
-		visual.play(&"run")
-		traversal.physics_step(delta)
+	_process_flat_roam(delta, investigation_speed, _search_center, search_radius)
 
 func _process_confirmed(delta: float) -> void:
 	if not _player_detected():
@@ -342,7 +331,7 @@ func _on_route_completed() -> void:
 			_roam_timer = 0.0
 			_pause_timer = _random_pause()
 		State.SEARCH:
-			_pause_timer = _random.randf_range(search_pause_min_seconds, search_pause_max_seconds)
+			_pause_timer = _random_pause()
 
 func _on_route_failed(_result: GroundTraversal2D.RouteResult, last_reachable: Vector2, _reason: StringName) -> void:
 	match state:
@@ -354,7 +343,7 @@ func _on_route_failed(_result: GroundTraversal2D.RouteResult, last_reachable: Ve
 		State.ROAM:
 			_pause_timer = _random_pause()
 		State.SEARCH:
-			_pause_timer = _random.randf_range(search_pause_min_seconds, search_pause_max_seconds)
+			_pause_timer = _random_pause()
 
 func _consider_sound(event: SoundEvent) -> void:
 	if event == null or not support.detectors_enabled() or event.source == self:

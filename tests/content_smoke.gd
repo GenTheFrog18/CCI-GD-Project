@@ -225,6 +225,11 @@ func _test_layer2_enemies() -> void:
 	hound._roam_timer = 0.01
 	hound._process_roam(0.1)
 	_check(is_zero_approx(hound.velocity.x) and hound._pause_timer > 0.0, "Hound pauses after a roam burst")
+	hound._enter_search(Vector2.ZERO)
+	hound._pause_timer = 0.0
+	hound._roam_timer = 0.0
+	hound._process_search(0.1)
+	_check(not is_zero_approx(hound.velocity.x), "Hound uses timed movement while searching")
 	var hound_attacker := Node2D.new()
 	add_child(hound_attacker)
 	hound._on_damaged(DamageInfo.new(1.0, hound_attacker, &"tester"))
