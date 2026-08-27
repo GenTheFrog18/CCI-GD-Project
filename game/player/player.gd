@@ -32,6 +32,8 @@ signal threat_warning_requested(source: Node2D, duration: float)
 @export var rope_lateral_range := 8.0
 @export var rope_lateral_speed := 48.0
 @export var detection_origin_offset := Vector2(0.0, -28.0)
+@export_range(0.01, 1.0, 0.01) var hit_flash_duration := 0.05
+@export_range(0.0, 1.0, 0.01) var hit_flash_gap := 0.04
 @export var species_id: StringName = &"player"
 @export var persistent_id := "player"
 
@@ -80,7 +82,7 @@ func _ready() -> void:
 	_hit_flash = HitFlash.new()
 	add_child(_hit_flash)
 	_hit_flash.setup(self)
-	health.damaged.connect(func(info: DamageInfo): _hit_flash.play(2 if info.causes_hit_reaction else 1))
+	health.damaged.connect(func(info: DamageInfo): _hit_flash.play(2 if info.causes_hit_reaction else 1, hit_flash_duration, hit_flash_gap))
 	curse_tracker = CurseTracker.new()
 	add_child(curse_tracker)
 	curse_tracker.setup(self)

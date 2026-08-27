@@ -311,6 +311,8 @@ collision_layer = 2
 script = ExtResource("1")
 move_speed = 90.0
 carry_capacity = 15
+hit_flash_duration = 0.05
+hit_flash_gap = 0.04
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=706998304]
 position = Vector2(0, -14)

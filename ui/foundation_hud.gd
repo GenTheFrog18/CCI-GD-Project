@@ -51,6 +51,9 @@ var _status_elapsed := 0.0
 var _threats: Dictionary = {}
 var effect_overlay: ColorRect
 var health_flames: Array[TextureRect] = []
+var _health_flash_tween: Tween
+var _health_flash_normal_materials: Array[Material] = []
+var _health_flash_material: ShaderMaterial
 var hotbar_icons: Array[TextureRect] = []
 var hotbar_slots: Array[Control] = []
 var hotbar_indices: Array[int] = []
@@ -99,6 +102,7 @@ func set_player(value: PlayerController) -> void:
 	player.inventory_toggled.connect(_on_inventory_toggled)
 	player.prompt_changed.connect(func(text: String): prompt_label.text = text)
 	player.health.health_changed.connect(_set_health_text)
+	player.health.damaged.connect(_flash_health_flames)
 	player.health.died.connect(_on_player_died)
 	player.item_controller.inventory.changed.connect(_refresh_inventory)
 	player.item_controller.feedback_requested.connect(_show_feedback)
@@ -170,6 +174,10 @@ func _build_ui() -> void:
 	for flame in $LogicalUI/HealthFlames.get_children(): health_flames.append(flame as TextureRect)
 	$LogicalUI/HealthFlames.mouse_filter = Control.MOUSE_FILTER_STOP
 	for flame in health_flames: flame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var white_shader := Shader.new()
+	white_shader.code = HitFlash.WHITE_SHADER
+	_health_flash_material = ShaderMaterial.new()
+	_health_flash_material.shader = white_shader
 	health_value_tooltip = $LogicalUI/HealthValueTooltip
 	$LogicalUI/HealthFlames.mouse_entered.connect(func(): health_value_tooltip.show())
 	$LogicalUI/HealthFlames.mouse_exited.connect(func(): health_value_tooltip.hide())
@@ -586,6 +594,35 @@ func _set_health_text(current: float, maximum: float) -> void:
 	for index in health_flames.size():
 		var threshold := maximum * float(index + 1) / float(health_flames.size())
 		health_flames[index].texture = FIRE_FULL if current >= threshold else (FIRE_LOW if current > threshold - maximum / health_flames.size() else FIRE_DEAD)
+
+func _flash_health_flames(info: DamageInfo) -> void:
+	if health_flames.is_empty() or _health_flash_material == null:
+		return
+	if _health_flash_tween != null and _health_flash_tween.is_valid():
+		_health_flash_tween.kill()
+	_restore_health_flames()
+	_health_flash_normal_materials.clear()
+	for flame in health_flames:
+		_health_flash_normal_materials.append(flame.material)
+	_apply_health_flash_material()
+	var flash_duration: float = player.hit_flash_duration if player != null else HitFlash.FLASH_SECONDS
+	var flash_gap: float = player.hit_flash_gap if player != null else HitFlash.GAP_SECONDS
+	var pulses: int = 2 if info.causes_hit_reaction else 1
+	_health_flash_tween = create_tween()
+	for index in pulses:
+		_health_flash_tween.tween_interval(flash_duration)
+		_health_flash_tween.tween_callback(_restore_health_flames)
+		if index + 1 < pulses:
+			_health_flash_tween.tween_interval(flash_gap)
+			_health_flash_tween.tween_callback(_apply_health_flash_material)
+
+func _apply_health_flash_material() -> void:
+	for flame in health_flames:
+		flame.material = _health_flash_material
+
+func _restore_health_flames() -> void:
+	for index in mini(health_flames.size(), _health_flash_normal_materials.size()):
+		health_flames[index].material = _health_flash_normal_materials[index]
 
 func _select_hotbar(index: int) -> void:
 	if player != null:
