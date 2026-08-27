@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 [ext_resource type="Script" path="res://game/enemies/layer1/senior_diver.gd" id="1"]
 [ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
 [ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="3"]
@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://data/dialogue/gatekeeper1_first_warning.tres" id="5"]
 [ext_resource type="Resource" path="res://data/dialogue/gatekeeper1_escalation.tres" id="6"]
 [ext_resource type="Resource" path="res://data/dialogue/gatekeeper1_grab.tres" id="7"]
+[ext_resource type="Resource" path="res://data/dialogue/gatekeeper1_blue_intro.tres" id="8"]
 [sub_resource type="RectangleShape2D" id="Shape"]
 size = Vector2(24, 36)
 [node name="SeniorDiver" type="CharacterBody2D"]
@@ -15,6 +16,7 @@ script = ExtResource("1")
 first_warning_dialogue = ExtResource("5")
 escalation_dialogue = ExtResource("6")
 grab_dialogue = ExtResource("7")
+blue_intro_dialogue = ExtResource("8")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -18)
 shape = SubResource("Shape")

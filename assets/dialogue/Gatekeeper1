@@ -30,3 +30,17 @@ Elenara: grr... Lepaskan aku!
 Gatekeeper: Saatnya untukmu pulang ke atas lagi.
 
 Gatekeeper: Delver merah sepertimu tidak memerlukan relik sebanyak ini. Akan kusimpan sampai kau memerlukannya lagi.
+
+end
+
+if the player has blue whistle, there is no first sight encounter. only when the player is in the gatekeeper detection range and sees the player (triggers only once):
+
+Gatekeeper: Ah peluit biru! ku anggap kamu disini untuk perjalanan pertama mu ke layer 2?
+
+Elanara: Yap! betul sekali, ku ingin pergi lebih dalam!
+
+Gatekeeper: Baiklah, berhati-hati dibawah sana dan perhatikan langkahmu.
+
+Gatekeeper: Jika perlu bantuan, penjaga outpost di barat mungkin bisa membantu.
+
+Elenara: Baik! terimakasih, ku akan memberitahumu jika ada sesuatu yang keren dibawah sana!

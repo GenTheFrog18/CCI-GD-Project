@@ -9,6 +9,7 @@ const WALK_SHEET := preload("res://assets/art/characters/npc/animation/Gatekeepe
 const GRAB_SHEET := preload("res://assets/art/characters/npc/animation/Gatekeeper1/Gatekeeper1Grab-48x64-10FPS.png")
 const FIRST_WARNING_FLAG := "gatekeeper1:first_warning_seen"
 const ESCALATION_FLAG := "gatekeeper1:escalation_seen"
+const BLUE_INTRO_FLAG := "gatekeeper1:blue_intro_seen"
 
 @export var persistent_id := "senior_diver"
 @export var move_speed := 42.0
@@ -25,6 +26,7 @@ const ESCALATION_FLAG := "gatekeeper1:escalation_seen"
 @export var first_warning_dialogue: DialogueSequence
 @export var escalation_dialogue: DialogueSequence
 @export var grab_dialogue: DialogueSequence
+@export var blue_intro_dialogue: DialogueSequence
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sight: SightSensor = $SightSensor
@@ -80,12 +82,21 @@ func _physics_process(delta: float) -> void:
 		_apply_motion(delta)
 		return
 
-	if not _valid_target(_target) or _is_authorized(_target):
+	if not _valid_target(_target):
 		_clear_target()
 
 	var sees_red := _target != null and _has_sight and _is_red_whistle(_target)
+	var sees_blue := _target != null and _has_sight and _is_authorized(_target)
 	var inside_restricted := _target != null and _has_sight and not _is_authorized(_target) \
 		and global_position.distance_to(_target.global_position) <= restricted_radius
+	if sees_blue and not bool(GameSession.progression_flags.get(BLUE_INTRO_FLAG, false)):
+		if _start_dialogue(blue_intro_dialogue, _target):
+			GameSession.progression_flags[BLUE_INTRO_FLAG] = true
+		state = State.POST
+		velocity.x = 0.0
+		_was_restricted = false
+		_apply_motion(delta)
+		return
 	if sees_red:
 		if not bool(GameSession.progression_flags.get(FIRST_WARNING_FLAG, false)):
 			if _start_dialogue(first_warning_dialogue, _target):
