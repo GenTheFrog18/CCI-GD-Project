@@ -115,8 +115,10 @@ func _choose(index: int) -> void:
 		return
 	if choice.next_sequence != null:
 		var next := choice.next_sequence
+		var next_interactable := interactable
+		var next_player := player
 		_close(false)
-		start_sequence(next, interactable, player)
+		start_sequence(next, next_interactable, next_player)
 		return
 	_step_index += 1
 	_resolving_choice = false
@@ -167,8 +169,10 @@ func _run_action(action: DialogueAction) -> bool:
 			if action.sequence == null:
 				return false
 			var next := action.sequence
+			var next_interactable := interactable
+			var next_player := player
 			_close(false)
-			start_sequence(next, interactable, player)
+			start_sequence(next, next_interactable, next_player)
 			return false
 		DialogueAction.Type.OPEN_TUTORIAL:
 			GameSession.progression_flags["dialogue_tutorial:%s" % action.tutorial_id] = true
@@ -213,7 +217,7 @@ func _grant_or_drop(item_id: StringName, quantity: int, state: Dictionary) -> bo
 	return true
 
 func _finish() -> void:
-	if interactable != null and _sequence == interactable.first_sequence and not interactable.is_first_completed():
+	if interactable != null and not interactable.is_first_completed():
 		interactable.mark_first_completed()
 	_close(true)
 

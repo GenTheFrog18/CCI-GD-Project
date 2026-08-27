@@ -52,8 +52,8 @@ layout_mode = 2
 autowrap_mode = 3
 
 [node name="ChoiceScroll" type="ScrollContainer" parent="Content/Row/Column" unique_id=731240834]
-layout_mode = 2
 custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 3
 vertical_scroll_mode = 2

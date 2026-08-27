@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="DialogueSequence" format=3 uid="uid://btsg43bcuworu"]
 
 [ext_resource type="Script" uid="uid://c561kj13kn4li" path="res://data/definitions/dialogue_line.gd" id="1_line"]
-[ext_resource type="Texture2D" path="res://assets/art/characters/npc/portrait/old_man.png" id="2_oldman"]
+[ext_resource type="Texture2D" uid="uid://s7f6pn0dntwq" path="res://assets/art/characters/npc/portrait/old_man.png" id="2_oldman"]
 [ext_resource type="Texture2D" uid="uid://d0p2emigwb3c7" path="res://assets/art/characters/player/Portrait_Flat.png" id="3_player"]
+[ext_resource type="Script" uid="uid://b787tws6rygrl" path="res://data/definitions/dialogue_action.gd" id="4_p6y6x"]
 [ext_resource type="Script" uid="uid://j8ks4377trg3" path="res://data/definitions/dialogue_sequence.gd" id="4_sequence"]
-[ext_resource type="Script" path="res://data/definitions/dialogue_step.gd" id="5_step"]
-[ext_resource type="Script" path="res://data/definitions/dialogue_choice.gd" id="6_choice"]
+[ext_resource type="Script" uid="uid://b8t3tmjph4vjg" path="res://data/definitions/dialogue_step.gd" id="5_step"]
+[ext_resource type="Script" uid="uid://bbrv3qbntkyis" path="res://data/definitions/dialogue_choice.gd" id="6_choice"]
+[ext_resource type="Script" uid="uid://tvg2d78kr1k2" path="res://data/definitions/dialogue_condition.gd" id="7_p6m26"]
 
 [sub_resource type="Resource" id="Line_open"]
 script = ExtResource("1_line")
@@ -14,156 +16,195 @@ speaker_name = "Old Man"
 text = "Nah, nah. Lihat siapa yang akhirnya datang."
 portrait = ExtResource("2_oldman")
 
+[sub_resource type="Resource" id="Step_open_line"]
+script = ExtResource("5_step")
+line = SubResource("Line_open")
+
 [sub_resource type="Resource" id="Line_bicara_01"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Aku tidak terlambat kok."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Aku tidak bilang terlambat. Aku bilang akhirnya datang. Itu berbeda."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_03"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Aku sudah sering turun sebelumnya."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_04"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Iya benar. Tapi hari ini kau turun sendirian."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_05"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Aku bisa mengurus diriku sendiri kok."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_06"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Aku tahu. Kalau tidak, aku tidak akan membiarkanmu membawa tas itu."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_07"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Aku sudah mencoba selama bertahun-tahun. Kau hanya terlalu mirip ibumu untuk mau mendengarkan."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_08"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Aku pasti akan kembali sebelum malam."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_09"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Oke ya, kalau kau masih belum kembali aku akan mengejarmu."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_10"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Kalau begitu aku harus cepat! Aku ingin melihat apakah ada sesuatu yang berbeda hari ini."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_11"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Aku sudah cukup lama menjadi Delver untuk tahu bahwa rencana biasanya berubah begitu seseorang menginjakkan kaki di Abyss."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_12"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Iya, iya, aku bakal kembali. Tapi kalau aku menemukan sesuatu yang menarik, aku boleh melihatnya sebentar, kan?"
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_13"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Sebentar saja."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_14"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Dan kalau sesuatu itu sangat menarik?"
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_15"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Dan kalau begitu kau tetap kembali."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_16"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Baik! Aku akan mengingatnya."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_17"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Bagus. Ternyata masih ada sedikit harapan."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_18"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Kau akan tetap di sini?"
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_19"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Seseorang harus menjaga gate itu. Dan memastikan kau tidak membawa pulang sesuatu yang mencoba memakan kita."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_20"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Kalau aku menemukan sesuatu yang belum pernah kita lihat, aku akan menunjukkannya padamu dulu!"
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_21"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Hm... Iya baiklah."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_22"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Kau terdengar khawatir."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_23"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Karena aku tahu kau akan menemukan sesuatu."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_bicara_24"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Bukankah itu bagus?"
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_bicara_25"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Itulah yang membuatku khawatir."
 portrait = ExtResource("2_oldman")
+
+[sub_resource type="Resource" id="Sequence_bicara"]
+script = ExtResource("4_sequence")
+sequence_id = &"oldman_bicara"
+entries = Array[ExtResource("1_line")]([SubResource("Line_bicara_01"), SubResource("Line_bicara_02"), SubResource("Line_bicara_03"), SubResource("Line_bicara_04"), SubResource("Line_bicara_05"), SubResource("Line_bicara_06"), SubResource("Line_bicara_07"), SubResource("Line_bicara_08"), SubResource("Line_bicara_09"), SubResource("Line_bicara_10"), SubResource("Line_bicara_11"), SubResource("Line_bicara_12"), SubResource("Line_bicara_13"), SubResource("Line_bicara_14"), SubResource("Line_bicara_15"), SubResource("Line_bicara_16"), SubResource("Line_bicara_17"), SubResource("Line_bicara_18"), SubResource("Line_bicara_19"), SubResource("Line_bicara_20"), SubResource("Line_bicara_21"), SubResource("Line_bicara_22"), SubResource("Line_bicara_23"), SubResource("Line_bicara_24"), SubResource("Line_bicara_25")])
+
+[sub_resource type="Resource" id="Choice_bicara"]
+script = ExtResource("6_choice")
+choice_id = &"bicara"
+label = "Bicara"
+next_sequence = SubResource("Sequence_bicara")
 
 [sub_resource type="Resource" id="Line_tutorial_intro"]
 script = ExtResource("1_line")
@@ -172,30 +213,48 @@ speaker_name = "Old Man"
 text = "Baik. Apa yang ingin kau pelajari?"
 portrait = ExtResource("2_oldman")
 
+[sub_resource type="Resource" id="Step_tutorial_line"]
+script = ExtResource("5_step")
+line = SubResource("Line_tutorial_intro")
+
 [sub_resource type="Resource" id="Line_getting_01"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Bawa perlengkapan yang berguna, perhatikan sekelilingmu, dan rencanakan jalan pulang."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_getting_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Gunakan relik yang kau temukan, hindari pertarungan yang tidak perlu, dan jangan membawa terlalu banyak barang."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_getting_03"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Kedengarannya gampang."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_getting_04"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
-text = "Turun ke Abyss memang mudah. Kembali dengan selamat itu yang sulit."
+text = "Turun ke Abyss memang mudah. Kembali dengan selamat itu yang susah."
 portrait = ExtResource("2_oldman")
+
+[sub_resource type="Resource" id="Sequence_getting"]
+script = ExtResource("4_sequence")
+sequence_id = &"oldman_tutorial_getting_started"
+entries = Array[ExtResource("1_line")]([SubResource("Line_getting_01"), SubResource("Line_getting_02"), SubResource("Line_getting_03"), SubResource("Line_getting_04")])
+
+[sub_resource type="Resource" id="Choice_getting"]
+script = ExtResource("6_choice")
+choice_id = &"getting_started"
+label = "Getting Started"
+next_sequence = SubResource("Sequence_getting")
 
 [sub_resource type="Resource" id="Line_item_01"]
 script = ExtResource("1_line")
@@ -203,18 +262,21 @@ speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Pilih item dari tasmu untuk menggunakannya, bisa click and swap, atau drag and drop."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_item_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Gunakan item sebelum kau benar-benar membutuhkannya. Kau tidak bisa berpikir dengan benar saat panik."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_item_03"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Aku tidak pernah panik kok."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_item_04"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
@@ -222,12 +284,24 @@ speaker_name = "Old Man"
 text = "Oh iya. Bukan panik, hanya berteriak dengan sangat tenang."
 portrait = ExtResource("2_oldman")
 
+[sub_resource type="Resource" id="Sequence_item"]
+script = ExtResource("4_sequence")
+sequence_id = &"oldman_tutorial_item"
+entries = Array[ExtResource("1_line")]([SubResource("Line_item_01"), SubResource("Line_item_02"), SubResource("Line_item_03"), SubResource("Line_item_04")])
+
+[sub_resource type="Resource" id="Choice_item"]
+script = ExtResource("6_choice")
+choice_id = &"item"
+label = "Item"
+next_sequence = SubResource("Sequence_item")
+
 [sub_resource type="Resource" id="Line_multitool_01"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Gunakan multitool pada batu seperti itu disebelah rumah."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_multitool_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
@@ -235,30 +309,45 @@ speaker_name = "Old Man"
 text = "Beberapa benda mungkin menyembunyikan relic atau item lain."
 portrait = ExtResource("2_oldman")
 
+[sub_resource type="Resource" id="Sequence_multitool"]
+script = ExtResource("4_sequence")
+sequence_id = &"oldman_tutorial_multitool"
+entries = Array[ExtResource("1_line")]([SubResource("Line_multitool_01"), SubResource("Line_multitool_02")])
+
+[sub_resource type="Resource" id="Choice_multitool"]
+script = ExtResource("6_choice")
+choice_id = &"multitool_loot"
+label = "Loot"
+next_sequence = SubResource("Sequence_multitool")
+
 [sub_resource type="Resource" id="Line_attack_01"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Kau bisa menyerang apapun dari jarak dekat atau melempar item dari jauh."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_attack_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Namun, lebih baik lari daripada menghadapi. Jangan berharap kau bisa membunuh mereka."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_attack_03"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Gunakan item untuk mengalihkan perhatian, menciptakan jarak, atau melarikan diri."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_attack_04"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Jadi aku tidak harus melawan semuanya?"
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_attack_05"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
@@ -266,18 +355,31 @@ speaker_name = "Old Man"
 text = "Justru sebaiknya tidak."
 portrait = ExtResource("2_oldman")
 
+[sub_resource type="Resource" id="Sequence_attack"]
+script = ExtResource("4_sequence")
+sequence_id = &"oldman_tutorial_attack"
+entries = Array[ExtResource("1_line")]([SubResource("Line_attack_01"), SubResource("Line_attack_02"), SubResource("Line_attack_03"), SubResource("Line_attack_04"), SubResource("Line_attack_05")])
+
+[sub_resource type="Resource" id="Choice_attack"]
+script = ExtResource("6_choice")
+choice_id = &"attack_throw"
+label = "Menyerang dan Melempar"
+next_sequence = SubResource("Sequence_attack")
+
 [sub_resource type="Resource" id="Line_rope_01"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Beli rope dari shop dan pasang untuk menandai atau mengamankan jalur."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_rope_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Jangan menunggu sampai tersesat atau terjebak."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_rope_03"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
@@ -285,24 +387,38 @@ speaker_name = "Old Man"
 text = "Rope adalah jalanmu kembali, ingat itu."
 portrait = ExtResource("2_oldman")
 
+[sub_resource type="Resource" id="Sequence_rope"]
+script = ExtResource("4_sequence")
+sequence_id = &"oldman_tutorial_rope"
+entries = Array[ExtResource("1_line")]([SubResource("Line_rope_01"), SubResource("Line_rope_02"), SubResource("Line_rope_03")])
+
+[sub_resource type="Resource" id="Choice_rope"]
+script = ExtResource("6_choice")
+choice_id = &"rope"
+label = "Rope"
+next_sequence = SubResource("Sequence_rope")
+
 [sub_resource type="Resource" id="Line_relic_01"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Relik tidak selalu menjelaskan cara kerjanya."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_relic_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Amati, gunakan, dan eksperimentasi lah dengan hati-hati."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_relic_03"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Kalau tidak berhasil?"
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_relic_04"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
@@ -310,24 +426,38 @@ speaker_name = "Old Man"
 text = "Simpan. Kadang-kadang kau baru memahami sebuah relic setelah menemukan kegunaannya."
 portrait = ExtResource("2_oldman")
 
+[sub_resource type="Resource" id="Sequence_relic"]
+script = ExtResource("4_sequence")
+sequence_id = &"oldman_tutorial_relic"
+entries = Array[ExtResource("1_line")]([SubResource("Line_relic_01"), SubResource("Line_relic_02"), SubResource("Line_relic_03"), SubResource("Line_relic_04")])
+
+[sub_resource type="Resource" id="Choice_relic"]
+script = ExtResource("6_choice")
+choice_id = &"relic"
+label = "Relic"
+next_sequence = SubResource("Sequence_relic")
+
 [sub_resource type="Resource" id="Line_weight_01"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Semua barang memiliki berat."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_weight_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Jika tasmu terlalu penuh, gerakanmu akan melambat."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_weight_03"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Tapi kan semua hal ada gunanya."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_weight_04"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
@@ -335,30 +465,45 @@ speaker_name = "Old Man"
 text = "Ya pilihlah benar-benar. Barang apapun tidak akan berguna jika kamu terjebak."
 portrait = ExtResource("2_oldman")
 
+[sub_resource type="Resource" id="Sequence_weight"]
+script = ExtResource("4_sequence")
+sequence_id = &"oldman_tutorial_weight"
+entries = Array[ExtResource("1_line")]([SubResource("Line_weight_01"), SubResource("Line_weight_02"), SubResource("Line_weight_03"), SubResource("Line_weight_04")])
+
+[sub_resource type="Resource" id="Choice_weight"]
+script = ExtResource("6_choice")
+choice_id = &"item_weight"
+label = "Berat Barang"
+next_sequence = SubResource("Sequence_weight")
+
 [sub_resource type="Resource" id="Line_creature_01"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Amati makhluk sebelum bertindak."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_creature_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Sebagian akan menyerang saat melihatmu. Sebagian lain bereaksi terhadap suara, jarak, atau wilayahnya."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_creature_03"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Perhatikan gerakannya, gunakan lingkungan, dan jangan malu untuk berlari."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_creature_04"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Aku bisa menghindari mereka?"
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_creature_05"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
@@ -366,30 +511,45 @@ speaker_name = "Old Man"
 text = "Menghindari pertarungan sering kali merupakan pilihan terbaik."
 portrait = ExtResource("2_oldman")
 
+[sub_resource type="Resource" id="Sequence_creature"]
+script = ExtResource("4_sequence")
+sequence_id = &"oldman_tutorial_creatures"
+entries = Array[ExtResource("1_line")]([SubResource("Line_creature_01"), SubResource("Line_creature_02"), SubResource("Line_creature_03"), SubResource("Line_creature_04"), SubResource("Line_creature_05")])
+
+[sub_resource type="Resource" id="Choice_creature"]
+script = ExtResource("6_choice")
+choice_id = &"creatures"
+label = "Perilaku Makhluk"
+next_sequence = SubResource("Sequence_creature")
+
 [sub_resource type="Resource" id="Line_curse_01"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Semakin dalam kau pergi, semakin berbahaya perjalananmu kembali."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_curse_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Rencanakan jalur pulang sebelum turun dan jangan menunggu sampai tubuhmu yang membuat keputusan."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_curse_03"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Kalau sudah terkena Curse?"
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_curse_04"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Gunakan Numbing Pill jika perlu."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_curse_05"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
@@ -397,36 +557,52 @@ speaker_name = "Old Man"
 text = "Tapi ingat, hilangnya rasa sakit bukan berarti bahayanya hilang."
 portrait = ExtResource("2_oldman")
 
+[sub_resource type="Resource" id="Sequence_curse"]
+script = ExtResource("4_sequence")
+sequence_id = &"oldman_tutorial_curse"
+entries = Array[ExtResource("1_line")]([SubResource("Line_curse_01"), SubResource("Line_curse_02"), SubResource("Line_curse_03"), SubResource("Line_curse_04"), SubResource("Line_curse_05")])
+
+[sub_resource type="Resource" id="Choice_curse"]
+script = ExtResource("6_choice")
+choice_id = &"ascension_curse"
+label = "Ascension Curse"
+next_sequence = SubResource("Sequence_curse")
+
 [sub_resource type="Resource" id="Line_cycle_01"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Turun, temukan sesuatu, lalu kembali dengan selamat."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_cycle_02"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Setelah itu, jual barang yang tidak kau perlukan, pelajari relic yang kau temukan, dan bersiap untuk penyelaman berikutnya."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_cycle_03"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Kedengarannya sederhana."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_cycle_04"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
 speaker_name = "Old Man"
 text = "Kedengarannya memang sederhana."
 portrait = ExtResource("2_oldman")
+
 [sub_resource type="Resource" id="Line_cycle_05"]
 script = ExtResource("1_line")
 speaker_id = &"elenara"
 speaker_name = "Elenara"
 text = "Baiklah, aku akan kembali dengan sesuatu yang menarik."
 portrait = ExtResource("3_player")
+
 [sub_resource type="Resource" id="Line_cycle_06"]
 script = ExtResource("1_line")
 speaker_id = &"old_man"
@@ -434,116 +610,22 @@ speaker_name = "Old Man"
 text = "Pastikan kau masih hidup untuk menceritakannya."
 portrait = ExtResource("2_oldman")
 
-[sub_resource type="Resource" id="Sequence_bicara"]
-script = ExtResource("4_sequence")
-sequence_id = &"oldman_bicara"
-entries = Array[ExtResource("1_line")]([SubResource("Line_bicara_01"), SubResource("Line_bicara_02"), SubResource("Line_bicara_03"), SubResource("Line_bicara_04"), SubResource("Line_bicara_05"), SubResource("Line_bicara_06"), SubResource("Line_bicara_07"), SubResource("Line_bicara_08"), SubResource("Line_bicara_09"), SubResource("Line_bicara_10"), SubResource("Line_bicara_11"), SubResource("Line_bicara_12"), SubResource("Line_bicara_13"), SubResource("Line_bicara_14"), SubResource("Line_bicara_15"), SubResource("Line_bicara_16"), SubResource("Line_bicara_17"), SubResource("Line_bicara_18"), SubResource("Line_bicara_19"), SubResource("Line_bicara_20"), SubResource("Line_bicara_21"), SubResource("Line_bicara_22"), SubResource("Line_bicara_23"), SubResource("Line_bicara_24"), SubResource("Line_bicara_25")])
-
-[sub_resource type="Resource" id="Sequence_getting"]
-script = ExtResource("4_sequence")
-sequence_id = &"oldman_tutorial_getting_started"
-entries = Array[ExtResource("1_line")]([SubResource("Line_getting_01"), SubResource("Line_getting_02"), SubResource("Line_getting_03"), SubResource("Line_getting_04")])
-[sub_resource type="Resource" id="Sequence_item"]
-script = ExtResource("4_sequence")
-sequence_id = &"oldman_tutorial_item"
-entries = Array[ExtResource("1_line")]([SubResource("Line_item_01"), SubResource("Line_item_02"), SubResource("Line_item_03"), SubResource("Line_item_04")])
-[sub_resource type="Resource" id="Sequence_multitool"]
-script = ExtResource("4_sequence")
-sequence_id = &"oldman_tutorial_multitool"
-entries = Array[ExtResource("1_line")]([SubResource("Line_multitool_01"), SubResource("Line_multitool_02")])
-[sub_resource type="Resource" id="Sequence_attack"]
-script = ExtResource("4_sequence")
-sequence_id = &"oldman_tutorial_attack"
-entries = Array[ExtResource("1_line")]([SubResource("Line_attack_01"), SubResource("Line_attack_02"), SubResource("Line_attack_03"), SubResource("Line_attack_04"), SubResource("Line_attack_05")])
-[sub_resource type="Resource" id="Sequence_rope"]
-script = ExtResource("4_sequence")
-sequence_id = &"oldman_tutorial_rope"
-entries = Array[ExtResource("1_line")]([SubResource("Line_rope_01"), SubResource("Line_rope_02"), SubResource("Line_rope_03")])
-[sub_resource type="Resource" id="Sequence_relic"]
-script = ExtResource("4_sequence")
-sequence_id = &"oldman_tutorial_relic"
-entries = Array[ExtResource("1_line")]([SubResource("Line_relic_01"), SubResource("Line_relic_02"), SubResource("Line_relic_03"), SubResource("Line_relic_04")])
-[sub_resource type="Resource" id="Sequence_weight"]
-script = ExtResource("4_sequence")
-sequence_id = &"oldman_tutorial_weight"
-entries = Array[ExtResource("1_line")]([SubResource("Line_weight_01"), SubResource("Line_weight_02"), SubResource("Line_weight_03"), SubResource("Line_weight_04")])
-[sub_resource type="Resource" id="Sequence_creature"]
-script = ExtResource("4_sequence")
-sequence_id = &"oldman_tutorial_creatures"
-entries = Array[ExtResource("1_line")]([SubResource("Line_creature_01"), SubResource("Line_creature_02"), SubResource("Line_creature_03"), SubResource("Line_creature_04"), SubResource("Line_creature_05")])
-[sub_resource type="Resource" id="Sequence_curse"]
-script = ExtResource("4_sequence")
-sequence_id = &"oldman_tutorial_curse"
-entries = Array[ExtResource("1_line")]([SubResource("Line_curse_01"), SubResource("Line_curse_02"), SubResource("Line_curse_03"), SubResource("Line_curse_04"), SubResource("Line_curse_05")])
 [sub_resource type="Resource" id="Sequence_cycle"]
 script = ExtResource("4_sequence")
 sequence_id = &"oldman_tutorial_cycle"
 entries = Array[ExtResource("1_line")]([SubResource("Line_cycle_01"), SubResource("Line_cycle_02"), SubResource("Line_cycle_03"), SubResource("Line_cycle_04"), SubResource("Line_cycle_05"), SubResource("Line_cycle_06")])
 
-[sub_resource type="Resource" id="Choice_bicara"]
-script = ExtResource("6_choice")
-choice_id = &"bicara"
-label = "Bicara"
-next_sequence = SubResource("Sequence_bicara")
-[sub_resource type="Resource" id="Choice_getting"]
-script = ExtResource("6_choice")
-choice_id = &"getting_started"
-label = "Getting Started"
-next_sequence = SubResource("Sequence_getting")
-[sub_resource type="Resource" id="Choice_item"]
-script = ExtResource("6_choice")
-choice_id = &"item"
-label = "Item"
-next_sequence = SubResource("Sequence_item")
-[sub_resource type="Resource" id="Choice_multitool"]
-script = ExtResource("6_choice")
-choice_id = &"multitool_loot"
-label = "Multitool dan Breakable Loot Spawner"
-next_sequence = SubResource("Sequence_multitool")
-[sub_resource type="Resource" id="Choice_attack"]
-script = ExtResource("6_choice")
-choice_id = &"attack_throw"
-label = "Menyerang dan Melempar"
-next_sequence = SubResource("Sequence_attack")
-[sub_resource type="Resource" id="Choice_rope"]
-script = ExtResource("6_choice")
-choice_id = &"rope"
-label = "Rope"
-next_sequence = SubResource("Sequence_rope")
-[sub_resource type="Resource" id="Choice_relic"]
-script = ExtResource("6_choice")
-choice_id = &"relic"
-label = "Relic"
-next_sequence = SubResource("Sequence_relic")
-[sub_resource type="Resource" id="Choice_weight"]
-script = ExtResource("6_choice")
-choice_id = &"item_weight"
-label = "Berat Barang"
-next_sequence = SubResource("Sequence_weight")
-[sub_resource type="Resource" id="Choice_creature"]
-script = ExtResource("6_choice")
-choice_id = &"creatures"
-label = "Perilaku Makhluk"
-next_sequence = SubResource("Sequence_creature")
-[sub_resource type="Resource" id="Choice_curse"]
-script = ExtResource("6_choice")
-choice_id = &"ascension_curse"
-label = "Ascension Curse"
-next_sequence = SubResource("Sequence_curse")
 [sub_resource type="Resource" id="Choice_cycle"]
 script = ExtResource("6_choice")
 choice_id = &"dive_cycle"
 label = "Siklus Penyelaman"
 next_sequence = SubResource("Sequence_cycle")
 
-[sub_resource type="Resource" id="Step_tutorial_line"]
-script = ExtResource("5_step")
-type = 0
-line = SubResource("Line_tutorial_intro")
 [sub_resource type="Resource" id="Step_tutorial_choice"]
 script = ExtResource("5_step")
 type = 1
 choices = Array[ExtResource("6_choice")]([SubResource("Choice_getting"), SubResource("Choice_item"), SubResource("Choice_multitool"), SubResource("Choice_attack"), SubResource("Choice_rope"), SubResource("Choice_relic"), SubResource("Choice_weight"), SubResource("Choice_creature"), SubResource("Choice_curse"), SubResource("Choice_cycle")])
+
 [sub_resource type="Resource" id="Sequence_tutorial"]
 script = ExtResource("4_sequence")
 sequence_id = &"oldman_tutorial"
@@ -554,10 +636,7 @@ script = ExtResource("6_choice")
 choice_id = &"tutorial"
 label = "Tutorial"
 next_sequence = SubResource("Sequence_tutorial")
-[sub_resource type="Resource" id="Step_open_line"]
-script = ExtResource("5_step")
-type = 0
-line = SubResource("Line_open")
+
 [sub_resource type="Resource" id="Step_main_choice"]
 script = ExtResource("5_step")
 type = 1
