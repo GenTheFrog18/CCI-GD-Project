@@ -194,7 +194,7 @@ func _on_grab_dialogue_closed(_completed: bool, target: PlayerController) -> voi
 	_finish_grab(target)
 
 func _finish_grab(target: PlayerController) -> void:
-	var confiscated := target.confiscate_map_items()
+	var confiscated := target.confiscate_relic_items()
 	_return_confiscated_items(confiscated)
 	await get_tree().create_timer(grab_lock_seconds).timeout
 	if _grab_cancelled:

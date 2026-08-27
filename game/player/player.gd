@@ -257,8 +257,8 @@ func try_pickup_item(item_id: StringName, quantity: int, state: Dictionary) -> b
 func take_item_for_theft(can_take_multitool := true) -> ItemStack:
 	return item_controller.inventory.take_for_theft(can_take_multitool)
 
-func confiscate_map_items() -> Array[ItemStack]:
-	return item_controller.inventory.remove_origin(&"map")
+func confiscate_relic_items() -> Array[ItemStack]:
+	return item_controller.inventory.remove_relic_items()
 
 func use_whistle() -> bool:
 	if physical_whistle_id.is_empty() or inventory_open or locks.is_locked():
