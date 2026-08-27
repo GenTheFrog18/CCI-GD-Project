@@ -83,7 +83,7 @@ func _connect_sources() -> void:
 		_inventory.changed.connect(_refresh_callable)
 
 func _refresh(_ignored = null) -> void:
-	money_label.text = "%dg" % GameSession.money
+	money_label.text = "$%d" % GameSession.money
 	if _service == null or _inventory == null:
 		return
 	_clear_rows(buy_rows)

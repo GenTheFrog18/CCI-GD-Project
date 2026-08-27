@@ -20,6 +20,7 @@ signal close_requested
 @onready var item_name: Label = $BookContent/ItemName
 @onready var item_description: Label = $BookContent/ItemDescription
 @onready var weight_label: Label = $BookContent/Weight
+@onready var currency_label: Label = $BookContent/Currency
 @onready var whistle_icon: TextureRect = $BookContent/Whistle/Icon
 
 var slot_buttons: Array[InventorySlot] = []
@@ -40,6 +41,8 @@ func _ready() -> void:
 	]:
 		slot_buttons.append(get_node(path) as InventorySlot)
 	_backpack_rest_position = backpack.position
+	GameSession.money_changed.connect(_set_currency)
+	_set_currency(GameSession.money)
 	close_button.pressed.connect(close_requested.emit)
 	($BookContent/SubmenuButton as Button).pressed.connect(func(): $BookContent/Submenu.visible = not $BookContent/Submenu.visible)
 	($BookContent/Submenu/Panel/Content/Close as Button).pressed.connect(func(): $BookContent/Submenu.hide())
@@ -84,6 +87,9 @@ func set_details(name_text: String, description_text: String, total_weight: int,
 		"%d%s" % [total_weight, weight_unit],
 		"%d%s" % [carry_capacity, weight_unit],
 	]
+
+func _set_currency(value: int) -> void:
+	currency_label.text = "$%d" % value
 
 func set_whistle(icon: Texture2D, tooltip: String) -> void:
 	whistle_icon.texture = icon

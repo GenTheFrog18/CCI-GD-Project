@@ -155,16 +155,6 @@ texture = ExtResource("10_quit")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PlayIntro" type="CheckButton" parent="DesignUI" unique_id=2093000001]
-layout_mode = 0
-offset_left = 396.0
-offset_top = 172.0
-offset_right = 550.0
-offset_bottom = 196.0
-tooltip_text = "Play the opening and first surface dialogue"
-mouse_default_cursor_shape = 2
-text = "Play opening dialogue"
-
 [node name="Footer" type="VBoxContainer" parent="DesignUI" unique_id=1039943615]
 layout_mode = 1
 anchors_preset = 2

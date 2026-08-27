@@ -16,6 +16,10 @@ var _card_top := 0.0
 var _card_bottom := 0.0
 var _syncing_display_controls := false
 
+var play_intro_dialogue_enabled: bool:
+	get:
+		return play_intro_toggle.button_pressed
+
 @onready var dimmer: ColorRect = $Dimmer
 @onready var card: Control = $Card
 @onready var close_button: TextureButton = $Card/CloseButton
@@ -27,6 +31,7 @@ var _syncing_display_controls := false
 @onready var entry_how_to: Button = $Card/MenuPage/MenuColumn/EntryHowToPlay
 @onready var entry_credits: Button = $Card/MenuPage/MenuColumn/EntryCredits
 @onready var entry_main_action: Button = $Card/MenuPage/MenuColumn/EntryMainAction
+@onready var play_intro_toggle: CheckButton = $Card/MenuPage/PlayIntro
 @onready var sound_page: Control = $Card/SoundPage
 @onready var volume: HSlider = $Card/SoundPage/Volume
 @onready var screen_page: Control = $Card/ScreenPage
@@ -36,6 +41,7 @@ var _syncing_display_controls := false
 @onready var info_page: Control = $Card/InfoPage
 @onready var info_title: Label = $Card/InfoPage/Title
 @onready var info_body: Label = $Card/InfoPage/Body
+@onready var how_to_page: Control = $Card/HowToPlayPage
 
 func configure(show_resume: bool, action_text: String) -> void:
 	include_resume = show_resume
@@ -45,12 +51,13 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	z_index = 10
 	visible = false
+	play_intro_toggle.button_pressed = GameSession.first_launch
 	_card_top = card.offset_top
 	_card_bottom = card.offset_bottom
 	entry_resume.pressed.connect(func(): resume_requested.emit())
 	entry_sound.pressed.connect(func(): _show_page(sound_page, volume))
 	entry_screen.pressed.connect(func(): _show_page(screen_page, fullscreen))
-	entry_how_to.pressed.connect(func(): _show_info("How to Play", "A/D or arrows: move\nSpace: jump\nE: interact\n1/2 or mouse wheel: hotbar\nLeft click: use\nRight click: throw / secondary\nTab: inventory\nEsc: pause\nF11: fullscreen\nW/S: climb rope"))
+	entry_how_to.pressed.connect(_show_how_to_page)
 	entry_credits.pressed.connect(func(): _show_info("Credits", "Team Gorillaz Games\n\nFont: Perfect DOS VGA 437\nCopyright (c) Zeh Fernando\nLicensed under SIL Open Font License 1.1"))
 	entry_main_action.pressed.connect(_run_main_action)
 	for entry in [entry_resume, entry_sound, entry_screen, entry_how_to, entry_credits, entry_main_action]:
@@ -87,6 +94,7 @@ func _show_main_page() -> void:
 	sound_page.visible = false
 	screen_page.visible = false
 	info_page.visible = false
+	how_to_page.visible = false
 	entry_resume.visible = include_resume
 	entry_main_action.visible = include_resume
 	entry_main_action.tooltip_text = main_action_text
@@ -100,6 +108,7 @@ func _show_page(page: Control, focus: Control) -> void:
 	sound_page.visible = page == sound_page
 	screen_page.visible = page == screen_page
 	info_page.visible = false
+	how_to_page.visible = false
 	if page == sound_page:
 		volume.value = GameSession.master_volume
 	if page == screen_page:
@@ -142,12 +151,21 @@ func _show_info(title: String, body: String) -> void:
 	sound_page.visible = false
 	screen_page.visible = false
 	info_page.visible = true
+	how_to_page.visible = false
 	info_title.text = title
 	info_body.text = body
 	close_button.grab_focus()
 
+func _show_how_to_page() -> void:
+	menu_page.visible = false
+	sound_page.visible = false
+	screen_page.visible = false
+	info_page.visible = false
+	how_to_page.visible = true
+	close_button.grab_focus()
+
 func show_how_to_page() -> void:
-	_show_info("How to Play", "A/D or arrows: move\nSpace: jump\nE: interact\n1/2 or mouse wheel: hotbar\nLeft click: use\nRight click: throw / secondary\nTab: inventory\nEsc: pause\nF11: fullscreen\nW/S: climb rope")
+	_show_how_to_page()
 
 func _run_main_action() -> void:
 	if include_resume:

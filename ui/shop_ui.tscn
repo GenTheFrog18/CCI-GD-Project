@@ -140,7 +140,7 @@ offset_bottom = 40.0
 grow_horizontal = 0
 theme_type_variation = &"PixelHeading"
 theme_override_colors/font_color = Color(1, 0.92, 0.82, 1)
-text = "0g"
+text = "$0"
 horizontal_alignment = 2
 
 [node name="Confirmation" parent="." unique_id=299100056 instance=ExtResource("5")]

@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://cwl7f5o4qjyn4" path="res://assets/art/ui/settings/credits.png" id="9_credits"]
 [ext_resource type="Texture2D" uid="uid://bayc8pamw0x18" path="res://assets/art/ui/settings/button-close.png" id="10_close"]
 [ext_resource type="Texture2D" uid="uid://c5knbiog4n7et" path="res://assets/art/ui/main_menu/quit.png" id="11_quit"]
+[ext_resource type="PackedScene" path="res://ui/how_to_play.tscn" id="12_how_to_play"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleFocus"]
 
@@ -227,6 +228,17 @@ texture = ExtResource("11_quit")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="PlayIntro" type="CheckButton" parent="Card/MenuPage" unique_id=2093000001]
+layout_mode = 0
+offset_left = 78.0
+offset_top = 174.0
+offset_right = 282.0
+offset_bottom = 198.0
+tooltip_text = "Play the opening and first surface dialogue"
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 10
+text = "Play opening dialogue"
+
 [node name="SoundPage" type="Control" parent="Card" unique_id=613141099]
 visible = false
 layout_mode = 1
@@ -348,6 +360,15 @@ theme_override_font_sizes/font_size = 11
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+
+[node name="HowToPlayPage" parent="Card" instance=ExtResource("12_how_to_play")]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="CloseButton" type="TextureButton" parent="Card" unique_id=1525322063]
 layout_mode = 1
