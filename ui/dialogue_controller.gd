@@ -54,7 +54,9 @@ func start_sequence(sequence: DialogueSequence, speaker: Node = null, actor: Nod
 
 func _steps_for(sequence: DialogueSequence) -> Array[DialogueStep]:
 	if not sequence.steps.is_empty():
-		return sequence.steps
+		var copied_steps: Array[DialogueStep] = []
+		copied_steps.assign(sequence.steps)
+		return copied_steps
 	var result: Array[DialogueStep] = []
 	for entry in sequence.entries:
 		var step := DialogueStep.new()
