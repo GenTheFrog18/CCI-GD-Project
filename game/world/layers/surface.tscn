@@ -12,8 +12,6 @@
 [ext_resource type="Texture2D" uid="uid://cjfg32j0wugln" path="res://assets/art/world/ground/layer1_Ground.png" id="7_npgeb"]
 [ext_resource type="Texture2D" uid="uid://dlj0yux4jwjrl" path="res://assets/art/world/foliage/Pickups(32x32).png" id="8_xytb8"]
 [ext_resource type="Texture2D" uid="uid://d0lihqpsgrsgf" path="res://assets/art/world/ground/Pixel_Woods_Tileset.png" id="10_h2sgq"]
-[ext_resource type="Script" uid="uid://bklq5e7ut66ux" path="res://game/story/surface/surface_intro.gd" id="10_y73ex"]
-[ext_resource type="Resource" uid="uid://dpvw3j2w0jiiy" path="res://data/dialogue/surface_intro_dialogue.tres" id="11_t2nio"]
 [ext_resource type="PackedScene" uid="uid://bxrr7i18qw7gw" path="res://game/world/sources/breakable_loot.tscn" id="16_56uc8"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_78j1j"]
@@ -8980,10 +8978,6 @@ prompt = "Enter Layer 1 East"
 
 [node name="TestShopTerminal" parent="." unique_id=1368338874 instance=ExtResource("3_7hsqt")]
 position = Vector2(663, 234)
-
-[node name="SurfaceIntro" type="Node" parent="." unique_id=95022173]
-script = ExtResource("10_y73ex")
-dialogue_sequence = ExtResource("11_t2nio")
 
 [node name="BreakableLoot" parent="." unique_id=1868534636 instance=ExtResource("16_56uc8")]
 position = Vector2(118, 155)

@@ -198,13 +198,6 @@ func _load_active_layer(is_transition: bool, target_spawn_id: StringName = &"") 
 	await get_tree().process_frame
 	loading_layer.visible = false
 	
-	if GameSession.current_layer_id == &"surface":
-		if not GameSession.progression_flags.get("surface_intro_finished", false):
-			var surface_intro := active_layer.get_node_or_null("SurfaceIntro")
-
-			if surface_intro != null:
-				surface_intro.start_intro(player, dialogue_ui)
-
 func _scene_for_layer(layer_id: StringName) -> PackedScene:
 	match layer_id:
 		&"surface": return surface_scene
