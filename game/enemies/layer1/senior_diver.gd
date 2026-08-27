@@ -50,6 +50,7 @@ var _investigation_remaining := 0.0
 var _grab_in_progress := false
 var _grab_cancelled := false
 var _grab_waiting_for_dialogue := false
+var _first_warning_dialogue_active := false
 var _aggravated := false
 
 func _ready() -> void:
@@ -99,9 +100,17 @@ func _physics_process(delta: float) -> void:
 		_apply_motion(delta)
 		return
 	if sees_red:
+		if _dialogue_is_active():
+			state = State.POST
+			velocity.x = 0.0
+			_was_restricted = false
+			_apply_motion(delta)
+			return
 		if not bool(GameSession.progression_flags.get(FIRST_WARNING_FLAG, false)):
 			if _start_dialogue(first_warning_dialogue, _target):
-				GameSession.progression_flags[FIRST_WARNING_FLAG] = true
+				_first_warning_dialogue_active = true
+				var controller: DialogueController = _dialogue_controller()
+				controller.sequence_closed.connect(_on_first_warning_closed, CONNECT_ONE_SHOT)
 			state = State.POST
 			velocity.x = 0.0
 			_was_restricted = false
@@ -115,7 +124,12 @@ func _physics_process(delta: float) -> void:
 				return
 			_aggravated = true
 			GameSession.progression_flags[ESCALATION_FLAG] = true
-			_start_dialogue(escalation_dialogue, _target)
+			if _start_dialogue(escalation_dialogue, _target):
+				state = State.POST
+				velocity.x = 0.0
+				_was_restricted = false
+				_apply_motion(delta)
+				return
 	if inside_restricted and not _was_restricted:
 		_warn_trespass(_target)
 	_was_restricted = inside_restricted
@@ -229,7 +243,6 @@ func _apply_motion(_delta: float) -> void:
 	_knockback = Vector2.ZERO
 	move_and_slide()
 	_update_visual()
-	sight.facing = Vector2(signf(velocity.x), 0.0) if absf(velocity.x) > 0.1 else sight.facing
 
 func _on_seen(target: Node2D, position: Vector2) -> void:
 	if target is not PlayerController:
@@ -250,6 +263,12 @@ func _on_lost(target: Node2D) -> void:
 	if state == State.GRAB_TELEGRAPH:
 		_cancel_grab()
 
+func _on_first_warning_closed(_completed: bool) -> void:
+	if not _first_warning_dialogue_active:
+		return
+	_first_warning_dialogue_active = false
+	GameSession.progression_flags[FIRST_WARNING_FLAG] = true
+
 func _on_sound(event: SoundEvent, _direct: bool) -> void:
 	if event == null or event.sound_type not in [&"rattlepod", &"whistle", &"crystal", &"lantern_crystal"]:
 		return
@@ -264,7 +283,9 @@ func _on_sound(event: SoundEvent, _direct: bool) -> void:
 	state = State.INVESTIGATE
 
 func _grab_valid() -> bool:
-	return is_instance_valid(_grab_target) and _grab_target.is_alive() \
+	return not _first_warning_dialogue_active and not _dialogue_is_active() \
+		and bool(GameSession.progression_flags.get(FIRST_WARNING_FLAG, false)) \
+		and is_instance_valid(_grab_target) and _grab_target.is_alive() \
 		and not _is_authorized(_grab_target) and _has_sight \
 		and global_position.distance_to(_grab_target.global_position) <= grab_range
 
@@ -327,6 +348,7 @@ func _update_visual() -> void:
 			facing = signf(_last_known_position.x - global_position.x)
 	if not is_zero_approx(facing):
 		visual.flip_h = facing < 0.0
+		sight.facing = Vector2(facing, 0.0)
 
 func _dialogue_controller() -> DialogueController:
 	var hud := get_tree().get_first_node_in_group(&"foundation_hud") as FoundationHUD
