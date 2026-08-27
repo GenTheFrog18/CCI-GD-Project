@@ -72,8 +72,11 @@ func _cross_threshold(layer: StringName) -> bool:
 	return false
 
 func apply_current_layer_curse() -> void:
+	apply_layer_curse(GameSession.current_layer_id)
+
+func apply_layer_curse(layer: StringName) -> void:
 	if player == null: return
-	if GameSession.current_layer_id == &"layer_1":
+	if layer == &"layer_1":
 		player.status.remove_status(&"curse_layer_2_penalty")
 		player.status.remove_status(&"curse_layer_2_health_cap")
 		var random := RandomNumberGenerator.new()
@@ -83,7 +86,7 @@ func apply_current_layer_curse() -> void:
 			&"healing_received": random.randf_range(0.45, 0.75),
 			&"throw_range": random.randf_range(0.55, 0.8),
 		}})
-	elif GameSession.current_layer_id == &"layer_2":
+	elif layer == &"layer_2":
 		player.status.remove_status(&"curse_layer_1")
 		player.apply_status(&"curse_layer_2_penalty", {"duration": layer2_duration})
 		player.apply_status(&"curse_layer_2_health_cap", {"duration": layer2_duration})

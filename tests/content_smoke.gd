@@ -26,6 +26,7 @@ func _ready() -> void:
 	_test_layer2_quest()
 	_test_effects_and_curse()
 	_test_player_item_regressions()
+	await _test_hit_flash()
 	await _test_item_impacts()
 	await _test_layer2_relics()
 	_test_flyer_transfer()
@@ -103,10 +104,41 @@ func _test_enemy_scenes() -> void:
 	var direct_flyer := LargeLayer1Flyer.new()
 	_check(direct_flyer.has_method("restore_state"), "large flyer script class compiles")
 	direct_flyer.free()
+	var flyer := preload("res://game/enemies/layer1/large_flyer.tscn").instantiate() as LargeLayer1Flyer
+	add_child(flyer)
+	_check(flyer.support.hit_flash_duration > 0.0, "Enemy hit flash duration is adjustable")
+	_check(flyer._surround_sight != null and flyer._surround_sight.normal_angle_degrees == 360.0 and flyer._surround_sight.process_mode == Node.PROCESS_MODE_DISABLED, "Large Flyer surround sight is configured and idle")
+	_check(flyer.max_health == 500.0 and flyer.support.health.max_health == flyer.max_health, "Large Flyer health is adjustable")
+	var multitool_behavior := ContentCatalog.get_item(&"multitool").primary_behavior as MultitoolBehavior
+	_check(multitool_behavior.enemy_recovery_seconds > multitool_behavior.recovery_seconds, "Enemy melee recovery is slower and adjustable")
+	_check(flyer.poi_change_min_seconds == 12.0 and flyer.poi_change_max_seconds == 18.0 and flyer.engagement_distance == 80.0, "Large Flyer route and engagement settings are adjustable")
+	_check(flyer.poi_patrol_radius == 160.0 and flyer.poi_inner_flight_radius == 130.0 and flyer.max_destination_attempts == 10, "Large Flyer local patrol is adjustable")
+	_check(flyer._steering_alpha(1.0 / 60.0) > 0.0, "Large Flyer patrol steering preserves momentum")
+	flyer._begin_search(Vector2(96.0, 48.0))
+	_check(flyer.state == LargeLayer1Flyer.State.SEARCH and flyer._search_point == Vector2(96.0, 48.0) and flyer._patrol_center == Vector2(96.0, 48.0), "Large Flyer search patrol centers on last known player position")
+	var flyer_health_before_rod := flyer.support.health.health
+	var rod := BoltShockRod.new()
+	rod.configure(null, flyer.global_position, Vector2.RIGHT * 700.0, 10.0, 10.0, 10.0, 10.0)
+	rod._resolve(flyer)
+	_check(is_equal_approx(flyer_health_before_rod - flyer.support.health.health, 20.0), "Bolt Shock deals capped impact damage to Large Flyer")
+	flyer.support.status.active.clear()
+	flyer.support.health._invulnerable_until = 0
+	_check(flyer.apply_damage(DamageInfo.new(1.0)) and flyer.state == LargeLayer1Flyer.State.RECOVER, "Large Flyer damage triggers recovery")
+	var flyer_attacker := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	add_child(flyer_attacker)
+	flyer_attacker.global_position = flyer.global_position + Vector2.RIGHT * 20.0
+	flyer.support.health._invulnerable_until = 0
+	var melee_hit := DamageInfo.new(1.0, flyer_attacker, &"player")
+	melee_hit.tags = [&"player_melee"]
+	_check(flyer.apply_damage(melee_hit) and flyer.state == LargeLayer1Flyer.State.DIVE and flyer._target == flyer_attacker and flyer._state_timer == flyer.dive_seconds and flyer_attacker._knockback.x > 0.0, "Large Flyer immediately retaliates and knocks back player melee hits")
+	flyer_attacker.free()
+	flyer.free()
 	var spider := preload("res://game/enemies/layer1/cave_spider.tscn").instantiate() as CaveSpider
 	add_child(spider)
 	_check(spider.sprite.sprite_frames.has_animation(&"walk") and spider.sprite.sprite_frames.has_animation(&"shoot"), "Cave Spider finished animations missing")
 	_check(is_equal_approx(spider.projectile_damage, 3.0), "Cave Spider projectile damage is adjustable with 3 default")
+	_check(spider.state == CaveSpider.State.IDLE_PAUSE and spider.bite_hitbox != null, "Cave Spider starts in pause state with a dedicated bite hitbox")
+	_check(is_equal_approx(spider.miss_retry_cooldown_seconds, 2.0) and is_equal_approx(spider.bite_windup_seconds, 0.4), "Cave Spider retry and bite timings are adjustable")
 	var disabled_light := LightSource2D.new()
 	disabled_light.enabled = false
 	disabled_light.light_intensity = 0.0
@@ -123,6 +155,8 @@ func _test_enemy_scenes() -> void:
 	var diver := preload("res://game/enemies/layer1/senior_diver.tscn").instantiate() as SeniorDiver
 	add_child(diver)
 	_check(diver.sound.minimum_priority == 8 and diver.state == SeniorDiver.State.POST, "Senior Diver has strong-sound investigation and post state")
+	_check(diver.first_warning_dialogue != null and diver.escalation_dialogue != null and diver.grab_dialogue != null and diver.blue_intro_dialogue != null, "Senior Diver Gatekeeper dialogue resources are assigned")
+	_check(diver.visual.sprite_frames.get_frame_count(&"idle") == 4 and diver.visual.sprite_frames.get_frame_count(&"walk") == 6 and diver.visual.sprite_frames.get_frame_count(&"grab") == 10, "Senior Diver Gatekeeper animations are assigned")
 	var diver_player := preload("res://game/player/player.tscn").instantiate() as PlayerController
 	add_child(diver_player)
 	var old_whistle_tier := GameSession.whistle_tier
@@ -204,9 +238,16 @@ func _test_layer2_enemies() -> void:
 	_check((saved.get("members", {}) as Dictionary).size() == flock.starting_member_count and flock.is_in_group(&"persistent_objects") and flock.process_mode == Node.PROCESS_MODE_DISABLED, "Sky Hunter flock owns stable inactive members")
 	flock.activate_near(Vector2(1900, 400))
 	_check(flock.process_mode == Node.PROCESS_MODE_INHERIT and flock.global_position.x == 1920.0, "flock activation selects the current route")
+	var flyer_probe := Node2D.new()
+	flyer_probe.add_to_group(&"large_flyer")
+	add_child(flyer_probe)
+	var hunter: SkyHunter = flock._living_members()[0] as SkyHunter
+	flyer_probe.global_position = hunter.global_position - Vector2.RIGHT * 20.0
+	_check(hunter._separation_velocity().x > 0.0, "Sky Hunter avoids the Large Flyer")
 	if had_flock_flag: GameSession.progression_flags["layer_2_sky_hunter_active"] = old_flock_flag
 	else: GameSession.progression_flags.erase("layer_2_sky_hunter_active")
 
+	flyer_probe.free()
 	flock.free()
 	bulwark.free()
 	attacker.free()
@@ -287,6 +328,15 @@ func _test_effects_and_curse() -> void:
 	player.curse_tracker.crossed_band = 0
 	player.curse_tracker._physics_process(0.0)
 	_check(is_equal_approx(player.status.get_remaining(&"curse_suppression"), 80.0), "suppression resets ascent reference after one threshold")
+	player.apply_status(&"poison", {"duration": 10.0})
+	player.apply_status(&"poison", {"duration": 10.0})
+	_check(is_equal_approx(player.status.get_remaining(&"poison"), 15.0), "Poison duration stacks to its cap")
+	player.apply_status(&"spider_slow", {"duration": 3.0})
+	player.apply_status(&"spider_slow", {"duration": 3.0})
+	_check(is_equal_approx(player.status.get_remaining(&"spider_slow"), 6.0), "Spider slow duration stacks additively")
+	player.apply_status(&"tracking_mark", {"duration": 20.0})
+	player.apply_status(&"tracking_mark", {"duration": 20.0})
+	_check(is_equal_approx(player.status.get_remaining(&"tracking_mark"), 20.0), "Tracking mark duration respects its cap")
 	GameSession.current_layer_id = &"layer_2"
 	player.curse_tracker.apply_current_layer_curse()
 	_check(not player.status.has_status(&"curse_layer_1") and player.status.has_status(&"curse_layer_2_penalty") and player.status.get_stack_count(&"curse_layer_2_health_cap") == 1, "Layer 2 Curse replaces Layer 1 package")
@@ -335,6 +385,22 @@ func _test_player_item_regressions() -> void:
 	loose_item.free()
 	resin_area.free()
 	world.free()
+
+func _test_hit_flash() -> void:
+	var actor := Node2D.new()
+	var visual := Sprite2D.new()
+	var original := CanvasItemMaterial.new()
+	visual.material = original
+	actor.add_child(visual)
+	add_child(actor)
+	var flash := HitFlash.new()
+	actor.add_child(flash)
+	_check(flash.setup(actor), "Hit flash finds actor visual")
+	flash.play(2)
+	_check(visual.material is ShaderMaterial, "Hit flash turns visual white immediately")
+	await get_tree().create_timer(0.25).timeout
+	_check(visual.material == original, "Hit flash restores original material")
+	actor.free()
 
 func _test_item_impacts() -> void:
 	var probe := ReceiverProbe.new()
@@ -409,13 +475,20 @@ func _test_flyer_transfer() -> void:
 	SaveManager.restore_registered_objects(&"layer_2")
 	var flyer := root.get_child(0) as LargeLayer1Flyer
 	_check(flyer != null and flyer.global_position == Vector2(10, 20) and flyer.support.health.health == 321.0, "transferred flyer restores health and position")
-	_check(flyer != null and flyer.support.status.has_status(&"driftseed") and flyer.state == LargeLayer1Flyer.State.ROAM and flyer._target == null and flyer._requests.is_empty(), "transferred flyer keeps status but resets transient AI")
+	_check(flyer != null and flyer.support.status.has_status(&"driftseed") and flyer.state == LargeLayer1Flyer.State.ROAM and flyer._target == null and flyer._requests.is_empty() and flyer.is_in_group(&"large_flyer"), "transferred flyer keeps status but resets transient AI")
 	if flyer != null:
 		flyer._upsert_request(&"ordinary", Vector2.ZERO, null, 20.0, INF, false)
 		flyer._upsert_request(&"snail", Vector2.ZERO, null, 50.0, INF, false)
 		_check(StringName(flyer._select_request().get("request_id", "")) == &"snail", "flyer selects strongest target request")
 		flyer._remove_request(&"snail")
 		_check(StringName(flyer._select_request().get("request_id", "")) == &"ordinary", "flyer falls back to valid lower-priority request")
+		var stale_source := Node2D.new()
+		root.add_child(stale_source)
+		flyer._upsert_request(&"stale", Vector2.ZERO, null, 90.0, INF, false, stale_source)
+		stale_source.free()
+		_check(StringName(flyer._select_request().get("request_id", "")) == &"ordinary", "flyer removes requests from freed sources")
+		flyer.state = LargeLayer1Flyer.State.ATTACK_SETUP
+		_check(flyer.interrupt_action(&"electric") and flyer.state == LargeLayer1Flyer.State.RECOVER, "Bolt Shock interrupts flyer attacks")
 	root.free()
 	SaveManager.loaded_persistent_state = old_state
 	SaveManager.destroyed_ids = old_destroyed

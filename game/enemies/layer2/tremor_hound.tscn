@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://game/enemies/layer2/tremor_hound.gd" id="1"]
 [ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
 [ext_resource type="Script" path="res://core/sensing/sound_listener.gd" id="3"]
+[ext_resource type="Script" path="res://core/editor_range_preview.gd" id="4"]
 
 [sub_resource type="RectangleShape2D" id="Shape"]
 size = Vector2(32, 20)
@@ -30,3 +31,8 @@ tags = Array[StringName]([&"enemy", &"small_enemy", &"grounded", &"sound_hunter"
 position = Vector2(0, -10)
 script = ExtResource("3")
 minimum_priority = 1
+
+[node name="PlayerProximityPreview" type="Node2D" parent="."]
+z_index = -10
+script = ExtResource("4")
+radius_property = &"close_confirmation_radius"

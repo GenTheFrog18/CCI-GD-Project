@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://ea2fod06x4yv" path="res://game/player/dazzled_overlay.gd" id="1"]
 
 [node name="DazzledOverlay" type="CanvasLayer" unique_id=1557607422]
+visible = false
 layer = 110
 script = ExtResource("1")
 fade_in_seconds = 0.25

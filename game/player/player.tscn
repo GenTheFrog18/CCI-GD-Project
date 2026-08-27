@@ -14,7 +14,7 @@
 [ext_resource type="Script" uid="uid://cw04hr0tcjxom" path="res://game/player/player_camera.gd" id="7_camera"]
 [ext_resource type="Script" uid="uid://dtp8poa044sqh" path="res://game/player/player_item_preview.gd" id="8_preview"]
 [ext_resource type="PackedScene" path="res://game/items/world/hushcap_overlay.tscn" id="9_hushcap"]
-[ext_resource type="PackedScene" path="res://game/player/dazzled_overlay.tscn" id="10_dazzled"]
+[ext_resource type="PackedScene" uid="uid://d3qmj5faix8wh" path="res://game/player/dazzled_overlay.tscn" id="10_dazzled"]
 
 [sub_resource type="CapsuleShape2D" id="PlayerShape"]
 radius = 6.0
@@ -311,7 +311,8 @@ collision_layer = 2
 script = ExtResource("1")
 move_speed = 90.0
 carry_capacity = 15
-detection_origin_offset = Vector2(0, -28)
+hit_flash_duration = 0.05
+hit_flash_gap = 0.04
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=706998304]
 position = Vector2(0, -14)
@@ -320,10 +321,10 @@ shape = SubResource("PlayerShape")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=89202644]
 position = Vector2(0, -16)
 sprite_frames = SubResource("SpriteFrames_uoqeo")
-animation = &"attack"
+animation = &"idle"
 
 [node name="HeldItemAnchor" type="Node2D" parent="." unique_id=608757879]
-position = Vector2(8, -15)
+position = Vector2(7, -16)
 
 [node name="HeldItemIcon" type="Sprite2D" parent="HeldItemAnchor" unique_id=1448294322]
 
@@ -343,13 +344,13 @@ held_item_anchor = NodePath("../HeldItemAnchor")
 held_item_icon = NodePath("../HeldItemAnchor/HeldItemIcon")
 
 [node name="InteractionSensor" type="Node2D" parent="." unique_id=939739551]
-position = Vector2(1, -25)
+position = Vector2(1, -24)
 script = ExtResource("5")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1285975351]
 position = Vector2(0, -40)
 script = ExtResource("7_camera")
 
-[node name="HushcapOverlay" parent="." instance=ExtResource("9_hushcap")]
+[node name="HushcapOverlay" parent="." unique_id=1904076001 instance=ExtResource("9_hushcap")]
 
-[node name="DazzledOverlay" parent="." instance=ExtResource("10_dazzled")]
+[node name="DazzledOverlay" parent="." unique_id=1287401536 instance=ExtResource("10_dazzled")]

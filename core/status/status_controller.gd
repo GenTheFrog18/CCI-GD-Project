@@ -46,6 +46,8 @@ func apply_status(effect_id: StringName, data: Dictionary = {}) -> bool:
 	var duration := float(data.get("duration", definition.duration))
 	if duration <= 0.0:
 		return false
+	if definition.additive_duration_cap > 0.0 and not bool(data.get("_duration_cap_applied", false)):
+		return extend_status_duration(effect_id, duration, definition.additive_duration_cap)
 	var application := {
 		"remaining": duration,
 		"provider_id": String(data.get("provider_id", "")),
@@ -92,11 +94,11 @@ func extend_status_duration(effect_id: StringName, duration: float, maximum: flo
 	if amount <= 0.0 or cap <= 0.0:
 		return false
 	if not active.has(effect_id):
-		return apply_status(effect_id, {"duration": minf(amount, cap)})
+		return apply_status(effect_id, {"duration": minf(amount, cap), "_duration_cap_applied": true})
 	var entry: Dictionary = active[effect_id]
 	var applications: Array = entry.get("applications", [])
 	if applications.is_empty():
-		return apply_status(effect_id, {"duration": minf(amount, cap)})
+		return apply_status(effect_id, {"duration": minf(amount, cap), "_duration_cap_applied": true})
 	var longest_index := 0
 	for index in range(1, applications.size()):
 		if float(applications[index].get("remaining", 0.0)) > float(applications[longest_index].get("remaining", 0.0)):

@@ -180,6 +180,22 @@ func remove_origin(origin: StringName) -> Array[ItemStack]:
 		changed.emit()
 	return removed
 
+func remove_relic_items() -> Array[ItemStack]:
+	var removed: Array[ItemStack] = []
+	for container in [hotbar, backpack]:
+		for index in container.size():
+			var slot := container[index] as ItemStack
+			if slot.is_empty():
+				continue
+			var definition := ContentCatalog.get_item(slot.item_id)
+			if definition == null or definition.category not in [&"relic", &"quest_relic"]:
+				continue
+			removed.append(slot.copy())
+			container[index] = ItemStack.new()
+	if not removed.is_empty():
+		changed.emit()
+	return removed
+
 func capture_state() -> Dictionary:
 	return {
 		"hotbar": hotbar.map(func(slot: ItemStack): return slot.capture_state()),

@@ -5,4 +5,5 @@ script = ExtResource("1")
 effect_id = &"tracking_mark"
 display_name = "Tracked"
 duration = 20.0
+additive_duration_cap = 20.0
 persists = true

@@ -12,6 +12,7 @@ var _extension := 8.0
 var _active_remaining := 0.12
 var _recovery_remaining := 0.18
 var _recovery_duration := 0.18
+var _enemy_recovery_seconds := 0.5
 var _resolved := false
 
 @onready var visual: Sprite2D = $Visual
@@ -26,6 +27,7 @@ func configure(
 	extension: float,
 	active_seconds: float,
 	recovery_seconds: float,
+	enemy_recovery_seconds: float,
 	target_mask: int,
 	visual_rotation_offset: float,
 	speed_multiplier: float
@@ -37,6 +39,7 @@ func configure(
 	_active_remaining = active_seconds
 	_recovery_remaining = recovery_seconds
 	_recovery_duration = recovery_seconds
+	_enemy_recovery_seconds = enemy_recovery_seconds
 	collision_mask = target_mask
 	movement_multiplier = speed_multiplier
 	rotation = (direction if not direction.is_zero_approx() else Vector2.RIGHT).angle()
@@ -93,12 +96,18 @@ func _resolve_hit() -> void:
 
 func _apply_target(target: Node) -> void:
 	selected_targets.append(target)
+	var is_enemy := target.get_node_or_null("EnemySupport") is EnemySupport
 	if target.has_method("receive_multitool"):
 		target.receive_multitool(_actor)
 		return
+	if is_enemy:
+		_recovery_remaining = maxf(_recovery_remaining, _enemy_recovery_seconds)
+		_recovery_duration = maxf(_recovery_duration, _enemy_recovery_seconds)
 	var species = _actor.get("species_id")
 	if target.has_method("apply_damage"):
-		target.apply_damage(DamageInfo.new(_damage, _actor, StringName(species) if species != null else &""))
+		var info := DamageInfo.new(_damage, _actor, StringName(species) if species != null else &"")
+		info.tags = [&"player_melee"]
+		target.apply_damage(info)
 	if target.has_method("apply_force"):
 		target.apply_force(Vector2.RIGHT.rotated(global_rotation) * _force)
 

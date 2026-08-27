@@ -89,6 +89,16 @@ offset_bottom = 34.0
 text = "Hotbar"
 horizontal_alignment = 1
 
+[node name="Currency" type="Label" parent="BookContent" unique_id=1193395309]
+layout_mode = 0
+offset_left = 129.33334
+offset_top = 123.333336
+offset_right = 206.33334
+offset_bottom = 139.33334
+theme_override_colors/font_color = Color(0.6039216, 0.4, 0, 1)
+theme_override_font_sizes/font_size = 8
+text = "$0"
+
 [node name="Weight" type="Label" parent="BookContent" unique_id=452134816]
 layout_mode = 0
 offset_left = 128.66669

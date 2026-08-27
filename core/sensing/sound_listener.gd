@@ -1,3 +1,4 @@
+@tool
 class_name SoundListener
 extends Node2D
 
@@ -10,6 +11,8 @@ signal sound_target_lost
 @export var escalation_window := 2.0
 @export var target_timeout := 10.0
 @export var search_seconds := 1.0
+@export_range(0.0, 2000.0, 1.0) var hearing_radius := 600.0
+@export var show_editor_preview := true
 
 var current_event: SoundEvent
 var direct_target := false
@@ -20,6 +23,10 @@ func _ready() -> void:
 	add_to_group(&"sound_listeners")
 
 func _process(_delta: float) -> void:
+	if Engine.is_editor_hint():
+		if show_editor_preview:
+			queue_redraw()
+		return
 	if GameSession.debug_gameplay_draw or _debug_was_visible:
 		_debug_was_visible = GameSession.debug_gameplay_draw
 		queue_redraw()
@@ -28,7 +35,7 @@ func _process(_delta: float) -> void:
 	var age := (Time.get_ticks_msec() - current_event.timestamp) / 1000.0
 	var listener := get_parent() as Node2D
 	var source_out_of_range := is_instance_valid(current_event.source) and current_event.source is Node2D and listener != null \
-		and listener.global_position.distance_to(current_event.position) > current_event.radius
+		and listener.global_position.distance_to(current_event.position) > minf(current_event.radius, hearing_radius)
 	if age > target_timeout or source_out_of_range:
 		clear_target()
 
@@ -42,7 +49,7 @@ func hear_sound(event: SoundEvent) -> void:
 		return
 	if is_instance_valid(event.source) and event.source.has_method("is_combat_protected") and event.source.is_combat_protected():
 		return
-	if listener.global_position.distance_to(event.position) > event.radius:
+	if listener.global_position.distance_to(event.position) > minf(event.radius, hearing_radius):
 		return
 	var same_direct_source := direct_target and current_event != null and event.source == current_event.source
 	if not same_direct_source and not _is_better(event, listener.global_position):
@@ -91,5 +98,10 @@ func _owner_status() -> StatusController:
 	return support.status if support != null else null
 
 func _draw() -> void:
+	if Engine.is_editor_hint():
+		if show_editor_preview:
+			draw_circle(Vector2.ZERO, hearing_radius, Color(0.3, 0.75, 1.0, 0.08))
+			draw_arc(Vector2.ZERO, hearing_radius, 0.0, TAU, 48, Color(0.3, 0.75, 1.0, 0.75), 1.0)
+		return
 	if GameSession.debug_gameplay_draw and current_event != null:
-		draw_arc(to_local(current_event.position), current_event.radius, 0.0, TAU, 48, Color(0.3, 0.75, 1.0, 0.55), 1.0)
+		draw_arc(to_local(current_event.position), minf(current_event.radius, hearing_radius), 0.0, TAU, 48, Color(0.3, 0.75, 1.0, 0.55), 1.0)

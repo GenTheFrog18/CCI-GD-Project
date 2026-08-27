@@ -1,0 +1,46 @@
+layer 1 gatekeeper
+name: Gatekeeper
+
+triggers immediatelywhen gatekeeper sees the player for the first time if player has red whistle:
+
+Gatekeeper: Hei kau peluit merah!, apa yang kamu lakukan sedalam ini.
+
+Gatekeeper: Delver merah tidak boleh pergi lebih dalam. Kembali lah keatas sekarang juga!
+
+Gatekeeper:  Atau aku sendiri yang akan membawa mu pulang.
+
+end
+
+triggers after the previous dialogue has been triggered and the player is on the gatekeeper detection range and gatekeeper sees the player.
+
+Gatekeeper: Sudah kubilang, pulanglah keatas, kembali lagi jika kau sudah membuktikan kemampuanmu dengan peluit biru.
+
+Gatekeeper: Jika kau masih keras kepala, kau harus melewati ku!
+
+immediately makes the gatekeeper into an aggrevated state
+
+end
+
+when gatekeeper grabs player
+
+Gatekeeper: Hah, Tertangkap juga.
+
+Elenara: grr... Lepaskan aku!
+
+Gatekeeper: Saatnya untukmu pulang ke atas lagi.
+
+Gatekeeper: Delver merah sepertimu tidak memerlukan relik sebanyak ini. Akan kusimpan sampai kau memerlukannya lagi.
+
+end
+
+if the player has blue whistle, there is no first sight encounter. only when the player is in the gatekeeper detection range and sees the player (triggers only once):
+
+Gatekeeper: Ah peluit biru! ku anggap kamu disini untuk perjalanan pertama mu ke layer 2?
+
+Elanara: Yap! betul sekali, ku ingin pergi lebih dalam!
+
+Gatekeeper: Baiklah, berhati-hati dibawah sana dan perhatikan langkahmu.
+
+Gatekeeper: Jika perlu bantuan, penjaga outpost di barat mungkin bisa membantu.
+
+Elenara: Baik! terimakasih, ku akan memberitahumu jika ada sesuatu yang keren dibawah sana!

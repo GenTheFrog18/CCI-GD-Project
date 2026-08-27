@@ -1,31 +1,109 @@
-[gd_scene load_steps=7 format=3]
-[ext_resource type="Script" path="res://game/enemies/layer1/senior_diver.gd" id="1"]
-[ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
-[ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="3"]
-[ext_resource type="Script" path="res://core/sensing/sound_listener.gd" id="4"]
-[sub_resource type="RectangleShape2D" id="Shape"]
-size = Vector2(24, 36)
-[node name="SeniorDiver" type="CharacterBody2D"]
+[gd_scene format=3 uid="uid://cob3cm5xvdhk5"]
+
+[ext_resource type="Script" uid="uid://cqtc8bvxitl5x" path="res://game/enemies/layer1/senior_diver.gd" id="1"]
+[ext_resource type="Script" uid="uid://ducaowngygpn0" path="res://game/enemies/enemy_support.gd" id="2"]
+[ext_resource type="Script" uid="uid://dedxrelm31xit" path="res://core/sensing/sight_sensor.gd" id="3"]
+[ext_resource type="Script" uid="uid://ctpy5jx0wglna" path="res://core/sensing/sound_listener.gd" id="4"]
+[ext_resource type="Resource" uid="uid://b4lmuu8ihvxbq" path="res://data/dialogue/gatekeeper1_first_warning.tres" id="5"]
+[ext_resource type="Resource" uid="uid://dhte2k6asxf8j" path="res://data/dialogue/gatekeeper1_escalation.tres" id="6"]
+[ext_resource type="Texture2D" uid="uid://dl01m8u82n0va" path="res://assets/art/characters/npc/animation/Gatekeeper1/Gatekeeper1Idle-48x64-4FPS.png" id="6_p5b33"]
+[ext_resource type="Resource" uid="uid://4j7b6asm3vuv" path="res://data/dialogue/gatekeeper1_grab.tres" id="7"]
+[ext_resource type="Resource" uid="uid://dp7ic2t3c2ms6" path="res://data/dialogue/gatekeeper1_blue_intro.tres" id="8"]
+[ext_resource type="Script" uid="uid://3oroetgwrvqq" path="res://core/editor_range_preview.gd" id="9"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rhq4y"]
+height = 45.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_siq0d"]
+atlas = ExtResource("6_p5b33")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o5bc0"]
+atlas = ExtResource("6_p5b33")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6h3pk"]
+atlas = ExtResource("6_p5b33")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6my2v"]
+atlas = ExtResource("6_p5b33")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_a8f4o"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_siq0d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o5bc0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6h3pk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6my2v")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="SeniorDiver" type="CharacterBody2D" unique_id=380015001]
 collision_layer = 68
-collision_mask = 1
+collision_mask = 3
 script = ExtResource("1")
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -18)
-shape = SubResource("Shape")
-[node name="Visual" type="Polygon2D" parent="."]
-position = Vector2(0, -18)
-polygon = PackedVector2Array(-10, 18, -11, -10, 0, -18, 11, -10, 10, 18)
-color = Color(0.25, 0.45, 0.7, 1)
-[node name="EnemySupport" type="Node" parent="."]
+player_collision_speed_multiplier = 0.15
+first_warning_dialogue = ExtResource("5")
+escalation_dialogue = ExtResource("6")
+grab_dialogue = ExtResource("7")
+blue_intro_dialogue = ExtResource("8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=143285706]
+position = Vector2(0, -22.5)
+shape = SubResource("CapsuleShape2D_rhq4y")
+
+[node name="PlayerCollisionSlowArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerCollisionSlowArea"]
+position = Vector2(0, -22.5)
+shape = SubResource("CapsuleShape2D_rhq4y")
+
+[node name="Visual" type="AnimatedSprite2D" parent="." unique_id=100403764]
+texture_filter = 1
+position = Vector2(0, -24)
+sprite_frames = SubResource("SpriteFrames_a8f4o")
+
+[node name="EnemySupport" type="Node" parent="." unique_id=1094156044]
 script = ExtResource("2")
 species_id = &"senior_diver"
 max_health = 250.0
 tags = Array[StringName]([&"gatekeeper"])
-[node name="SightSensor" type="Node2D" parent="."]
+
+[node name="SightSensor" type="Node2D" parent="." unique_id=292932659]
+position = Vector2(0, -37)
 script = ExtResource("3")
-normal_range = 240.0
-[node name="SoundListener" type="Node2D" parent="."]
+normal_range = 400.0
+normal_angle_degrees = 90.0
+aggravated_range = 500.0
+aggravated_angle_degrees = 270.0
+
+[node name="SoundListener" type="Node2D" parent="." unique_id=283982095]
+position = Vector2(0, -4)
 script = ExtResource("4")
-minimum_priority = 8
-[node name="LostItemReturn" type="Marker2D" parent="."]
-position = Vector2(-40, 0)
+minimum_priority = 4
+escalation_count = 2
+search_seconds = 10.0
+hearing_radius = 500.0
+
+[node name="LostItemReturn" type="Marker2D" parent="." unique_id=1401916681]
+position = Vector2(-28, -8)
+
+[node name="PlayerProximityPreview" type="Node2D" parent="." unique_id=496735370]
+z_index = -10
+position = Vector2(0, -24)
+script = ExtResource("9")
+radius_property = &"restricted_radius"

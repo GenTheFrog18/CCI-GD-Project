@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dro4u3m0n4fjn" path="res://game/enemies/layer1/knockback_bird.gd" id="1"]
 [ext_resource type="Script" uid="uid://ducaowngygpn0" path="res://game/enemies/enemy_support.gd" id="2"]
 [ext_resource type="Script" uid="uid://dedxrelm31xit" path="res://core/sensing/sight_sensor.gd" id="3"]
+[ext_resource type="Script" path="res://core/editor_range_preview.gd" id="4"]
 
 [sub_resource type="CircleShape2D" id="Shape"]
 radius = 9.0
@@ -14,6 +15,7 @@ radius = 14.0
 z_index = 3
 collision_layer = 4
 script = ExtResource("1")
+knockback_strength = 350.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=546365703]
 shape = SubResource("Shape")
@@ -31,6 +33,12 @@ fall_immune = true
 [node name="SightSensor" type="Node2D" parent="." unique_id=132667486]
 script = ExtResource("3")
 normal_angle_degrees = 160.0
+
+[node name="PlayerProximityPreview" type="Node2D" parent="."]
+z_index = -10
+script = ExtResource("4")
+radius_property = &"nest_trigger_radius"
+center_property = &"nest_position"
 
 [node name="SwoopHitbox" type="Area2D" parent="." unique_id=946152577]
 collision_layer = 0

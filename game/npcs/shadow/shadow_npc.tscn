@@ -1,9 +1,10 @@
-[gd_scene load_steps=16 format=3 uid="uid://cmahh3afjs5t1"]
+[gd_scene load_steps=17 format=3 uid="uid://cmahh3afjs5t1"]
 
 [ext_resource type="Script" uid="uid://cd4kqypk3gwy3" path="res://game/npcs/shadow/shadow_npc.gd" id="1_6qk0i"]
 [ext_resource type="Resource" uid="uid://cahbk2a2shbno" path="res://data/dialogue/shadow_dialogue.tres" id="2_c5n02"]
 [ext_resource type="Texture2D" uid="uid://msgkprhm4esy" path="res://assets/art/characters/npc/animation/Shadow-idle.png" id="3_c5n02"]
 [ext_resource type="FontFile" uid="uid://di7mogw7xh6qt" path="res://assets/fonts/Perfect DOS VGA 437.ttf" id="4_a55tk"]
+[ext_resource type="PackedScene" path="res://game/npcs/dialogue_interactable.tscn" id="5_dialogue"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_a55tk"]
 atlas = ExtResource("3_c5n02")
@@ -90,7 +91,6 @@ size = Vector2(26, 45)
 collision_layer = 64
 collision_mask = 0
 script = ExtResource("1_6qk0i")
-dialogue_sequence = ExtResource("2_c5n02")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=282687630]
 position = Vector2(0, -17)
@@ -110,3 +110,8 @@ offset_right = 14.0
 offset_bottom = -11.0
 theme_override_fonts/font = ExtResource("4_a55tk")
 text = "[E]"
+
+[node name="DialogueInteractable" parent="." instance=ExtResource("5_dialogue")]
+persistent_id = &"shadow_npc"
+prompt = "Talk to Shadow"
+first_sequence = ExtResource("2_c5n02")

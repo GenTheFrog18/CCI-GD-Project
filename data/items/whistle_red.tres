@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dxgtp1xnhth0g" path="res://core/items/item_behavior.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://djye5hp12fuv0" path="res://assets/art/items/whistles/whistle_red.png" id="3"]
 [ext_resource type="Script" uid="uid://rsvyjwgl88lr" path="res://data/definitions/item_state_visual.gd" id="4_yig7q"]
+[ext_resource type="PackedScene" uid="uid://df7ejxvsrrk8r" path="res://game/items/world/hitboxes/hitbox_whistle.tscn" id="5_4pg3k"]
 
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
@@ -16,5 +17,6 @@ unknown_description = "A red delver's whistle."
 known_description = "Emits a very high-priority sound when used."
 category = &"whistle"
 icon = ExtResource("3")
+world_hitbox_scene = ExtResource("5_4pg3k")
 weight = 0
 behavior = SubResource("Behavior")

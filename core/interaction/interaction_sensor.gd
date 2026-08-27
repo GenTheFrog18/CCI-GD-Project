@@ -1,3 +1,4 @@
+@tool
 class_name InteractionSensor
 extends Node2D
 
@@ -7,10 +8,31 @@ extends Node2D
 @export_flags_2d_physics var collision_mask := 72
 @export_flags_2d_physics var obstruction_mask := 1
 @export_range(1, 64, 1) var maximum_results := 32
+@export var show_editor_preview := true
 
 var last_query_point := Vector2.ZERO
 var last_query_origin := Vector2.ZERO
 var last_target: Node
+
+func _process(_delta: float) -> void:
+	if Engine.is_editor_hint() and show_editor_preview:
+		queue_redraw()
+
+func _draw() -> void:
+	if not Engine.is_editor_hint() or not show_editor_preview:
+		return
+	var half_width := maxf(query_width, 1.0) * 0.5
+	var reach := maxf(maximum_reach, 0.0)
+	var points := PackedVector2Array([
+		Vector2(0.0, -half_width),
+		Vector2(reach, -half_width),
+		Vector2(reach, half_width),
+		Vector2(0.0, half_width),
+	])
+	draw_colored_polygon(points, Color(0.3, 0.8, 1.0, 0.08))
+	points.append(points[0])
+	draw_polyline(points, Color(0.3, 0.8, 1.0, 0.8), 1.0)
+	draw_line(Vector2(reach, -half_width), Vector2(reach, half_width), Color(0.3, 0.8, 1.0, 0.9), 2.0)
 
 func best_target(actor: Node2D = get_parent() as Node2D, cursor: Vector2 = get_global_mouse_position()) -> Node:
 	last_target = null

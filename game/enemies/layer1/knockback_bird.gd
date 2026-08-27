@@ -24,6 +24,9 @@ enum State { PATROL, ALERT_WAIT, TELEGRAPH, SWOOP, RECOVERY }
 @export var swoop_speed := 240.0
 @export var swoop_max_duration := 0.8
 @export var recovery_duration := 0.8
+@export var recovery_distance_min := 90.0
+@export var recovery_distance_max := 130.0
+@export_range(0.0, 180.0, 1.0) var recovery_angle_variance_degrees := 25.0
 @export var attack_cooldown := 2.0
 @export var attack_group_maximum := 0
 @export var attack_group_spacing := 0.8
@@ -49,6 +52,7 @@ var _patrol_hover := false
 var _state_timer := 0.0
 var _attack_cooldown_remaining := 0.0
 var _attack_target_position := Vector2.ZERO
+var _recovery_destination := Vector2.ZERO
 var _has_hit_this_swoop := false
 var _coordinator: AttackGroupCoordinator
 
@@ -134,10 +138,10 @@ func _process_swoop(delta: float) -> void:
 func _process_recovery(delta: float) -> void:
 	_play_visual(&"fly")
 	_state_timer -= delta
-	var direction := global_position.direction_to(_nest)
+	var direction := global_position.direction_to(_recovery_destination)
 	velocity = direction * flight_speed * _flight_multiplier()
 	move_and_slide()
-	if _state_timer <= 0.0 or global_position.distance_to(_nest) <= 12.0:
+	if _state_timer <= 0.0 or global_position.distance_to(_recovery_destination) <= 12.0:
 		_attack_cooldown_remaining = attack_cooldown
 		if _player_in_nest():
 			_enter_alert_wait()
@@ -182,6 +186,7 @@ func _enter_recovery() -> void:
 	state = State.RECOVERY
 	_play_visual(&"fly")
 	_state_timer = recovery_duration
+	_recovery_destination = _choose_recovery_destination()
 	_has_hit_this_swoop = false
 
 func _release_attack() -> void:
@@ -235,6 +240,21 @@ func _is_destination_path_clear(candidate: Vector2) -> bool:
 	var query := PhysicsRayQueryParameters2D.create(global_position, candidate, flight_blocking_collision_mask)
 	query.exclude = [self]
 	return get_world_2d().direct_space_state.intersect_ray(query).is_empty()
+
+func _choose_recovery_destination() -> Vector2:
+	var player := _target if is_instance_valid(_target) else null
+	if player == null:
+		return _nest
+	var away_angle := player.global_position.direction_to(_nest).angle()
+	if player.global_position.is_equal_approx(_nest):
+		away_angle = randf_range(0.0, TAU)
+	for _attempt in max_destination_attempts:
+		var distance := randf_range(minf(recovery_distance_min, recovery_distance_max), maxf(recovery_distance_min, recovery_distance_max))
+		var angle := away_angle + deg_to_rad(randf_range(-recovery_angle_variance_degrees, recovery_angle_variance_degrees))
+		var candidate := player.global_position + Vector2.RIGHT.rotated(angle) * distance
+		if candidate.distance_to(_nest) <= patrol_radius and _is_destination_path_clear(candidate):
+			return candidate
+	return _nest
 
 func _patrol_area_center() -> Vector2:
 	return _nest

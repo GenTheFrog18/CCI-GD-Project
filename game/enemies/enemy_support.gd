@@ -11,11 +11,14 @@ extends Node
 @export var interrupt_resistance := 0.0
 @export var electric_stun_duration_multiplier := 1.0
 @export var detector_suppression_duration_multiplier := 1.0
+@export var hit_flash_duration := 0.15
 
 var health: HealthComponent
 var status: StatusController
 var effect_label: Label
+var hit_flash: HitFlash
 var _flight_fall_speed := 0.0
+var _was_airborne_during_disabled_flight := false
 
 func _ready() -> void:
 	var definition := ContentCatalog.get_enemy(species_id)
@@ -28,6 +31,9 @@ func _ready() -> void:
 	status = StatusController.new()
 	add_child(status)
 	var actor := get_parent()
+	hit_flash = HitFlash.new()
+	add_child(hit_flash)
+	hit_flash.setup(actor)
 	if actor != null:
 		if actor is Node2D:
 			effect_label = Label.new()
@@ -61,6 +67,8 @@ func _refresh_effect_label() -> void:
 	if effect_label == null or status == null:
 		return
 	var lines := PackedStringArray()
+	if GameSession.debug_gameplay_draw:
+		lines.append("%d/%d" % [int(health.health), int(health.max_health)])
 	for id: StringName in status.active:
 		var definition := ContentCatalog.get_effect(id)
 		var name := definition.display_name if definition != null else String(id)
@@ -103,16 +111,25 @@ func request_interrupt(strength: float, reason: StringName = &"impact") -> bool:
 func process_disabled_flight(actor: CharacterBody2D, delta: float, gravity := 900.0) -> bool:
 	if actor == null or not actor.is_in_group(&"flying") or not status.has_status(&"electro_stunned"):
 		_flight_fall_speed = 0.0
+		_was_airborne_during_disabled_flight = false
 		return false
+	if actor.is_on_floor():
+		actor.velocity.y = 0.0
+		actor.move_and_slide()
+		_flight_fall_speed = 0.0
+		_was_airborne_during_disabled_flight = false
+		return true
+	_was_airborne_during_disabled_flight = true
 	actor.velocity.x = move_toward(actor.velocity.x, 0.0, gravity * delta)
 	actor.velocity.y += gravity * delta
 	_flight_fall_speed = maxf(_flight_fall_speed, actor.velocity.y)
 	actor.move_and_slide()
-	if actor.is_on_floor() and _flight_fall_speed > 0.0:
+	if actor.is_on_floor() and _was_airborne_during_disabled_flight and _flight_fall_speed > 0.0:
 		var info := DamageInfo.new(fall_damage)
 		info.tags = [&"fall"]
-		health.apply_damage(info, species_id)
+		if not fall_immune: health.apply_damage(info, species_id)
 		_flight_fall_speed = 0.0
+		_was_airborne_during_disabled_flight = false
 	return true
 
 func capture_state() -> Dictionary:
@@ -136,13 +153,8 @@ func restore_state(data: Dictionary) -> bool:
 		actor.global_position = Vector2(float(position_data[0]), float(position_data[1]))
 	return true
 
-func _on_damaged(info: DamageInfo) -> void:
-	if not info.causes_hit_reaction:
-		return
-	var actor := get_parent() as CanvasItem
-	if actor != null:
-		actor.modulate = Color(1.0, 0.55, 0.55, 1.0)
-		actor.create_tween().tween_property(actor, "modulate", Color(1, 1, 1, 1), 0.12)
+func _on_damaged(_info: DamageInfo) -> void:
+	hit_flash.play(1, hit_flash_duration)
 
 func _on_status_damage(amount: float) -> void:
 	var info := DamageInfo.new(amount)

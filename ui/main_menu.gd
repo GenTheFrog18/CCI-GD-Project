@@ -14,7 +14,6 @@ const NEW_RUN_CONFIRMATION_SCENE := preload("res://ui/new_run_confirmation.tscn"
 @onready var background: TextureRect = $Background
 @onready var design_ui: Control = $DesignUI
 @onready var new_run_button: Button = $DesignUI/MenuColumn/NewRun
-@onready var play_intro_toggle: CheckButton = $DesignUI/PlayIntro
 @onready var continue_button: Button = $DesignUI/MenuColumn/Continue
 @onready var continue_label: TextureRect = $DesignUI/MenuColumn/Continue/Label
 @onready var settings_button: Button = $DesignUI/MenuColumn/Settings
@@ -34,7 +33,6 @@ func _ready() -> void:
 	GameSession.configure_design_root(design_ui)
 	GameSession.display_settings_changed.connect(func(): GameSession.configure_design_root(design_ui))
 	GameSession.apply_settings()
-	play_intro_toggle.button_pressed = GameSession.first_launch
 	new_run_button.pressed.connect(_confirm_new)
 	continue_button.pressed.connect(_continue_run)
 	settings_button.pressed.connect(_show_settings)
@@ -140,7 +138,7 @@ func _show_new_run_confirmation() -> void:
 func _start_new() -> void:
 	GameSession.start_new_run(int(seed_input.value), debug_checkbox.button_pressed)
 	SaveManager.loaded_persistent_state.clear()
-	if play_intro_toggle.button_pressed:
+	if settings_popup.play_intro_dialogue_enabled:
 		SceneRouter.go_to("res://game/story/prologue/prologue.tscn")
 	else:
 		GameSession.progression_flags["surface_intro_finished"] = true

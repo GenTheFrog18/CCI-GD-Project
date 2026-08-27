@@ -6,6 +6,7 @@ enum StackRule { REFRESH, STACK, REPLACE, IGNORE }
 @export var effect_id: StringName
 @export var display_name := ""
 @export var duration := 1.0
+@export var additive_duration_cap := 0.0
 @export var stack_rule := StackRule.REFRESH
 @export var max_stacks := 1
 @export var tick_interval := 0.0

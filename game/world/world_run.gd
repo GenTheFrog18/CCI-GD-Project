@@ -299,4 +299,4 @@ func _debug_spawn_layer2_enemies() -> void:
 
 func _update_debug_draw() -> void:
 	if _debug_draw != null:
-		_debug_draw.refresh(active_layer, _show_bounds)
+		_debug_draw.refresh(active_layer, GameSession.debug_gameplay_draw, _show_bounds)

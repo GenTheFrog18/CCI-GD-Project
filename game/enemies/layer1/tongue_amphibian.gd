@@ -13,6 +13,7 @@ enum State { IDLE, MOVE, ATTACK, RETREAT }
 @export var jump_velocity := -280.0
 @export_range(0.0, 1.0, 0.05) var air_control := 0.15
 @export var tongue_range := 150.0
+@export var item_detection_range := 225.0
 @export var tongue_angle_degrees := 0.0
 @export var tongue_width := 16.0
 @export var telegraph_seconds := 0.45
@@ -23,6 +24,7 @@ enum State { IDLE, MOVE, ATTACK, RETREAT }
 @export var theft_cooldown_seconds := 3.0
 @export var can_steal_multitool := false
 @export var leash_distance := 180.0
+@export var stuck_direction_seconds := 4.0
 @export var carried_drop_offset := Vector2(0.0, -16.0)
 
 @onready var support: EnemySupport = $EnemySupport
@@ -41,6 +43,7 @@ var _theft_cooldown := 0.0
 var _roam_target := Vector2.ZERO
 var _has_roam_target := false
 var _facing_direction := 1.0
+var _roam_stuck_seconds := 0.0
 var _random := RandomNumberGenerator.new()
 var _knockback := Vector2.ZERO
 var _investigation_remaining := 0.0
@@ -65,6 +68,8 @@ func _ready() -> void:
 	)
 	sound.sound_accepted.connect(func(event: SoundEvent, _direct: bool):
 		_investigation_remaining = 2.0
+		_roam_target = event.position
+		_has_roam_target = true
 		$AwarenessIndicator.text = "?"
 		$AwarenessIndicator.show()
 		_move_toward(event.position)
@@ -87,8 +92,10 @@ func _physics_process(delta: float) -> void:
 	else:
 		var air_target := _facing_direction * move_speed * support.status.get_multiplier(&"move_speed")
 		velocity.x = move_toward(velocity.x, air_target, move_speed * air_control * delta)
-	var loose := _nearest_loose_item()
+	var player_interacting := _target != null or _investigation_remaining > 0.0
+	var loose := _nearest_loose_item() if state in [State.IDLE, State.MOVE] and not player_interacting else null
 	var chasing_player := _target != null and sight.current_target == _target
+	var investigating_sound := _target == null and _investigation_remaining > 0.0
 	var desired: Node2D = _target if chasing_player else loose if loose != null else _target
 	if not carried.is_empty():
 		state = State.RETREAT
@@ -99,9 +106,12 @@ func _physics_process(delta: float) -> void:
 			_perform_tongue(desired)
 			state = State.IDLE
 			_timer = cooldown_seconds
+	elif investigating_sound:
+		state = State.MOVE
+		_move_toward(_roam_target)
 	elif desired != null:
 		var distance := global_position.distance_to(desired.global_position)
-		if distance <= tongue_range and _timer <= 0.0:
+		if distance <= tongue_range and _timer <= 0.0 and _theft_cooldown <= 0.0:
 			state = State.ATTACK
 			_timer = telegraph_seconds
 			if desired.has_method("warn_attack"): desired.warn_attack(self, telegraph_seconds)
@@ -111,23 +121,27 @@ func _physics_process(delta: float) -> void:
 	else:
 		state = State.MOVE
 		_roam()
+	if state == State.ATTACK:
+		velocity.x = 0.0
 	if state != State.ATTACK and grounded and _jump_timer <= 0.0 and not support.status.has_status(&"electro_stunned"):
 		velocity.x = _facing_direction * move_speed * support.status.get_multiplier(&"move_speed")
 		velocity.y = jump_velocity * _random_jump_height() * support.status.get_multiplier(&"jump_strength")
 		_jump_timer = _random_jump_cooldown()
 	velocity += _knockback
 	_knockback = Vector2.ZERO
+	var horizontal_position := global_position.x
 	move_and_slide()
+	_update_roam_stuck(delta, desired, horizontal_position)
 	_update_visual(grounded)
 	sight.facing = Vector2(_facing_direction, 0.0)
 	if GameSession.debug_gameplay_draw:
 		queue_redraw()
 
 func _nearest_loose_item() -> Node2D:
-	if _theft_cooldown > 0.0:
+	if _theft_cooldown > 0.0 or support.status.has_status(&"electrocuted"):
 		return null
 	var best: Node2D
-	var distance := tongue_range * 1.5
+	var distance := maxf(item_detection_range, 0.0)
 	var best_weight := INF
 	for node in get_tree().get_nodes_in_group(&"loose_items"):
 		if node is not Node2D or node.is_queued_for_deletion() or not node.has_method("can_be_picked_up") or not node.can_be_picked_up() or not _can_steal_item(node): continue
@@ -144,7 +158,7 @@ func _nearest_loose_item() -> Node2D:
 func _perform_tongue(target: Node2D) -> void:
 	if target == null or not target.has_method("can_be_picked_up") and not target.has_method("take_item_for_theft"):
 		return
-	if _theft_cooldown > 0.0:
+	if _theft_cooldown > 0.0 or support.status.has_status(&"electrocuted"):
 		return
 	if global_position.distance_to(target.global_position) > tongue_range or not _tongue_reaches(target):
 		return
@@ -195,6 +209,21 @@ func _roam() -> void:
 		_roam_target = _origin + Vector2(_random.randf_range(-leash_distance, leash_distance), 0.0)
 		_has_roam_target = true
 	_move_toward(_roam_target)
+
+func _update_roam_stuck(delta: float, desired: Node2D, previous_x: float) -> void:
+	if state != State.MOVE or desired != null:
+		_roam_stuck_seconds = 0.0
+		return
+	if absf(global_position.x - previous_x) > 0.5:
+		_roam_stuck_seconds = 0.0
+		return
+	_roam_stuck_seconds += delta
+	if _roam_stuck_seconds < maxf(stuck_direction_seconds, 0.0):
+		return
+	_roam_stuck_seconds = 0.0
+	_set_facing(-_facing_direction)
+	_roam_target = _origin + Vector2(_facing_direction * maxf(leash_distance, 1.0), 0.0)
+	_has_roam_target = true
 
 func _set_facing(direction: float) -> void:
 	if is_zero_approx(direction):

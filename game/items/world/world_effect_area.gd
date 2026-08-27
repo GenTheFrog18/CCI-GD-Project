@@ -64,8 +64,17 @@ func _physics_process(delta: float) -> void:
 		body.linear_velocity *= damping
 
 func _on_body_entered(body: Node) -> void:
-	if effect_kind == &"hushcap" and body.is_in_group(&"player") and body.has_method("set_hushcap_area"):
-		body.set_hushcap_area(true)
+	if effect_kind == &"hushcap":
+		if body.is_in_group(&"player") and body.has_method("set_hushcap_area"):
+			body.set_hushcap_area(true)
+		elif body.is_in_group(&"effect_receivers"):
+			var status := _status_for_body(body)
+			if status != null:
+				status.apply_status(&"detector_suppressed", {
+					"provider_id": provider_id,
+					"duration": duration,
+					"modifiers": {&"sight_enabled": 0.0},
+				})
 		return
 	if effect_kind == &"resin":
 		if body.has_method("apply_status"):
@@ -76,8 +85,13 @@ func _on_body_entered(body: Node) -> void:
 			_resin_bodies.append(body)
 
 func _on_body_exited(body: Node) -> void:
-	if effect_kind == &"hushcap" and body.is_in_group(&"player") and body.has_method("set_hushcap_area"):
-		body.set_hushcap_area(false)
+	if effect_kind == &"hushcap":
+		if body.is_in_group(&"player") and body.has_method("set_hushcap_area"):
+			body.set_hushcap_area(false)
+		elif body.is_in_group(&"effect_receivers"):
+			var status := _status_for_body(body)
+			if status != null:
+				status.remove_status(&"detector_suppressed", provider_id)
 		return
 	if effect_kind == &"resin":
 		if body is RigidBody2D:
@@ -88,6 +102,13 @@ func _on_body_exited(body: Node) -> void:
 			status = support.status if support != null else null
 		if status is StatusController:
 			status.remove_status(effect_id, provider_id)
+
+func _status_for_body(body: Node) -> StatusController:
+	var value = body.get("status") if body != null else null
+	if value is StatusController:
+		return value
+	var support := body.get_node_or_null("EnemySupport") as EnemySupport if body != null else null
+	return support.status if support != null else null
 
 func _flash() -> void:
 	for actor in get_tree().get_nodes_in_group(&"effect_receivers"):

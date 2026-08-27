@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="DialogueSequence" format=3 uid="uid://4j7b6asm3vuv"]
+
+[ext_resource type="Script" uid="uid://c561kj13kn4li" path="res://data/definitions/dialogue_line.gd" id="1_line"]
+[ext_resource type="Script" uid="uid://j8ks4377trg3" path="res://data/definitions/dialogue_sequence.gd" id="2_sequence"]
+[ext_resource type="Texture2D" uid="uid://cfvf1bi1xlfsd" path="res://assets/art/characters/npc/portrait/Gatekeeper1.png" id="3_gatekeeper"]
+[ext_resource type="Texture2D" uid="uid://d0p2emigwb3c7" path="res://assets/art/characters/player/Portrait_Flat.png" id="4_player"]
+[ext_resource type="Script" uid="uid://b8t3tmjph4vjg" path="res://data/definitions/dialogue_step.gd" id="5_dsnoi"]
+
+[sub_resource type="Resource" id="Line_01"]
+script = ExtResource("1_line")
+speaker_id = &"gatekeeper1"
+speaker_name = "Gatekeeper"
+text = "Hah, Tertangkap juga."
+portrait = ExtResource("3_gatekeeper")
+
+[sub_resource type="Resource" id="Line_02"]
+script = ExtResource("1_line")
+speaker_id = &"elenara"
+speaker_name = "Elenara"
+text = "Grr... Lepaskan aku!"
+portrait = ExtResource("4_player")
+
+[sub_resource type="Resource" id="Line_03"]
+script = ExtResource("1_line")
+speaker_id = &"gatekeeper1"
+speaker_name = "Gatekeeper"
+text = "Saatnya untukmu pulang ke atas lagi."
+portrait = ExtResource("3_gatekeeper")
+
+[sub_resource type="Resource" id="Line_04"]
+script = ExtResource("1_line")
+speaker_id = &"gatekeeper1"
+speaker_name = "Gatekeeper"
+text = "Delver merah sepertimu tidak memerlukan relik sebanyak ini. Akan kusimpan sampai kau memerlukannya lagi."
+portrait = ExtResource("3_gatekeeper")
+
+[resource]
+script = ExtResource("2_sequence")
+sequence_id = &"gatekeeper1_grab"
+entries = Array[ExtResource("1_line")]([SubResource("Line_01"), SubResource("Line_02"), SubResource("Line_03"), SubResource("Line_04")])

@@ -1,9 +1,12 @@
 extends Node
 
+const DIALOGUE_BOX_SCENE := preload("res://ui/dialogue_box.tscn")
+
 @export var dialogue_sequence: DialogueSequence
 
 var player: PlayerController
 var dialogue_box: DialogueBox
+var dialogue_controller: DialogueController
 
 func start_intro(player_controller: PlayerController, dialogue_parent: Control) -> void:
 	print("=== SURFACE INTRO START ===")
@@ -24,15 +27,18 @@ func start_intro(player_controller: PlayerController, dialogue_parent: Control) 
 
 	player.locks.lock(&"surface_intro")
 
-	dialogue_box = DialogueBox.new()
+	dialogue_box = DIALOGUE_BOX_SCENE.instantiate() as DialogueBox
 	dialogue_parent.add_child(dialogue_box)
 	dialogue_box.position = Vector2(60, 245)
+	dialogue_controller = DialogueController.new()
+	dialogue_parent.add_child(dialogue_controller)
+	dialogue_controller.setup(dialogue_box)
 
-	dialogue_box.dialogue_finished.connect(_on_dialogue_finished)
+	dialogue_controller.sequence_finished.connect(_on_dialogue_finished)
 
 	print("Menampilkan Surface Intro...")
 
-	dialogue_box.show_sequence(dialogue_sequence, null, player)
+	dialogue_controller.start_sequence(dialogue_sequence, null, player)
 
 func _on_dialogue_finished() -> void:
 	print("=== SURFACE INTRO SELESAI ===")
@@ -46,8 +52,11 @@ func _on_dialogue_finished() -> void:
 
 	if is_instance_valid(dialogue_box):
 		dialogue_box.queue_free()
+	if is_instance_valid(dialogue_controller):
+		dialogue_controller.queue_free()
 
 	dialogue_box = null
+	dialogue_controller = null
 	
 func _show_objective() -> void:
 	print("OBJECTIVE: Temui Kakek")

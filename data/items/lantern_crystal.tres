@@ -16,7 +16,7 @@ radius = 180.0
 [sub_resource type="Resource" id="Behavior"]
 script = ExtResource("2")
 kind = "crystal"
-duration = 4.0
+duration = 7.0
 primary_shape = SubResource("PrimaryShape")
 impact_shape = SubResource("ImpactShape")
 sound_priority = 9

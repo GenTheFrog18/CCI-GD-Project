@@ -12,6 +12,7 @@ const ROW_SCENE := preload("res://ui/shop_item_row.tscn")
 @onready var close_button: TextureButton = $Backdrop/Close
 @onready var buy_rows: VBoxContainer = $Backdrop/Columns/BuyColumn/BuyScroll/BuyRows
 @onready var sell_rows: VBoxContainer = $Backdrop/Columns/SellColumn/SellScroll/SellRows
+@onready var money_label: Label = $Money
 @onready var confirmation: ShopConfirmation = $Confirmation
 
 var _service: ShopService
@@ -82,6 +83,7 @@ func _connect_sources() -> void:
 		_inventory.changed.connect(_refresh_callable)
 
 func _refresh(_ignored = null) -> void:
+	money_label.text = "$%d" % GameSession.money
 	if _service == null or _inventory == null:
 		return
 	_clear_rows(buy_rows)

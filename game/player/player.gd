@@ -32,6 +32,8 @@ signal threat_warning_requested(source: Node2D, duration: float)
 @export var rope_lateral_range := 8.0
 @export var rope_lateral_speed := 48.0
 @export var detection_origin_offset := Vector2(0.0, -28.0)
+@export_range(0.01, 1.0, 0.01) var hit_flash_duration := 0.05
+@export_range(0.0, 1.0, 0.01) var hit_flash_gap := 0.04
 @export var species_id: StringName = &"player"
 @export var persistent_id := "player"
 
@@ -65,6 +67,8 @@ var _combat_safe_zone_count := 0
 var _thorn_spike_iframe_until := 0
 var _hushcap_area_count := 0
 var _dazzled_remaining := 0.0
+var _hit_flash: HitFlash
+var _collision_slowdowns: Dictionary = {}
 
 @onready var hushcap_overlay: HushcapOverlay = $HushcapOverlay
 func _ready() -> void:
@@ -75,6 +79,10 @@ func _ready() -> void:
 	status.tick_damage_requested.connect(_on_status_tick)
 	status.tick_healing_requested.connect(heal)
 	status.status_changed.connect(_on_status_changed)
+	_hit_flash = HitFlash.new()
+	add_child(_hit_flash)
+	_hit_flash.setup(self)
+	health.damaged.connect(func(info: DamageInfo): _hit_flash.play(2 if info.causes_hit_reaction else 1, hit_flash_duration, hit_flash_gap))
 	curse_tracker = CurseTracker.new()
 	add_child(curse_tracker)
 	curse_tracker.setup(self)
@@ -116,6 +124,8 @@ func _physics_process(delta: float) -> void:
 	var speed_multiplier := status.get_multiplier(&"move_speed") * movement_strength
 	if inventory_open:
 		speed_multiplier *= 0.35
+	for multiplier in _collision_slowdowns.values():
+		speed_multiplier *= clampf(float(multiplier), 0.01, 1.0)
 	var axis := Input.get_axis(&"move_left", &"move_right") if can_control else 0.0
 	var target_speed := axis * move_speed * speed_multiplier * item_controller.get_movement_multiplier()
 	var rate := _horizontal_rate(axis, was_on_floor)
@@ -252,8 +262,8 @@ func try_pickup_item(item_id: StringName, quantity: int, state: Dictionary) -> b
 func take_item_for_theft(can_take_multitool := true) -> ItemStack:
 	return item_controller.inventory.take_for_theft(can_take_multitool)
 
-func confiscate_map_items() -> Array[ItemStack]:
-	return item_controller.inventory.remove_origin(&"map")
+func confiscate_relic_items() -> Array[ItemStack]:
+	return item_controller.inventory.remove_relic_items()
 
 func use_whistle() -> bool:
 	if physical_whistle_id.is_empty() or inventory_open or locks.is_locked():
@@ -330,6 +340,14 @@ func apply_force(force: Vector2) -> void:
 		if not force.is_zero_approx():
 			_detach_rope(true)
 		_knockback += force * status.get_multiplier(&"knockback_received")
+
+func set_collision_slowdown(source: Node, multiplier: float) -> void:
+	if is_instance_valid(source):
+		_collision_slowdowns[source.get_instance_id()] = clampf(multiplier, 0.01, 1.0)
+
+func clear_collision_slowdown(source: Node) -> void:
+	if source != null:
+		_collision_slowdowns.erase(source.get_instance_id())
 
 func is_alive() -> bool:
 	return not health.is_dead

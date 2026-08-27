@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://df7ejxvsrrk8r"]
+
+[ext_resource type="Script" uid="uid://h8avkfckcn8j" path="res://game/items/world/world_hitbox_authoring.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://djye5hp12fuv0" path="res://assets/art/items/whistles/whistle_red.png" id="2_e3va7"]
+
+[node name="WorldHitboxAuthoring" type="Area2D" unique_id=1441439163]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1")
+preview_texture = ExtResource("2_e3va7")
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="." unique_id=999894883]
+polygon = PackedVector2Array(-8, -1, 1, -7, 8, 0, 5, 5, -5, 6)

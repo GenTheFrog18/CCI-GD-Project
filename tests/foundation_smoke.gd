@@ -472,16 +472,43 @@ func _test_ui_input_and_debug() -> void:
 	var dialogue := ContentCatalog.get_dialogue(&"foundation_intro")
 	hud.show_dialogue(dialogue)
 	assert(hud.dialogue_box.visible and not player.locks.is_locked())
+	var inventory_event := InputEventAction.new()
+	inventory_event.action = &"inventory"
+	inventory_event.pressed = true
+	hud._input(inventory_event)
+	assert(not player.inventory_open)
+	var cancel_dialogue_event := InputEventAction.new()
+	cancel_dialogue_event.action = &"ui_cancel"
+	cancel_dialogue_event.pressed = true
+	hud._input(cancel_dialogue_event)
+	assert(not hud.dialogue_box.visible and not hud.dialogue_controller.is_active())
+	hud.show_dialogue(dialogue)
 	var interact_event := InputEventAction.new()
 	interact_event.action = &"interact"
 	interact_event.pressed = true
 	hud.dialogue_box._input(interact_event)
-	assert(hud.dialogue_box._index == 0 and not hud.dialogue_box._typing)
+	assert(hud.dialogue_controller.is_active() and not hud.dialogue_box._typing)
 	hud.dialogue_box._input(interact_event)
-	assert(hud.dialogue_box._index == 1)
+	assert(hud.dialogue_controller.is_active() and hud.dialogue_box._typing)
 	hud.dialogue_box._input(interact_event)
 	hud.dialogue_box._input(interact_event)
-	assert(not hud.dialogue_box.visible)
+	assert(not hud.dialogue_box.visible and not player.locks.is_locked())
+	var choice_sequence := DialogueSequence.new()
+	var choice_step := DialogueStep.new()
+	choice_step.type = DialogueStep.Type.CHOICE
+	var choice := DialogueChoice.new()
+	choice.label = "Set dialogue smoke flag"
+	var action := DialogueAction.new()
+	action.type = DialogueAction.Type.SET_FLAG
+	action.flag_id = &"dialogue_smoke_choice"
+	choice.actions.append(action)
+	choice_step.choices.append(choice)
+	choice_sequence.steps.append(choice_step)
+	hud.show_dialogue(choice_sequence)
+	assert(hud.dialogue_box.visible and not player.locks.is_locked())
+	(hud.dialogue_box._choices.get_child(0) as Button).pressed.emit()
+	assert(bool(GameSession.progression_flags.get("dialogue_smoke_choice", false)) and not hud.dialogue_controller.is_active() and not player.locks.is_locked())
+	GameSession.progression_flags.erase("dialogue_smoke_choice")
 	var original_run_path := SaveManager.run_path
 	var original_meta_path := SaveManager.meta_path
 	SaveManager.run_path = "user://foundation_smoke_death_run.json"
@@ -931,6 +958,15 @@ func _test_room_loads() -> void:
 	prologue.free()
 	var room := preload("res://game/world/foundation_test_room.tscn").instantiate()
 	assert(room != null)
+	assert(room.test_curse_layer == "None")
+	assert(room.get_node("Ground").position == Vector2(320.0, 344.0))
+	assert((room.get_node("Ground/CollisionShape2D").shape as RectangleShape2D).size == Vector2(640.0, 32.0))
+	assert(room.get_node("LeftWall").position == Vector2(0.0, 180.0))
+	assert(room.get_node("RightWall").position == Vector2(640.0, 180.0))
+	assert(not room.has_node("Background"))
+	assert(not room.has_node("Platform") and not room.has_node("TestShopTerminal"))
+	assert(not room.has_node("RockPickup") and not room.has_node("BreakableLoot"))
+	assert(not room.has_node("TestAmphibian") and not room.has_node("ProjectileTurret"))
 	room.free()
 	var world_run := preload("res://game/world/world_run.tscn").instantiate()
 	assert(world_run != null)
@@ -948,7 +984,7 @@ func _test_room_loads() -> void:
 	for child in surface.get_children():
 		if child is TestAmphibian:
 			surface_ids[child.persistent_id] = true
-	assert(surface_ids.size() == 3)
+	assert(surface_ids.is_empty())
 	surface.free()
 
 func _test_world_run_runtime() -> void:
