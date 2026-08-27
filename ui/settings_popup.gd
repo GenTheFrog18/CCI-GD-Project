@@ -51,6 +51,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	z_index = 10
 	visible = false
+	play_intro_toggle.visible = not include_resume
 	play_intro_toggle.button_pressed = GameSession.first_launch
 	_card_top = card.offset_top
 	_card_bottom = card.offset_bottom
