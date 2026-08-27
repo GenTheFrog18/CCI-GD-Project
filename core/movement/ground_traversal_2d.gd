@@ -139,6 +139,7 @@ func _build_profile() -> Dictionary:
 		return {}
 	profile["body_shape"] = collision.shape
 	profile["body_bottom"] = collision.position.y + _shape_half_height(collision.shape)
+	profile["body_shape_half_height"] = _shape_half_height(collision.shape)
 	profile["body_width"] = _shape_width(collision.shape)
 	profile["shape_rotation"] = collision.rotation
 	profile["sample_spacing"] = sample_spacing

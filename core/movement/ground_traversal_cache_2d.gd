@@ -326,7 +326,7 @@ func _shape_query(surface_position: Vector2, profile: Dictionary) -> PhysicsShap
 	return query
 
 func _shape_center(surface_position: Vector2, profile: Dictionary) -> Vector2:
-	return surface_position - Vector2(0.0, float(profile.get("body_bottom", 0.0)) + float(profile.get("ground_skin", 1.0)))
+	return surface_position - Vector2(0.0, float(profile.get("body_shape_half_height", 0.0)) + float(profile.get("ground_skin", 1.0)))
 
 func _nearest_sample(samples: Array[SurfaceSample], position: Vector2, maximum_distance: float) -> int:
 	var best_id := -1
@@ -350,10 +350,11 @@ func _restore_failed_links(graph: ProfileGraph) -> void:
 			graph.astar.connect_points(link.from_id, link.to_id, false)
 
 func _profile_key(profile: Dictionary) -> String:
-	return "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % [
+	return "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % [
 		String(profile.get("profile_id", &"default")),
 		str(profile.get("body_width", 0.0)),
 		str(profile.get("body_bottom", 0.0)),
+		str(profile.get("body_shape_half_height", 0.0)),
 		str(profile.get("walk_speed", 0.0)),
 		str(profile.get("gravity", 0.0)),
 		str(profile.get("jump_velocity", 0.0)),

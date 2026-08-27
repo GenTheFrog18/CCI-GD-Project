@@ -164,6 +164,22 @@ func _ready() -> void:
 			break
 	assert(failures == [GroundTraversal2D.RouteResult.TEMPORARILY_BLOCKED])
 
+	var hound := preload("res://game/enemies/layer2/tremor_hound.tscn").instantiate() as TremorHound
+	hound.position = Vector2(260.0, 479.0)
+	hound.set_physics_process(false)
+	section.add_child(hound)
+	await get_tree().physics_frame
+	hound._movement_speed = 90.0
+	var hound_route := hound.traversal.request_move_to(Vector2(284.0, 480.0), &"smoke")
+	assert(hound_route == GroundTraversal2D.RouteResult.SUCCESS)
+	for _frame in 240:
+		hound.traversal.physics_step(1.0 / 60.0)
+		await get_tree().physics_frame
+		if not hound.traversal.is_active():
+			break
+	assert(not hound.traversal.is_active())
+	assert(hound.global_position.x > 275.0)
+
 	print("GROUND_TRAVERSAL_SMOKE_OK")
 	get_tree().quit(0)
 
