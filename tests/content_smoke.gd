@@ -217,6 +217,14 @@ func _test_layer2_enemies() -> void:
 	hound._on_sound(disturbance, false)
 	_check(hound.state == TremorHound.State.INVESTIGATE and hound._investigation == disturbance.position, "Hound investigates recorded sound position")
 	_check(hound.visual.sprite_frames.get_frame_count(&"idle") == 6 and hound.visual.sprite_frames.get_frame_count(&"run") == 8 and hound.visual.sprite_frames.get_frame_count(&"pounce") == 2 and hound.visual.flip_h, "Hound uses flipped idle, run, and pounce animations")
+	hound._enter_roam()
+	hound._pause_timer = 0.0
+	hound._roam_timer = 0.0
+	hound._process_roam(0.1)
+	_check(not is_zero_approx(hound.velocity.x), "Hound starts a timed roam burst")
+	hound._roam_timer = 0.01
+	hound._process_roam(0.1)
+	_check(is_zero_approx(hound.velocity.x) and hound._pause_timer > 0.0, "Hound pauses after a roam burst")
 	var hound_attacker := Node2D.new()
 	add_child(hound_attacker)
 	hound._on_damaged(DamageInfo.new(1.0, hound_attacker, &"tester"))

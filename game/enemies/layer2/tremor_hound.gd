@@ -67,6 +67,7 @@ var _sound_queue: Array[Dictionary] = []
 var _state_timer := 0.0
 var _roam_timer := 0.0
 var _pause_timer := 0.0
+var _roam_direction := 1.0
 var _search_center := Vector2.ZERO
 var _movement_speed := 0.0
 var _pounce_direction := Vector2.RIGHT
@@ -138,20 +139,27 @@ func _physics_process(delta: float) -> void:
 		queue_redraw()
 
 func _process_roam(delta: float) -> void:
-	visual.play(&"run" if traversal.is_active() else &"idle")
-	if traversal.is_active():
-		traversal.physics_step(delta)
-		return
-	_ground_motion(delta)
 	if _pause_timer > 0.0:
+		visual.play(&"idle")
+		velocity.x = move_toward(velocity.x, 0.0, ground_acceleration * delta)
 		_pause_timer -= delta
+		_ground_motion(delta)
 		return
 	if _roam_timer <= 0.0:
-		_movement_speed = roam_speed
-		var result: GroundTraversal2D.RouteResult = traversal.request_random_move(&"roam", 24.0)
+		_roam_direction = _random_direction()
 		_roam_timer = _random.randf_range(roam_burst_min_seconds, roam_burst_max_seconds)
-		if result != GroundTraversal2D.RouteResult.SUCCESS:
-			velocity.x = _random_direction() * roam_speed
+	visual.play(&"run")
+	_roam_timer -= delta
+	velocity.x = move_toward(velocity.x, _roam_direction * roam_speed, ground_acceleration * delta)
+	_ground_motion(delta)
+	if is_on_wall():
+		_roam_direction *= -1.0
+		_roam_timer = 0.0
+		velocity.x = 0.0
+		_pause_timer = _random_pause()
+	elif _roam_timer <= 0.0:
+		velocity.x = 0.0
+		_pause_timer = _random_pause()
 
 func _process_investigate(delta: float) -> void:
 	if _player_detected():
@@ -423,6 +431,7 @@ func _enter_investigate() -> void:
 		return
 	state = State.INVESTIGATE
 	_target = null
+	velocity.x = 0.0
 	traversal.cancel()
 
 func _enter_search(center: Vector2) -> void:
@@ -441,6 +450,7 @@ func _enter_confirmed(target: Node2D) -> void:
 	state = State.CONFIRMED_TARGET
 	_current_event = {}
 	_pause_timer = 0.0
+	velocity.x = 0.0
 
 func _begin_prepare(target: Node2D) -> void:
 	if not is_instance_valid(target):
@@ -491,6 +501,7 @@ func _enter_roam() -> void:
 	_retaliation_target = null
 	_roam_timer = 0.0
 	_pause_timer = _random_pause()
+	velocity.x = 0.0
 	traversal.cancel()
 
 func _on_damaged(info: DamageInfo) -> void:

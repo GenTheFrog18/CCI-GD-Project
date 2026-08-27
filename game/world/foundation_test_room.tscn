@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://d3o6v8awj7dcx" path="res://ui/foundation_hud.tscn" id="3"]
 [ext_resource type="Script" uid="uid://cffkoem4dm71c" path="res://game/world/lighting/darkness_region_2d.gd" id="4_mt4mp"]
 [ext_resource type="Texture2D" uid="uid://d0xljos4bjkc8" path="res://assets/art/world/ground/Tiles1.png" id="5_lc0jv"]
-[ext_resource type="PackedScene" path="res://game/enemies/layer2/tremor_hound.tscn" id="7_a8f4o"]
+[ext_resource type="PackedScene" uid="uid://dpvavwc16kcn7" path="res://game/enemies/layer2/tremor_hound.tscn" id="7_a8f4o"]
 [ext_resource type="PackedScene" uid="uid://cfythaj4tmipg" path="res://game/world/large_flyer_blocker.tscn" id="12_6wnfj"]
 
 [sub_resource type="RectangleShape2D" id="GroundShape"]
@@ -1365,7 +1365,7 @@ color = Color(0.18, 0.22, 0.27, 1)
 polygon = PackedVector2Array(-16, -180, 16, -180, 16, 180, -16, 180)
 
 [node name="Player" parent="." unique_id=107821812 instance=ExtResource("2")]
-position = Vector2(764, 213)
+position = Vector2(903, 230)
 
 [node name="FoundationHUD" parent="." unique_id=851461818 instance=ExtResource("3")]
 
@@ -1400,4 +1400,4 @@ position = Vector2(718, 238)
 position = Vector2(868, 247)
 
 [node name="TremorHound" parent="." unique_id=1560503611 instance=ExtResource("7_a8f4o")]
-position = Vector2(754, 313)
+position = Vector2(857, 305)
