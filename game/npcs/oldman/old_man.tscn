@@ -77,3 +77,4 @@ shape = SubResource("RectangleShape2D_1r8fe")
 persistent_id = &"old_man"
 prompt = "Talk to Old Man"
 first_sequence = ExtResource("2_1whv8")
+repeat_sequence = ExtResource("2_1whv8")
