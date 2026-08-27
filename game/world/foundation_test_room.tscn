@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://d3o6v8awj7dcx" path="res://ui/foundation_hud.tscn" id="3"]
 [ext_resource type="Script" uid="uid://cffkoem4dm71c" path="res://game/world/lighting/darkness_region_2d.gd" id="4_mt4mp"]
 [ext_resource type="Texture2D" uid="uid://d0xljos4bjkc8" path="res://assets/art/world/ground/Tiles1.png" id="5_lc0jv"]
-[ext_resource type="PackedScene" path="res://game/enemies/layer1/senior_diver.tscn" id="6_a8f4o"]
+[ext_resource type="PackedScene" uid="uid://cob3cm5xvdhk5" path="res://game/enemies/layer1/senior_diver.tscn" id="6_a8f4o"]
 [ext_resource type="PackedScene" uid="uid://cfythaj4tmipg" path="res://game/world/large_flyer_blocker.tscn" id="12_6wnfj"]
 
 [sub_resource type="RectangleShape2D" id="GroundShape"]
@@ -1396,6 +1396,7 @@ tile_set = SubResource("TileSet_l7r7e")
 [node name="SeniorDiver" parent="mapping/terrain" unique_id=2035866500 instance=ExtResource("6_a8f4o")]
 light_mask = 21
 position = Vector2(717, 317)
+trespass_knockback = 60.0
 
 [node name="LargeFlyerBlocker" parent="." unique_id=1664994195 instance=ExtResource("12_6wnfj")]
 position = Vector2(718, 238)

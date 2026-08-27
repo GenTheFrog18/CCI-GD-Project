@@ -9,6 +9,11 @@ func _ready() -> void:
 	assert(diver.blue_intro_dialogue != null)
 	assert(diver.blue_intro_dialogue.entries.size() == 5)
 	assert(diver.get_node("PlayerProximityPreview").radius_property == &"restricted_radius")
+	assert(diver.collision_mask & 2 != 0)
+	diver._last_known_position = Vector2(-10.0, 0.0)
+	diver._has_last_known_position = true
+	diver._update_visual()
+	assert(diver.visual.flip_h)
 	assert(diver.visual.sprite_frames.get_frame_count(&"idle") == 4)
 	assert(diver.visual.sprite_frames.get_frame_count(&"walk") == 6)
 	assert(diver.visual.sprite_frames.get_frame_count(&"grab") == 10)

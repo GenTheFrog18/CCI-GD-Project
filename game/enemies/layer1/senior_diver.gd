@@ -41,6 +41,7 @@ var _grab_target: PlayerController
 var _timer := 0.0
 var _lost := 0.0
 var _has_sight := false
+var _has_last_known_position := false
 var _knockback := Vector2.ZERO
 var _was_restricted := false
 var _last_known_position := Vector2.ZERO
@@ -235,6 +236,7 @@ func _on_seen(target: Node2D, position: Vector2) -> void:
 		return
 	_target = target
 	_last_known_position = position
+	_has_last_known_position = true
 	_has_sight = true
 	_lost = lost_seconds
 
@@ -244,6 +246,7 @@ func _on_lost(target: Node2D) -> void:
 	_has_sight = false
 	_lost = lost_seconds
 	_last_known_position = target.global_position
+	_has_last_known_position = true
 	if state == State.GRAB_TELEGRAPH:
 		_cancel_grab()
 
@@ -317,8 +320,11 @@ func _update_visual() -> void:
 	if visual.animation != animation:
 		visual.play(animation)
 	var facing: float = signf(velocity.x)
-	if is_zero_approx(facing) and is_instance_valid(_target):
-		facing = signf(_target.global_position.x - global_position.x)
+	if is_zero_approx(facing):
+		if is_instance_valid(_target):
+			facing = signf(_target.global_position.x - global_position.x)
+		elif _has_last_known_position:
+			facing = signf(_last_known_position.x - global_position.x)
 	if not is_zero_approx(facing):
 		visual.flip_h = facing < 0.0
 
