@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bnjqtbwb56hne" path="res://game/enemies/layer1/thorn_bloom.gd" id="1"]
 [ext_resource type="Script" uid="uid://ducaowngygpn0" path="res://game/enemies/enemy_support.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://4ajrsynl35d4" path="res://assets/art/enemies/thorn_bloom/idle.png" id="2_qmu1m"]
+[ext_resource type="Script" path="res://core/editor_range_preview.gd" id="3"]
 
 [sub_resource type="RectangleShape2D" id="Shape"]
 size = Vector2(16, 16)
@@ -46,3 +47,8 @@ script = ExtResource("2")
 species_id = &"thorn_bloom"
 max_health = 30.0
 tags = Array[StringName]([&"neutral_creature", &"hazard"])
+
+[node name="PlayerProximityPreview" type="Node2D" parent="."]
+z_index = -10
+script = ExtResource("3")
+radius_property = &"trigger_radius"

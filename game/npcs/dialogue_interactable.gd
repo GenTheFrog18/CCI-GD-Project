@@ -1,3 +1,4 @@
+@tool
 class_name DialogueInteractable
 extends Area2D
 
@@ -8,12 +9,39 @@ extends Area2D
 @export var repeat_sequence: DialogueSequence
 @export var completed_sequence: DialogueSequence
 @export var face_parent_sprite := true
+@export_range(0.0, 256.0, 1.0) var interaction_radius := 18.0
+@export var show_editor_preview := true
 
 @onready var interaction_indicator: Label = $InteractionIndicator
 
 func _ready() -> void:
-	add_to_group(&"interactables")
+	_sync_collision_shape()
 	interaction_indicator.visible = false
+	if Engine.is_editor_hint():
+		queue_redraw()
+		return
+	add_to_group(&"interactables")
+
+func _process(_delta: float) -> void:
+	if Engine.is_editor_hint():
+		_sync_collision_shape()
+		if show_editor_preview:
+			queue_redraw()
+
+func _sync_collision_shape() -> void:
+	var collision := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	var current := collision.shape as CircleShape2D if collision != null else null
+	if current == null or is_equal_approx(current.radius, interaction_radius):
+		return
+	var shape := current.duplicate() as CircleShape2D
+	shape.radius = interaction_radius
+	collision.shape = shape
+
+func _draw() -> void:
+	if not Engine.is_editor_hint() or not show_editor_preview:
+		return
+	draw_circle(Vector2.ZERO, interaction_radius, Color(1.0, 0.7, 0.25, 0.1))
+	draw_arc(Vector2.ZERO, interaction_radius, 0.0, TAU, 32, Color(1.0, 0.7, 0.25, 0.9), 2.0)
 
 func get_interaction_prompt(_actor: Node) -> String:
 	return prompt

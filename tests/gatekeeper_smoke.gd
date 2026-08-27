@@ -8,6 +8,7 @@ func _ready() -> void:
 	assert(diver.grab_dialogue != null)
 	assert(diver.blue_intro_dialogue != null)
 	assert(diver.blue_intro_dialogue.entries.size() == 5)
+	assert(diver.get_node("PlayerProximityPreview").radius_property == &"restricted_radius")
 	assert(diver.visual.sprite_frames.get_frame_count(&"idle") == 4)
 	assert(diver.visual.sprite_frames.get_frame_count(&"walk") == 6)
 	assert(diver.visual.sprite_frames.get_frame_count(&"grab") == 10)

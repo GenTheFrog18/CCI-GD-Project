@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="DialogueSequence" format=3]
+[gd_resource type="Resource" script_class="DialogueSequence" format=3 uid="uid://dhte2k6asxf8j"]
 
-[ext_resource type="Script" path="res://data/definitions/dialogue_line.gd" id="1_line"]
-[ext_resource type="Script" path="res://data/definitions/dialogue_sequence.gd" id="2_sequence"]
-[ext_resource type="Texture2D" path="res://assets/art/characters/npc/portrait/Gatekeeper1.png" id="3_gatekeeper"]
+[ext_resource type="Script" uid="uid://c561kj13kn4li" path="res://data/definitions/dialogue_line.gd" id="1_line"]
+[ext_resource type="Script" uid="uid://j8ks4377trg3" path="res://data/definitions/dialogue_sequence.gd" id="2_sequence"]
+[ext_resource type="Texture2D" uid="uid://cfvf1bi1xlfsd" path="res://assets/art/characters/npc/portrait/Gatekeeper1.png" id="3_gatekeeper"]
+[ext_resource type="Script" uid="uid://b8t3tmjph4vjg" path="res://data/definitions/dialogue_step.gd" id="4_u2j5o"]
 
 [sub_resource type="Resource" id="Line_01"]
 script = ExtResource("1_line")

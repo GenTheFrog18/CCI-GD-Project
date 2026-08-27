@@ -1,3 +1,4 @@
+@tool
 class_name SightSensor
 extends Node2D
 
@@ -11,6 +12,7 @@ signal target_lost(target: Node2D)
 @export var proximity_range := 32.0
 @export var scan_interval := 0.1
 @export_flags_2d_physics var obstruction_mask := 257
+@export var show_editor_preview := true
 
 var aggravated := false
 var facing := Vector2.RIGHT
@@ -24,6 +26,10 @@ func _ready() -> void:
 	_scan_remaining = fmod(float(get_instance_id()), maxf(scan_interval, 0.001))
 
 func _process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		if show_editor_preview:
+			queue_redraw()
+		return
 	if GameSession.debug_gameplay_draw or _debug_was_visible:
 		_debug_was_visible = GameSession.debug_gameplay_draw
 		queue_redraw()
@@ -98,7 +104,10 @@ func _owner_status() -> StatusController:
 	return support.status if support != null else null
 
 func _draw() -> void:
-	if not GameSession.debug_gameplay_draw:
+	if Engine.is_editor_hint():
+		if not show_editor_preview:
+			return
+	elif not GameSession.debug_gameplay_draw:
 		return
 	var sight_range := aggravated_range if aggravated else normal_range
 	var angle := aggravated_angle_degrees if aggravated else normal_angle_degrees

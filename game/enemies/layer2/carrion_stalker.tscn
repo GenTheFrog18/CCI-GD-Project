@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://game/enemies/layer2/carrion_stalker.gd" id="1"]
 [ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
+[ext_resource type="Script" path="res://core/editor_range_preview.gd" id="3"]
 
 [sub_resource type="RectangleShape2D" id="Shape"]
 size = Vector2(28, 24)
@@ -24,3 +25,8 @@ color = Color(0.48, 0.15, 0.28, 1)
 script = ExtResource("2")
 species_id = &"carrion_stalker"
 tags = Array[StringName]([&"enemy", &"small_enemy", &"grounded", &"wounded_hunter", &"layer_2"])
+
+[node name="PlayerProximityPreview" type="Node2D" parent="."]
+z_index = -10
+script = ExtResource("3")
+radius_property = &"prey_scan_radius"
