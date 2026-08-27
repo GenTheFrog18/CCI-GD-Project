@@ -31,7 +31,7 @@ portrait = ExtResource("3_gatekeeper")
 script = ExtResource("1_line")
 speaker_id = &"gatekeeper1"
 speaker_name = "Gatekeeper"
-text = "Jika perlu bantuan, penjaga outpost di barat mungkin bisa membantu."
+text = "Jika perlu bantuan, penjaga outpost di timur mungkin bisa membantu."
 portrait = ExtResource("3_gatekeeper")
 
 [sub_resource type="Resource" id="Line_05"]

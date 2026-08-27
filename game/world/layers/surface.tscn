@@ -8994,12 +8994,3 @@ item_id = &"rope"
 position = Vector2(995, 203)
 persistent_id = "spawnloot 1"
 item_id = &"rope"
-
-[node name="Label" type="Label" parent="." unique_id=645516380]
-offset_left = 591.0
-offset_top = 143.0
-offset_right = 710.0
-offset_bottom = 194.0
-text = "buy rope
-esc: pause
-tab: inventory"

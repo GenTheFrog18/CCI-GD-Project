@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://j8ks4377trg3" path="res://data/definitions/dialogue_sequence.gd" id="4_7parr"]
 [ext_resource type="Texture2D" uid="uid://cl36mg5bllu1y" path="res://assets/art/characters/player/Portrait_Smile.png" id="4_e14fb"]
 [ext_resource type="Texture2D" uid="uid://cov40fo3o7htl" path="res://assets/art/characters/player/Portrait_Angry.png" id="5_opn47"]
+[ext_resource type="Script" uid="uid://b8t3tmjph4vjg" path="res://data/definitions/dialogue_step.gd" id="7_7parr"]
 
 [sub_resource type="Resource" id="Resource_31mnv"]
 script = ExtResource("1_nidfc")

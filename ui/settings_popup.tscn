@@ -230,13 +230,16 @@ stretch_mode = 5
 
 [node name="PlayIntro" type="CheckButton" parent="Card/MenuPage" unique_id=2093000001]
 layout_mode = 0
-offset_left = 78.0
-offset_top = 174.0
-offset_right = 282.0
-offset_bottom = 198.0
+offset_left = 89.0
+offset_top = 136.0
+offset_right = 284.0
+offset_bottom = 165.0
 tooltip_text = "Play the opening and first surface dialogue"
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.875, 0.875, 0.875, 1)
+theme_override_colors/font_outline_color = Color(0.5823783, 0.32245365, 0.19014624, 1)
+theme_override_constants/outline_size = 7
+theme_override_font_sizes/font_size = 13
 text = "Play opening dialogue"
 
 [node name="SoundPage" type="Control" parent="Card" unique_id=613141099]
@@ -304,7 +307,7 @@ offset_right = 256.0
 offset_bottom = 146.0
 text = "Fullscreen"
 
-[node name="ResolutionLabel" type="Label" parent="Card/ScreenPage"]
+[node name="ResolutionLabel" type="Label" parent="Card/ScreenPage" unique_id=301346814]
 layout_mode = 0
 offset_left = 72.0
 offset_top = 55.0
@@ -313,7 +316,7 @@ offset_bottom = 75.0
 text = "Windowed Resolution"
 horizontal_alignment = 1
 
-[node name="Resolution" type="OptionButton" parent="Card/ScreenPage"]
+[node name="Resolution" type="OptionButton" parent="Card/ScreenPage" unique_id=2143404661]
 layout_mode = 0
 offset_left = 98.0
 offset_top = 78.0
@@ -321,7 +324,7 @@ offset_right = 262.0
 offset_bottom = 102.0
 focus_mode = 0
 
-[node name="FullscreenHint" type="Label" parent="Card/ScreenPage"]
+[node name="FullscreenHint" type="Label" parent="Card/ScreenPage" unique_id=1671348490]
 layout_mode = 0
 offset_left = 52.0
 offset_top = 148.0
@@ -361,14 +364,9 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="HowToPlayPage" parent="Card" instance=ExtResource("12_how_to_play")]
+[node name="HowToPlayPage" parent="Card" unique_id=1706544466 instance=ExtResource("12_how_to_play")]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="CloseButton" type="TextureButton" parent="Card" unique_id=1525322063]
 layout_mode = 1

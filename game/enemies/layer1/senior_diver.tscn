@@ -84,6 +84,7 @@ max_health = 250.0
 tags = Array[StringName]([&"gatekeeper"])
 
 [node name="SightSensor" type="Node2D" parent="." unique_id=292932659]
+position = Vector2(0, -37)
 script = ExtResource("3")
 normal_range = 400.0
 normal_angle_degrees = 90.0
