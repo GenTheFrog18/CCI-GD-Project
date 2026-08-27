@@ -47,6 +47,7 @@ var _was_restricted := false
 var _last_known_position := Vector2.ZERO
 var _investigation_position := Vector2.ZERO
 var _investigation_remaining := 0.0
+var _retaliation_target: PlayerController
 var _grab_in_progress := false
 var _grab_cancelled := false
 var _grab_waiting_for_dialogue := false
@@ -86,6 +87,16 @@ func _physics_process(delta: float) -> void:
 
 	if not _valid_target(_target):
 		_clear_target()
+	var is_retaliating := is_instance_valid(_retaliation_target) and _target == _retaliation_target
+	if is_retaliating:
+		if _dialogue_is_active():
+			_dialogue_controller().close()
+		if _has_sight:
+			_process_chase()
+		else:
+			_process_lost_target(delta)
+		_apply_motion(delta)
+		return
 
 	var sees_red := _target != null and _has_sight and _is_red_whistle(_target)
 	var sees_blue := _target != null and _has_sight and _is_authorized(_target)
@@ -283,10 +294,11 @@ func _on_sound(event: SoundEvent, _direct: bool) -> void:
 	state = State.INVESTIGATE
 
 func _grab_valid() -> bool:
-	return not _first_warning_dialogue_active and not _dialogue_is_active() \
-		and bool(GameSession.progression_flags.get(FIRST_WARNING_FLAG, false)) \
+	var forced := is_instance_valid(_retaliation_target) and _grab_target == _retaliation_target
+	return (forced or (not _first_warning_dialogue_active and not _dialogue_is_active() \
+		and bool(GameSession.progression_flags.get(FIRST_WARNING_FLAG, false)))) \
 		and is_instance_valid(_grab_target) and _grab_target.is_alive() \
-		and not _is_authorized(_grab_target) and _has_sight \
+		and (forced or not _is_authorized(_grab_target)) and _has_sight \
 		and global_position.distance_to(_grab_target.global_position) <= grab_range
 
 func _valid_target(target: PlayerController) -> bool:
@@ -300,6 +312,7 @@ func _is_red_whistle(player: PlayerController) -> bool:
 
 func _clear_target() -> void:
 	_target = null
+	_retaliation_target = null
 	_has_sight = false
 	_lost = 0.0
 	_was_restricted = false
@@ -384,6 +397,7 @@ func _return_confiscated_items(stacks: Array[ItemStack]) -> void:
 func _on_died(_source: Node) -> void:
 	_cancel_grab()
 	_target = null
+	_retaliation_target = null
 	_has_sight = false
 	_was_restricted = false
 
@@ -408,7 +422,21 @@ func _move_multiplier() -> float:
 	return support.status.get_multiplier(&"move_speed")
 
 func apply_damage(info: DamageInfo) -> bool:
-	return support.apply_damage(info)
+	var applied := support.apply_damage(info)
+	var attacker := info.source as PlayerController
+	if applied and not support.health.is_dead and is_instance_valid(attacker):
+		_retaliation_target = attacker
+		_target = attacker
+		_last_known_position = attacker.global_position
+		_has_last_known_position = true
+		_has_sight = true
+		_aggravated = true
+		GameSession.progression_flags[ESCALATION_FLAG] = true
+		_cancel_grab()
+		if _dialogue_is_active():
+			_dialogue_controller().close()
+		_process_chase()
+	return applied
 
 func apply_force(force: Vector2) -> void:
 	_knockback += support.apply_force(force)
@@ -425,6 +453,7 @@ func restore_state(data: Dictionary) -> void:
 		velocity = Vector2.ZERO
 		_cancel_grab()
 		_target = null
+		_retaliation_target = null
 		_has_sight = false
 		_lost = 0.0
 		_was_restricted = false
@@ -435,6 +464,7 @@ func handle_world_out_of_bounds() -> void:
 	global_position = _origin
 	velocity = Vector2.ZERO
 	_target = null
+	_retaliation_target = null
 	_has_sight = false
 	_lost = 0.0
 	_was_restricted = false
