@@ -15,6 +15,7 @@ const BLUE_INTRO_FLAG := "gatekeeper1:blue_intro_seen"
 @export var move_speed := 42.0
 @export var gravity := 900.0
 @export var restricted_radius := 120.0
+@export_range(0.01, 1.0, 0.01) var player_collision_speed_multiplier := 0.15
 @export var grab_range := 26.0
 @export var telegraph_seconds := 0.25
 @export var grab_lock_seconds := 1.0
@@ -33,6 +34,7 @@ const BLUE_INTRO_FLAG := "gatekeeper1:blue_intro_seen"
 @onready var sound: SoundListener = $SoundListener
 @onready var lost_item_return: Marker2D = $LostItemReturn
 @onready var visual: AnimatedSprite2D = $Visual
+@onready var player_collision_slow_area: Area2D = $PlayerCollisionSlowArea
 
 var state := State.POST
 var _origin := Vector2.ZERO
@@ -64,6 +66,8 @@ func _ready() -> void:
 	sight.target_lost.connect(_on_lost)
 	sound.sound_accepted.connect(_on_sound)
 	support.health.died.connect(_on_died)
+	player_collision_slow_area.body_entered.connect(_on_player_collision_entered)
+	player_collision_slow_area.body_exited.connect(_on_player_collision_exited)
 	lost_item_return.add_to_group(&"lost_item_return_marker")
 
 func _physics_process(delta: float) -> void:
@@ -400,6 +404,21 @@ func _on_died(_source: Node) -> void:
 	_retaliation_target = null
 	_has_sight = false
 	_was_restricted = false
+
+func _on_player_collision_entered(body: Node2D) -> void:
+	if body is PlayerController:
+		(body as PlayerController).set_collision_slowdown(self, player_collision_speed_multiplier)
+
+func _on_player_collision_exited(body: Node2D) -> void:
+	if body is PlayerController:
+		(body as PlayerController).clear_collision_slowdown(self)
+
+func _exit_tree() -> void:
+	if player_collision_slow_area == null:
+		return
+	for body in player_collision_slow_area.get_overlapping_bodies():
+		if body is PlayerController:
+			(body as PlayerController).clear_collision_slowdown(self)
 
 func get_interaction_prompt(_actor: Node) -> String:
 	return "Talk to Senior Diver"

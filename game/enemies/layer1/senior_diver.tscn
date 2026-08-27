@@ -54,12 +54,21 @@ animations = [{
 collision_layer = 68
 collision_mask = 3
 script = ExtResource("1")
+player_collision_speed_multiplier = 0.15
 first_warning_dialogue = ExtResource("5")
 escalation_dialogue = ExtResource("6")
 grab_dialogue = ExtResource("7")
 blue_intro_dialogue = ExtResource("8")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=143285706]
+position = Vector2(0, -22.5)
+shape = SubResource("CapsuleShape2D_rhq4y")
+
+[node name="PlayerCollisionSlowArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerCollisionSlowArea"]
 position = Vector2(0, -22.5)
 shape = SubResource("CapsuleShape2D_rhq4y")
 

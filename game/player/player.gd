@@ -66,6 +66,7 @@ var _thorn_spike_iframe_until := 0
 var _hushcap_area_count := 0
 var _dazzled_remaining := 0.0
 var _hit_flash: HitFlash
+var _collision_slowdowns: Dictionary = {}
 
 @onready var hushcap_overlay: HushcapOverlay = $HushcapOverlay
 func _ready() -> void:
@@ -121,6 +122,8 @@ func _physics_process(delta: float) -> void:
 	var speed_multiplier := status.get_multiplier(&"move_speed") * movement_strength
 	if inventory_open:
 		speed_multiplier *= 0.35
+	for multiplier in _collision_slowdowns.values():
+		speed_multiplier *= clampf(float(multiplier), 0.01, 1.0)
 	var axis := Input.get_axis(&"move_left", &"move_right") if can_control else 0.0
 	var target_speed := axis * move_speed * speed_multiplier * item_controller.get_movement_multiplier()
 	var rate := _horizontal_rate(axis, was_on_floor)
@@ -335,6 +338,14 @@ func apply_force(force: Vector2) -> void:
 		if not force.is_zero_approx():
 			_detach_rope(true)
 		_knockback += force * status.get_multiplier(&"knockback_received")
+
+func set_collision_slowdown(source: Node, multiplier: float) -> void:
+	if is_instance_valid(source):
+		_collision_slowdowns[source.get_instance_id()] = clampf(multiplier, 0.01, 1.0)
+
+func clear_collision_slowdown(source: Node) -> void:
+	if source != null:
+		_collision_slowdowns.erase(source.get_instance_id())
 
 func is_alive() -> bool:
 	return not health.is_dead
