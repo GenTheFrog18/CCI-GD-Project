@@ -287,7 +287,6 @@ func _grab_valid() -> bool:
 		and bool(GameSession.progression_flags.get(FIRST_WARNING_FLAG, false)) \
 		and is_instance_valid(_grab_target) and _grab_target.is_alive() \
 		and not _is_authorized(_grab_target) and _has_sight \
-		and global_position.distance_to(_grab_target.global_position) <= restricted_radius \
 		and global_position.distance_to(_grab_target.global_position) <= grab_range
 
 func _valid_target(target: PlayerController) -> bool:
