@@ -52,8 +52,11 @@ func _on_dialogue_finished() -> void:
 
 	if is_instance_valid(dialogue_box):
 		dialogue_box.queue_free()
+	if is_instance_valid(dialogue_controller):
+		dialogue_controller.queue_free()
 
 	dialogue_box = null
+	dialogue_controller = null
 	
 func _show_objective() -> void:
 	print("OBJECTIVE: Temui Kakek")

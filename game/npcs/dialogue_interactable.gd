@@ -22,7 +22,12 @@ func set_interaction_indicator(enabled: bool) -> void:
 	interaction_indicator.visible = enabled
 
 func interact(actor: Node) -> bool:
-	var controller := get_tree().get_first_node_in_group(&"dialogue_controller") as DialogueController
+	var controller: DialogueController
+	var hud := get_tree().get_first_node_in_group(&"foundation_hud") as FoundationHUD
+	if hud != null:
+		controller = hud.dialogue_controller
+	if controller == null:
+		controller = get_tree().get_first_node_in_group(&"dialogue_controller") as DialogueController
 	if controller == null or controller.is_active():
 		return false
 	_face_actor(actor)
