@@ -51,8 +51,17 @@ theme_override_font_sizes/font_size = 16
 layout_mode = 2
 autowrap_mode = 3
 
-[node name="Choices" type="VBoxContainer" parent="Content/Row/Column" unique_id=731240834]
+[node name="ChoiceScroll" type="ScrollContainer" parent="Content/Row/Column" unique_id=731240834]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 64)
+size_flags_vertical = 3
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 2
+
+[node name="Choices" type="GridContainer" parent="Content/Row/Column/ChoiceScroll" unique_id=731240835]
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 2
 
 [node name="Continue" type="Label" parent="Content/Row/Column" unique_id=1738252982]
 layout_mode = 2

@@ -20,13 +20,15 @@ var _auto_advance_seconds := 0.0
 @onready var _speaker_label: Label = $Content/Row/Column/Speaker
 @onready var _text_label: Label = $Content/Row/Column/Text
 @onready var _continue_label: Label = $Content/Row/Column/Continue
-@onready var _choices: VBoxContainer = $Content/Row/Column/Choices
+@onready var _choice_scroll: ScrollContainer = $Content/Row/Column/ChoiceScroll
+@onready var _choices: GridContainer = $Content/Row/Column/ChoiceScroll/Choices
 @onready var _typing_sfx: AudioStreamPlayer = $TypingSfx
 var _sfx_visible_characters := 0
 var _sfx_character_count := 0
 
 func _ready() -> void:
 	add_to_group(&"dialogue_box")
+	_choice_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_ALWAYS
 	visible = false
 
 func open_dialogue(_speaker: Node = null) -> void:
@@ -53,12 +55,14 @@ func show_choices(choices: Array[DialogueChoice], available: Array[bool]) -> voi
 	_continue_label.visible = false
 	_text_label.visible_characters = -1
 	_clear_choices()
+	_choice_scroll.scroll_vertical = 0
 	for index in choices.size():
 		var choice := choices[index]
 		var button := Button.new()
 		button.text = choice.label if available[index] else "%s — %s" % [choice.label, choice.disabled_reason]
 		button.disabled = not available[index]
-		button.custom_minimum_size = Vector2(144.0, 32.0)
+		button.custom_minimum_size = Vector2(144.0, 28.0)
+		button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		var style := StyleBoxTexture.new()
 		style.texture = choice_button_texture
 		button.add_theme_stylebox_override(&"normal", style)
