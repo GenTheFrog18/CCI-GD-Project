@@ -2,6 +2,7 @@ class_name DialogueController
 extends Node
 
 signal sequence_finished
+signal sequence_closed(completed: bool)
 
 const WORLD_ITEM_SCENE := preload("res://game/items/world/world_item.tscn")
 
@@ -235,5 +236,6 @@ func _close(completed := false) -> void:
 	_resolving_choice = false
 	interactable = null
 	dialogue_box.hide()
+	sequence_closed.emit(completed)
 	if completed:
 		sequence_finished.emit()

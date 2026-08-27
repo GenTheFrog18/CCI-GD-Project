@@ -1,21 +1,26 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=10 format=3]
 [ext_resource type="Script" path="res://game/enemies/layer1/senior_diver.gd" id="1"]
 [ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
 [ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="3"]
 [ext_resource type="Script" path="res://core/sensing/sound_listener.gd" id="4"]
+[ext_resource type="Resource" path="res://data/dialogue/gatekeeper1_first_warning.tres" id="5"]
+[ext_resource type="Resource" path="res://data/dialogue/gatekeeper1_escalation.tres" id="6"]
+[ext_resource type="Resource" path="res://data/dialogue/gatekeeper1_grab.tres" id="7"]
 [sub_resource type="RectangleShape2D" id="Shape"]
 size = Vector2(24, 36)
 [node name="SeniorDiver" type="CharacterBody2D"]
 collision_layer = 68
 collision_mask = 1
 script = ExtResource("1")
+first_warning_dialogue = ExtResource("5")
+escalation_dialogue = ExtResource("6")
+grab_dialogue = ExtResource("7")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -18)
 shape = SubResource("Shape")
-[node name="Visual" type="Polygon2D" parent="."]
-position = Vector2(0, -18)
-polygon = PackedVector2Array(-10, 18, -11, -10, 0, -18, 11, -10, 10, 18)
-color = Color(0.25, 0.45, 0.7, 1)
+[node name="Visual" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -24)
 [node name="EnemySupport" type="Node" parent="."]
 script = ExtResource("2")
 species_id = &"senior_diver"

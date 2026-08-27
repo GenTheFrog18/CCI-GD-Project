@@ -155,6 +155,8 @@ func _test_enemy_scenes() -> void:
 	var diver := preload("res://game/enemies/layer1/senior_diver.tscn").instantiate() as SeniorDiver
 	add_child(diver)
 	_check(diver.sound.minimum_priority == 8 and diver.state == SeniorDiver.State.POST, "Senior Diver has strong-sound investigation and post state")
+	_check(diver.first_warning_dialogue != null and diver.escalation_dialogue != null and diver.grab_dialogue != null, "Senior Diver Gatekeeper dialogue resources are assigned")
+	_check(diver.visual.sprite_frames.get_frame_count(&"idle") == 4 and diver.visual.sprite_frames.get_frame_count(&"walk") == 6 and diver.visual.sprite_frames.get_frame_count(&"grab") == 10, "Senior Diver Gatekeeper animations are assigned")
 	var diver_player := preload("res://game/player/player.tscn").instantiate() as PlayerController
 	add_child(diver_player)
 	var old_whistle_tier := GameSession.whistle_tier

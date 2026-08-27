@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="DialogueSequence" format=3]
+
+[ext_resource type="Script" path="res://data/definitions/dialogue_line.gd" id="1_line"]
+[ext_resource type="Script" path="res://data/definitions/dialogue_sequence.gd" id="2_sequence"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/npc/portrait/Gatekeeper1.png" id="3_gatekeeper"]
+
+[sub_resource type="Resource" id="Line_01"]
+script = ExtResource("1_line")
+speaker_id = &"gatekeeper1"
+speaker_name = "Gatekeeper"
+text = "Hei kau peluit merah!, apa yang kamu lakukan sedalam ini."
+portrait = ExtResource("3_gatekeeper")
+
+[sub_resource type="Resource" id="Line_02"]
+script = ExtResource("1_line")
+speaker_id = &"gatekeeper1"
+speaker_name = "Gatekeeper"
+text = "Delver merah tidak boleh pergi lebih dalam. Kembali lah keatas sekarang juga!"
+portrait = ExtResource("3_gatekeeper")
+
+[sub_resource type="Resource" id="Line_03"]
+script = ExtResource("1_line")
+speaker_id = &"gatekeeper1"
+speaker_name = "Gatekeeper"
+text = "Atau aku sendiri yang akan membawa mu pulang."
+portrait = ExtResource("3_gatekeeper")
+
+[resource]
+script = ExtResource("2_sequence")
+sequence_id = &"gatekeeper1_first_warning"
+entries = Array[ExtResource("1_line")]([SubResource("Line_01"), SubResource("Line_02"), SubResource("Line_03")])

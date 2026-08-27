@@ -4,6 +4,11 @@ extends CharacterBody2D
 enum State { POST, CHASE, GRAB_TELEGRAPH, GRAB_RESOLUTION, LOST_TARGET, INVESTIGATE }
 
 const GRAB_LOCK_REASON := &"senior_diver_grab"
+const IDLE_SHEET := preload("res://assets/art/characters/npc/animation/Gatekeeper1/Gatekeeper1Idle-48x64-4FPS.png")
+const WALK_SHEET := preload("res://assets/art/characters/npc/animation/Gatekeeper1/Gatekeeper1Walk-48x64-4FPS.png")
+const GRAB_SHEET := preload("res://assets/art/characters/npc/animation/Gatekeeper1/Gatekeeper1Grab-48x64-10FPS.png")
+const FIRST_WARNING_FLAG := "gatekeeper1:first_warning_seen"
+const ESCALATION_FLAG := "gatekeeper1:escalation_seen"
 
 @export var persistent_id := "senior_diver"
 @export var move_speed := 42.0
@@ -17,11 +22,15 @@ const GRAB_LOCK_REASON := &"senior_diver_grab"
 @export var investigation_speed := 76.0
 @export var investigation_seconds := 3.0
 @export var return_drop_spacing := 12.0
+@export var first_warning_dialogue: DialogueSequence
+@export var escalation_dialogue: DialogueSequence
+@export var grab_dialogue: DialogueSequence
 
 @onready var support: EnemySupport = $EnemySupport
 @onready var sight: SightSensor = $SightSensor
 @onready var sound: SoundListener = $SoundListener
 @onready var lost_item_return: Marker2D = $LostItemReturn
+@onready var visual: AnimatedSprite2D = $Visual
 
 var state := State.POST
 var _origin := Vector2.ZERO
@@ -37,10 +46,14 @@ var _investigation_position := Vector2.ZERO
 var _investigation_remaining := 0.0
 var _grab_in_progress := false
 var _grab_cancelled := false
+var _grab_waiting_for_dialogue := false
+var _aggravated := false
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
 	_origin = global_position
+	_aggravated = bool(GameSession.progression_flags.get(ESCALATION_FLAG, false))
+	_setup_visual()
 	add_to_group(&"interactables")
 	sight.target_seen.connect(_on_seen)
 	sight.target_lost.connect(_on_lost)
@@ -70,13 +83,35 @@ func _physics_process(delta: float) -> void:
 	if not _valid_target(_target) or _is_authorized(_target):
 		_clear_target()
 
+	var sees_red := _target != null and _has_sight and _is_red_whistle(_target)
 	var inside_restricted := _target != null and _has_sight and not _is_authorized(_target) \
 		and global_position.distance_to(_target.global_position) <= restricted_radius
+	if sees_red:
+		if not bool(GameSession.progression_flags.get(FIRST_WARNING_FLAG, false)):
+			if _start_dialogue(first_warning_dialogue, _target):
+				GameSession.progression_flags[FIRST_WARNING_FLAG] = true
+			state = State.POST
+			velocity.x = 0.0
+			_was_restricted = false
+			_apply_motion(delta)
+			return
+		if not _aggravated:
+			if _dialogue_is_active():
+				state = State.POST
+				velocity.x = 0.0
+				_apply_motion(delta)
+				return
+			_aggravated = true
+			GameSession.progression_flags[ESCALATION_FLAG] = true
+			_start_dialogue(escalation_dialogue, _target)
 	if inside_restricted and not _was_restricted:
 		_warn_trespass(_target)
 	_was_restricted = inside_restricted
 
-	if inside_restricted:
+	if _is_red_whistle(_target) and not _aggravated:
+		state = State.POST
+		_move_to_post()
+	elif inside_restricted:
 		_process_chase()
 	elif not _has_sight and _target != null:
 		_process_lost_target(delta)
@@ -118,6 +153,21 @@ func _resolve_grab() -> void:
 	state = State.GRAB_RESOLUTION
 	var target := _grab_target
 	target.locks.lock(GRAB_LOCK_REASON)
+	_grab_waiting_for_dialogue = true
+	if _start_dialogue(grab_dialogue, target):
+		var controller: DialogueController = _dialogue_controller()
+		controller.sequence_closed.connect(_on_grab_dialogue_closed.bind(target), CONNECT_ONE_SHOT)
+		return
+	_grab_waiting_for_dialogue = false
+	_finish_grab(target)
+
+func _on_grab_dialogue_closed(_completed: bool, target: PlayerController) -> void:
+	if not _grab_waiting_for_dialogue or target != _grab_target:
+		return
+	_grab_waiting_for_dialogue = false
+	_finish_grab(target)
+
+func _finish_grab(target: PlayerController) -> void:
 	var confiscated := target.confiscate_map_items()
 	_return_confiscated_items(confiscated)
 	await get_tree().create_timer(grab_lock_seconds).timeout
@@ -166,6 +216,7 @@ func _apply_motion(_delta: float) -> void:
 	velocity += _knockback
 	_knockback = Vector2.ZERO
 	move_and_slide()
+	_update_visual()
 	sight.facing = Vector2(signf(velocity.x), 0.0) if absf(velocity.x) > 0.1 else sight.facing
 
 func _on_seen(target: Node2D, position: Vector2) -> void:
@@ -209,6 +260,9 @@ func _valid_target(target: PlayerController) -> bool:
 func _is_authorized(player: PlayerController) -> bool:
 	return player != null and GameSession.whistle_tier == &"blue"
 
+func _is_red_whistle(player: PlayerController) -> bool:
+	return player != null and GameSession.whistle_tier == &"red"
+
 func _clear_target() -> void:
 	_target = null
 	_has_sight = false
@@ -219,6 +273,7 @@ func _clear_target() -> void:
 
 func _cancel_grab() -> void:
 	_grab_cancelled = true
+	_grab_waiting_for_dialogue = false
 	if is_instance_valid(_grab_target):
 		_grab_target.locks.unlock(GRAB_LOCK_REASON)
 	_grab_target = null
@@ -226,6 +281,49 @@ func _cancel_grab() -> void:
 	if state == State.GRAB_TELEGRAPH or state == State.GRAB_RESOLUTION:
 		state = State.POST
 		_timer = 0.0
+
+func _setup_visual() -> void:
+	var frames := SpriteFrames.new()
+	frames.remove_animation(&"default")
+	_add_animation(frames, &"idle", IDLE_SHEET, 4, 4.0, true)
+	_add_animation(frames, &"walk", WALK_SHEET, 6, 4.0, true)
+	_add_animation(frames, &"grab", GRAB_SHEET, 10, 10.0, false)
+	visual.sprite_frames = frames
+	visual.play(&"idle")
+
+func _add_animation(frames: SpriteFrames, name: StringName, sheet: Texture2D, count: int, fps: float, loop: bool) -> void:
+	frames.add_animation(name)
+	frames.set_animation_speed(name, fps)
+	frames.set_animation_loop(name, loop)
+	for index in count:
+		var atlas := AtlasTexture.new()
+		atlas.atlas = sheet
+		atlas.region = Rect2(index * 48.0, 0.0, 48.0, 48.0)
+		frames.add_frame(name, atlas)
+
+func _update_visual() -> void:
+	var animation: StringName = &"grab" if state in [State.GRAB_TELEGRAPH, State.GRAB_RESOLUTION] else (&"walk" if absf(velocity.x) > 0.1 else &"idle")
+	if visual.animation != animation:
+		visual.play(animation)
+	var facing: float = signf(velocity.x)
+	if is_zero_approx(facing) and is_instance_valid(_target):
+		facing = signf(_target.global_position.x - global_position.x)
+	if not is_zero_approx(facing):
+		visual.flip_h = facing < 0.0
+
+func _dialogue_controller() -> DialogueController:
+	var hud := get_tree().get_first_node_in_group(&"foundation_hud") as FoundationHUD
+	return hud.dialogue_controller if hud != null else null
+
+func _dialogue_is_active() -> bool:
+	var controller: DialogueController = _dialogue_controller()
+	return controller != null and controller.is_active()
+
+func _start_dialogue(sequence: DialogueSequence, target: PlayerController) -> bool:
+	if sequence == null:
+		return false
+	var controller: DialogueController = _dialogue_controller()
+	return controller != null and not controller.is_active() and controller.start_sequence(sequence, self, target)
 
 func _return_confiscated_items(stacks: Array[ItemStack]) -> void:
 	var parent := get_parent()
