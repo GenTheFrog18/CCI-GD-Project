@@ -1,38 +1,92 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=10 format=3]
 
-[ext_resource type="Script" path="res://game/enemies/layer2/tremor_hound.gd" id="1"]
-[ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2"]
-[ext_resource type="Script" path="res://core/sensing/sound_listener.gd" id="3"]
-[ext_resource type="Script" path="res://core/editor_range_preview.gd" id="4"]
+[ext_resource type="Script" path="res://game/enemies/layer2/tremor_hound.gd" id="1_hound"]
+[ext_resource type="Script" path="res://game/enemies/enemy_support.gd" id="2_support"]
+[ext_resource type="Script" path="res://core/sensing/sight_sensor.gd" id="3_sight"]
+[ext_resource type="Script" path="res://core/sensing/sound_listener.gd" id="4_sound"]
+[ext_resource type="Script" path="res://core/movement/ground_traversal_2d.gd" id="5_traversal"]
 
-[sub_resource type="RectangleShape2D" id="Shape"]
+[sub_resource type="RectangleShape2D" id="BodyShape"]
 size = Vector2(32, 20)
+
+[sub_resource type="CircleShape2D" id="ProximityShape"]
+radius = 52.0
+
+[sub_resource type="CircleShape2D" id="PounceShape"]
+radius = 12.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"idle",
+"speed": 6.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run",
+"speed": 10.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"pounce",
+"speed": 1.0
+}]
 
 [node name="TremorHound" type="CharacterBody2D"]
 collision_layer = 4
 collision_mask = 513
-script = ExtResource("1")
+script = ExtResource("1_hound")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -10)
-shape = SubResource("Shape")
+shape = SubResource("BodyShape")
 
-[node name="Visual" type="Polygon2D" parent="."]
-position = Vector2(0, -10)
-polygon = PackedVector2Array(-17, 8, -13, -8, 7, -10, 17, 0, 10, 8)
-color = Color(0.58, 0.38, 0.24, 1)
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -24)
+sprite_frames = SubResource("SpriteFrames")
+animation = &"idle"
 
 [node name="EnemySupport" type="Node" parent="."]
-script = ExtResource("2")
+script = ExtResource("2_support")
 species_id = &"tremor_hound"
+max_health = 32.0
 tags = Array[StringName]([&"enemy", &"small_enemy", &"grounded", &"sound_hunter", &"layer_2"])
+
+[node name="SightSensor" type="Node2D" parent="."]
+position = Vector2(0, -10)
+script = ExtResource("3_sight")
+normal_range = 300.0
+normal_angle_degrees = 360.0
+proximity_range = 0.0
+obstruction_mask = 1
 
 [node name="SoundListener" type="Node2D" parent="."]
 position = Vector2(0, -10)
-script = ExtResource("3")
+script = ExtResource("4_sound")
 minimum_priority = 1
+hearing_radius = 600.0
+forward_all_events = true
 
-[node name="PlayerProximityPreview" type="Node2D" parent="."]
-z_index = -10
-script = ExtResource("4")
-radius_property = &"close_confirmation_radius"
+[node name="PlayerProximityDetector" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerProximityDetector"]
+shape = SubResource("ProximityShape")
+
+[node name="GroundTraversal2D" type="Node2D" parent="."]
+script = ExtResource("5_traversal")
+terrain_collision_mask = 1
+
+[node name="PounceHitbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 6
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PounceHitbox"]
+shape = SubResource("PounceShape")
+disabled = true

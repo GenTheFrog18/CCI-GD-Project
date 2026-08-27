@@ -111,6 +111,21 @@ func sample_position(profile_key: String, sample_id: int) -> Vector2:
 		return Vector2.ZERO
 	return graph.samples[sample_id].position
 
+func random_target(profile: Dictionary, origin: Vector2, minimum_distance: float = 0.0) -> Vector2:
+	if section == null:
+		return Vector2.INF
+	if raw_samples.is_empty():
+		_build_surface_samples(float(profile.get("sample_spacing", sample_spacing)))
+	var graph := _graph_for(profile)
+	var candidates: Array[SurfaceSample] = []
+	for sample: SurfaceSample in graph.samples:
+		if sample.position.distance_to(origin) >= minimum_distance:
+			candidates.append(sample)
+	if candidates.is_empty():
+		return Vector2.INF
+	var chosen: SurfaceSample = candidates[randi_range(0, candidates.size() - 1)]
+	return chosen.position
+
 func _build_surface_samples(spacing: float) -> void:
 	build_count += 1
 	var tilemaps: Dictionary = {}

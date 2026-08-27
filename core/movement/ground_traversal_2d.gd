@@ -57,6 +57,22 @@ func request_move_to(target_position: Vector2, movement_reason: StringName = &"s
 	_reason = movement_reason
 	return _plan()
 
+func request_random_move(movement_reason: StringName = &"roam", minimum_distance := 24.0) -> RouteResult:
+	if not enabled or body == null:
+		return RouteResult.START_INVALID
+	cache = _resolve_cache()
+	if cache == null:
+		return RouteResult.START_INVALID
+	_profile = _build_profile()
+	if _profile.is_empty():
+		return RouteResult.START_INVALID
+	var target := cache.random_target(_profile, body.global_position, minimum_distance)
+	if target == Vector2.INF:
+		return RouteResult.NO_ROUTE
+	_target = target
+	_reason = movement_reason
+	return _plan()
+
 func cancel(stop_horizontal_velocity := false) -> void:
 	_active = false
 	_committed = false

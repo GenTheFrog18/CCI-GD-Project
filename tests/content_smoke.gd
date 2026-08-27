@@ -216,6 +216,11 @@ func _test_layer2_enemies() -> void:
 	var disturbance := SoundEvent.new(Vector2(75, 20), 200.0, &"impact", 8, null, 20.0)
 	hound._on_sound(disturbance, false)
 	_check(hound.state == TremorHound.State.INVESTIGATE and hound._investigation == disturbance.position, "Hound investigates recorded sound position")
+	_check(hound.visual.sprite_frames.get_frame_count(&"idle") == 6 and hound.visual.sprite_frames.get_frame_count(&"run") == 8 and hound.visual.sprite_frames.get_frame_count(&"pounce") == 2 and hound.visual.flip_h, "Hound uses flipped idle, run, and pounce animations")
+	var hound_attacker := Node2D.new()
+	add_child(hound_attacker)
+	hound._on_damaged(DamageInfo.new(1.0, hound_attacker, &"tester"))
+	_check(hound.state == TremorHound.State.RETALIATION_WAIT and hound._retaliation_target == hound_attacker, "Hound retaliates against direct damage")
 
 	var stalker := preload("res://game/enemies/layer2/carrion_stalker.tscn").instantiate() as CarrionStalker
 	add_child(stalker)
