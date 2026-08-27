@@ -29,6 +29,7 @@ var _sfx_character_count := 0
 func _ready() -> void:
 	add_to_group(&"dialogue_box")
 	_choice_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_ALWAYS
+	_anchor_to_bottom()
 	visible = false
 
 func open_dialogue(_speaker: Node = null) -> void:
@@ -38,6 +39,7 @@ func open_dialogue(_speaker: Node = null) -> void:
 
 func show_line(line: DialogueLine) -> void:
 	_clear_choices()
+	_choice_scroll.hide()
 	_portrait.texture = line.portrait
 	_portrait.visible = line.portrait != null
 	_speaker_label.text = line.speaker_name
@@ -49,11 +51,13 @@ func show_line(line: DialogueLine) -> void:
 	_sfx_character_count = 0
 	_typing = not _full_text.is_empty()
 	_continue_label.visible = not _typing
+	call_deferred(&"_fit_to_content")
 
 func show_choices(choices: Array[DialogueChoice], available: Array[bool]) -> void:
 	_typing = false
 	_continue_label.visible = false
 	_text_label.visible_characters = -1
+	_choice_scroll.show()
 	_clear_choices()
 	_choice_scroll.scroll_vertical = 0
 	for index in choices.size():
@@ -72,6 +76,22 @@ func show_choices(choices: Array[DialogueChoice], available: Array[bool]) -> voi
 		_choices.add_child(button)
 		if index == 0 and not button.disabled:
 			button.call_deferred(&"grab_focus")
+	call_deferred(&"_fit_to_content")
+
+func _fit_to_content() -> void:
+	var minimum := get_combined_minimum_size()
+	size = Vector2(maxf(minimum.x, custom_minimum_size.x), maxf(minimum.y, custom_minimum_size.y))
+	_anchor_to_bottom()
+
+func _anchor_to_bottom() -> void:
+	anchor_left = 0.0
+	anchor_right = 0.0
+	anchor_top = 1.0
+	anchor_bottom = 1.0
+	offset_left = 60.0
+	offset_top = -size.y - 10.0
+	offset_right = offset_left + size.x
+	offset_bottom = -10.0
 
 func set_choices_enabled(enabled: bool) -> void:
 	for child in _choices.get_children():
