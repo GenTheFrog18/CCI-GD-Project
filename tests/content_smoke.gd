@@ -213,9 +213,12 @@ func _test_layer2_enemies() -> void:
 
 	var hound := preload("res://game/enemies/layer2/tremor_hound.tscn").instantiate() as TremorHound
 	add_child(hound)
-	var disturbance := SoundEvent.new(Vector2(75, 20), 200.0, &"impact", 8, null, 20.0)
+	var sound_source := Node2D.new()
+	sound_source.position = Vector2(75.0, 80.0)
+	add_child(sound_source)
+	var disturbance := SoundEvent.new(Vector2(75, 20), 200.0, &"impact", 8, sound_source, 20.0)
 	hound._on_sound(disturbance, false)
-	_check(hound.state == TremorHound.State.INVESTIGATE and hound._investigation == disturbance.position, "Hound investigates recorded sound position")
+	_check(hound.state == TremorHound.State.INVESTIGATE and hound._investigation == sound_source.global_position, "Hound investigates sound source position")
 	hound._process_investigate(0.1)
 	_check(hound.state == TremorHound.State.SEARCH and hound._sound_queue.is_empty(), "Hound discards unreachable sound before searching")
 	var ignored_target := Node2D.new()
@@ -280,6 +283,7 @@ func _test_layer2_enemies() -> void:
 	hound._process_recover(0.1)
 	_check(hound.velocity.x < 0.0 and hound.visual.animation == &"run", "Hound retreats during recovery with run animation")
 	recovery_target.free()
+	sound_source.free()
 	var hound_attacker := Node2D.new()
 	add_child(hound_attacker)
 	hound._on_damaged(DamageInfo.new(1.0, hound_attacker, &"tester"))

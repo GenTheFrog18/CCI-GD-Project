@@ -195,7 +195,6 @@ func _process_investigate(delta: float) -> void:
 		_current_event = {}
 		_enter_search(_last_known_position)
 	else:
-		_last_known_position = traversal.get_projected_target()
 		visual.play(&"run")
 		traversal.physics_step(delta)
 
@@ -256,7 +255,6 @@ func _process_search_center(delta: float) -> void:
 		if result != GroundTraversal2D.RouteResult.SUCCESS:
 			_trigger_search_escape()
 			return
-		_search_center = traversal.get_projected_target()
 		if traversal.current_action == &"complete":
 			_process_search_center_direct(delta)
 		else:
@@ -478,8 +476,7 @@ func _on_route_completed() -> void:
 func _on_route_failed(_result: GroundTraversal2D.RouteResult, last_reachable: Vector2, _reason: StringName) -> void:
 	match state:
 		State.INVESTIGATE:
-			_last_known_position = last_reachable
-			_enter_search(last_reachable)
+			_enter_search(_last_known_position)
 		State.CONFIRMED_TARGET:
 			_enter_search(last_reachable)
 		State.ROAM:
