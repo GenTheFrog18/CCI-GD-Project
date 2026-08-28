@@ -252,6 +252,11 @@ func _test_layer2_enemies() -> void:
 	hound.velocity.y = -20.0
 	hound._physics_process(1.0 / 60.0)
 	_check(hound.velocity.y > -20.0, "Hound keeps applying gravity after proximity search handoff")
+	nearby_player.global_position = hound.global_position + Vector2.RIGHT * ((hound.pounce_engagement_distance + hound.proximity_detection_radius) * 0.5)
+	hound._enter_confirmed(nearby_player)
+	hound.velocity.y = -20.0
+	hound._process_confirmed(1.0 / 60.0)
+	_check(hound.state == TremorHound.State.CONFIRMED_TARGET and hound.velocity.x > 0.0 and hound.velocity.y > -20.0 and not hound.traversal.is_active(), "Hound moves and falls inside close chase band")
 	nearby_player.free()
 	var recovery_target := Node2D.new()
 	recovery_target.position = Vector2(100.0, 0.0)

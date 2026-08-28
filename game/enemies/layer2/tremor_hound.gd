@@ -214,8 +214,16 @@ func _process_confirmed(delta: float) -> void:
 		_enter_search(_last_known_position)
 		return
 	_last_known_position = _target.global_position
-	if global_position.distance_to(_target.global_position) <= pounce_engagement_distance:
+	var target_distance := global_position.distance_to(_target.global_position)
+	if target_distance <= pounce_engagement_distance:
 		_begin_prepare(_target)
+		return
+	if target_distance <= proximity_detection_radius:
+		traversal.cancel()
+		visual.play(&"run")
+		var chase_direction := signf(_target.global_position.x - global_position.x)
+		velocity.x = move_toward(velocity.x, chase_direction * confirmed_chase_speed, ground_acceleration * delta)
+		_ground_motion(delta)
 		return
 	_movement_speed = confirmed_chase_speed
 	visual.play(&"run")
