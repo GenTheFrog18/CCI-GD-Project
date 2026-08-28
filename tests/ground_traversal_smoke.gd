@@ -179,6 +179,27 @@ func _ready() -> void:
 			break
 	assert(not hound.traversal.is_active())
 	assert(hound.global_position.x > 260.0)
+	var nearby_player := CharacterBody2D.new()
+	nearby_player.collision_layer = 2
+	nearby_player.collision_mask = 0
+	nearby_player.add_to_group(&"player")
+	var nearby_shape := CollisionShape2D.new()
+	nearby_shape.position = Vector2(0.0, -14.0)
+	var nearby_circle := CircleShape2D.new()
+	nearby_circle.radius = 6.0
+	nearby_shape.shape = nearby_circle
+	nearby_player.add_child(nearby_shape)
+	section.add_child(nearby_player)
+	hound.global_position = Vector2(260.0, 400.0)
+	nearby_player.global_position = hound.global_position + Vector2.RIGHT * 56.0
+	await get_tree().physics_frame
+	assert(hound._nearby_player() == nearby_player)
+	hound._enter_confirmed(nearby_player)
+	hound.velocity.y = -20.0
+	hound._process_confirmed(1.0 / 60.0)
+	assert(hound.velocity.x > 0.0)
+	assert(hound.velocity.y > -20.0)
+	assert(not hound.traversal.is_active())
 
 	print("GROUND_TRAVERSAL_SMOKE_OK")
 	get_tree().quit(0)

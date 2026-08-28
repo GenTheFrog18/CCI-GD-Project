@@ -218,22 +218,28 @@ func _process_confirmed(delta: float) -> void:
 	if target_distance <= pounce_engagement_distance:
 		_begin_prepare(_target)
 		return
-	if target_distance <= proximity_detection_radius:
-		traversal.cancel()
-		visual.play(&"run")
-		var chase_direction := signf(_target.global_position.x - global_position.x)
-		velocity.x = move_toward(velocity.x, chase_direction * confirmed_chase_speed, ground_acceleration * delta)
-		_ground_motion(delta)
+	if _nearby_player() == _target:
+		_process_direct_chase(delta)
 		return
 	_movement_speed = confirmed_chase_speed
 	visual.play(&"run")
 	var result: GroundTraversal2D.RouteResult = traversal.request_move_to(_target.global_position, &"chase")
 	if result == GroundTraversal2D.RouteResult.SUCCESS:
-		traversal.physics_step(delta)
+		if traversal.current_action == &"complete":
+			_process_direct_chase(delta)
+		else:
+			traversal.physics_step(delta)
 	else:
 		var unreachable_target := _target
 		_enter_search(_last_known_position)
 		_search_ignored_target = unreachable_target
+
+func _process_direct_chase(delta: float) -> void:
+	traversal.cancel()
+	visual.play(&"run")
+	var chase_direction := signf(_target.global_position.x - global_position.x)
+	velocity.x = move_toward(velocity.x, chase_direction * confirmed_chase_speed, ground_acceleration * delta)
+	_ground_motion(delta)
 
 func _process_prepare(delta: float) -> void:
 	visual.play(&"idle")
