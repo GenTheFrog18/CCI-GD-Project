@@ -1,27 +1,34 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://da2xqskxfcfft"]
 
-[ext_resource type="Script" path="res://game/world/world_gate.gd" id="1"]
+[ext_resource type="Script" uid="uid://bjgjs67urxq4" path="res://game/world/world_gate.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://bjixirw2lkdet" path="res://assets/art/world/foliage/layer1gatewest.png" id="2_hpmlh"]
 
 [sub_resource type="RectangleShape2D" id="GateShape"]
-size = Vector2(72, 56)
+size = Vector2(44, 47)
 
-[node name="WorldGate" type="Area2D"]
+[node name="WorldGate" type="Area2D" unique_id=2054075079]
 collision_layer = 64
 collision_mask = 2
 script = ExtResource("1")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -28)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1109310834]
+position = Vector2(0, -23.5)
 shape = SubResource("GateShape")
 
-[node name="Visual" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-36, 0, -36, -56, 36, -56, 36, 0)
+[node name="Visual" type="Polygon2D" parent="." unique_id=385857887]
+visible = false
 color = Color(0.28, 0.4, 0.55, 1)
+polygon = PackedVector2Array(-36, 0, -36, -56, 36, -56, 36, 0)
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=305026933]
+visible = false
 offset_left = -32.0
 offset_top = -45.0
 offset_right = 32.0
 offset_bottom = -20.0
 text = "GATE"
 horizontal_alignment = 1
+
+[node name="Layer1Gatewest" type="Sprite2D" parent="." unique_id=994383245]
+position = Vector2(2, -26)
+texture = ExtResource("2_hpmlh")
