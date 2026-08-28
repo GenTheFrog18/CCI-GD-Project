@@ -30,5 +30,6 @@ text = "GATE"
 horizontal_alignment = 1
 
 [node name="Layer1Gatewest" type="Sprite2D" parent="." unique_id=994383245]
+visible = false
 position = Vector2(2, -26)
 texture = ExtResource("2_hpmlh")
