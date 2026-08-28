@@ -794,6 +794,14 @@ func _draw() -> void:
 		return
 	draw_arc(Vector2.ZERO, proximity_detection_radius, 0.0, TAU, 32, Color(1.0, 0.3, 0.2, 0.8), 1.0)
 	draw_arc(Vector2.ZERO, hearing_radius, 0.0, TAU, 64, Color(0.3, 0.75, 1.0, 0.25), 1.0)
+	if not _current_event.is_empty() and state in [State.INVESTIGATE, State.SEARCH]:
+		var sound_center: Vector2 = _search_center if state == State.SEARCH else _last_known_position
+		var center := to_local(sound_center)
+		draw_circle(center, 6.0, Color(1.0, 0.75, 0.2, 0.9), false, 2.0)
+		draw_line(center - Vector2(9.0, 0.0), center + Vector2(9.0, 0.0), Color(1.0, 0.75, 0.2, 0.9), 1.0)
+		draw_line(center - Vector2(0.0, 9.0), center + Vector2(0.0, 9.0), Color(1.0, 0.75, 0.2, 0.9), 1.0)
+		draw_line(Vector2.ZERO, center, Color(1.0, 0.75, 0.2, 0.25), 1.0)
+		draw_string(ThemeDB.fallback_font, center + Vector2(8.0, -8.0), "sound center", HORIZONTAL_ALIGNMENT_LEFT, -1.0, 10, Color(1.0, 0.85, 0.4, 0.95))
 	if state == State.POUNCE:
 		draw_circle(to_local(global_position + _pounce_direction * 16.0), 12.0, Color(1.0, 0.2, 0.2, 0.35))
 	var text := "%s  %d/%d  q:%d" % [State.keys()[state], int(support.health.health), int(support.health.max_health), _sound_queue.size()]
