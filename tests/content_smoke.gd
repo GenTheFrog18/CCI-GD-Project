@@ -216,6 +216,14 @@ func _test_layer2_enemies() -> void:
 	var disturbance := SoundEvent.new(Vector2(75, 20), 200.0, &"impact", 8, null, 20.0)
 	hound._on_sound(disturbance, false)
 	_check(hound.state == TremorHound.State.INVESTIGATE and hound._investigation == disturbance.position, "Hound investigates recorded sound position")
+	hound._process_investigate(0.1)
+	_check(hound.state == TremorHound.State.SEARCH and hound._sound_queue.is_empty(), "Hound discards unreachable sound before searching")
+	var ignored_target := Node2D.new()
+	add_child(ignored_target)
+	hound._search_ignored_target = ignored_target
+	hound._on_sight_seen(ignored_target, ignored_target.global_position)
+	_check(hound.state == TremorHound.State.SEARCH and hound._target == null, "Hound does not reacquire unreachable player during search")
+	ignored_target.free()
 	_check(hound.visual.sprite_frames.get_frame_count(&"idle") == 6 and hound.visual.sprite_frames.get_frame_count(&"run") == 8 and hound.visual.sprite_frames.get_frame_count(&"pounce") == 2 and hound.visual.flip_h, "Hound uses flipped idle, run, and pounce animations")
 	hound._enter_roam()
 	hound._pause_timer = 0.0

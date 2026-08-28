@@ -67,6 +67,7 @@ var _roam_timer := 0.0
 var _pause_timer := 0.0
 var _roam_direction := 1.0
 var _search_center := Vector2.ZERO
+var _search_ignored_target: Node2D
 var _movement_speed := 0.0
 var _pounce_direction := Vector2.RIGHT
 var _pounce_hit := false
@@ -181,6 +182,7 @@ func _process_investigate(delta: float) -> void:
 	_movement_speed = investigation_speed
 	var result: GroundTraversal2D.RouteResult = traversal.request_move_to(_last_known_position, &"investigate")
 	if result != GroundTraversal2D.RouteResult.SUCCESS:
+		_discard_sound_event(_current_event)
 		_current_event = {}
 		_enter_search(_last_known_position)
 	else:
@@ -188,10 +190,12 @@ func _process_investigate(delta: float) -> void:
 		traversal.physics_step(delta)
 
 func _process_search(delta: float) -> void:
+	_clear_search_ignored_target()
 	if _player_detected():
 		_enter_confirmed(_target)
 		return
 	if _state_timer <= 0.0:
+		_discard_sound_event(_current_event)
 		_current_event = {}
 		var next_event: Dictionary = _best_sound_event()
 		if next_event.is_empty():
@@ -218,7 +222,9 @@ func _process_confirmed(delta: float) -> void:
 	if result == GroundTraversal2D.RouteResult.SUCCESS:
 		traversal.physics_step(delta)
 	else:
+		var unreachable_target := _target
 		_enter_search(_last_known_position)
+		_search_ignored_target = unreachable_target
 
 func _process_prepare(delta: float) -> void:
 	visual.play(&"idle")
@@ -280,10 +286,11 @@ func _process_retaliation_wait(delta: float) -> void:
 func _refresh_detection() -> void:
 	if not support.detectors_enabled():
 		return
+	_clear_search_ignored_target()
 	var player := _nearby_player()
 	if player == null and is_instance_valid(sight.current_target) and sight.can_see(sight.current_target):
 		player = sight.current_target
-	if player != null:
+	if player != null and player != _search_ignored_target:
 		_target = player
 		_last_known_position = player.global_position
 		if state in [State.ROAM, State.INVESTIGATE, State.SEARCH]:
@@ -304,8 +311,20 @@ func _player_detected() -> bool:
 		return false
 	return _nearby_player() == _target or sight.can_see(_target)
 
+func _player_is_detectable(player: Node2D) -> bool:
+	if not is_instance_valid(player):
+		return false
+	if player.has_method("is_combat_protected") and player.is_combat_protected():
+		return false
+	return _nearby_player() == player or sight.can_see(player)
+
+func _clear_search_ignored_target() -> void:
+	if is_instance_valid(_search_ignored_target) and _player_is_detectable(_search_ignored_target):
+		return
+	_search_ignored_target = null
+
 func _on_sight_seen(target: Node2D, last_known: Vector2) -> void:
-	if not support.detectors_enabled() or target == null:
+	if not support.detectors_enabled() or target == null or target == _search_ignored_target:
 		return
 	_target = target
 	_last_known_position = last_known
@@ -395,6 +414,17 @@ func _best_sound_event() -> Dictionary:
 			best_score = score
 	return best
 
+func _discard_sound_event(event: Dictionary) -> void:
+	if event.is_empty():
+		return
+	var timestamp := int(event.get("timestamp", -1))
+	var category := StringName(event.get("category", &""))
+	var source_id := int(event.get("source_id", 0))
+	for index in range(_sound_queue.size() - 1, -1, -1):
+		var queued: Dictionary = _sound_queue[index]
+		if int(queued.get("timestamp", -2)) == timestamp and StringName(queued.get("category", &"")) == category and int(queued.get("source_id", 0)) == source_id:
+			_sound_queue.remove_at(index)
+
 func _sound_score(event: Dictionary) -> float:
 	var category := StringName(event.get("category", &"generic"))
 	var category_multiplier := 1.0
@@ -437,6 +467,7 @@ func _enter_confirmed(target: Node2D) -> void:
 	if not is_instance_valid(target):
 		return
 	_target = target
+	_search_ignored_target = null
 	_last_known_position = target.global_position
 	state = State.CONFIRMED_TARGET
 	_current_event = {}
@@ -489,6 +520,7 @@ func _enter_roam() -> void:
 	state = State.ROAM
 	_current_event = {}
 	_target = null
+	_search_ignored_target = null
 	_retaliation_target = null
 	_roam_timer = 0.0
 	_pause_timer = _random_pause()
