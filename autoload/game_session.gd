@@ -8,7 +8,6 @@ signal display_settings_changed
 
 const STARTING_MONEY := 50
 const DESIGN_SIZE := Vector2(640.0, 360.0)
-const INTERNAL_SCALE := 1.5
 const MENU_CURSOR := preload("res://assets/art/ui/cursors/cursor-1.png")
 const GAME_CURSOR := preload("res://assets/art/ui/cursors/cursor-2.png")
 const DEFAULT_WINDOWED_SIZE := Vector2i(1280, 720)
@@ -184,7 +183,7 @@ func windowed_size_label(value: Vector2i) -> String:
 	return "%d × %d" % [value.x, value.y]
 
 func display_scale() -> float:
-	return INTERNAL_SCALE
+	return 1.0
 
 func display_origin() -> Vector2:
 	return Vector2.ZERO
@@ -194,10 +193,10 @@ func configure_design_root(root: Control) -> void:
 		return
 	root.position = Vector2.ZERO
 	root.size = DESIGN_SIZE
-	root.scale = Vector2.ONE * INTERNAL_SCALE
+	root.scale = Vector2.ONE
 
 func screen_to_design(screen_position: Vector2) -> Vector2:
-	return screen_position / INTERNAL_SCALE
+	return screen_position
 
 func use_menu_cursor() -> void:
 	Input.set_custom_mouse_cursor(MENU_CURSOR, Input.CURSOR_ARROW, Vector2.ZERO)

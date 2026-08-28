@@ -1,11 +1,13 @@
 extends Node
 
 func _ready() -> void:
-	assert(ProjectSettings.get_setting("display/window/size/viewport_width") == 960)
-	assert(ProjectSettings.get_setting("display/window/size/viewport_height") == 540)
-	assert(ProjectSettings.get_setting("display/window/stretch/mode") == "viewport")
+	assert(ProjectSettings.get_setting("display/window/size/viewport_width") == 640)
+	assert(ProjectSettings.get_setting("display/window/size/viewport_height") == 360)
+	assert(ProjectSettings.get_setting("display/window/stretch/mode") == "canvas_items")
 	assert(ProjectSettings.get_setting("display/window/stretch/aspect") == "keep")
-	assert(ProjectSettings.get_setting("display/window/stretch/scale_mode") == "fractional")
+	assert(ProjectSettings.get_setting("display/window/stretch/scale_mode") == "integer")
+	assert(not ProjectSettings.get_setting("rendering/2d/snap/snap_2d_transforms_to_pixel"))
+	assert(not ProjectSettings.get_setting("rendering/2d/snap/snap_2d_vertices_to_pixel"))
 	assert(InputMap.has_action(&"toggle_fullscreen"))
 	assert(GameSession.sanitize_windowed_size(Vector2i(1, 1)) == Vector2i(640, 360))
 	assert(GameSession.get_windowed_size_options(Vector2i(1280, 720)).size() == 4)
@@ -16,8 +18,8 @@ func _ready() -> void:
 	GameSession.configure_design_root(design_root)
 	assert(design_root.size == GameSession.DESIGN_SIZE)
 	assert(design_root.position == Vector2.ZERO)
-	assert(design_root.scale == Vector2.ONE * GameSession.INTERNAL_SCALE)
-	assert(GameSession.screen_to_design(Vector2(150.0, 75.0)) == Vector2(100.0, 50.0))
+	assert(design_root.scale == Vector2.ONE)
+	assert(GameSession.screen_to_design(Vector2(123.0, 45.0)) == Vector2(123.0, 45.0))
 	design_root.queue_free()
 	var old_fullscreen := GameSession.fullscreen
 	var old_size := GameSession.windowed_size
