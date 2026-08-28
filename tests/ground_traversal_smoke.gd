@@ -169,6 +169,12 @@ func _ready() -> void:
 	hound.set_physics_process(false)
 	section.add_child(hound)
 	await get_tree().physics_frame
+	hound._enter_search(Vector2(284.0, 430.0))
+	hound._pause_timer = 0.0
+	hound._roam_timer = 0.0
+	hound._process_search(1.0 / 60.0)
+	assert(hound._search_center.y > 470.0)
+	hound.traversal.cancel()
 	hound._movement_speed = 90.0
 	var hound_route := hound.traversal.request_move_to(Vector2(284.0, 480.0), &"smoke")
 	assert(hound_route == GroundTraversal2D.RouteResult.SUCCESS)

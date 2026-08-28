@@ -18,6 +18,7 @@ signal action_changed(action: StringName)
 var body: CharacterBody2D
 var cache: GroundTraversalCache2D
 var current_action: StringName = &"inactive"
+var _projected_target := Vector2.ZERO
 var _profile: Dictionary = {}
 var _profile_key := ""
 var _route: Array[GroundTraversalCache2D.TraversalLink] = []
@@ -88,6 +89,9 @@ func cancel(stop_horizontal_velocity := false) -> void:
 func is_active() -> bool:
 	return _active
 
+func get_projected_target() -> Vector2:
+	return _projected_target
+
 func physics_step(delta: float) -> void:
 	if not _active or body == null:
 		return
@@ -115,6 +119,8 @@ func _plan(report_failure := true) -> RouteResult:
 	if route_result != RouteResult.SUCCESS:
 		return _fail(route_result, &"no_route", result.get("last_reachable_position", body.global_position)) if report_failure else route_result
 	_profile_key = String(result.get("profile_key", ""))
+	var projected_target: Variant = result.get("projected_target", _target)
+	_projected_target = projected_target if projected_target is Vector2 else _target
 	_route.clear()
 	for link in result.get("route", []):
 		_route.append(link as GroundTraversalCache2D.TraversalLink)
