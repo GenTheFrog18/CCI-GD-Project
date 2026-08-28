@@ -182,22 +182,21 @@ func _process_investigate(delta: float) -> void:
 	if _player_detected():
 		_enter_confirmed(_target)
 		return
-	if traversal.is_active():
-		visual.play(&"run")
-		traversal.physics_step(delta)
-		return
 	if _current_event.is_empty():
 		_enter_roam()
 		return
 	_movement_speed = investigation_speed
 	var result: GroundTraversal2D.RouteResult = traversal.request_move_to(_last_known_position, &"investigate")
 	if result != GroundTraversal2D.RouteResult.SUCCESS:
+		if not is_on_floor():
+			_process_direct_sound_move(delta, _last_known_position)
+			return
 		_discard_sound_event(_current_event)
 		_current_event = {}
 		_enter_search(_last_known_position)
-	else:
-		visual.play(&"run")
-		traversal.physics_step(delta)
+		return
+	visual.play(&"run")
+	traversal.physics_step(delta)
 
 func _process_search(delta: float) -> void:
 	_clear_search_ignored_target()
@@ -254,6 +253,9 @@ func _process_search_center(delta: float) -> void:
 	else:
 		var result: GroundTraversal2D.RouteResult = traversal.request_move_to(_search_center, &"search_center")
 		if result != GroundTraversal2D.RouteResult.SUCCESS:
+			if not is_on_floor():
+				_process_direct_sound_move(delta, _search_navigation_target)
+				return
 			_trigger_search_escape()
 			return
 		_search_navigation_target = traversal.get_projected_target()
@@ -276,6 +278,12 @@ func _process_search_center(delta: float) -> void:
 
 func _process_search_center_direct(delta: float) -> void:
 	var direction := signf(_search_navigation_target.x - global_position.x)
+	velocity.x = move_toward(velocity.x, direction * investigation_speed, ground_acceleration * delta)
+	_ground_motion(delta)
+
+func _process_direct_sound_move(delta: float, target: Vector2) -> void:
+	visual.play(&"run")
+	var direction := signf(target.x - global_position.x)
 	velocity.x = move_toward(velocity.x, direction * investigation_speed, ground_acceleration * delta)
 	_ground_motion(delta)
 
@@ -468,6 +476,8 @@ func _on_sound_heard(event: SoundEvent) -> void:
 func _on_route_completed() -> void:
 	match state:
 		State.INVESTIGATE:
+			if not is_on_floor():
+				return
 			_enter_search(_last_known_position)
 		State.ROAM:
 			_roam_timer = 0.0
@@ -478,12 +488,16 @@ func _on_route_completed() -> void:
 func _on_route_failed(_result: GroundTraversal2D.RouteResult, last_reachable: Vector2, _reason: StringName) -> void:
 	match state:
 		State.INVESTIGATE:
+			if not is_on_floor():
+				return
 			_enter_search(_last_known_position)
 		State.CONFIRMED_TARGET:
 			_enter_search(last_reachable)
 		State.ROAM:
 			_pause_timer = _random_pause()
 		State.SEARCH:
+			if not is_on_floor():
+				return
 			if _search_center_reached:
 				_pause_timer = _random_pause()
 			else:
@@ -495,7 +509,11 @@ func _consider_sound(event: SoundEvent) -> void:
 	var distance := global_position.distance_to(event.position)
 	if distance > minf(event.radius, hearing_radius):
 		return
-	var record: Dictionary = {"position": event.position, "radius": event.radius, "priority": event.priority, "intensity": event.intensity, "category": event.sound_type, "timestamp": event.timestamp, "source_id": event.source.get_instance_id() if is_instance_valid(event.source) else 0, "source": event.source}
+	var source: Node2D = event.source as Node2D
+	var source_position: Vector2 = event.position
+	if is_instance_valid(source):
+		source_position = source.global_position
+	var record: Dictionary = {"position": event.position, "source_position": source_position, "radius": event.radius, "priority": event.priority, "intensity": event.intensity, "category": event.sound_type, "timestamp": event.timestamp, "source_id": event.source.get_instance_id() if is_instance_valid(event.source) else 0, "source": event.source}
 	for index in _sound_queue.size():
 		if int(_sound_queue[index].get("source_id", 0)) == int(record.get("source_id", 0)) and StringName(_sound_queue[index].get("category", &"")) == StringName(record.get("category", &"")):
 			_sound_queue[index] = record
@@ -564,9 +582,9 @@ func _sound_age(event: Dictionary) -> float:
 	return maxf(0.0, (Time.get_ticks_msec() - int(event.get("timestamp", 0))) / 1000.0)
 
 func _sound_origin_position(event: Dictionary) -> Vector2:
-	var source: Node2D = event.get("source") as Node2D
-	if is_instance_valid(source):
-		return source.global_position
+	var source_position: Variant = event.get("source_position")
+	if source_position is Vector2:
+		return source_position
 	var position: Variant = event.get("position", global_position)
 	return position if position is Vector2 else global_position
 
@@ -584,10 +602,12 @@ func _enter_investigate() -> void:
 	if _current_event.is_empty():
 		_enter_roam()
 		return
+	var already_investigating := state == State.INVESTIGATE
 	state = State.INVESTIGATE
 	_target = null
-	velocity.x = 0.0
-	traversal.cancel()
+	if not already_investigating:
+		velocity.x = 0.0
+		traversal.cancel()
 
 func _enter_search(center: Vector2) -> void:
 	state = State.SEARCH

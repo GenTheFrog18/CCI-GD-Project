@@ -216,11 +216,13 @@ func _test_layer2_enemies() -> void:
 	var sound_source := Node2D.new()
 	sound_source.position = Vector2(75.0, 80.0)
 	add_child(sound_source)
+	var sound_center := sound_source.global_position
 	var disturbance := SoundEvent.new(Vector2(75, 20), 200.0, &"impact", 8, sound_source, 20.0)
 	hound._on_sound(disturbance, false)
-	_check(hound.state == TremorHound.State.INVESTIGATE and hound._investigation == sound_source.global_position, "Hound investigates sound source position")
+	sound_source.position = Vector2(400.0, 80.0)
+	_check(hound.state == TremorHound.State.INVESTIGATE and hound._investigation == sound_center and hound._sound_origin_position(hound._sound_queue[0]) == sound_center, "Hound preserves sound source position")
 	hound._process_investigate(0.1)
-	_check(hound.state == TremorHound.State.SEARCH and hound._sound_queue.is_empty(), "Hound discards unreachable sound before searching")
+	_check(hound.state == TremorHound.State.INVESTIGATE and hound.velocity.x > 0.0, "Hound moves toward sound while falling")
 	var ignored_target := Node2D.new()
 	add_child(ignored_target)
 	hound._search_ignored_target = ignored_target
