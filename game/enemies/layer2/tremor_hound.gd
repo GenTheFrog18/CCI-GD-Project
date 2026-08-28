@@ -69,6 +69,7 @@ var _roam_timer := 0.0
 var _pause_timer := 0.0
 var _roam_direction := 1.0
 var _search_center := Vector2.ZERO
+var _search_navigation_target := Vector2.ZERO
 var _search_center_reached := false
 var _search_stall_remaining := 0.0
 var _search_last_x := 0.0
@@ -220,7 +221,7 @@ func _process_search(delta: float) -> void:
 	_process_flat_roam(delta, investigation_speed, _search_center, search_radius)
 
 func _process_search_center(delta: float) -> void:
-	if global_position.distance_to(_search_center) <= investigation_arrival_tolerance:
+	if global_position.distance_to(_search_navigation_target) <= investigation_arrival_tolerance:
 		_search_center_reached = true
 		_search_stall_remaining = 0.0
 		_search_escape_remaining = 0.0
@@ -255,6 +256,7 @@ func _process_search_center(delta: float) -> void:
 		if result != GroundTraversal2D.RouteResult.SUCCESS:
 			_trigger_search_escape()
 			return
+		_search_navigation_target = traversal.get_projected_target()
 		if traversal.current_action == &"complete":
 			_process_search_center_direct(delta)
 		else:
@@ -273,7 +275,7 @@ func _process_search_center(delta: float) -> void:
 		_pause_timer = _random_pause()
 
 func _process_search_center_direct(delta: float) -> void:
-	var direction := signf(_search_center.x - global_position.x)
+	var direction := signf(_search_navigation_target.x - global_position.x)
 	velocity.x = move_toward(velocity.x, direction * investigation_speed, ground_acceleration * delta)
 	_ground_motion(delta)
 
@@ -282,7 +284,7 @@ func _trigger_search_escape() -> void:
 	_search_escape_remaining = search_escape_duration
 	_search_stall_remaining = search_stall_timeout
 	_search_last_x = global_position.x
-	_search_escape_direction = -signf(_search_center.x - global_position.x)
+	_search_escape_direction = -signf(_search_navigation_target.x - global_position.x)
 	if is_zero_approx(_search_escape_direction):
 		_search_escape_direction = -_roam_direction
 	_search_escape_jump = is_on_floor() and _random.randf() < 0.5
@@ -590,6 +592,7 @@ func _enter_investigate() -> void:
 func _enter_search(center: Vector2) -> void:
 	state = State.SEARCH
 	_search_center = center
+	_search_navigation_target = center
 	_search_center_reached = false
 	_search_stall_remaining = search_stall_timeout
 	_search_last_x = global_position.x

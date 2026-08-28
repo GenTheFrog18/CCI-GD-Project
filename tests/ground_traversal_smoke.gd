@@ -173,7 +173,7 @@ func _ready() -> void:
 	hound._pause_timer = 0.0
 	hound._roam_timer = 0.0
 	hound._process_search(1.0 / 60.0)
-	assert(hound._search_center.y > 470.0)
+	assert(is_equal_approx(hound._search_center.y, 430.0) and hound._search_navigation_target.y > 470.0)
 	hound.traversal.cancel()
 	hound._movement_speed = 90.0
 	var hound_route := hound.traversal.request_move_to(Vector2(284.0, 480.0), &"smoke")
