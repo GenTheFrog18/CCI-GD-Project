@@ -14,7 +14,7 @@ var _elapsed := 0.0
 var _active := false
 
 func _ready() -> void:
-	visible = true
+	visible = false
 	_screenshot.modulate.a = clampf(screenshot_opacity, 0.0, 1.0)
 	_white_fill.modulate.a = clampf(white_opacity, 0.0, 1.0)
 	_layers.modulate.a = 0.0
@@ -23,15 +23,21 @@ func start_flash(duration: float) -> void:
 	var image := get_viewport().get_texture().get_image()
 	if image == null:
 		return
-	_screenshot.texture = ImageTexture.create_from_image(image)
 	_duration = maxf(duration, 0.0)
+	if _duration <= 0.0:
+		stop_flash()
+		return
+	_screenshot.texture = ImageTexture.create_from_image(image)
+	visible = true
 	_elapsed = 0.0
-	_active = _duration > 0.0
+	_active = true
 	_layers.modulate.a = 0.0
 
 func stop_flash() -> void:
 	_active = false
 	_layers.modulate.a = 0.0
+	visible = false
+	_screenshot.texture = null
 
 func _process(delta: float) -> void:
 	if not _active:

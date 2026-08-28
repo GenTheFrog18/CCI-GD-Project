@@ -54,6 +54,7 @@ var _jump_buffer_remaining := 0.0
 var _walking_distance := 0.0
 var _prompt_target: Node
 var _prompt_text := ""
+var _prompt_elapsed := 0.05
 var facing_direction := 1.0
 var _nearby_ropes: Array[PlacedRope] = []
 var _climbing_rope: PlacedRope
@@ -153,7 +154,10 @@ func _physics_process(delta: float) -> void:
 		_last_air_speed = 0.0
 	_update_walking_sound(global_position.x - before_move.x)
 	_update_animation()
-	_update_prompt()
+	_prompt_elapsed += delta
+	if _prompt_elapsed >= 0.05:
+		_prompt_elapsed = 0.0
+		_update_prompt()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_alive():
@@ -168,16 +172,21 @@ func _unhandled_input(event: InputEvent) -> void:
 		item_controller.inventory.select_hotbar(item_controller.inventory.active_hotbar_index - 1)
 	if inventory_open or locks.is_locked():
 		return
+	var interact_pressed := event.is_action_pressed(&"interact")
+	var primary_pressed := event.is_action_pressed(&"primary_action")
+	var secondary_pressed := event.is_action_pressed(&"secondary_action")
+	if not interact_pressed and not primary_pressed and not secondary_pressed:
+		return
 	var target := interaction_sensor.best_target(self, get_global_mouse_position())
-	if event.is_action_pressed(&"interact") and target != null:
+	if interact_pressed and target != null:
 		target.interact(self)
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed(&"primary_action"):
+	elif primary_pressed:
 		_face_toward(get_global_mouse_position())
 		var active_id := item_controller.inventory.get_active_stack().item_id
 		if item_controller.primary(self, get_parent(), get_global_mouse_position(), target) and active_id == &"multitool":
 			_play_action_animation(&"attack")
-	elif event.is_action_pressed(&"secondary_action"):
+	elif secondary_pressed:
 		_face_toward(get_global_mouse_position())
 		if item_controller.secondary(self, get_parent(), get_global_mouse_position(), target):
 			_play_action_animation(&"throw")

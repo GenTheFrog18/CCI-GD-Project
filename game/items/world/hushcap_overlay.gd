@@ -16,26 +16,32 @@ extends CanvasLayer
 var _fade_tween: Tween
 
 func _ready() -> void:
-	visible = true
 	_set_layer_opacity(_layer_25, layer_25_opacity)
 	_set_layer_opacity(_layer_50, layer_50_opacity)
 	_set_layer_opacity(_layer_75, layer_75_opacity)
 	_set_layer_opacity(_layer_100, layer_100_opacity)
 	_layers.modulate.a = 0.0
+	visible = false
 
 func set_active(active: bool) -> void:
 	var target := 1.0 if active else 0.0
 	if is_equal_approx(_layers.modulate.a, target):
+		visible = active
 		return
 	if _fade_tween != null:
 		_fade_tween.kill()
 	var seconds := fade_in_seconds if active else fade_out_seconds
+	if active:
+		visible = true
 	if seconds <= 0.0:
 		_layers.modulate.a = target
+		visible = active
 		return
 	_fade_tween = create_tween()
 	_fade_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	_fade_tween.tween_property(_layers, "modulate:a", target, seconds)
+	if not active:
+		_fade_tween.finished.connect(func(): visible = false)
 
 func _set_layer_opacity(layer: TextureRect, opacity: float) -> void:
 	var tint := layer.modulate

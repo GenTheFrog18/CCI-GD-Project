@@ -21,13 +21,16 @@ var last_ray_end := Vector2.ZERO
 var last_ray_blocked := false
 var _scan_remaining := 0.0
 var _debug_was_visible := false
+var _editor_preview_remaining := 0.0
 
 func _ready() -> void:
 	_scan_remaining = fmod(float(get_instance_id()), maxf(scan_interval, 0.001))
 
 func _process(delta: float) -> void:
 	if Engine.is_editor_hint():
-		if show_editor_preview:
+		_editor_preview_remaining -= delta
+		if show_editor_preview and _editor_preview_remaining <= 0.0:
+			_editor_preview_remaining = 0.25
 			queue_redraw()
 		return
 	if GameSession.debug_gameplay_draw or _debug_was_visible:

@@ -19,6 +19,7 @@ var effect_label: Label
 var hit_flash: HitFlash
 var _flight_fall_speed := 0.0
 var _was_airborne_during_disabled_flight := false
+var _label_refresh_elapsed := 0.0
 
 func _ready() -> void:
 	var definition := ContentCatalog.get_enemy(species_id)
@@ -54,14 +55,20 @@ func _ready() -> void:
 		for tag in tags:
 			actor.add_to_group(tag)
 	health.damaged.connect(_on_damaged)
+	health.health_changed.connect(func(_current: float, _maximum: float): _refresh_effect_label())
 	health.died.connect(_on_died)
 	status.tick_damage_requested.connect(_on_status_damage)
 	status.tick_healing_requested.connect(func(amount: float): health.heal(amount))
 	status.status_changed.connect(_refresh_effect_label)
 	_refresh_effect_label()
 
-func _process(_delta: float) -> void:
-	_refresh_effect_label()
+func _process(delta: float) -> void:
+	_label_refresh_elapsed += delta
+	if _label_refresh_elapsed < 0.25:
+		return
+	_label_refresh_elapsed = 0.0
+	if GameSession.debug_gameplay_draw or not status.active.is_empty() or (effect_label != null and effect_label.visible):
+		_refresh_effect_label()
 
 func _refresh_effect_label() -> void:
 	if effect_label == null or status == null:

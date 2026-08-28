@@ -183,21 +183,20 @@ func windowed_size_label(value: Vector2i) -> String:
 	return "%d × %d" % [value.x, value.y]
 
 func display_scale() -> float:
-	var size := Vector2(get_window().size)
-	return maxf(minf(size.x / DESIGN_SIZE.x, size.y / DESIGN_SIZE.y), 0.01)
+	return 1.0
 
 func display_origin() -> Vector2:
-	return (Vector2(get_window().size) - DESIGN_SIZE * display_scale()) * 0.5
+	return Vector2.ZERO
 
 func configure_design_root(root: Control) -> void:
 	if root == null:
 		return
-	root.position = display_origin()
+	root.position = Vector2.ZERO
 	root.size = DESIGN_SIZE
-	root.scale = Vector2.ONE * display_scale()
+	root.scale = Vector2.ONE
 
 func screen_to_design(screen_position: Vector2) -> Vector2:
-	return (screen_position - display_origin()) / display_scale()
+	return screen_position
 
 func use_menu_cursor() -> void:
 	Input.set_custom_mouse_cursor(MENU_CURSOR, Input.CURSOR_ARROW, Vector2.ZERO)

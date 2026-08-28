@@ -41,6 +41,9 @@ func _ready() -> void:
 	var controller := WorldLightingController.new()
 	add_child(controller)
 	controller.build(Rect2(0.0, 0.0, 64.0, 64.0), [])
+	assert(not controller.overlay.visible)
+	controller.build(Rect2(0.0, 0.0, 64.0, 64.0), [region])
+	assert(controller.overlay.visible)
 	var source := LightSource2D.new()
 	add_child(source)
 	await get_tree().process_frame

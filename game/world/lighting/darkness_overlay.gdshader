@@ -1,7 +1,6 @@
 shader_type canvas_item;
-render_mode unshaded;
+render_mode unshaded, blend_mul;
 
-uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_linear;
 uniform sampler2D darkness_mask : repeat_disable, filter_linear;
 uniform vec2 mask_origin;
 uniform vec2 mask_size;
@@ -15,7 +14,6 @@ uniform vec4 darkness_tint : source_color = vec4(0.08, 0.10, 0.14, 1.0);
 uniform float maximum_screen_darkness = 0.82;
 
 void fragment() {
-	vec4 world_color = texture(screen_texture, SCREEN_UV);
 	vec2 screen_position = SCREEN_UV / SCREEN_PIXEL_SIZE;
 	vec2 world_position = screen_to_world_x * screen_position.x + screen_to_world_y * screen_position.y + screen_to_world_origin;
 	vec2 mask_uv = (world_position - mask_origin) / mask_size;
@@ -34,6 +32,5 @@ void fragment() {
 		light_reveal = max(light_reveal, contribution);
 	}
 	float final_darkness = max(base_darkness - light_reveal, 0.0) * maximum_screen_darkness;
-	world_color.rgb = mix(world_color.rgb, world_color.rgb * darkness_tint.rgb, final_darkness);
-	COLOR = world_color;
+	COLOR = vec4(mix(vec3(1.0), darkness_tint.rgb, final_darkness), 1.0);
 }

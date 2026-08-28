@@ -13,9 +13,14 @@ extends Node2D
 var last_query_point := Vector2.ZERO
 var last_query_origin := Vector2.ZERO
 var last_target: Node
+var _editor_preview_remaining := 0.0
 
-func _process(_delta: float) -> void:
-	if Engine.is_editor_hint() and show_editor_preview:
+func _process(delta: float) -> void:
+	if not Engine.is_editor_hint() or not show_editor_preview:
+		return
+	_editor_preview_remaining -= delta
+	if _editor_preview_remaining <= 0.0:
+		_editor_preview_remaining = 0.25
 		queue_redraw()
 
 func _draw() -> void:

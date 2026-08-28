@@ -13,6 +13,7 @@ extends Area2D
 @export var show_editor_preview := true
 
 @onready var interaction_indicator: Label = $InteractionIndicator
+var _editor_preview_remaining := 0.0
 
 func _ready() -> void:
 	_sync_collision_shape()
@@ -22,11 +23,16 @@ func _ready() -> void:
 		return
 	add_to_group(&"interactables")
 
-func _process(_delta: float) -> void:
-	if Engine.is_editor_hint():
-		_sync_collision_shape()
-		if show_editor_preview:
-			queue_redraw()
+func _process(delta: float) -> void:
+	if not Engine.is_editor_hint():
+		return
+	_editor_preview_remaining -= delta
+	if _editor_preview_remaining > 0.0:
+		return
+	_editor_preview_remaining = 0.25
+	_sync_collision_shape()
+	if show_editor_preview:
+		queue_redraw()
 
 func _sync_collision_shape() -> void:
 	var collision := get_node_or_null("CollisionShape2D") as CollisionShape2D

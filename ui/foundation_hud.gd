@@ -48,6 +48,7 @@ var _selected_container: StringName
 var _selected_index := -1
 var _performance_elapsed := 0.0
 var _status_elapsed := 0.0
+var _location_elapsed := 0.1
 var _threats: Dictionary = {}
 var effect_overlay: ColorRect
 var health_flames: Array[TextureRect] = []
@@ -83,8 +84,11 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	crosshair.position = GameSession.screen_to_design(get_viewport().get_mouse_position())
 	_update_cursor_appearance()
-	_update_location()
 	_update_threat(delta)
+	_location_elapsed += delta
+	if _location_elapsed >= 0.1:
+		_location_elapsed = 0.0
+		_update_location()
 	_status_elapsed += delta
 	if _status_elapsed >= 0.1:
 		_status_elapsed = 0.0
@@ -578,14 +582,15 @@ func _refresh_status() -> void:
 		var timer_text := " %ds" % ceili(player.status.get_remaining(id)) if definition == null or definition.show_timer else " — active"
 		lines.append("%s%s%s" % [name, stack_text, timer_text])
 	status_label.text = "\n".join(lines)
+	var overlay_color := Color.TRANSPARENT
 	if player.status.has_status(&"dazzled"):
-		effect_overlay.color = Color(1, 1, 1, 0.35)
+		overlay_color = Color(1, 1, 1, 0.35)
 	elif player.status.has_status(&"curse_layer_2_penalty"):
-		effect_overlay.color = Color(0.35, 0.1, 0.45, 0.2)
+		overlay_color = Color(0.35, 0.1, 0.45, 0.2)
 	elif player.status.has_status(&"curse_layer_1"):
-		effect_overlay.color = Color(0.45, 0.1, 0.1, 0.18)
-	else:
-		effect_overlay.color = Color.TRANSPARENT
+		overlay_color = Color(0.45, 0.1, 0.1, 0.18)
+	effect_overlay.color = overlay_color
+	effect_overlay.visible = overlay_color.a > 0.0
 
 func _set_health_text(current: float, maximum: float) -> void:
 	health_label.text = "HP ∞" if GameSession.debug_unlimited_health else "HP %d/%d" % [ceili(current), ceili(maximum)]

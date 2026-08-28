@@ -472,10 +472,10 @@ func _test_ui_input_and_debug() -> void:
 	var dialogue := ContentCatalog.get_dialogue(&"foundation_intro")
 	hud.show_dialogue(dialogue)
 	assert(hud.dialogue_box.visible and not player.locks.is_locked())
-	var inventory_event := InputEventAction.new()
-	inventory_event.action = &"inventory"
-	inventory_event.pressed = true
-	hud._input(inventory_event)
+	var dialogue_inventory_event := InputEventAction.new()
+	dialogue_inventory_event.action = &"inventory"
+	dialogue_inventory_event.pressed = true
+	hud._input(dialogue_inventory_event)
 	assert(not player.inventory_open)
 	var cancel_dialogue_event := InputEventAction.new()
 	cancel_dialogue_event.action = &"ui_cancel"

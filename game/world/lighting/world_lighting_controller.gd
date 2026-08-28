@@ -19,11 +19,14 @@ func _ready() -> void:
 	add_to_group(&"world_lighting_controller")
 	overlay = OVERLAY_SCENE.instantiate() as DarknessOverlay
 	add_child(overlay)
+	overlay.visible = false
 	overlay._material.set_shader_parameter(&"darkness_tint", darkness_tint)
 	overlay._material.set_shader_parameter(&"maximum_screen_darkness", maximum_screen_darkness)
 
 func _process(_delta: float) -> void:
 	_prune_lights()
+	if not overlay.visible:
+		return
 	var canvas_transform := get_viewport().get_canvas_transform()
 	if not _has_camera_transform or canvas_transform != _last_canvas_transform:
 		_has_camera_transform = true
@@ -49,6 +52,10 @@ func build(bounds: Rect2, roots: Array[Node]) -> void:
 				push_error(error)
 		else:
 			valid_regions.append(region)
+	overlay.visible = not valid_regions.is_empty()
+	if valid_regions.is_empty():
+		darkness_mask = null
+		return
 	darkness_mask = MASK_BUILDER.new().build_mask(layer_bounds, valid_regions)
 	overlay.apply_mask(darkness_mask, layer_bounds)
 	_upload_lights()

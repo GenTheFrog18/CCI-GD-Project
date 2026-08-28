@@ -6,9 +6,14 @@ extends Node2D
 @export var center_property: StringName
 @export var preview_color := Color(1.0, 0.45, 0.2, 0.85)
 @export var show_editor_preview := true
+var _editor_preview_remaining := 0.0
 
-func _process(_delta: float) -> void:
-	if Engine.is_editor_hint() and show_editor_preview:
+func _process(delta: float) -> void:
+	if not Engine.is_editor_hint() or not show_editor_preview:
+		return
+	_editor_preview_remaining -= delta
+	if _editor_preview_remaining <= 0.0:
+		_editor_preview_remaining = 0.25
 		queue_redraw()
 
 func _draw() -> void:

@@ -106,9 +106,9 @@ func finish_run(completion_point: StringName = &"layer_3_entrance") -> void:
 	GameSession.progression_flags["reached_layer_2_gate" if ends_at_layer_2 else "reached_layer_3_entrance"] = true
 	SaveManager.save_run()
 	loading_layer.visible = false
-	var end_screen := END_SCREEN_SCENE.instantiate() as EndScreen
+	var end_screen := END_SCREEN_SCENE.instantiate()
 	add_child(end_screen)
-	end_screen.set_completion_message("Layer 2 gate reached." if ends_at_layer_2 else "Layer 3 entrance reached.")
+	end_screen.call(&"set_completion_message", "Layer 2 gate reached." if ends_at_layer_2 else "Layer 3 entrance reached.")
 	await get_tree().create_timer(1.5).timeout
 	SceneRouter.go_to("res://ui/main_menu.tscn")
 

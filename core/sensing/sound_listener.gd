@@ -20,13 +20,16 @@ var current_event: SoundEvent
 var direct_target := false
 var _accepted_times: Dictionary = {}
 var _debug_was_visible := false
+var _editor_preview_remaining := 0.0
 
 func _ready() -> void:
 	add_to_group(&"sound_listeners")
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if Engine.is_editor_hint():
-		if show_editor_preview:
+		_editor_preview_remaining -= delta
+		if show_editor_preview and _editor_preview_remaining <= 0.0:
+			_editor_preview_remaining = 0.25
 			queue_redraw()
 		return
 	if GameSession.debug_gameplay_draw or _debug_was_visible:
