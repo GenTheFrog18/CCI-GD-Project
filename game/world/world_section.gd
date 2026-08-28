@@ -20,6 +20,16 @@ const SEAM_X := 640.0
 @export var dynamic_root: Node
 @export var darkness_regions_root: Node
 
+var _ground_traversal_cache: GroundTraversalCache2D
+
+func get_ground_traversal_cache(sample_spacing := 8.0, terrain_collision_mask := 1) -> GroundTraversalCache2D:
+	if _ground_traversal_cache == null:
+		_ground_traversal_cache = GroundTraversalCache2D.new()
+		_ground_traversal_cache.name = "GroundTraversalCache2D"
+		add_child(_ground_traversal_cache)
+		_ground_traversal_cache.configure(self, sample_spacing, terrain_collision_mask)
+	return _ground_traversal_cache
+
 func validate() -> PackedStringArray:
 	var errors := PackedStringArray()
 	if slot_id.is_empty():

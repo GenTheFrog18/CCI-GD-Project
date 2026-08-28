@@ -141,7 +141,6 @@ func _start_new() -> void:
 	if settings_popup.play_intro_dialogue_enabled:
 		SceneRouter.go_to("res://game/story/prologue/prologue.tscn")
 	else:
-		GameSession.progression_flags["surface_intro_finished"] = true
 		SceneRouter.go_to("res://game/world/world_run.tscn")
 
 func _continue_run() -> void:

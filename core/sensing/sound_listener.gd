@@ -3,6 +3,7 @@ class_name SoundListener
 extends Node2D
 
 signal sound_accepted(event: SoundEvent, direct_target: bool)
+signal sound_heard(event: SoundEvent)
 signal sound_target_lost
 
 @export var minimum_priority := 0
@@ -12,6 +13,7 @@ signal sound_target_lost
 @export var target_timeout := 10.0
 @export var search_seconds := 1.0
 @export_range(0.0, 2000.0, 1.0) var hearing_radius := 600.0
+@export var forward_all_events := false
 @export var show_editor_preview := true
 
 var current_event: SoundEvent
@@ -51,6 +53,8 @@ func hear_sound(event: SoundEvent) -> void:
 		return
 	if listener.global_position.distance_to(event.position) > minf(event.radius, hearing_radius):
 		return
+	if forward_all_events:
+		sound_heard.emit(event)
 	var same_direct_source := direct_target and current_event != null and event.source == current_event.source
 	if not same_direct_source and not _is_better(event, listener.global_position):
 		return

@@ -1,5 +1,7 @@
-[gd_resource type="Resource" script_class="EffectDefinition" load_steps=2 format=3]
-[ext_resource type="Script" path="res://data/definitions/effect_definition.gd" id="1"]
+[gd_resource type="Resource" script_class="EffectDefinition" format=3 uid="uid://mcv6qskoqiba"]
+
+[ext_resource type="Script" uid="uid://cju2p51urv1av" path="res://data/definitions/effect_definition.gd" id="1"]
+
 [resource]
 script = ExtResource("1")
 effect_id = &"healing"

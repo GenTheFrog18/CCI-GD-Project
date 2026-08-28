@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="2"]
 [ext_resource type="Texture2D" uid="uid://dle3dw3bniypd" path="res://assets/art/world/ground/Tree-Assets.png" id="3_ijwsk"]
 [ext_resource type="Script" uid="uid://cffkoem4dm71c" path="res://game/world/lighting/darkness_region_2d.gd" id="4_0t4bh"]
+[ext_resource type="PackedScene" uid="uid://dq7wfm672giiw" path="res://game/player/player.tscn" id="5_1fdaw"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_0t4bh"]
 tile_data = PackedInt32Array(65536, 851968, 13, 131072, 851968, 14, 196608, 851968, 15, 262144, 851968, 16, 65537, 917504, 13, 131073, 917504, 14, 196609, 917504, 15, 262145, 917504, 16, 2, 983040, 12, 65538, 983040, 13, 131074, 983040, 14, 196610, 983040, 15, 262146, 983040, 16, 3, 1048576, 12, 65539, 1048576, 13, 131075, 1048576, 14, 196611, 1048576, 15, 262147, 1048576, 16, 4, 1114112, 12, 65540, 1114112, 13, 131076, 1114112, 14, 196612, 1114112, 15, 262148, 1114112, 16, 5, 1179648, 12, 65541, 1179648, 13, 131077, 1179648, 14, 196613, 1179648, 15, 262149, 1179648, 16, 65542, 1245184, 13, 131078, 1245184, 14, 196614, 1245184, 15, 262150, 1245184, 16, 65543, 1310720, 13, 131079, 1310720, 14, 196615, 1310720, 15, 262151, 1310720, 16)
@@ -433,3 +434,6 @@ script = ExtResource("4_0t4bh")
 region_id = &"layer2_east_01_a_cave"
 darkness_strength = 1.0
 edge_falloff_pixels = 51.0
+
+[node name="Player" parent="." index="9" unique_id=1966081600 instance=ExtResource("5_1fdaw")]
+position = Vector2(258, 279)

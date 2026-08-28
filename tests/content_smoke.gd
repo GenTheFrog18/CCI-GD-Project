@@ -213,9 +213,84 @@ func _test_layer2_enemies() -> void:
 
 	var hound := preload("res://game/enemies/layer2/tremor_hound.tscn").instantiate() as TremorHound
 	add_child(hound)
-	var disturbance := SoundEvent.new(Vector2(75, 20), 200.0, &"impact", 8, null, 20.0)
+	var sound_source := Node2D.new()
+	sound_source.position = Vector2(75.0, 80.0)
+	add_child(sound_source)
+	var sound_center := sound_source.global_position
+	var disturbance := SoundEvent.new(Vector2(75, 20), 200.0, &"impact", 8, sound_source, 20.0)
 	hound._on_sound(disturbance, false)
-	_check(hound.state == TremorHound.State.INVESTIGATE and hound._investigation == disturbance.position, "Hound investigates recorded sound position")
+	sound_source.position = Vector2(400.0, 80.0)
+	_check(hound.state == TremorHound.State.INVESTIGATE and hound._investigation == sound_center and hound._sound_origin_position(hound._sound_queue[0]) == sound_center, "Hound preserves sound source position")
+	hound._process_investigate(0.1)
+	_check(hound.state == TremorHound.State.INVESTIGATE and hound.velocity.x > 0.0, "Hound moves toward sound while falling")
+	var ignored_target := Node2D.new()
+	add_child(ignored_target)
+	hound._search_ignored_target = ignored_target
+	hound._on_sight_seen(ignored_target, ignored_target.global_position)
+	_check(hound.state == TremorHound.State.SEARCH and hound._target == null, "Hound does not reacquire unreachable player during search")
+	ignored_target.free()
+	_check(hound.visual.sprite_frames.get_frame_count(&"idle") == 6 and hound.visual.sprite_frames.get_frame_count(&"run") == 8 and hound.visual.sprite_frames.get_frame_count(&"pounce") == 2 and hound.visual.flip_h, "Hound uses flipped idle, run, and pounce animations")
+	hound._enter_roam()
+	hound._pause_timer = 0.0
+	hound._roam_timer = 0.0
+	hound._process_roam(0.1)
+	_check(not is_zero_approx(hound.velocity.x), "Hound starts a timed roam burst")
+	hound._roam_timer = 0.01
+	hound._process_roam(0.1)
+	_check(is_zero_approx(hound.velocity.x) and hound._pause_timer > 0.0, "Hound pauses after a roam burst")
+	hound._enter_search(hound.global_position)
+	hound._pause_timer = 0.0
+	hound._roam_timer = 0.0
+	hound._process_search(0.1)
+	_check(hound._search_center_reached, "Hound reaches the sound center before local search")
+	hound._pause_timer = 0.0
+	hound._roam_timer = 0.0
+	hound._process_search(0.1)
+	_check(not is_zero_approx(hound.velocity.x), "Hound uses timed movement while searching")
+	hound._enter_search(hound.global_position + Vector2.RIGHT * 100.0)
+	hound._pause_timer = 0.0
+	hound._roam_timer = 0.0
+	var failed_route_search_x := hound.global_position.x
+	hound._process_search(0.1)
+	_check(hound.global_position.x > failed_route_search_x and is_zero_approx(hound._search_escape_remaining), "Hound moves toward a search center when traversal fails")
+	var nearby_player := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	add_child(nearby_player)
+	nearby_player.global_position = hound.global_position + Vector2.RIGHT * 10.0
+	hound._on_sound(SoundEvent.new(Vector2(40.0, 0.0), 200.0, &"impact", 8, null, 20.0), false)
+	hound._enter_search(hound.global_position)
+	hound.sight.current_target = nearby_player
+	hound._refresh_detection()
+	hound._process_sound_priority()
+	_check(hound.state == TremorHound.State.CONFIRMED_TARGET, "Hound keeps proximity target over queued sound during search")
+	hound._physics_process(1.0 / 60.0)
+	_check(hound.state == TremorHound.State.PREPARE_POUNCE, "Hound begins attack after proximity confirmation")
+	hound.velocity.y = -20.0
+	hound._physics_process(1.0 / 60.0)
+	_check(hound.velocity.y > -20.0, "Hound keeps applying gravity after proximity search handoff")
+	nearby_player.global_position = hound.global_position + Vector2.RIGHT * ((hound.pounce_engagement_distance + hound.proximity_detection_radius) * 0.5)
+	hound._enter_confirmed(nearby_player)
+	hound.velocity.y = -20.0
+	hound._process_confirmed(1.0 / 60.0)
+	_check(hound.state == TremorHound.State.CONFIRMED_TARGET and hound.velocity.x > 0.0 and hound.velocity.y > -20.0 and not hound.traversal.is_active(), "Hound moves and falls inside close chase band")
+	nearby_player.free()
+	var recovery_target := Node2D.new()
+	recovery_target.position = Vector2(100.0, 0.0)
+	add_child(recovery_target)
+	hound._target = recovery_target
+	hound.state = TremorHound.State.PREPARE_POUNCE
+	hound._state_timer = 1.0
+	hound.velocity = Vector2.ZERO
+	hound._process_prepare(0.1)
+	_check(hound.velocity.x > 0.0, "Hound keeps moving during pounce preparation")
+	hound._recover()
+	hound._process_recover(0.1)
+	_check(hound.velocity.x < 0.0 and hound.visual.animation == &"run", "Hound retreats during recovery with run animation")
+	recovery_target.free()
+	sound_source.free()
+	var hound_attacker := Node2D.new()
+	add_child(hound_attacker)
+	hound._on_damaged(DamageInfo.new(1.0, hound_attacker, &"tester"))
+	_check(hound.state == TremorHound.State.RETALIATION_WAIT and hound._retaliation_target == hound_attacker, "Hound retaliates against direct damage")
 
 	var stalker := preload("res://game/enemies/layer2/carrion_stalker.tscn").instantiate() as CarrionStalker
 	add_child(stalker)

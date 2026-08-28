@@ -38,10 +38,9 @@ var play_intro_dialogue_enabled: bool:
 @onready var resolution: OptionButton = $Card/ScreenPage/Resolution
 @onready var fullscreen: CheckButton = $Card/ScreenPage/Fullscreen
 @onready var fullscreen_hint: Label = $Card/ScreenPage/FullscreenHint
-@onready var info_page: Control = $Card/InfoPage
-@onready var info_title: Label = $Card/InfoPage/Title
-@onready var info_body: Label = $Card/InfoPage/Body
 @onready var how_to_page: Control = $Card/HowToPlayPage
+@onready var credits_page: Control = $Card/CreditsPage
+@onready var credits_close_button: TextureButton = $Card/CreditsPage/CloseButton
 
 func configure(show_resume: bool, action_text: String) -> void:
 	include_resume = show_resume
@@ -59,12 +58,13 @@ func _ready() -> void:
 	entry_sound.pressed.connect(func(): _show_page(sound_page, volume))
 	entry_screen.pressed.connect(func(): _show_page(screen_page, fullscreen))
 	entry_how_to.pressed.connect(_show_how_to_page)
-	entry_credits.pressed.connect(func(): _show_info("Credits", "Team Gorillaz Games\n\nFont: Perfect DOS VGA 437\nCopyright (c) Zeh Fernando\nLicensed under SIL Open Font License 1.1"))
+	entry_credits.pressed.connect(_show_credits_page)
 	entry_main_action.pressed.connect(_run_main_action)
 	for entry in [entry_resume, entry_sound, entry_screen, entry_how_to, entry_credits, entry_main_action]:
 		entry.focus_entered.connect(_move_indicator.bind(entry))
 		entry.mouse_entered.connect(entry.grab_focus)
 	close_button.pressed.connect(_close_or_resume)
+	credits_close_button.pressed.connect(_show_main_page)
 	volume.value_changed.connect(func(value: float): GameSession.master_volume = value; GameSession.apply_settings(); SaveManager.save_meta())
 	fullscreen.toggled.connect(_on_fullscreen_toggled)
 	resolution.item_selected.connect(_on_resolution_selected)
@@ -94,8 +94,9 @@ func _show_main_page() -> void:
 	menu_page.visible = true
 	sound_page.visible = false
 	screen_page.visible = false
-	info_page.visible = false
 	how_to_page.visible = false
+	credits_page.visible = false
+	close_button.visible = true
 	entry_resume.visible = include_resume
 	entry_main_action.visible = include_resume
 	entry_main_action.tooltip_text = main_action_text
@@ -108,8 +109,9 @@ func _show_page(page: Control, focus: Control) -> void:
 	menu_page.visible = false
 	sound_page.visible = page == sound_page
 	screen_page.visible = page == screen_page
-	info_page.visible = false
 	how_to_page.visible = false
+	credits_page.visible = false
+	close_button.visible = true
 	if page == sound_page:
 		volume.value = GameSession.master_volume
 	if page == screen_page:
@@ -147,23 +149,23 @@ func _on_resolution_selected(index: int) -> void:
 		return
 	GameSession.set_windowed_size(resolution.get_item_metadata(index) as Vector2i)
 
-func _show_info(title: String, body: String) -> void:
-	menu_page.visible = false
-	sound_page.visible = false
-	screen_page.visible = false
-	info_page.visible = true
-	how_to_page.visible = false
-	info_title.text = title
-	info_body.text = body
-	close_button.grab_focus()
-
 func _show_how_to_page() -> void:
 	menu_page.visible = false
 	sound_page.visible = false
 	screen_page.visible = false
-	info_page.visible = false
 	how_to_page.visible = true
+	credits_page.visible = false
+	close_button.visible = true
 	close_button.grab_focus()
+
+func _show_credits_page() -> void:
+	menu_page.visible = false
+	sound_page.visible = false
+	screen_page.visible = false
+	how_to_page.visible = false
+	credits_page.visible = true
+	close_button.visible = false
+	credits_close_button.grab_focus()
 
 func show_how_to_page() -> void:
 	_show_how_to_page()
