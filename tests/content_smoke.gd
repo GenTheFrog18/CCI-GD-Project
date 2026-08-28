@@ -264,7 +264,7 @@ func _test_layer2_enemies() -> void:
 	_check(hound.velocity.x > 0.0, "Hound keeps moving during pounce preparation")
 	hound._recover()
 	hound._process_recover(0.1)
-	_check(hound.velocity.x < 0.0, "Hound retreats during recovery")
+	_check(hound.velocity.x < 0.0 and hound.visual.animation == &"run", "Hound retreats during recovery with run animation")
 	recovery_target.free()
 	var hound_attacker := Node2D.new()
 	add_child(hound_attacker)

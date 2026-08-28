@@ -263,7 +263,7 @@ func _process_pounce(delta: float) -> void:
 		_recover()
 
 func _process_recover(delta: float) -> void:
-	visual.play(&"idle")
+	visual.play(&"run")
 	velocity.x = move_toward(velocity.x, _recovery_direction.x * roam_speed, ground_acceleration * delta)
 	_ground_motion(delta)
 	if _state_timer > 0.0:
@@ -292,6 +292,14 @@ func _refresh_detection() -> void:
 		return
 	_clear_search_ignored_target()
 	var player := _nearby_player()
+	if player != null:
+		# Physical proximity overrides the temporary unreachable-target suppression.
+		_search_ignored_target = null
+		_target = player
+		_last_known_position = player.global_position
+		if state in [State.ROAM, State.INVESTIGATE, State.SEARCH]:
+			_enter_confirmed(player)
+		return
 	if player == null and is_instance_valid(sight.current_target) and sight.can_see(sight.current_target):
 		player = sight.current_target
 	if player != null and player != _search_ignored_target:
@@ -397,7 +405,7 @@ func _process_sound_priority() -> void:
 		return
 	# A live player target always outranks a remembered sound. Without this,
 	# proximity detection can bounce the hound back into investigation every frame.
-	if _player_detected():
+	if _nearby_player() != null or _player_detected():
 		return
 	var best: Dictionary = _best_sound_event()
 	if best.is_empty():
@@ -480,6 +488,7 @@ func _enter_confirmed(target: Node2D) -> void:
 	state = State.CONFIRMED_TARGET
 	_current_event = {}
 	_pause_timer = 0.0
+	traversal.cancel()
 	velocity.x = 0.0
 
 func _begin_prepare(target: Node2D) -> void:

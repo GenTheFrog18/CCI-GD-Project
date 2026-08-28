@@ -1398,4 +1398,5 @@ roam_speed = 60.0
 roam_burst_max_seconds = 4.0
 roam_pause_min_seconds = 1.0
 roam_pause_max_seconds = 6.0
+search_duration = 10.0
 max_walkable_slope_degrees = 90.0
