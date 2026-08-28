@@ -212,7 +212,7 @@ func _process_search(delta: float) -> void:
 			_enter_roam()
 		else:
 			_current_event = next_event
-			_last_known_position = next_event.position
+			_last_known_position = _sound_origin_position(next_event)
 			_enter_investigate()
 		return
 	if not _search_center_reached:
@@ -496,7 +496,7 @@ func _consider_sound(event: SoundEvent) -> void:
 	var distance := global_position.distance_to(event.position)
 	if distance > minf(event.radius, hearing_radius):
 		return
-	var record: Dictionary = {"position": event.position, "radius": event.radius, "priority": event.priority, "intensity": event.intensity, "category": event.sound_type, "timestamp": event.timestamp, "source_id": event.source.get_instance_id() if is_instance_valid(event.source) else 0}
+	var record: Dictionary = {"position": event.position, "radius": event.radius, "priority": event.priority, "intensity": event.intensity, "category": event.sound_type, "timestamp": event.timestamp, "source_id": event.source.get_instance_id() if is_instance_valid(event.source) else 0, "source": event.source}
 	for index in _sound_queue.size():
 		if int(_sound_queue[index].get("source_id", 0)) == int(record.get("source_id", 0)) and StringName(_sound_queue[index].get("category", &"")) == StringName(record.get("category", &"")):
 			_sound_queue[index] = record
@@ -508,7 +508,7 @@ func _consider_sound(event: SoundEvent) -> void:
 		var best: Dictionary = _best_sound_event()
 		if not best.is_empty() and (_current_event.is_empty() or _sound_score(best) > _sound_score(_current_event) + sound_retarget_margin):
 			_current_event = best
-			_last_known_position = best.get("position", global_position)
+			_last_known_position = _sound_origin_position(best)
 			_investigation = _last_known_position
 			_sound_retarget_remaining = sound_retarget_cooldown
 			_enter_investigate()
@@ -527,7 +527,7 @@ func _process_sound_priority() -> void:
 		return
 	if _current_event.is_empty() or _sound_score(best) > _sound_score(_current_event) + sound_retarget_margin:
 		_current_event = best
-		_last_known_position = best.get("position", global_position)
+		_last_known_position = _sound_origin_position(best)
 		_investigation = _last_known_position
 		_enter_investigate()
 
@@ -563,6 +563,13 @@ func _sound_score(event: Dictionary) -> float:
 
 func _sound_age(event: Dictionary) -> float:
 	return maxf(0.0, (Time.get_ticks_msec() - int(event.get("timestamp", 0))) / 1000.0)
+
+func _sound_origin_position(event: Dictionary) -> Vector2:
+	var source: Node2D = event.get("source") as Node2D
+	if is_instance_valid(source):
+		return source.global_position
+	var position: Variant = event.get("position", global_position)
+	return position if position is Vector2 else global_position
 
 func _worst_sound_index() -> int:
 	var index := 0
