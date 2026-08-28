@@ -32,6 +32,8 @@ enum State { SPAWN, ROAM, INVESTIGATE, SEARCH, CONFIRMED_TARGET, PREPARE_POUNCE,
 @export var investigation_arrival_tolerance := 18.0
 @export var search_radius := 64.0
 @export var search_duration := 2.5
+@export_range(0.05, 2.0, 0.05) var search_stall_timeout := 0.4
+@export_range(0.05, 2.0, 0.05) var search_escape_duration := 0.35
 @export var pounce_engagement_distance := 42.0
 @export var pounce_prepare_duration := 0.75
 @export var pounce_speed := 250.0
@@ -67,6 +69,12 @@ var _roam_timer := 0.0
 var _pause_timer := 0.0
 var _roam_direction := 1.0
 var _search_center := Vector2.ZERO
+var _search_center_reached := false
+var _search_stall_remaining := 0.0
+var _search_last_x := 0.0
+var _search_escape_remaining := 0.0
+var _search_escape_direction := -1.0
+var _search_escape_jump := false
 var _search_ignored_target: Node2D
 var _movement_speed := 0.0
 var _pounce_direction := Vector2.RIGHT
@@ -183,9 +191,10 @@ func _process_investigate(delta: float) -> void:
 	_movement_speed = investigation_speed
 	var result: GroundTraversal2D.RouteResult = traversal.request_move_to(_last_known_position, &"investigate")
 	if result != GroundTraversal2D.RouteResult.SUCCESS:
+		var search_center: Vector2 = _current_event.get("position", _last_known_position)
 		_discard_sound_event(_current_event)
 		_current_event = {}
-		_enter_search(_last_known_position)
+		_enter_search(search_center)
 	else:
 		visual.play(&"run")
 		traversal.physics_step(delta)
@@ -206,7 +215,93 @@ func _process_search(delta: float) -> void:
 			_last_known_position = next_event.position
 			_enter_investigate()
 		return
+	if not _search_center_reached:
+		_process_search_center(delta)
+		return
 	_process_flat_roam(delta, investigation_speed, _search_center, search_radius)
+
+func _process_search_center(delta: float) -> void:
+	if global_position.distance_to(_search_center) <= investigation_arrival_tolerance:
+		_search_center_reached = true
+		_search_stall_remaining = 0.0
+		_search_escape_remaining = 0.0
+		traversal.cancel()
+		velocity.x = 0.0
+		_pause_timer = _random_pause()
+		_roam_timer = 0.0
+		return
+	if _search_escape_remaining > 0.0:
+		_process_search_escape(delta)
+		return
+	if _pause_timer > 0.0:
+		visual.play(&"idle")
+		traversal.cancel()
+		velocity.x = move_toward(velocity.x, 0.0, ground_acceleration * delta)
+		_pause_timer -= delta
+		_search_last_x = global_position.x
+		_search_stall_remaining = search_stall_timeout
+		_ground_motion(delta)
+		return
+	if _roam_timer <= 0.0:
+		_roam_timer = _random.randf_range(roam_burst_min_seconds, roam_burst_max_seconds)
+		_search_last_x = global_position.x
+		_search_stall_remaining = search_stall_timeout
+	_roam_timer -= delta
+	_movement_speed = investigation_speed
+	visual.play(&"run")
+	if traversal.is_active():
+		traversal.physics_step(delta)
+	else:
+		var result: GroundTraversal2D.RouteResult = traversal.request_move_to(_search_center, &"search_center")
+		if result != GroundTraversal2D.RouteResult.SUCCESS:
+			_trigger_search_escape()
+			return
+		if traversal.current_action == &"complete":
+			_process_search_center_direct(delta)
+		else:
+			traversal.physics_step(delta)
+	if absf(global_position.x - _search_last_x) > 0.25:
+		_search_stall_remaining = search_stall_timeout
+	else:
+		_search_stall_remaining -= delta
+	_search_last_x = global_position.x
+	if _search_stall_remaining <= 0.0:
+		_trigger_search_escape()
+		return
+	if _roam_timer <= 0.0:
+		traversal.cancel()
+		velocity.x = 0.0
+		_pause_timer = _random_pause()
+
+func _process_search_center_direct(delta: float) -> void:
+	var direction := signf(_search_center.x - global_position.x)
+	velocity.x = move_toward(velocity.x, direction * investigation_speed, ground_acceleration * delta)
+	_ground_motion(delta)
+
+func _trigger_search_escape() -> void:
+	traversal.cancel()
+	_search_escape_remaining = search_escape_duration
+	_search_stall_remaining = search_stall_timeout
+	_search_last_x = global_position.x
+	_search_escape_direction = -signf(_search_center.x - global_position.x)
+	if is_zero_approx(_search_escape_direction):
+		_search_escape_direction = -_roam_direction
+	_search_escape_jump = is_on_floor() and _random.randf() < 0.5
+	if _search_escape_jump:
+		velocity.y = -jump_velocity
+
+func _process_search_escape(delta: float) -> void:
+	visual.play(&"run")
+	var escape_speed := investigation_speed * 0.5 if _search_escape_jump else investigation_speed
+	velocity.x = move_toward(velocity.x, _search_escape_direction * escape_speed, ground_acceleration * delta)
+	_ground_motion(delta)
+	_search_escape_remaining -= delta
+	if _search_escape_remaining <= 0.0:
+		_search_escape_jump = false
+		_roam_timer = 0.0
+		_pause_timer = _random_pause()
+		_search_last_x = global_position.x
+		_search_stall_remaining = search_stall_timeout
 
 func _process_confirmed(delta: float) -> void:
 	if not _player_detected():
@@ -382,14 +477,18 @@ func _on_route_completed() -> void:
 func _on_route_failed(_result: GroundTraversal2D.RouteResult, last_reachable: Vector2, _reason: StringName) -> void:
 	match state:
 		State.INVESTIGATE:
+			var search_center: Vector2 = _current_event.get("position", last_reachable)
 			_last_known_position = last_reachable
-			_enter_search(last_reachable)
+			_enter_search(search_center)
 		State.CONFIRMED_TARGET:
 			_enter_search(last_reachable)
 		State.ROAM:
 			_pause_timer = _random_pause()
 		State.SEARCH:
-			_pause_timer = _random_pause()
+			if _search_center_reached:
+				_pause_timer = _random_pause()
+			else:
+				_trigger_search_escape()
 
 func _consider_sound(event: SoundEvent) -> void:
 	if event == null or not support.detectors_enabled() or event.source == self:
@@ -487,6 +586,11 @@ func _enter_investigate() -> void:
 func _enter_search(center: Vector2) -> void:
 	state = State.SEARCH
 	_search_center = center
+	_search_center_reached = false
+	_search_stall_remaining = search_stall_timeout
+	_search_last_x = global_position.x
+	_search_escape_remaining = 0.0
+	_search_escape_jump = false
 	_state_timer = search_duration
 	_pause_timer = 0.0
 	_roam_timer = 0.0

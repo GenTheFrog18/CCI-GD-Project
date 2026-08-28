@@ -233,11 +233,20 @@ func _test_layer2_enemies() -> void:
 	hound._roam_timer = 0.01
 	hound._process_roam(0.1)
 	_check(is_zero_approx(hound.velocity.x) and hound._pause_timer > 0.0, "Hound pauses after a roam burst")
-	hound._enter_search(Vector2.ZERO)
+	hound._enter_search(hound.global_position)
+	hound._pause_timer = 0.0
+	hound._roam_timer = 0.0
+	hound._process_search(0.1)
+	_check(hound._search_center_reached, "Hound reaches the sound center before local search")
 	hound._pause_timer = 0.0
 	hound._roam_timer = 0.0
 	hound._process_search(0.1)
 	_check(not is_zero_approx(hound.velocity.x), "Hound uses timed movement while searching")
+	hound._enter_search(hound.global_position + Vector2.RIGHT * 100.0)
+	hound._pause_timer = 0.0
+	hound._roam_timer = 0.0
+	hound._process_search(0.1)
+	_check(hound._search_escape_remaining > 0.0, "Hound escapes when a search-center route cannot move")
 	var nearby_player := preload("res://game/player/player.tscn").instantiate() as PlayerController
 	add_child(nearby_player)
 	nearby_player.global_position = hound.global_position + Vector2.RIGHT * 10.0
