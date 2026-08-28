@@ -238,6 +238,19 @@ func _test_layer2_enemies() -> void:
 	hound._roam_timer = 0.0
 	hound._process_search(0.1)
 	_check(not is_zero_approx(hound.velocity.x), "Hound uses timed movement while searching")
+	var recovery_target := Node2D.new()
+	recovery_target.position = Vector2(100.0, 0.0)
+	add_child(recovery_target)
+	hound._target = recovery_target
+	hound.state = TremorHound.State.PREPARE_POUNCE
+	hound._state_timer = 1.0
+	hound.velocity = Vector2.ZERO
+	hound._process_prepare(0.1)
+	_check(hound.velocity.x > 0.0, "Hound keeps moving during pounce preparation")
+	hound._recover()
+	hound._process_recover(0.1)
+	_check(hound.velocity.x < 0.0, "Hound retreats during recovery")
+	recovery_target.free()
 	var hound_attacker := Node2D.new()
 	add_child(hound_attacker)
 	hound._on_damaged(DamageInfo.new(1.0, hound_attacker, &"tester"))

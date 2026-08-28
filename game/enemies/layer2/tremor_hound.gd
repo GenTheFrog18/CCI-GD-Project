@@ -70,6 +70,7 @@ var _search_center := Vector2.ZERO
 var _search_ignored_target: Node2D
 var _movement_speed := 0.0
 var _pounce_direction := Vector2.RIGHT
+var _recovery_direction := Vector2.LEFT
 var _pounce_hit := false
 var _warned := false
 var _sound_retarget_remaining := 0.0
@@ -228,7 +229,10 @@ func _process_confirmed(delta: float) -> void:
 
 func _process_prepare(delta: float) -> void:
 	visual.play(&"idle")
-	velocity.x = move_toward(velocity.x, 0.0, ground_acceleration * delta * 0.25)
+	var prepare_direction := signf(_target.global_position.x - global_position.x) if is_instance_valid(_target) else _roam_direction
+	if is_zero_approx(prepare_direction):
+		prepare_direction = _roam_direction
+	velocity.x = move_toward(velocity.x, prepare_direction * roam_speed * 0.35, ground_acceleration * delta)
 	_ground_motion(delta)
 	if not is_instance_valid(_target):
 		_enter_search(_last_known_position)
@@ -260,7 +264,7 @@ func _process_pounce(delta: float) -> void:
 
 func _process_recover(delta: float) -> void:
 	visual.play(&"idle")
-	velocity.x = move_toward(velocity.x, 0.0, ground_acceleration * delta)
+	velocity.x = move_toward(velocity.x, _recovery_direction.x * roam_speed, ground_acceleration * delta)
 	_ground_motion(delta)
 	if _state_timer > 0.0:
 		return
@@ -484,6 +488,14 @@ func _begin_prepare(target: Node2D) -> void:
 	_warned = false
 
 func _recover() -> void:
+	var retreat_from := _target as Node2D
+	if not is_instance_valid(retreat_from):
+		retreat_from = get_tree().get_first_node_in_group(&"player") as Node2D
+	if is_instance_valid(retreat_from):
+		var away := retreat_from.global_position.direction_to(global_position)
+		_recovery_direction = Vector2(signf(away.x), 0.0) if not is_zero_approx(away.x) else Vector2(-_pounce_direction.x, 0.0)
+	else:
+		_recovery_direction = Vector2(-_pounce_direction.x, 0.0)
 	_set_pounce_hitbox(false)
 	state = State.RECOVER
 	_state_timer = recovery_duration
