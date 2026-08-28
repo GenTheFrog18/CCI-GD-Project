@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/end_screen.gd" id="1_script"]
+
+[node name="EndScreen" type="CanvasLayer"]
+layer = 110
+script = ExtResource("1_script")
+
+[node name="LogicalUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+
+[node name="Panel" type="ColorRect" parent="LogicalUI"]
+layout_mode = 0
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0.02, 0.025, 0.04, 1)
+
+[node name="Column" type="VBoxContainer" parent="LogicalUI/Panel"]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 140.0
+offset_right = 520.0
+offset_bottom = 220.0
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="LogicalUI/Panel/Column"]
+layout_mode = 2
+text = "Demo Complete"
+horizontal_alignment = 1
+
+[node name="Message" type="Label" parent="LogicalUI/Panel/Column"]
+layout_mode = 2
+text = "Layer 2 gate reached."
+horizontal_alignment = 1
