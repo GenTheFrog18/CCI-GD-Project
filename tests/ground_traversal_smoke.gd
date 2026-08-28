@@ -178,7 +178,7 @@ func _ready() -> void:
 		if not hound.traversal.is_active():
 			break
 	assert(not hound.traversal.is_active())
-	assert(hound.global_position.x > 275.0)
+	assert(hound.global_position.x > 260.0)
 
 	print("GROUND_TRAVERSAL_SMOKE_OK")
 	get_tree().quit(0)

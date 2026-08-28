@@ -155,11 +155,12 @@ func _process_flat_roam(delta: float, speed: float, boundary_center: Vector2 = V
 			_roam_direction = -signf(horizontal_offset)
 	visual.play(&"run")
 	_roam_timer -= delta
-	velocity.x = move_toward(velocity.x, _roam_direction * speed, ground_acceleration * delta)
+	var requested_velocity_x := move_toward(velocity.x, _roam_direction * speed, ground_acceleration * delta)
+	velocity.x = requested_velocity_x
 	_ground_motion(delta)
-	if is_on_wall():
+	if is_on_wall() and absf(requested_velocity_x) > 1.0 and absf(get_last_motion().x) < 0.01:
 		_roam_direction *= -1.0
-		_roam_timer = 0.0
+		_roam_timer = _random.randf_range(roam_burst_min_seconds, roam_burst_max_seconds)
 		velocity.x = 0.0
 		_pause_timer = _random_pause()
 	elif _roam_timer <= 0.0:
@@ -428,6 +429,7 @@ func _enter_search(center: Vector2) -> void:
 	_search_center = center
 	_state_timer = search_duration
 	_pause_timer = 0.0
+	_roam_timer = 0.0
 	_target = null
 	traversal.cancel()
 
