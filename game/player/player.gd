@@ -183,9 +183,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif primary_pressed:
 		_face_toward(get_global_mouse_position())
-		var active_id := item_controller.inventory.get_active_stack().item_id
-		if item_controller.primary(self, get_parent(), get_global_mouse_position(), target) and active_id == &"multitool":
-			_play_action_animation(&"attack")
+		item_controller.primary(self, get_parent(), get_global_mouse_position(), target)
 	elif secondary_pressed:
 		_face_toward(get_global_mouse_position())
 		if item_controller.secondary(self, get_parent(), get_global_mouse_position(), target):
