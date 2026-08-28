@@ -250,8 +250,9 @@ func _test_layer2_enemies() -> void:
 	hound._enter_search(hound.global_position + Vector2.RIGHT * 100.0)
 	hound._pause_timer = 0.0
 	hound._roam_timer = 0.0
+	var failed_route_search_x := hound.global_position.x
 	hound._process_search(0.1)
-	_check(hound._search_escape_remaining > 0.0, "Hound escapes when a search-center route cannot move")
+	_check(hound.global_position.x > failed_route_search_x and is_zero_approx(hound._search_escape_remaining), "Hound moves toward a search center when traversal fails")
 	var nearby_player := preload("res://game/player/player.tscn").instantiate() as PlayerController
 	add_child(nearby_player)
 	nearby_player.global_position = hound.global_position + Vector2.RIGHT * 10.0

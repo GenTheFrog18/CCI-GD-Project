@@ -253,16 +253,13 @@ func _process_search_center(delta: float) -> void:
 	else:
 		var result: GroundTraversal2D.RouteResult = traversal.request_move_to(_search_center, &"search_center")
 		if result != GroundTraversal2D.RouteResult.SUCCESS:
-			if not is_on_floor():
-				_process_direct_sound_move(delta, _search_navigation_target)
-				return
-			_trigger_search_escape()
-			return
-		_search_navigation_target = traversal.get_projected_target()
-		if traversal.current_action == &"complete":
-			_process_search_center_direct(delta)
+			_process_direct_sound_move(delta, _search_navigation_target)
 		else:
-			traversal.physics_step(delta)
+			_search_navigation_target = traversal.get_projected_target()
+			if traversal.current_action == &"complete":
+				_process_search_center_direct(delta)
+			else:
+				traversal.physics_step(delta)
 	if absf(global_position.x - _search_last_x) > 0.25:
 		_search_stall_remaining = search_stall_timeout
 	else:
@@ -496,12 +493,7 @@ func _on_route_failed(_result: GroundTraversal2D.RouteResult, last_reachable: Ve
 		State.ROAM:
 			_pause_timer = _random_pause()
 		State.SEARCH:
-			if not is_on_floor():
-				return
-			if _search_center_reached:
-				_pause_timer = _random_pause()
-			else:
-				_trigger_search_escape()
+			return
 
 func _consider_sound(event: SoundEvent) -> void:
 	if event == null or not support.detectors_enabled() or event.source == self:
@@ -603,9 +595,10 @@ func _enter_investigate() -> void:
 		_enter_roam()
 		return
 	var already_investigating := state == State.INVESTIGATE
+	var committed_traversal := traversal.current_action in [&"jump", &"fall"]
 	state = State.INVESTIGATE
 	_target = null
-	if not already_investigating:
+	if not already_investigating and not committed_traversal:
 		velocity.x = 0.0
 		traversal.cancel()
 
