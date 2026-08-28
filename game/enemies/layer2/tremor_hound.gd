@@ -794,7 +794,7 @@ func _draw() -> void:
 		return
 	draw_arc(Vector2.ZERO, proximity_detection_radius, 0.0, TAU, 32, Color(1.0, 0.3, 0.2, 0.8), 1.0)
 	draw_arc(Vector2.ZERO, hearing_radius, 0.0, TAU, 64, Color(0.3, 0.75, 1.0, 0.25), 1.0)
-	if not _current_event.is_empty() and state in [State.INVESTIGATE, State.SEARCH]:
+	if state in [State.INVESTIGATE, State.SEARCH]:
 		var sound_center: Vector2 = _search_center if state == State.SEARCH else _last_known_position
 		var center := to_local(sound_center)
 		draw_circle(center, 6.0, Color(1.0, 0.75, 0.2, 0.9), false, 2.0)
