@@ -395,6 +395,10 @@ func _consider_sound(event: SoundEvent) -> void:
 func _process_sound_priority() -> void:
 	if state in [State.PREPARE_POUNCE, State.POUNCE, State.RECOVER, State.RETALIATION_WAIT, State.STUNNED]:
 		return
+	# A live player target always outranks a remembered sound. Without this,
+	# proximity detection can bounce the hound back into investigation every frame.
+	if _player_detected():
+		return
 	var best: Dictionary = _best_sound_event()
 	if best.is_empty():
 		return

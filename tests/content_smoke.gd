@@ -238,6 +238,21 @@ func _test_layer2_enemies() -> void:
 	hound._roam_timer = 0.0
 	hound._process_search(0.1)
 	_check(not is_zero_approx(hound.velocity.x), "Hound uses timed movement while searching")
+	var nearby_player := preload("res://game/player/player.tscn").instantiate() as PlayerController
+	add_child(nearby_player)
+	nearby_player.global_position = hound.global_position + Vector2.RIGHT * 10.0
+	hound._on_sound(SoundEvent.new(Vector2(40.0, 0.0), 200.0, &"impact", 8, null, 20.0), false)
+	hound._enter_search(hound.global_position)
+	hound.sight.current_target = nearby_player
+	hound._refresh_detection()
+	hound._process_sound_priority()
+	_check(hound.state == TremorHound.State.CONFIRMED_TARGET, "Hound keeps proximity target over queued sound during search")
+	hound._physics_process(1.0 / 60.0)
+	_check(hound.state == TremorHound.State.PREPARE_POUNCE, "Hound begins attack after proximity confirmation")
+	hound.velocity.y = -20.0
+	hound._physics_process(1.0 / 60.0)
+	_check(hound.velocity.y > -20.0, "Hound keeps applying gravity after proximity search handoff")
+	nearby_player.free()
 	var recovery_target := Node2D.new()
 	recovery_target.position = Vector2(100.0, 0.0)
 	add_child(recovery_target)
