@@ -21,7 +21,10 @@ func _process(delta: float) -> void:
 	var next_preview: Dictionary = {}
 	if player != null and not player.inventory_open and player.is_alive():
 		var cursor := player.get_global_mouse_position()
-		next_preview = player.item_controller.get_preview(player, player.get_parent(), cursor, player.interaction_sensor.last_target)
+		var target: Node = null
+		if is_instance_valid(player.interaction_sensor.last_target):
+			target = player.interaction_sensor.last_target
+		next_preview = player.item_controller.get_preview(player, player.get_parent(), cursor, target)
 	if next_preview != preview or GameSession.debug_gameplay_draw:
 		preview = next_preview
 		queue_redraw()
