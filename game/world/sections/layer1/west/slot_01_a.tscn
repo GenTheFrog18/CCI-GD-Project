@@ -8,11 +8,12 @@
 [ext_resource type="PackedScene" path="res://game/world/placers/loot_placer.tscn" id="6_3e46b"]
 [ext_resource type="PackedScene" uid="uid://bxrr7i18qw7gw" path="res://game/world/sources/breakable_loot.tscn" id="7_5mrea"]
 [ext_resource type="Script" uid="uid://cffkoem4dm71c" path="res://game/world/lighting/darkness_region_2d.gd" id="7_5wbkw"]
-[ext_resource type="PackedScene" path="res://game/world/world_gate.tscn" id="8_2j4x8"]
+[ext_resource type="PackedScene" uid="uid://da2xqskxfcfft" path="res://game/world/world_gate.tscn" id="8_2j4x8"]
 [ext_resource type="PackedScene" path="res://game/world/placers/bird_nest_placer.tscn" id="10_qy4c4"]
 [ext_resource type="PackedScene" uid="uid://cjwcecup4eqge" path="res://game/enemies/layer1/cave_spider.tscn" id="11_qshq0"]
 [ext_resource type="PackedScene" uid="uid://u1b4ki8jlewf" path="res://game/enemies/layer1/lantern_snail.tscn" id="12_wclnx"]
 [ext_resource type="PackedScene" uid="uid://nes3153cti6e" path="res://game/enemies/layer1/thorn_bloom.tscn" id="13_4i18d"]
+[ext_resource type="Texture2D" uid="uid://bjixirw2lkdet" path="res://assets/art/world/foliage/layer1gatewest.png" id="14_wclnx"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g8qop"]
 texture = ExtResource("2_dn4ct")
@@ -2530,3 +2531,7 @@ maximum_quantity = 2
 position = Vector2(31, 744)
 persistent_id = &"ohasoirvyewiuargh"
 entries = Array[ExtResource("4_p5sea")]([SubResource("Resource_qshq0")])
+
+[node name="Layer1Gatewest" type="Sprite2D" parent="." index="29" unique_id=1022189706]
+position = Vector2(42, 66)
+texture = ExtResource("14_wclnx")

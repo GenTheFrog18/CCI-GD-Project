@@ -12,10 +12,11 @@ var layer_bounds := Rect2()
 var darkness_mask: ImageTexture
 var overlay: DarknessOverlay
 var _lights: Dictionary = {}
-var _last_canvas_transform := Transform2D()
-var _has_camera_transform := false
+var _last_world_to_screen_transform := Transform2D()
+var _has_world_to_screen_transform := false
 
 func _ready() -> void:
+	process_priority = 100
 	add_to_group(&"world_lighting_controller")
 	overlay = OVERLAY_SCENE.instantiate() as DarknessOverlay
 	add_child(overlay)
@@ -27,11 +28,12 @@ func _process(_delta: float) -> void:
 	_prune_lights()
 	if not overlay.visible:
 		return
-	var canvas_transform := get_viewport().get_canvas_transform()
-	if not _has_camera_transform or canvas_transform != _last_canvas_transform:
-		_has_camera_transform = true
-		_last_canvas_transform = canvas_transform
-		overlay.apply_camera_transform(canvas_transform)
+	var viewport := get_viewport()
+	var world_to_screen := viewport.get_final_transform() * viewport.get_canvas_transform()
+	if not _has_world_to_screen_transform or world_to_screen != _last_world_to_screen_transform:
+		_has_world_to_screen_transform = true
+		_last_world_to_screen_transform = world_to_screen
+		overlay.apply_world_to_screen_transform(world_to_screen)
 
 func build_for_layer(layer: WorldLayer) -> void:
 	var sections: Array[Node] = []

@@ -3832,6 +3832,14 @@ offset_bottom = 7.0
 theme_override_constants/outline_size = 3
 text = "w/s"
 
+[node name="PlacedRope3" parent="Ground" unique_id=726784950 instance=ExtResource("10_5086k")]
+position = Vector2(253, -91)
+rope_length = 112.0
+
+[node name="PlacedRope4" parent="Ground" unique_id=593530535 instance=ExtResource("10_5086k")]
+position = Vector2(354, -88)
+rope_length = 112.0
+
 [node name="LeftWall" type="StaticBody2D" parent="." unique_id=943838515]
 position = Vector2(-10, 180)
 

@@ -12,6 +12,7 @@ const ESCALATION_FLAG := "gatekeeper1:escalation_seen"
 const BLUE_INTRO_FLAG := "gatekeeper1:blue_intro_seen"
 
 @export var persistent_id := "senior_diver"
+@export_enum("Left:-1", "Right:1") var facing_direction := 1
 @export var move_speed := 42.0
 @export var gravity := 900.0
 @export var restricted_radius := 120.0
@@ -55,10 +56,12 @@ var _grab_cancelled := false
 var _grab_waiting_for_dialogue := false
 var _first_warning_dialogue_active := false
 var _aggravated := false
+var _facing_direction := 1.0
 
 func _ready() -> void:
 	support.persistent_id = persistent_id
 	_origin = global_position
+	_facing_direction = -1.0 if facing_direction < 0 else 1.0
 	_aggravated = bool(GameSession.progression_flags.get(ESCALATION_FLAG, false))
 	_setup_visual()
 	add_to_group(&"interactables")
@@ -363,7 +366,10 @@ func _update_visual() -> void:
 			facing = signf(_target.global_position.x - global_position.x)
 		elif _has_last_known_position:
 			facing = signf(_last_known_position.x - global_position.x)
+		else:
+			facing = _facing_direction
 	if not is_zero_approx(facing):
+		_facing_direction = facing
 		visual.flip_h = facing < 0.0
 		sight.facing = Vector2(facing, 0.0)
 

@@ -9,8 +9,8 @@ func apply_mask(mask: Texture2D, bounds: Rect2) -> void:
 	_material.set_shader_parameter(&"mask_origin", bounds.position)
 	_material.set_shader_parameter(&"mask_size", bounds.size)
 
-func apply_camera_transform(canvas_transform: Transform2D) -> void:
-	var inverse := canvas_transform.affine_inverse()
+func apply_world_to_screen_transform(world_to_screen: Transform2D) -> void:
+	var inverse := world_to_screen.affine_inverse()
 	_material.set_shader_parameter(&"screen_to_world_x", inverse.x)
 	_material.set_shader_parameter(&"screen_to_world_y", inverse.y)
 	_material.set_shader_parameter(&"screen_to_world_origin", inverse.origin)

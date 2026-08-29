@@ -10,6 +10,9 @@ func _ready() -> void:
 	assert(diver.blue_intro_dialogue.entries.size() == 5)
 	assert(diver.get_node("PlayerProximityPreview").radius_property == &"restricted_radius")
 	assert(diver.collision_mask & 2 != 0)
+	assert(diver.facing_direction == 1.0)
+	diver._update_visual()
+	assert(not diver.visual.flip_h)
 	diver._last_known_position = Vector2(-10.0, 0.0)
 	diver._has_last_known_position = true
 	diver._update_visual()

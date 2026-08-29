@@ -4,11 +4,18 @@
 [ext_resource type="Script" uid="uid://qe67kbamixq5" path="res://game/world/world_slot.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://pp2jaujwp3vc" path="res://game/world/sections/layer1/west/slot_01_a.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://b7yipua6tyu2n" path="res://game/world/sections/layer1/west/slot_02_a.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://tjdlwrxnt2gs" path="res://game/world/sections/layer1/west/slot_01_b.tscn" id="4_wj7ke"]
 [ext_resource type="PackedScene" uid="uid://xnsshmg5bt6y" path="res://game/world/sections/layer1/west/slot_03_a.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://dbcv7ixchlequ" path="res://game/world/sections/layer1/east/slot_01_a.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://ijluv1w1mqas" path="res://game/world/sections/layer1/west/slot_02_b.tscn" id="6_twxif"]
 [ext_resource type="PackedScene" uid="uid://sbl5t6mykcwa" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://bddta4kbxsboo" path="res://game/world/sections/layer1/east/slot_03_a.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://vjs0idvynj0w" path="res://game/world/sections/layer1/west/slot_03_b.tscn" id="8_mkrrf"]
 [ext_resource type="Texture2D" uid="uid://53g7bbk1hoxf" path="res://assets/art/world/bg/dc6154349939ed3f483591c02be13aa1.png" id="9_6bbwv"]
+[ext_resource type="Script" uid="uid://df5umlrlcomfa" path="res://game/world/layer1_background_controller.gd" id="10_background"]
+[ext_resource type="Texture2D" uid="uid://b3icjxn66jqhg" path="res://assets/art/world/background/layer1section1.png" id="11_background1"]
+[ext_resource type="Texture2D" uid="uid://drbs45iu2ralh" path="res://assets/art/world/background/layer1section2.png" id="12_background2"]
+[ext_resource type="Texture2D" uid="uid://c1cxkdx3hv3j7" path="res://assets/art/world/background/layer1section3.png" id="13_background3"]
 
 [sub_resource type="RectangleShape2D" id="OuterWall"]
 size = Vector2(20, 2400)
@@ -30,7 +37,7 @@ east_spawn = NodePath("EastSpawn")
 script = ExtResource("2")
 slot_id = &"layer1_west_01"
 layer_id = &"layer_1"
-variations = Array[PackedScene]([ExtResource("3")])
+variations = Array[PackedScene]([ExtResource("3"), ExtResource("4_wj7ke")])
 fallback_scene = ExtResource("3")
 
 [node name="West02" type="Marker2D" parent="Slots" unique_id=1715781223]
@@ -39,7 +46,7 @@ script = ExtResource("2")
 slot_id = &"layer1_west_02"
 layer_id = &"layer_1"
 depth_index = 2
-variations = Array[PackedScene]([ExtResource("4")])
+variations = Array[PackedScene]([ExtResource("4"), ExtResource("6_twxif")])
 fallback_scene = ExtResource("4")
 
 [node name="West03" type="Marker2D" parent="Slots" unique_id=2085210856]
@@ -48,7 +55,7 @@ script = ExtResource("2")
 slot_id = &"layer1_west_03"
 layer_id = &"layer_1"
 depth_index = 3
-variations = Array[PackedScene]([ExtResource("5")])
+variations = Array[PackedScene]([ExtResource("5"), ExtResource("8_mkrrf")])
 fallback_scene = ExtResource("5")
 
 [node name="East01" type="Marker2D" parent="Slots" unique_id=1781049290]
@@ -108,15 +115,41 @@ shape = SubResource("OuterWall")
 position = Vector2(1280, 960)
 shape = SubResource("MiddleWall")
 
+[node name="SectionBackground" type="CanvasLayer" parent="." unique_id=1353727310]
+layer = -10
+script = ExtResource("10_background")
+background_textures = Array[Texture2D]([ExtResource("11_background1"), ExtResource("12_background2"), ExtResource("13_background3")])
+
+[node name="CurrentBackground" type="TextureRect" parent="SectionBackground" unique_id=810594664]
+texture_filter = 1
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 672.0
+offset_bottom = 392.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="IncomingBackground" type="TextureRect" parent="SectionBackground" unique_id=580737011]
+texture_filter = 1
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 672.0
+offset_bottom = 392.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
 [node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="." unique_id=1071352017]
+visible = false
 z_index = -6
-position = Vector2(632.99994, 361.75)
+position = Vector2(422, 720)
 scale = Vector2(1.0649999, 1.0438336)
 texture = ExtResource("9_6bbwv")
 
 [node name="Dc6154349939Ed3f483591c02Be13Aa1" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1" unique_id=868980378]
 z_index = -4
-position = Vector2(0.6878853, 682.0309)
+position = Vector2(-2377.4648, 614.322)
 scale = Vector2(1.0066782, 1.0201375)
 texture = ExtResource("9_6bbwv")
 
@@ -128,7 +161,7 @@ texture = ExtResource("9_6bbwv")
 
 [node name="Dc6154349939Ed3f483591c02Be13Aa2" type="Sprite2D" parent="Dc6154349939Ed3f483591c02Be13Aa1" unique_id=996023732]
 z_index = -6
-position = Vector2(1241.3147, -2.6345215)
+position = Vector2(2812.2065, -31.374735)
 scale = Vector2(1.0649999, 1.0438336)
 texture = ExtResource("9_6bbwv")
 
