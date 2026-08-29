@@ -9,6 +9,7 @@ const HOTBAR_SECONDARY := preload("res://assets/art/ui/hud/hotbar-sec.png")
 const HOTBAR_ARROW := preload("res://assets/art/ui/hud/arrow-hotbar.png")
 const WARNING_ICON := preload("res://assets/art/characters/player/warning.png")
 const ENEMY_POINTER_ICON := preload("res://assets/art/characters/player/enemy_pointer.png")
+const CURSE_WARNING_TEXT := "Naik terlalu cepat, akan terkena curse"
 const SETTINGS_POPUP_SCENE := preload("res://ui/settings_popup.tscn")
 const INVENTORY_MENU_SCENE := preload("res://ui/inventory_menu.tscn")
 const SHOP_UI_SCENE := preload("res://ui/shop_ui.tscn")
@@ -113,6 +114,7 @@ func set_player(value: PlayerController) -> void:
 	player.whistle_slot_changed.connect(_refresh_whistle)
 	player.threat_warning_requested.connect(_show_threat)
 	player.status.status_changed.connect(_refresh_status)
+	player.curse_tracker.curse_warning_changed.connect(_on_curse_warning_changed)
 	GameSession.money_changed.connect(func(value: int): money_label.text = "%dg" % value)
 	_set_health_text(player.health.health, player.health.max_health)
 	money_label.text = "%dg" % GameSession.money
@@ -579,7 +581,8 @@ func _show_threat(source: Node2D, duration: float) -> void:
 func _update_threat(delta: float) -> void:
 	if warning_icon == null or player == null:
 		return
-	if _threats.is_empty():
+	var curse_warning_active := player.curse_tracker != null and player.curse_tracker.curse_warning_active
+	if _threats.is_empty() and not curse_warning_active:
 		warning_icon.hide()
 		return
 	var warning_position := GameSession.screen_to_design(player.get_global_transform_with_canvas().origin) + warning_icon_offset
@@ -614,6 +617,8 @@ func _refresh_status() -> void:
 		var stack_text := " x%d" % stacks if stacks > 1 else ""
 		var timer_text := " %ds" % ceili(player.status.get_remaining(id)) if definition == null or definition.show_timer else " — active"
 		lines.append("%s%s%s" % [name, stack_text, timer_text])
+	if player.curse_tracker != null and player.curse_tracker.curse_warning_active:
+		lines.append(CURSE_WARNING_TEXT)
 	status_label.text = "\n".join(lines)
 	var overlay_color := Color.TRANSPARENT
 	if player.status.has_status(&"dazzled"):
@@ -624,6 +629,9 @@ func _refresh_status() -> void:
 		overlay_color = Color(0.45, 0.1, 0.1, 0.18)
 	effect_overlay.color = overlay_color
 	effect_overlay.visible = overlay_color.a > 0.0
+
+func _on_curse_warning_changed(_active: bool) -> void:
+	_refresh_status()
 
 func _set_health_text(current: float, maximum: float) -> void:
 	health_label.text = "HP ∞" if GameSession.debug_unlimited_health else "HP %d/%d" % [ceili(current), ceili(maximum)]

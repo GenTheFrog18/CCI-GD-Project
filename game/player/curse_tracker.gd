@@ -1,7 +1,11 @@
 class_name CurseTracker
 extends Node
 
+signal curse_warning_changed(active: bool)
+
 @export var trigger_distance := 320.0
+@export_range(0.0, 1.0, 0.01) var warning_threshold_ratio := 0.7
+@export_range(0.0, 10.0, 0.1) var warning_stop_delay := 1.0
 @export var stillness_seconds := 10.0
 @export var stillness_tolerance := 32.0
 @export var transition_grace := 1.0
@@ -16,27 +20,40 @@ var crossed_band := 0
 var rest_anchor_y := 0.0
 var rest_elapsed := 0.0
 var grace_remaining := 0.0
+var curse_warning_active := false
 var _layer2_roll_remaining := 1.0
+var _warning_stop_remaining := 0.0
+var _previous_y := 0.0
 var _debug_was_visible := false
 
 func setup(owner_player: PlayerController) -> void:
 	player = owner_player
 	reference_y = player.global_position.y
 	rest_anchor_y = reference_y
+	_previous_y = reference_y
 
 func _physics_process(delta: float) -> void:
-	if player == null or not player.is_alive(): return
+	if player == null: return
+	if not player.is_alive():
+		_clear_curse_warning()
+		return
+	var current_y := player.global_position.y
+	var moving_up := current_y < _previous_y
+	_previous_y = current_y
 	var layer := GameSession.current_layer_id
 	if layer not in [&"layer_1", &"layer_2"]:
+		_clear_curse_warning()
 		reset_reference(false)
 		return
 	grace_remaining = maxf(0.0, grace_remaining - delta)
-	if player.global_position.y > reference_y:
-		reference_y = player.global_position.y
+	if current_y > reference_y:
+		reference_y = current_y
 		crossed_band = 0
 		rest_anchor_y = reference_y
 		rest_elapsed = 0.0
+		_clear_curse_warning()
 	_update_rest(delta)
+	_update_curse_warning(delta, moving_up)
 	if grace_remaining <= 0.0:
 		var band := maxi(0, floori((reference_y - player.global_position.y) / trigger_distance))
 		while crossed_band < band:
@@ -79,6 +96,7 @@ func apply_current_layer_curse() -> void:
 
 func apply_layer_curse(layer: StringName) -> void:
 	if player == null: return
+	_clear_curse_warning()
 	if layer == &"layer_1":
 		player.status.remove_status(&"curse_layer_2_penalty")
 		player.status.remove_status(&"curse_layer_2_health_cap")
@@ -105,10 +123,32 @@ func _update_layer2_stop(delta: float) -> void:
 func reset_reference(with_grace := true) -> void:
 	if player == null: return
 	reference_y = player.global_position.y
+	_previous_y = reference_y
 	crossed_band = 0
 	rest_anchor_y = reference_y
 	rest_elapsed = 0.0
+	_clear_curse_warning()
 	if with_grace: grace_remaining = transition_grace
+
+func _update_curse_warning(delta: float, moving_up: bool) -> void:
+	var distance := maxf(trigger_distance, 0.001)
+	var progress := (reference_y - player.global_position.y) / distance
+	if moving_up and progress >= warning_threshold_ratio:
+		_warning_stop_remaining = warning_stop_delay
+		_set_curse_warning(true)
+	elif curse_warning_active:
+		_warning_stop_remaining -= delta
+		if _warning_stop_remaining <= 0.0:
+			_clear_curse_warning()
+
+func _set_curse_warning(active: bool) -> void:
+	if curse_warning_active == active: return
+	curse_warning_active = active
+	curse_warning_changed.emit(active)
+
+func _clear_curse_warning() -> void:
+	_warning_stop_remaining = 0.0
+	_set_curse_warning(false)
 
 func capture_state() -> Dictionary:
 	return {
@@ -119,6 +159,7 @@ func capture_state() -> Dictionary:
 
 func restore_state(data: Dictionary) -> void:
 	reference_y = float(data.get("reference_y", player.global_position.y if player != null else 0.0))
+	_previous_y = player.global_position.y if player != null else reference_y
 	crossed_band = int(data.get("crossed_band", 0))
 	rest_anchor_y = float(data.get("rest_anchor_y", reference_y))
 	rest_elapsed = float(data.get("rest_elapsed", 0.0))

@@ -396,6 +396,15 @@ func _test_effects_and_curse() -> void:
 	_check(player.status.get_stack_count(&"curse_layer_2_health_cap") == 2, "Layer 2 health-cap stacks independently")
 	_check(player.heal(10.0) == 0.0 and player.health.health == 95.0, "health cap must not delete existing health")
 	GameSession.current_layer_id = &"layer_1"
+	player.curse_tracker.reset_reference(false)
+	player.global_position.y -= player.curse_tracker.trigger_distance * player.curse_tracker.warning_threshold_ratio
+	player.curse_tracker._physics_process(0.0)
+	_check(player.curse_tracker.curse_warning_active, "Curse warning activates during upward movement")
+	player.curse_tracker._physics_process(0.5)
+	_check(player.curse_tracker.curse_warning_active, "Curse warning lingers after upward movement stops")
+	player.curse_tracker._physics_process(0.6)
+	_check(not player.curse_tracker.curse_warning_active, "Curse warning clears after stop delay")
+	player.curse_tracker.reset_reference(false)
 	player.curse_tracker.apply_current_layer_curse()
 	_check(player.status.has_status(&"curse_layer_1"), "Layer 1 Curse package applies")
 	player.apply_status(&"curse_suppression", {"duration": 100.0})
