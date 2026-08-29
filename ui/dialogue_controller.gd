@@ -217,6 +217,7 @@ func _grant_or_drop(item_id: StringName, quantity: int, state: Dictionary) -> bo
 	root.add_child(drop)
 	drop.global_position = interactable.global_position + Vector2(0.0, -12.0) if interactable != null else player.global_position
 	drop.add_to_group(&"persistent_objects")
+	AudioManager.play_item_dropped()
 	return true
 
 func _finish() -> void:

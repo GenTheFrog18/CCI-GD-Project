@@ -24,6 +24,7 @@ ContentCatalog="*res://autoload/content_catalog.gd"
 GameSession="*res://autoload/game_session.gd"
 SaveManager="*res://autoload/save_manager.gd"
 SceneRouter="*res://autoload/scene_router.gd"
+AudioManager="*res://autoload/audio_manager.gd"
 
 [debug]
 

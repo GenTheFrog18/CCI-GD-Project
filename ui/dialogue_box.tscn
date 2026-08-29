@@ -70,3 +70,4 @@ horizontal_alignment = 2
 
 [node name="TypingSfx" type="AudioStreamPlayer" parent="." unique_id=781426871]
 stream = ExtResource("4_typing")
+bus = &"UI"

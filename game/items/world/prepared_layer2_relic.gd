@@ -83,6 +83,7 @@ func secondary_action(controller: PlayerItemController, world: Node, cursor: Vec
 		var ball := preload("res://game/items/world/lacerator_ball.tscn").instantiate() as LaceratorBall
 		ball.configure(source_actor, global_position, _lacerator_velocity(cursor), float(settings.direct_damage), float(settings.bleed_duration), int(settings.valid_ball_hits), float(settings.interrupt_strength))
 		world.add_child(ball)
+		AudioManager.play_lacerator_fire()
 		instance_state["remaining_ammo"] = int(instance_state.get("remaining_ammo", settings.capacity)) - 1
 		controller.feedback_requested.emit("Lacerator: %d shots remain" % instance_state.remaining_ammo)
 	else:
@@ -90,6 +91,7 @@ func secondary_action(controller: PlayerItemController, world: Node, cursor: Vec
 		var rod := preload("res://game/items/world/bolt_shock_rod.tscn").instantiate() as BoltShockRod
 		rod.configure(source_actor, global_position, direction * float(settings.launch_speed), float(settings.direct_damage), float(settings.rod_stun_duration), float(settings.rod_suppression_duration), float(settings.rod_shock_duration))
 		world.add_child(rod)
+		AudioManager.play_bolt_shock_fire()
 		instance_state["remaining_uses"] = int(instance_state.get("remaining_uses", settings.capacity)) - 1
 		controller.feedback_requested.emit("Bolt Shock: %d uses remain" % instance_state.remaining_uses)
 	controller.cancel_prepared(&"fired")
@@ -155,6 +157,7 @@ func cancel_preparation(controller: PlayerItemController, reason: StringName) ->
 		var dropped := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
 		dropped.configure(definition, instance_state, source_actor, source_actor.global_position, Vector2.ZERO)
 		source_actor.get_parent().add_child(dropped)
+		AudioManager.play_item_dropped()
 	queue_free()
 
 func _refresh_visual() -> void:

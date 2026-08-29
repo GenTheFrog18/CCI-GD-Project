@@ -25,6 +25,7 @@ var _collision: CollisionShape2D
 var _light: LightSource2D
 var _elapsed := 0.0
 var _visual: Sprite2D
+var _audio_loop: AudioStreamPlayer
 var _impact_velocity := Vector2.ZERO
 var _impact_activation_pending := false
 
@@ -82,6 +83,8 @@ func _process(delta: float) -> void:
 			queue_free()
 			return
 	if kind == &"rattlepod" and _pulses_sent < pulse_count:
+		if not is_instance_valid(_audio_loop):
+			_audio_loop = AudioManager.start_loop(self, AudioManager.RATTLEPOD_RATTLING)
 		_pulse_remaining -= delta
 		if _pulse_remaining <= 0.0:
 			_pulse_remaining += pulse_interval
@@ -89,6 +92,9 @@ func _process(delta: float) -> void:
 			SoundBus.emit_sound(get_tree(), SoundEvent.new(global_position, pulse_radius, &"rattlepod", pulse_priority, self))
 			if _pulses_sent >= pulse_count:
 				queue_free()
+
+func _exit_tree() -> void:
+	AudioManager.stop_loop(self)
 
 func throw_toward(cursor: Vector2) -> void:
 	if _launched:

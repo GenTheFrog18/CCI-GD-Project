@@ -542,6 +542,7 @@ func _show_threat(source: Node2D, duration: float) -> void:
 	pointer.texture = ENEMY_POINTER_ICON
 	warning_layer.add_child(pointer)
 	_threats[id] = {"source": source, "remaining": duration, "pointer": pointer}
+	AudioManager.play_player_warning()
 
 func _update_threat(delta: float) -> void:
 	if warning_icon == null or player == null:

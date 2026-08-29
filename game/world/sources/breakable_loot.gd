@@ -57,3 +57,4 @@ func _spawn_drop(drop_item_id: StringName, drop_id: String) -> void:
 	offset.y -= drop_height_offset
 	drop.global_position = global_position + offset
 	parent.call_deferred(&"add_child", drop)
+	AudioManager.play_item_dropped()

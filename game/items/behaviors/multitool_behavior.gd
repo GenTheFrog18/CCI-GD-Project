@@ -18,6 +18,7 @@ func can_primary(context: ItemContext, _state: Dictionary) -> bool:
 
 func primary(context: ItemContext, state: Dictionary) -> ItemActionResult:
 	var direction := context.cursor_position - context.action_origin
+	AudioManager.play_player_attack()
 	var thrust := thrust_scene.instantiate() as HeldThrust
 	thrust.configure(
 		context.actor,

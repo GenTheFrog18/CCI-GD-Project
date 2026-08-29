@@ -402,6 +402,7 @@ func _return_confiscated_items(stacks: Array[ItemStack]) -> void:
 			drop.configure(definition, stack.state, null, lost_item_return.global_position + offset, Vector2.ZERO)
 			drop.freeze = true
 			parent.call_deferred(&"add_child", drop)
+			AudioManager.play_item_dropped()
 			index += 1
 
 func _on_died(_source: Node) -> void:

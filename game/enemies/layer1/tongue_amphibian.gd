@@ -304,6 +304,7 @@ func _drop_carried(position: Vector2) -> void:
 		var drop := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
 		drop.configure(definition, carried.state, self, position + carried_drop_offset, Vector2(0, -40))
 		get_parent().call_deferred(&"add_child", drop)
+		AudioManager.play_item_dropped()
 	carried = ItemStack.new()
 	_theft_cooldown = maxf(theft_cooldown_seconds, 0.0)
 	_refresh_carried_icon()

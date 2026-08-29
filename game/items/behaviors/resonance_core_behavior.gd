@@ -31,5 +31,6 @@ func _emit_resonance(body: Node2D, strength: float) -> void:
 	elif strength >= medium_impact:
 		radius = medium_radius
 		priority = medium_priority
+	AudioManager.start_loop(body, AudioManager.RESONANCE_CORE_HUM)
 	SoundBus.emit_sound(body.get_tree(), SoundEvent.new(body.global_position, radius, &"resonance", priority, body, strength))
 	GameSession.record_signature_use(&"resonance_core")

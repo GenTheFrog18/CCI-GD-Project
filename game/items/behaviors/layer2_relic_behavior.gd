@@ -75,6 +75,10 @@ func primary(context: ItemContext, state: Dictionary) -> ItemActionResult:
 	var result := ItemActionResult.completed(1)
 	result.prepared_node = prepared
 	result.message = "Umbrella opening" if kind == "plate_umbrella" else "%s loaded" % context.definition.display_name
+	match kind:
+		"plate_umbrella": AudioManager.play_plate_umbrella_opened()
+		"lacerator": AudioManager.play_lacerator_armed()
+		"bolt_shock": AudioManager.play_bolt_shock_armed()
 	GameSession.record_signature_use(context.definition.item_id)
 	return result
 

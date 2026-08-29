@@ -19,6 +19,7 @@ func primary(context: ItemContext, _state: Dictionary) -> ItemActionResult:
 				if status != null:
 					status.remove_status(&"bleed")
 				actor.apply_status(&"healing", {"duration": duration})
+			AudioManager.play_bandage_use()
 		"numbing_pill":
 			if not actor.has_method("apply_status"):
 				return ItemActionResult.failed("Cannot use here")

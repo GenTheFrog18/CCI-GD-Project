@@ -83,7 +83,7 @@ func _ready() -> void:
 	_hit_flash = HitFlash.new()
 	add_child(_hit_flash)
 	_hit_flash.setup(self)
-	health.damaged.connect(func(info: DamageInfo): _hit_flash.play(2 if info.causes_hit_reaction else 1, hit_flash_duration, hit_flash_gap))
+	health.damaged.connect(func(info: DamageInfo): AudioManager.play_player_hurt(); _hit_flash.play(2 if info.causes_hit_reaction else 1, hit_flash_duration, hit_flash_gap))
 	curse_tracker = CurseTracker.new()
 	add_child(curse_tracker)
 	curse_tracker.setup(self)
@@ -228,6 +228,7 @@ func _update_walking_sound(horizontal_distance: float) -> void:
 		_emit_sound(&"walk", 1, walking_sound_radius)
 
 func _on_landed(speed: float) -> void:
+	AudioManager.play_player_hit_ground()
 	if speed > fall_damage_speed:
 		var fall_damage := minf((speed - fall_damage_speed) * 0.2, maximum_fall_damage)
 		apply_damage(DamageInfo.new(fall_damage))
@@ -276,6 +277,7 @@ func use_whistle() -> bool:
 	if physical_whistle_id.is_empty() or inventory_open or locks.is_locked():
 		return false
 	_emit_sound(&"whistle", 10, 600.0)
+	AudioManager.play_whistle()
 	return true
 
 func take_physical_whistle() -> ItemStack:
@@ -310,6 +312,7 @@ func drop_inventory_slot(container: StringName, index: int) -> bool:
 	var dropped := preload("res://game/items/world/thrown_item.tscn").instantiate() as ThrownItem
 	dropped.configure(definition, stack.state, self, global_position + Vector2(20.0, -4.0), Vector2.ZERO)
 	get_parent().add_child(dropped)
+	AudioManager.play_item_dropped()
 	return true
 
 func apply_damage(info: DamageInfo) -> bool:

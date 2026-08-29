@@ -100,6 +100,7 @@ func secondary(actor: Node2D, world: Node, cursor: Vector2, target: Node = null)
 		item.reparent(world)
 		item.global_transform = keep_transform
 		item.throw_toward(cursor)
+		AudioManager.play_player_throw()
 		prepared_item = null
 		prepared_item_changed.emit(null)
 		_refresh_held_icon()
@@ -162,7 +163,10 @@ func _execute(is_secondary: bool, actor: Node2D, world: Node, cursor: Vector2, t
 		feedback_requested.emit("Action unavailable")
 		return false
 	var result := behavior.secondary(context, stack.state) if is_secondary else behavior.primary(context, stack.state)
-	return _commit_result(result, world, actor)
+	var committed := _commit_result(result, world, actor)
+	if committed and is_secondary:
+		AudioManager.play_player_throw()
+	return committed
 
 func _make_context(actor: Node2D, world: Node, cursor: Vector2, target: Node, definition: ItemDefinition, stack: ItemStack) -> ItemContext:
 	var context := ItemContext.new(actor, world, cursor, target, definition, stack.copy())
