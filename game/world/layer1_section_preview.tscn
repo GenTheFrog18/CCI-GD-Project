@@ -1,20 +1,20 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene format=3 uid="uid://csu46iuhwuaay"]
 
-[ext_resource type="Script" path="res://game/world/layer1_section_preview.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/west/slot_01_a.tscn" id="2_west01"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/west/slot_02_a.tscn" id="3_west02"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/west/slot_03_a.tscn" id="4_west03"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/east/slot_01_a.tscn" id="5_east01"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="6_east02"]
-[ext_resource type="PackedScene" path="res://game/world/sections/layer1/east/slot_03_a.tscn" id="7_east03"]
+[ext_resource type="Script" uid="uid://cacyqbc2fiwnb" path="res://game/world/layer1_section_preview.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://tjdlwrxnt2gs" path="res://game/world/sections/layer1/west/slot_01_b.tscn" id="2_ejl43"]
+[ext_resource type="PackedScene" uid="uid://b7yipua6tyu2n" path="res://game/world/sections/layer1/west/slot_02_a.tscn" id="3_west02"]
+[ext_resource type="PackedScene" uid="uid://vjs0idvynj0w" path="res://game/world/sections/layer1/west/slot_03_b.tscn" id="4_v8x6c"]
+[ext_resource type="PackedScene" uid="uid://dbcv7ixchlequ" path="res://game/world/sections/layer1/east/slot_01_a.tscn" id="5_east01"]
+[ext_resource type="PackedScene" uid="uid://sbl5t6mykcwa" path="res://game/world/sections/layer1/east/slot_02_a.tscn" id="6_east02"]
+[ext_resource type="PackedScene" uid="uid://bddta4kbxsboo" path="res://game/world/sections/layer1/east/slot_03_a.tscn" id="7_east03"]
 
-[node name="Layer1SectionPreview" type="Node2D"]
+[node name="Layer1SectionPreview" type="Node2D" unique_id=897321665]
 script = ExtResource("1_script")
-west_01 = ExtResource("2_west01")
+west_01 = ExtResource("2_ejl43")
 west_02 = ExtResource("3_west02")
-west_03 = ExtResource("4_west03")
+west_03 = ExtResource("4_v8x6c")
 east_01 = ExtResource("5_east01")
 east_02 = ExtResource("6_east02")
 east_03 = ExtResource("7_east03")
 
-[node name="PreviewSections" type="Node2D" parent="."]
+[node name="PreviewSections" type="Node2D" parent="." unique_id=1349986122]

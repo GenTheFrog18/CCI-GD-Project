@@ -14,7 +14,6 @@ position = Vector2(-1, 0)
 collision_layer = 4
 script = ExtResource("1")
 tongue_range = 64.0
-item_detection_range = 225.0
 tongue_angle_degrees = 30.0
 tongue_width = 10.0
 cooldown_seconds = 1.0
@@ -51,7 +50,7 @@ horizontal_alignment = 1
 [node name="EnemySupport" type="Node" parent="." unique_id=1577383427]
 script = ExtResource("2")
 species_id = &"tongue_amphibian"
-max_health = 25.0
+max_health = 12.0
 tags = Array[StringName]([&"small_enemy"])
 
 [node name="SightSensor" type="Node2D" parent="." unique_id=1679865635]
