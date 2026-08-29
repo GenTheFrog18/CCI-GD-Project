@@ -33,6 +33,9 @@ func _process(_delta: float) -> void:
 		return
 	var section := _layer.section_at(_player.global_position)
 	if section == null:
+		if _active_depth < 0:
+			_set_immediate(0)
+		_update_background_layout(null)
 		return
 	var current_depth := _depth_for_section(section)
 	if _active_depth < 0:
@@ -58,10 +61,12 @@ func _layout_background_rect(background: TextureRect, parallax_offset: Vector2) 
 	background.position = (GameSession.DESIGN_SIZE - size) * 0.5 + parallax_offset
 	background.size = size
 
-func _update_background_layout(section: WorldSection) -> void:
+func _update_background_layout(section: WorldSection = null) -> void:
 	var parallax_offset := Vector2.ZERO
 	if parallax_strength > 0.0 and is_instance_valid(_player) and _player.camera != null:
-		var section_center := section.global_position + section.section_size * 0.5
+		var section_center := _layer.world_bounds.get_center()
+		if section != null:
+			section_center = section.global_position + section.section_size * 0.5
 		parallax_offset = (_player.camera.get_screen_center_position() - section_center) * -parallax_strength
 		parallax_offset.x = clampf(parallax_offset.x, -parallax_padding_pixels, parallax_padding_pixels)
 		parallax_offset.y = clampf(parallax_offset.y, -parallax_padding_pixels, parallax_padding_pixels)
