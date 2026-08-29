@@ -12,7 +12,7 @@ const WORLD_REVISION := 3
 
 var generation_log: Array[Dictionary] = []
 
-func build_manifest(run_seed: int) -> Dictionary:
+func build_manifest(run_seed: int, forced_layer_id: StringName = &"", forced_sections: Dictionary = {}) -> Dictionary:
 	generation_log.clear()
 	var manifest := {
 		"world_revision": WORLD_REVISION,
@@ -49,7 +49,10 @@ func build_manifest(run_seed: int) -> Dictionary:
 	var stable_ids: Dictionary = {}
 	for layer in layer_instances:
 		for slot in layer.get_slots():
-			var selected := slot.select_variation(run_seed)
+			var requested_id := StringName()
+			if layer.layer_id == forced_layer_id:
+				requested_id = StringName(forced_sections.get(String(slot.slot_id), ""))
+			var selected := slot.select_variation(run_seed, requested_id)
 			if selected == null:
 				errors.append("WorldSlot %s has no selectable variation" % slot.slot_id)
 				continue

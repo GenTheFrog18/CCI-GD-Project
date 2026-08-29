@@ -116,7 +116,11 @@ func _prepare_run() -> void:
 	loading_layer.visible = true
 	if GameSession.world_manifest.is_empty():
 		loading_label.text = "Preparing world..."
-		var manifest := await generator.build_manifest(GameSession.run_seed)
+		var manifest := await generator.build_manifest(
+			GameSession.run_seed,
+			GameSession.debug_custom_layer_id,
+			GameSession.debug_custom_section_overrides
+		)
 		var errors: PackedStringArray = manifest.get("errors", PackedStringArray())
 		if not errors.is_empty():
 			loading_label.text = "World generation failed:\n%s" % "\n".join(errors)

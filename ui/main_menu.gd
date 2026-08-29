@@ -6,6 +6,10 @@ const CONTINUE_LABEL := preload("res://assets/art/ui/main_menu/continue.png")
 const CONTINUE_DISABLED_LABEL := preload("res://assets/art/ui/main_menu/continue_disabled.png")
 const SETTINGS_POPUP_SCENE := preload("res://ui/settings_popup.tscn")
 const NEW_RUN_CONFIRMATION_SCENE := preload("res://ui/new_run_confirmation.tscn")
+const DEBUG_LAYER_SCENES: Dictionary = {
+	&"layer_1": preload("res://game/world/layers/layer_1.tscn"),
+	&"layer_2": preload("res://game/world/layers/layer_2.tscn"),
+}
 
 @export_range(1.0, 600.0, 1.0) var background_travel_seconds := 60.0
 @export_range(0.01, 2.0, 0.01) var popup_animation_seconds := 0.15
@@ -24,6 +28,11 @@ var seed_input: SpinBox
 var settings_popup: SettingsPopup
 var confirmation_popup: NewRunConfirmation
 var debug_checkbox: CheckBox
+var custom_layer_option: OptionButton
+var custom_slot_scroll: ScrollContainer
+var custom_slot_column: VBoxContainer
+var custom_slot_ids: Array[StringName] = []
+var custom_slot_options: Array[OptionButton] = []
 var menu_cursor: Sprite2D
 var _background_tween: Tween
 
@@ -107,7 +116,7 @@ func _build_settings() -> void:
 func _build_debug() -> void:
 	debug_panel = VBoxContainer.new()
 	debug_panel.position = Vector2(12, 12)
-	debug_panel.size = Vector2(230, 120)
+	debug_panel.size = Vector2(310, 340)
 	debug_panel.visible = false
 	design_ui.add_child(debug_panel)
 	debug_checkbox = CheckBox.new()
@@ -121,6 +130,81 @@ func _build_debug() -> void:
 	debug_panel.add_child(room)
 	debug_checkbox.toggled.connect(func(enabled: bool): room.visible = enabled)
 	room.visible = false
+	_build_custom_world_menu()
+
+func _build_custom_world_menu() -> void:
+	var title := Label.new()
+	title.text = "Custom World"
+	debug_panel.add_child(title)
+	custom_layer_option = OptionButton.new()
+	custom_layer_option.add_item("Layer 1")
+	custom_layer_option.set_item_metadata(0, &"layer_1")
+	custom_layer_option.add_item("Layer 2")
+	custom_layer_option.set_item_metadata(1, &"layer_2")
+	custom_layer_option.select(0)
+	custom_layer_option.item_selected.connect(_on_custom_layer_selected)
+	debug_panel.add_child(custom_layer_option)
+	custom_slot_scroll = ScrollContainer.new()
+	custom_slot_scroll.custom_minimum_size = Vector2(0, 130)
+	custom_slot_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	debug_panel.add_child(custom_slot_scroll)
+	custom_slot_column = VBoxContainer.new()
+	custom_slot_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	custom_slot_scroll.add_child(custom_slot_column)
+	_load_custom_layer(&"layer_1")
+	var launch := _button("Launch Custom World", _launch_custom_world)
+	debug_panel.add_child(launch)
+
+func _on_custom_layer_selected(index: int) -> void:
+	_load_custom_layer(StringName(custom_layer_option.get_item_metadata(index)))
+
+func _load_custom_layer(layer_id: StringName) -> void:
+	for child in custom_slot_column.get_children():
+		child.free()
+	custom_slot_ids.clear()
+	custom_slot_options.clear()
+	var layer_scene: PackedScene = DEBUG_LAYER_SCENES.get(layer_id) as PackedScene
+	var layer: WorldLayer = null
+	if layer_scene != null:
+		layer = layer_scene.instantiate() as WorldLayer
+	if layer == null:
+		return
+	for slot in layer.get_slots():
+		var row := HBoxContainer.new()
+		var label := Label.new()
+		label.text = String(slot.slot_id)
+		label.custom_minimum_size.x = 122.0
+		row.add_child(label)
+		var option := OptionButton.new()
+		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		for variation in slot.variations:
+			var section: WorldSection = null
+			if variation != null:
+				section = variation.instantiate() as WorldSection
+			if section == null:
+				continue
+			option.add_item(String(section.variation_id))
+			section.free()
+		if option.item_count > 0:
+			option.select(0)
+		row.add_child(option)
+		custom_slot_column.add_child(row)
+		custom_slot_ids.append(slot.slot_id)
+		custom_slot_options.append(option)
+	layer.free()
+
+func _launch_custom_world() -> void:
+	var layer_id := StringName(custom_layer_option.get_item_metadata(custom_layer_option.selected))
+	var overrides: Dictionary = {}
+	for index in custom_slot_options.size():
+		var option: OptionButton = custom_slot_options[index]
+		if option.item_count > 0:
+			overrides[String(custom_slot_ids[index])] = String(option.get_item_text(option.selected))
+	GameSession.start_new_run(int(seed_input.value), true)
+	GameSession.debug_custom_layer_id = layer_id
+	GameSession.debug_custom_section_overrides = overrides
+	SaveManager.loaded_persistent_state.clear()
+	SceneRouter.go_to("res://game/world/world_run.tscn")
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"debug_toggle"):

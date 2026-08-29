@@ -28,6 +28,8 @@ var current_slot_id: StringName = &""
 var debug_enabled := false
 var debug_unlimited_health := false
 var debug_gameplay_draw := false
+var debug_custom_layer_id: StringName = &""
+var debug_custom_section_overrides: Dictionary = {}
 var runtime_id_counter := 0
 var world_generation_log: Array[Dictionary] = []
 var master_volume := 1.0
@@ -65,6 +67,8 @@ func start_new_run(seed_value := 0, enable_debug := false) -> void:
 	debug_enabled = enable_debug
 	debug_unlimited_health = false
 	debug_gameplay_draw = false
+	debug_custom_layer_id = &""
+	debug_custom_section_overrides.clear()
 	runtime_id_counter = 0
 	world_generation_log.clear()
 	run_started.emit()
