@@ -1,6 +1,6 @@
 # Delvers of the Abyss — Post-Jam GDD and README Questionnaire
 
-> **Status:** Awaiting project-owner answers.
+> **Status:** Completed by the project owner on 30 August 2026. Answers were incorporated into the post-jam GDD and README.
 >
 > **Purpose:** Gather only the decisions and facts that cannot be determined reliably from the repository. These answers will be used to replace the outdated GitHub README and revise the English and Indonesian GDDs into living post-jam documents.
 
@@ -58,7 +58,7 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** “A 2D exploration roguelite about descending into a living Abyss, experimenting with strange relics, and surviving the climb back.”
 
-**Answer:**
+**Answer:** A 2D exploration roguelite about descending into the Abyss, adapting with the environment, and surviving the climb back.”
 
 ## A2 — Public project summary — REQUIRED — IDENTITY
 
@@ -66,7 +66,7 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Mention Elenara's descent, systemic relic use, interacting creatures, route preparation, dangerous ascent, and the unfinished post-jam status.
 
-**Answer:**
+**Answer:** This is a game where you dive down into the abyss to uncover its mysteries. every creature interacts with the world, and you have to deal with it by preparing your descent/ascend and using your creativity and intelligence to survive and dive deeper. (sort of like that but with proper grammar)
 
 ## A3 — Current project-status wording — REQUIRED — README
 
@@ -74,7 +74,7 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Use “post-jam playable prototype under continued development” and explicitly state that Layer 1 is the current content focus while later layers remain incomplete.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## A4 — Long-term product ambition — REQUIRED — GDD
 
@@ -82,7 +82,7 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Why this matters:** The GDD cannot define sensible scope or milestones without knowing the intended destination.
 
-**Answer:**
+**Answer:** i want this to be an open ended passion project
 
 ## A5 — Public genre labels — REQUIRED — IDENTITY
 
@@ -90,7 +90,7 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Keep it unless “roguelite” creates an expectation of permanent stat upgrades that the game does not intend to provide.
 
-**Answer:**
+**Answer:** i honestly dont know what genre this game falls into
 
 ## A6 — Public inspiration statement — IMPORTANT — DIRECTION
 
@@ -99,6 +99,11 @@ The README will remain a concise public entry point and link to the longer GDD a
 **Recommendation:** Name inspirations briefly and describe design influence without implying shared canon, affiliation, or copied content.
 
 **Answer:**
+made in abyss as the narrative and setting inspiration, also the progression
+rainworld as ecosystem and atmosphere
+spelunky as sort of procedural but intentional level design
+risk of rain 2 as loot and progression
+noita and terraria as the biggest inspiration
 
 ## A7 — Unique promise — REQUIRED — GDD
 
@@ -106,13 +111,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Focus on treating relics, creatures, terrain, sound, sight, force, and status effects as one interacting problem-solving system.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## A8 — Project name permanence — IMPORTANT — DIRECTION
 
 **Question:** Is **Delvers of the Abyss** intended to be the permanent release title, or should the documents call it a working title?
 
-**Answer:**
+**Answer:** it is the permanent release title
 
 ---
 
@@ -124,13 +129,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Prioritize general players with platformer familiarity, while allowing deeper mastery for players who enjoy *Noita*, *Rain World*, and extraction-style planning.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B2 — Intended content rating and boundaries — REQUIRED — GDD
 
 **Question:** What age rating or content boundary should development target? How graphic may injury, bleeding, creature death, horror, child endangerment, and the parents' story become?
 
-**Answer:**
+**Answer:** this will not be graphic at all, maybe violence as the player can hit and shoot enemies, and maybe blood effects here and there
 
 ## B3 — Supported languages — REQUIRED — README
 
@@ -138,25 +143,25 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Current evidence:** Current authored dialogue and item descriptions are primarily Indonesian, while many development labels remain English.
 
-**Answer:**
+**Answer:** english and indonesia
 
 ## B4 — Current playable platforms — REQUIRED — README
 
 **Question:** Which exported builds are you willing to call supported now: Windows, Linux, web, or another platform? Which platforms are future targets only?
 
-**Answer:**
+**Answer:** windows and linux
 
 ## B5 — Distribution page and downloadable build — REQUIRED — README
 
 **Question:** Where should players obtain the game? Provide the itch.io, GitHub Releases, game-jam page, or other public link. If no build should be public yet, say so.
 
-**Answer:**
+**Answer:** itch.io, the page should be ready when i finish this document
 
 ## B6 — Price and release model — IMPORTANT — DIRECTION
 
 **Question:** Is the intended game free, pay-what-you-want, paid, open source with free builds, or undecided?
 
-**Answer:**
+**Answer:** intended to be absolutely free, but donations are welcomed
 
 ## B7 — Minimum hardware expectations — IMPORTANT — README
 
@@ -164,13 +169,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Treat the VM as a useful low-end target, but do not publish exact minimum specifications until tested on named hardware.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## B8 — Input-device support — IMPORTANT — README
 
 **Question:** Should keyboard and mouse remain the only promised input method, or is controller support part of the intended release scope?
 
-**Answer:**
+**Answer:** yes controller supporr may be planned
 
 ## B9 — Accessibility commitment — IMPORTANT — DIRECTION
 
@@ -178,7 +183,7 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** At minimum, retain readable telegraphs and text, add reduced-flash/screen-effect options, and avoid communicating critical information by color alone.
 
-**Answer:**
+**Answer:** follow the recommendation, though currently its not settled
 
 ---
 
@@ -188,13 +193,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Question:** What can a new player complete in the current build without debug tools? Identify the actual start, current goal, ending point, and any known blocker that prevents a normal completion.
 
-**Answer:**
+**Answer:** currently the player should be able to reach layer 2 gate. which is all the implemented content so far, everything else works fine
 
 ## C2 — Definition of “Layer 1 complete” — REQUIRED — GDD
 
 **Question:** Which work must be finished before you personally consider Layer 1 complete? Separate missing content from balance, polish, narrative, map, accessibility, and technical cleanup.
 
-**Answer:**
+**Answer:** layer 1 is complete when all the variations of the section maps are finished, decorated, with all the items/enemies done and minimal bugs
 
 ## C3 — Next development milestone — REQUIRED — GDD
 
@@ -202,49 +207,49 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Choose one milestone smaller than “finish Layer 2,” such as a polished Layer 1 release candidate or one complete Layer 2 vertical slice.
 
-**Answer:**
+**Answer:** finishing the west section variation of layer 1 and then the east, after that balancing, and then begin progress for layer 2
 
 ## C4 — Intended 1.0 world scope — REQUIRED — GDD
 
 **Question:** How many playable layers should the complete game contain? Give each planned layer's name or theme if known, and clearly distinguish committed layers from distant ideas.
 
-**Answer:**
+**Answer:** 2 layers only. no name yet for now
 
 ## C5 — Layer 2 status and commitment — REQUIRED — GDD
 
 **Question:** Which existing Layer 2 designs are still canon and intended for implementation? Which enemies, relics, maps, quests, or mechanics are only proposals?
 
-**Answer:**
+**Answer:** the design that are confirmed are in available documents
 
 ## C6 — Layer 3 and deeper layers — OPTIONAL — FUTURE
 
 **Question:** Is Layer 3 intended to become playable? If yes, what role should it serve in the larger game? If the answer is not designed yet, explicitly mark it `TBD` rather than inventing details.
 
-**Answer:**
+**Answer:** TBD
 
 ## C7 — End goal of the complete game — REQUIRED — GDD
 
 **Question:** What ultimately ends a full game or expedition in the long-term version? Is finding the parents the final objective, one stage of a larger story, or only the protagonist's initial motivation?
 
-**Answer:**
+**Answer:** currently that is the jam narrative, proper game might change, but the goal is to eventually reach the bottom of the abyss. though the game might only be actively developed for a few more layers as i dont have the resource
 
 ## C8 — Features explicitly excluded — IMPORTANT — DIRECTION
 
 **Question:** Beyond the existing anti-pillars, what attractive but out-of-scope features should future contributors not assume are planned? Examples include multiplayer, base building, crafting trees, procedural terrain, class systems, or permanent stat upgrades.
 
-**Answer:**
+**Answer:** no base building, no class system, no traditional combat mechanic
 
 ## C9 — Existing features that may be removed — IMPORTANT — DIRECTION
 
 **Question:** Are any current systems considered jam compromises rather than part of the intended game? Identify anything that should be redesigned or removed instead of documented as permanent.
 
-**Answer:**
+**Answer:** all the audio is temporary, some assets are placeholder/temporary, quest mechanic is temporary, and map is temporary and all be subject ti change. but world gen will stay as it is. though it will be expanded greatly in the future, like adding bigger sections or more sections into a layer
 
 ## C10 — Development priority order — REQUIRED — GDD
 
 **Question:** Rank the next major priorities after documentation. Suggested categories: Layer 1 completion, bugs/performance, maps, narrative, UI/accessibility, Layer 2 systems, art/audio polish, and tooling.
 
-**Answer:**
+**Answer:** layer 1 completion
 
 ---
 
@@ -256,7 +261,7 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Include preparation, route choice, descent, relic discovery, creature interaction, risk/weight decisions, ascent, selling/delivery, knowledge updates, and deeper progression.
 
-**Answer:**
+**Answer:** player starts at surface, goes down towards the shop to buy supplies and break some intended breakable loot as help, then dive into the abyss from west/east side, collects some relics and use those relics when needed, plan path down and up properly, deal with the enemy by outsmarting them, go back up to sell found relics to stock up on supplies, or go even more down
 
 ## D2 — Reason to return to the Surface — REQUIRED — GDD
 
@@ -264,13 +269,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Use health, inventory weight, supplies, acquired value, route safety, and Curse risk as soft pressure rather than a timer.
 
-**Answer:**
+**Answer:** returning is a soft pressure made by player's weakness, health, inventory, and supplies. curse risk is a soft pressure to make the ascent have its own challange
 
 ## D3 — Run length targets — IMPORTANT — DIRECTION
 
 **Question:** The old GDD targets roughly 30 minutes. Does that mean a Layer 1 expedition, a complete current-build run, or the eventual full game? Give rough targets for a first run, successful Layer 1 trip, and full 1.0 completion if known.
 
-**Answer:**
+**Answer:** currently a full run might take about 15 minutes ish. a 1.0 release would need 30 mins ish to complete a run normally
 
 ## D4 — Death, saves, and permanent knowledge — REQUIRED — GDD
 
@@ -278,13 +283,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Current baseline:** The old design resets run inventory, world state, and progression on death while preserving knowledge.
 
-**Answer:**
+**Answer:** resets everythijg, what survives is meta knowledge represented by the item desc, and some statistics about the game will be saved
 
 ## D5 — Failure conditions — REQUIRED — GDD
 
 **Question:** Besides reaching zero health, can a run be lost through time, unrecoverable progression items, failed quests, the Curse, or another condition? What failures should never permanently ruin a save?
 
-**Answer:**
+**Answer:** only dying should end a run, player should not be able to get softlocked
 
 ## D6 — Long-term progression model — REQUIRED — GDD
 
@@ -292,7 +297,7 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Keep permanent power limited and emphasize knowledge, access, and story progression unless the game's identity has changed.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ## D7 — Replay motivation — REQUIRED — GDD
 
@@ -300,19 +305,19 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Authored section variations, route choice, different relic combinations, systemic encounters, incomplete knowledge, and optional objectives.
 
-**Answer:**
+**Answer:** different relic combination, route choice and variation
 
 ## D8 — Route choice information — IMPORTANT — DIRECTION
 
 **Question:** What should players know before choosing east or west, and how meaningfully should the routes differ in traversal, creatures, resources, and risk?
 
-**Answer:**
+**Answer:** no, the sections are not planned to be too ifferent
 
 ## D9 — Tutorial versus discovery — REQUIRED — GDD
 
 **Question:** Which mechanics must the game teach directly, and which should players discover through experimentation? What information is too important to hide in dialogue or item experimentation?
 
-**Answer:**
+**Answer:** how to deal with the enemies
 
 ## D10 — Intended difficulty and fairness — REQUIRED — GDD
 
@@ -320,19 +325,19 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Current baseline:** Difficulty should come mainly from resources, route planning, enemies, and ascent risk—not opaque instant deaths or demanding combat execution.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## D11 — Combat's intended place — IMPORTANT — DIRECTION
 
 **Question:** When should fighting be the best choice rather than avoidance or manipulation? What should prevent combat from becoming either useless or the universal solution?
 
-**Answer:**
+**Answer:** fighting is preffered if the player gets something in return, or to make the descent way safer
 
 ## D12 — Representative run — REQUIRED — GDD
 
 **Question:** Describe one ideal run that best represents the game: Surface preparation, route choice, Rope placement, relic use, at least two creature encounters, a Curse decision, return or deeper descent, and the ending of that expedition. Which single moment best expresses the game's identity?
 
-**Answer:**
+**Answer:** strting with a lot of ropes in inventory, the loot spawner spwans in thw world all spawns in useful relics, perfect rople placemennt setupz
 
 ---
 
@@ -342,13 +347,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Question:** What is the Abyss in this original setting? State what is common knowledge, what experts believe, and what must remain mysterious to the player.
 
-**Answer:**
+**Answer:** i havent gone that far yet
 
 ## E2 — Surface society — REQUIRED — GDD
 
 **Question:** Who lives around the Abyss, how does it shape their culture and economy, and why do people continue descending despite the danger?
 
-**Answer:**
+**Answer:** the people who lives on the edge of the abyss do it because this is their source of money, they sell artifacts to other nations, so this is their source of money
 
 ## E3 — Protagonist canon — REQUIRED — GDD
 
@@ -356,85 +361,85 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Current evidence:** Existing dialogue uses Elenara, while the old GDD deliberately retained `PLAYER_NAME` as replaceable.
 
-**Answer:**
+**Answer:** it is not the name that i will be using on the final game but currently the jam versiom uses that. havnet figured out tje personalitu yet
 
 ## E4 — The missing parents — REQUIRED — GDD
 
 **Question:** Who are Elenara's parents, why did they enter the Abyss, what does Elenara believe happened, and what is the truth currently planned by the writer?
 
-**Answer:**
+**Answer:** her parent is a legendary delver, she dares to go where no man has gone before, even if coming back would be impossible. though i havent had much thought about it other than that
 
 ## E5 — Inciting incident — REQUIRED — GDD
 
 **Question:** Why does Elenara begin this expedition now rather than earlier or later? What is the first concrete task given to the player after New Game?
 
-**Answer:**
+**Answer:** because this is the time where she can go dive to the abyss unsupervised
 
 ## E6 — Delvers and whistles — REQUIRED — GDD
 
 **Question:** What is a Delver in this setting? Explain the social and mechanical meaning of Red, Blue, and Moon Whistles, who grants them, and what authority recognizes them.
 
-**Answer:**
+**Answer:**  honesty just look up the setting from made in abyss anime, im basically ripping off of that
 
 ## E7 — Relic origin and knowledge — REQUIRED — GDD
 
 **Question:** What are relics, who or what created them, why are they found in the Abyss, and why does the player initially lack complete descriptions of their functions?
 
-**Answer:**
+**Answer:** relics are items found in the abyss that has unusual powers, they are thought to come from a past civilazation but no one knows for sure. the player lacks knowledge because it is their first time actually using the relics
 
 ## E8 — Ascension Curse fiction — REQUIRED — GDD
 
 **Question:** Why does upward movement cause the Curse, what do people in the world understand about it, and what long-term consequence exists beyond its current gameplay effects?
 
-**Answer:**
+**Answer:** it is simply the nature of the abyss, and again you can look up the discussions about made in abyss curse on the internet, its basically taken from those
 
 ## E9 — The Wanderer/Old Man — REQUIRED — GDD
 
 **Question:** Who is the Old Man currently called The Wanderer? Define his real role, relationship with Elenara and her parents, knowledge of the Abyss, reason for withholding information, and intended story arc.
 
-**Answer:**
+**Answer:** the wanderer was a placeholder thing. old man is a good friend of main character's mother, he was from the same delver group as her, but because of reasons he would not tell, he is retired and spends his time teaching and mentoring new delvers. mc mother specifically entrusted old man with her child
 
 ## E10 — Shadow — IMPORTANT — DIRECTION
 
 **Question:** Is Shadow still a planned distinct character? If yes, define their identity and narrative purpose. If not, confirm that the placeholder should be removed from canon.
 
-**Answer:**
+**Answer:** was a placeholder
 
 ## E11 — Surface shopkeeper — REQUIRED — GDD
 
 **Question:** Who runs the Surface shop, what is their relationship with Elenara, and why do they buy, sell, deliver, or replace expedition equipment?
 
-**Answer:**
+**Answer:** currently literally just a seller npc
 
 ## E12 — Senior Diver/Gatekeeper — REQUIRED — GDD
 
 **Question:** Who is the Layer 1 gatekeeper, what are they protecting, why do they recognize whistle rank, and why may the player bypass, distract, fight, or be grabbed by them instead of following one mandatory solution?
 
-**Answer:**
+**Answer:** a blue whistle delver entrusted with securing the entrance into and out of layer 2.  the player simply has freedom in how they approach the problem
 
 ## E13 — Layer 2 quest authority — OPTIONAL — FUTURE
 
 **Question:** Is the optional Layer 2 quest authority still planned? If yes, who are they, what do they want, why do they possess the rewards, and how does their quest fit the main story?
 
-**Answer:**
+**Answer:** yes, the layer 2 gatekeeper is another legendary delver, but she is a mysterious figure and knows informations about mc mother. that is all for now
 
 ## E14 — Quest and reward relics — OPTIONAL — FUTURE
 
 **Question:** What are the Layer 2 quest relic and powerful reward relic? Describe their names, appearance, origin, gameplay purpose, and narrative meaning, or mark them `TBD`.
 
-**Answer:**
+**Answer:** all the current planned relics have already been documented
 
 ## E15 — Layer themes and story progression — REQUIRED — GDD
 
 **Question:** For every committed layer, what is its visual/ecological identity, main gameplay lesson, major narrative revelation, and reason the player continues deeper?
 
-**Answer:**
+**Answer:** layer 1 is an easy introduction layer so that player can get the hang of things, it serves as a tutorial. layer 2 will be where the game actually becomes interesting/challeging
 
 ## E16 — Intended ending — REQUIRED — GDD
 
 **Question:** What ending or major reveal is currently intended for the complete game? If the final truth must remain private, provide the version that collaborators need in order to build toward it and label confidential details clearly.
 
-**Answer:**
+**Answer:** ending is TBD, as currently the plan is to add more unique layers
 
 ## E17 — Story delivery — IMPORTANT — DIRECTION
 
@@ -442,19 +447,19 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Keep mandatory explanations concise and let relics, environments, and creature interactions carry much of the worldbuilding.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ## E18 — Dialogue language and voice — REQUIRED — GDD
 
 **Question:** Define the desired dialogue voice: formal or conversational Indonesian, intended reading age, use of English game terms, humor level, and whether Elenara has internal monologue. Should future English localization preserve Indonesian names and terms?
 
-**Answer:**
+**Answer:** game is english first with indo localization. the dialogue will be casual targeted for teen/older. dialogue is minimal and only when needed
 
 ## E19 — Existing dialogue canon — REQUIRED — GDD
 
 **Question:** Which existing prologue, Old Man, and Gatekeeper dialogue files are canon today? Should outdated or detached sequences be treated as archive material rather than summarized in the GDD?
 
-**Answer:**
+**Answer:** honestly every dialogue right now is just to serve a functional purpose and all are not final
 
 ---
 
@@ -464,55 +469,55 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Question:** What makes a new relic worth adding? Must each relic solve several systemic situations, or may some serve a narrow traversal, combat, economy, or story purpose?
 
-**Answer:**
+**Answer:** a relic by itself does not solve any problems, it is merely treated as a tool to find the solution
 
 ## F2 — Relic knowledge progression — IMPORTANT — DIRECTION
 
 **Question:** How much should players know before first using a relic, how should successful experimentation reveal information, and can incorrect experimentation permanently waste a rare item?
 
-**Answer:**
+**Answer:** player should know the obvious bare minimum about the relic, usage is what determines if an item is known or not. improper use is still used
 
 ## F3 — Inventory pressure — IMPORTANT — DIRECTION
 
 **Question:** What decisions should the five backpack slots, two hotbar slots, item weight, and value create? Should future progression ever increase capacity, or is the small inventory a permanent constraint?
 
-**Answer:**
+**Answer:** currently its very intentional because that is a core part of the mechanic. it makes player think about which items are worth carrying and which are not
 
 ## F4 — Economy purpose — REQUIRED — GDD
 
 **Question:** What is money ultimately for? Define the intended roles of selling, delivery value, shop stock, replacement services, supplies, and progression purchases.
 
-**Answer:**
+**Answer:** just to buy supplies for now
 
 ## F5 — Enemy design rule — IMPORTANT — DIRECTION
 
 **Question:** What must every new enemy contribute beyond dealing damage? Define how readable behavior, ecology, world interaction, items, other enemies, and non-combat solutions should influence approval of a new enemy design.
 
-**Answer:**
+**Answer:** each enemy should be unique in what it does, each of them serves a specific niche. an enemy must fill a specific niche to be added, or reiterare existing niche and combine it with another
 
 ## F6 — Consequences of killing creatures — IMPORTANT — DIRECTION
 
 **Question:** Should killing enemies provide loot, safety, knowledge, money, moral consequences, ecological changes, or usually only remove a threat? How strongly should the game discourage routine extermination?
 
-**Answer:**
+**Answer:** the reward for killing is that the enemy will no longer be a danger to you, no loot is gained. enemies are hard to kill and they are dangerous, and no intrinsic incentive to kill them
 
 ## F7 — Authored versus randomized content — IMPORTANT — DIRECTION
 
 **Question:** The current game randomizes authored section variations and placer results rather than terrain. Is this the permanent world-generation model? What should always be fixed, and what may vary between runs?
 
-**Answer:**
+**Answer:** yes this is the current fixed system, you can figure out what varies between runs by examinif the game
 
 ## F8 — Layer design template — IMPORTANT — DIRECTION
 
 **Question:** Should every future layer follow the same broad structure—two routes, six section slots, layer-specific Curse, hub/gate, relic set, and creature ecosystem—or may later layers use fundamentally different structures?
 
-**Answer:**
+**Answer:** later layers will use fundamentally different structures, the current one is because its a jam limitation
 
 ## F9 — System complexity ceiling — IMPORTANT — DIRECTION
 
 **Question:** When a realistic systemic interaction conflicts with readability or development cost, which should win? Give one example of complexity the game should deliberately avoid.
 
-**Answer:**
+**Answer:** since this is basically a one man project from now on, dev cost is non negotiable. like i would not need to make a complex ai system like the one in rainworld or with its procedurally generated animations if something else can work
 
 ---
 
@@ -522,43 +527,43 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Question:** Describe the intended final visual identity beyond “pixel art.” Include mood, color, silhouette readability, detail level, environmental density, and how beauty should coexist with danger.
 
-**Answer:**
+**Answer:** im not sure how to describe it, its fantastical-medieval with some sci-fi and speculative biology type of feel. im aiming for something similar to noita, rain world, and made in abyss
 
 ## G2 — Current asset status — REQUIRED — README
 
 **Question:** Which current art, animation, UI, fonts, backgrounds, and audio should be described as final, temporary, commissioned, team-created, or placeholder?
 
-**Answer:**
+**Answer:** all items are team created, all enemy other than old man is team created, ui is team created but other than the health bar its final. the rest are maybe not final but unsure, depends on how much it costs to replace them as some are made with ai and i would prefer it to not be
 
 ## G3 — Creature visual philosophy — IMPORTANT — DIRECTION
 
 **Question:** Should creatures appear natural, alien, cute, horrific, or mixed? How visibly should their anatomy and animation communicate behavior before they attack?
 
-**Answer:**
+**Answer:** higher layered enemies looks normal, but the deeper you go they look more unrecognizeable. animation should be quite visible but not an emphasis
 
 ## G4 — Music direction — IMPORTANT — DIRECTION
 
 **Question:** What should music communicate on the Surface, during descent, in caves, during pursuit, during ascent/Curse pressure, and at major gates? Should music be continuous, sparse, adaptive, or mostly ambient?
 
-**Answer:**
+**Answer:** tbd, but music should be adaptive
 
 ## G5 — Sound-design identity — IMPORTANT — DIRECTION
 
 **Question:** Beyond functional sound detection, what should the game's soundscape feel like? Which sounds must remain especially recognizable for accessibility and gameplay?
 
-**Answer:**
+**Answer:** tbd, i have yet to design the sound part. but the soundscape should feel large, in awe, but with a hint of mystery
 
 ## G6 — UI presentation direction — IMPORTANT — DIRECTION
 
 **Question:** Should the interface feel like an in-world expedition journal, a clean game overlay, or a mixture? Which current UI scenes establish the style that future menus should follow?
 
-**Answer:**
+**Answer:** current ui looks like its an in world thing, and i like it
 
 ## G7 — Motion and screen effects — IMPORTANT — DIRECTION
 
 **Question:** What limits should apply to camera movement, pixel snapping, shake, flashes, overlays, and parallax so the game remains atmospheric without causing nausea or obscuring gameplay?
 
-**Answer:**
+**Answer:** tbd
 
 ---
 
@@ -568,19 +573,19 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Question:** What individual or team name should the README credit as the creator? Should it list real names, GitHub usernames, roles, or a studio/team identity?
 
-**Answer:**
+**Answer:** tbd later as i need to ask them
 
 ## H2 — Contributor credits — REQUIRED — README
 
 **Question:** List every contributor who should be credited and their role. Include programmers, designers, artists, writers, audio contributors, map designers, testers, mentors, and game-jam teammates. State any names that must remain private.
 
-**Answer:**
+**Answer:** yes, make a section for that and i will fill it up later
 
 ## H3 — Game-jam origin — REQUIRED — README
 
 **Question:** What was the event's official name, theme, date, team name, placement/result if any, and submission link? Which of those facts should appear publicly?
 
-**Answer:**
+**Answer:** "The Hack 2026 Game Jam" by CCI
 
 ## H4 — Code license — REQUIRED — README
 
@@ -588,55 +593,55 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Do not guess or add an open-source license without the owner's explicit choice.
 
-**Answer:**
+**Answer:**  follow the recommendation
 
 ## H5 — Asset licenses and attribution — REQUIRED — README
 
 **Question:** Who owns the art, audio, fonts, dialogue, and other assets? Which assets came from third parties, and what exact attribution or license does each require? May repository visitors reuse them?
 
-**Answer:**
+**Answer:** i used a lot of free assets and each of them require crediting sligrly differently so i will do that manually, just make a section where i can credit them
 
 ## H6 — Contribution policy — REQUIRED — README
 
 **Question:** May outsiders open pull requests or contribute designs, code, translations, maps, or testing? If yes, what should they do before starting? If not, should the README say the repository is public for viewing only?
 
-**Answer:**
+**Answer:** public viewing only
 
 ## H7 — Bug reports and support — REQUIRED — README
 
 **Question:** Where should players report bugs or request help: GitHub Issues, a form, Discord, email, or nowhere yet? Provide the public link or contact.
 
-**Answer:**
+**Answer:** nowhere yet
 
 ## H8 — Public roadmap — IMPORTANT — README
 
 **Question:** Should the README show a short roadmap, link to another document/project board, or avoid promises until development resumes? Which milestones may be public?
 
-**Answer:**
+**Answer:** it should link to the itch.io page, the readme only serves as a repository and not a project page
 
 ## H9 — Screenshots, logo, and trailer — REQUIRED — README
 
 **Question:** Which logo, banner, screenshots, GIFs, gameplay video, or trailer should the README display? Give file paths or links where possible, and identify anything too outdated to use.
 
-**Answer:**
+**Answer:** the logo should be the one in main menu
 
 ## H10 — Installation for players — REQUIRED — README
 
 **Question:** Should players be instructed to download a packaged build, clone and run the Godot project, or both? If packaged builds exist, where are they and are there platform-specific steps?
 
-**Answer:**
+**Answer:** that is handled in itch.io, but providing packaged executable build for previous version release would be cool to host on github.
 
 ## H11 — Setup for developers — REQUIRED — README
 
 **Question:** What should a new developer install or know beyond Godot 4.7.1? Include any required export templates, Git LFS, external tools, fonts, private assets, branch workflow, or known version restrictions.
 
-**Answer:**
+**Answer:** honestly being able to use godot and reading the technical documentation is enough, oh yeah after this also update the technical documentations
 
 ## H12 — Public contact and links — IMPORTANT — README
 
 **Question:** Which public links should appear: itch.io, GitHub profile or organization, portfolio, social media, Discord, email, game-jam page, devlog, or donation page?
 
-**Answer:**
+**Answer:**itch.io and github only
 
 ---
 
@@ -646,13 +651,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Question:** Who has final authority over game design, narrative, programming architecture, art direction, and release decisions now? How may the new enemy designer or future contributors propose changes?
 
-**Answer:**
+**Answer:** i have the final say in everything
 
 ## I2 — Expected development model — IMPORTANT — DIRECTION
 
 **Question:** Will continued development be primarily solo, the same jam team, occasional collaborators, or an open team? How much time do you realistically expect to spend on it?
 
-**Answer:**
+**Answer:** it will be mostly solo but with a few of the jam team helping here and there
 
 ## I3 — Milestone philosophy — IMPORTANT — DIRECTION
 
@@ -660,25 +665,25 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Complete and release stable vertical slices one layer at a time, keeping the main branch playable.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## I4 — Primary risks — REQUIRED — GDD
 
 **Question:** What do you believe is most likely to prevent completion or make the game worse? Consider scope, solo workload, content volume, map production, performance, unclear narrative, balancing systemic interactions, asset production, and technical debt.
 
-**Answer:**
+**Answer:** solo workload, asset production, and most imlortantly technical debt
 
 ## I5 — Playtesting plan — IMPORTANT — DIRECTION
 
 **Question:** Who can test the game, how often, and what evidence should decide whether a mechanic or layer is working? What feedback from the final presentation should not be forgotten?
 
-**Answer:**
+**Answer:** ill have my friends test the game. alsl the presentation feedback was like, we should continue imlroving the game because it has potential, and also its not as simple to get into
 
 ## I6 — Success criteria — REQUIRED — GDD
 
 **Question:** What would make continued development successful even if the game never becomes a large commercial release? Give player-experience, creative, technical, community, or release goals that matter to you.
 
-**Answer:**
+**Answer:** i genuinely just want to make a game that I've wished to exists, even if only one other person likes it that'd be enough. i want to make something im proud of
 
 ## I7 — Living-GDD update policy — REQUIRED — GDD
 
@@ -686,13 +691,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** The GDD owns approved intent; implementation documents own technical contracts. Record intentional changes in both, but label accidental implementation differences as bugs rather than silently rewriting the design.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## I8 — Private information boundary — REQUIRED — README
 
 **Question:** Is any answer in this questionnaire private and forbidden from the public README or repository-visible GDD? Clearly identify spoilers, personal contact details, unreleased plans, or contributor information that must be omitted.
 
-**Answer:**
+**Answer:** no everything here does not have any identifiable info, other than maybe the event name but we kind of have to include that
 
 ---
 
@@ -702,13 +707,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Question:** Rank the README's readers: players, potential collaborators, recruiters/portfolio reviewers, game-jam judges, and developers setting up the project.
 
-**Answer:**
+**Answer:** game-jam judge, devs setting up project, and recruiters
 
 ## J2 — GDD audience priority — REQUIRED — GDD
 
 **Question:** Rank the GDD's readers: yourself returning later, programmers, enemy/content designers, writers, artists/audio contributors, testers, and public readers.
 
-**Answer:**
+**Answer:** i will definitely revisit the gdd a lot, its mainly going to be me. the gdd actual purpose is to have a saved memory of the plans and ideas i have for the future, but it should also work as a normal gdd
 
 ## J3 — Acceptable provisional content — REQUIRED — GDD
 
@@ -716,13 +721,13 @@ The README will remain a concise public entry point and link to the longer GDD a
 
 **Recommendation:** Never invent canon. Use recommendations only for process and presentation; leave creative facts and release commitments as explicit `TBD`.
 
-**Answer:**
+**Answer:** follow the recommendation
 
 ## J4 — Anything the documents must not miss — REQUIRED — GDD
 
 **Question:** What important truth about the game, its history, or your intention has not been asked anywhere above?
 
-**Answer:**
+**Answer:** update all of the implementation documentation and technical documentations after this too
 
 ---
 
