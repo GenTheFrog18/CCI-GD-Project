@@ -283,44 +283,34 @@ func _build_ui() -> void:
 	debug_column.add_child(performance_label)
 	world_debug_label = Label.new()
 	debug_column.add_child(world_debug_label)
-	for spec in [
-		["Give Rock", _debug_give_rock],
-		["Give Heavy Pack", _debug_give_heavy_pack],
-		["Give Rope", _debug_give_rope],
-		["Emit Sound", _debug_emit_sound],
-		["Apply Slow", _debug_apply_slow],
-		["Damage 10", _debug_damage],
-		["Save", _debug_save],
-		["Load", _debug_load],
-	]:
-		var button := Button.new()
-		button.text = spec[0]
-		button.pressed.connect(spec[1])
-		debug_column.add_child(button)
+	var player_items_section := _add_debug_section(debug_column, "Player & Items")
+	_add_debug_button(player_items_section, "Give Rock", _debug_give_rock)
+	_add_debug_button(player_items_section, "Give Heavy Pack", _debug_give_heavy_pack)
+	_add_debug_button(player_items_section, "Give Rope", _debug_give_rope)
 	for item_id in [&"bandage", &"info_book", &"numbing_pill", &"sun_sphere", &"lantern_crystal", &"rattlepod", &"hushcap", &"cling_resin", &"driftseed", &"silver_weight", &"plate_umbrella", &"lacerator", &"resonance_core", &"bolt_shock"]:
 		var definition := ContentCatalog.get_item(item_id)
-		var button := Button.new()
-		button.text = "Give %s" % (definition.display_name if definition != null else String(item_id))
-		button.pressed.connect(_debug_give_item.bind(item_id))
-		debug_column.add_child(button)
-	var blue_whistle := Button.new()
-	blue_whistle.text = "Grant Blue Whistle"
-	blue_whistle.pressed.connect(_debug_grant_blue_whistle)
-	debug_column.add_child(blue_whistle)
-	var moon_whistle := Button.new()
-	moon_whistle.text = "Grant Moon Whistle"
-	moon_whistle.pressed.connect(_debug_grant_moon_whistle)
-	debug_column.add_child(moon_whistle)
+		_add_debug_button(player_items_section, "Give %s" % (definition.display_name if definition != null else String(item_id)), _debug_give_item.bind(item_id))
+	_add_debug_button(player_items_section, "Grant Blue Whistle", _debug_grant_blue_whistle)
+	_add_debug_button(player_items_section, "Grant Moon Whistle", _debug_grant_moon_whistle)
 	unlimited_health_toggle = CheckButton.new()
 	unlimited_health_toggle.text = "Unlimited Health"
 	unlimited_health_toggle.button_pressed = GameSession.debug_unlimited_health
 	unlimited_health_toggle.toggled.connect(_set_unlimited_health)
-	debug_column.add_child(unlimited_health_toggle)
-	var gameplay_draw_toggle := CheckButton.new()
-	gameplay_draw_toggle.text = "Show Gameplay Ranges"
-	gameplay_draw_toggle.button_pressed = GameSession.debug_gameplay_draw
-	gameplay_draw_toggle.toggled.connect(func(enabled: bool): GameSession.debug_gameplay_draw = enabled)
-	debug_column.add_child(gameplay_draw_toggle)
+	player_items_section.add_child(unlimited_health_toggle)
+
+	var effects_section := _add_debug_section(debug_column, "Effects")
+	_add_debug_button(effects_section, "Emit Sound", _debug_emit_sound)
+	_add_debug_button(effects_section, "Apply Slow", _debug_apply_slow)
+	_add_debug_button(effects_section, "Damage 10", _debug_damage)
+	for spec in [
+		["Reset Curse Height", &"curse_reset"],
+		["Clear Effects", &"curse_clear"],
+		["Add Healing", &"curse_heal"],
+		["Apply Layer Curse", &"curse_apply"],
+	]:
+		_add_debug_button(effects_section, spec[0], _emit_world_debug_action.bind(spec[1]))
+
+	var world_section := _add_debug_section(debug_column, "World")
 	for spec in [
 		["Toggle World Bounds", &"toggle_bounds"],
 		["Teleport Next Slot", &"teleport_next"],
@@ -328,17 +318,19 @@ func _build_ui() -> void:
 		["Teleport Layer 3 Entrance", &"teleport_ending"],
 		["Teleport Surface", &"teleport_surface"],
 		["Spawn Layer 2 Enemies", &"spawn_layer2_enemies"],
-		["Validate World", &"validate_world"],
-		["Dump Manifest", &"dump_manifest"],
-		["Reset Curse Height", &"curse_reset"],
-		["Clear Effects", &"curse_clear"],
-		["Add Healing", &"curse_heal"],
-		["Apply Layer Curse", &"curse_apply"],
 	]:
-		var button := Button.new()
-		button.text = spec[0]
-		button.pressed.connect(_emit_world_debug_action.bind(spec[1]))
-		debug_column.add_child(button)
+		_add_debug_button(world_section, spec[0], _emit_world_debug_action.bind(spec[1]))
+
+	var diagnostics_section := _add_debug_section(debug_column, "Diagnostics")
+	_add_debug_button(diagnostics_section, "Save", _debug_save)
+	_add_debug_button(diagnostics_section, "Load", _debug_load)
+	_add_debug_button(diagnostics_section, "Validate World", _emit_world_debug_action.bind(&"validate_world"))
+	_add_debug_button(diagnostics_section, "Dump Manifest", _emit_world_debug_action.bind(&"dump_manifest"))
+	var gameplay_draw_toggle := CheckButton.new()
+	gameplay_draw_toggle.text = "Show Gameplay Ranges"
+	gameplay_draw_toggle.button_pressed = GameSession.debug_gameplay_draw
+	gameplay_draw_toggle.toggled.connect(func(enabled: bool): GameSession.debug_gameplay_draw = enabled)
+	diagnostics_section.add_child(gameplay_draw_toggle)
 	world_log_panel = PanelContainer.new()
 	world_log_panel.position = Vector2(40, 30)
 	world_log_panel.size = Vector2(560, 300)
@@ -366,6 +358,24 @@ func _build_ui() -> void:
 	log_scroll.add_child(world_log_label)
 	_set_debug_text_visible(false)
 	_build_crosshair()
+
+func _add_debug_section(parent: VBoxContainer, title: String) -> VBoxContainer:
+	var header := Button.new()
+	header.text = title
+	header.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	header.toggle_mode = true
+	parent.add_child(header)
+	var content := VBoxContainer.new()
+	content.visible = false
+	parent.add_child(content)
+	header.toggled.connect(func(expanded: bool): content.visible = expanded)
+	return content
+
+func _add_debug_button(parent: VBoxContainer, text: String, callback: Callable) -> void:
+	var button := Button.new()
+	button.text = text
+	button.pressed.connect(callback)
+	parent.add_child(button)
 
 func _build_health_flames() -> void:
 	var row := HBoxContainer.new()
