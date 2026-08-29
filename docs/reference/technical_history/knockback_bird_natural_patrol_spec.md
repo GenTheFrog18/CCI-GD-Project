@@ -1,5 +1,7 @@
 # Knockback Bird — Natural Patrol Movement & Path Validation
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_1_enemies.md`](../../implementation/layer_1_enemies.md).
+
 ## Purpose
 
 This document supplements the main Knockback Bird implementation specification.

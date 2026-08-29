@@ -1,5 +1,7 @@
 # Tremor Hound — Programmer Handoff
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_2_enemies.md`](../../implementation/layer_2_enemies.md).
+
 **Project:** Two-layer game-jam build  
 **Engine:** Godot  
 **Content ID:** `tremor_hound`  

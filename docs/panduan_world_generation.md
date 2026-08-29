@@ -1,18 +1,19 @@
-# Panduan World & Map Generation
+# Panduan World dan Map Generation
 
-Dokumen ini adalah kontrak kerja programmer dan level designer. Keputusan mentah tersimpan di `keputusan_world_generation.md`; jika terjadi konflik, `fondasi_teknis_godot.md` menang.
+> **Status:** kontrak authoring aktif, diaudit 30 Agustus 2026. Dokumen ini menjelaskan code sekarang; intent world jangka panjang berada di GDD.
 
-## 1. Hasil yang dibangun
+## 1. Model world
 
-World bukan terrain procedural. Level designer membuat section dengan tangan. Generator hanya:
+Terrain tidak procedural. Level designer membuat setiap section secara manual. Generator hanya:
 
-1. memilih variation untuk 12 fixed slot,
-2. memilih isi placer,
-3. memvalidasi sambungan,
-4. menginstansiasi layer aktif,
-5. memulihkan living-run state.
+1. memilih satu variation per fixed slot;
+2. menyelesaikan weighted placer dari seed;
+3. memvalidasi ID dan scene contract;
+4. menyimpan manifest;
+5. menginstansiasi layer aktif;
+6. memulihkan state run.
 
-Layer 0 adalah satu authored hub. Layer 1 dan Layer 2 masing-masing mempunyai enam slot:
+Surface adalah satu authored hub. Layer 1 dan foundation Layer 2 masing-masing mempunyai enam slot:
 
 ```text
 west_01  east_01   y = 0
@@ -20,197 +21,180 @@ west_02  east_02   y = 800
 west_03  east_03   y = 1600
 ```
 
-West berada pada `x = 0`; east pada `x = 1280`. Section biasa berukuran 1280×800 px atau 80×50 tile. Total bounds layer adalah 2560×2400 px. Layer scene boleh mempunyai ruang khusus berbeda ukuran jika anchor dan bounds eksplisit.
+West berada di `x = 0`, east di `x = 1280`. Default section 1280×800 px; default layer bounds 2560×2400 px.
 
-## 2. Kontrak scene section
+Normal build sekarang selesai di gate Layer 2. Requirement Layer 3 yang masih ada pada template/validator adalah legacy code, bukan target authoring baru.
 
-Setiap variation wajib mempunyai:
+## 2. Scene contract
+
+Root variation harus `WorldSection` dan mengisi:
+
+- `slot_id` yang sama dengan owning `WorldSlot`;
+- unique `variation_id`;
+- positive `selection_weight`;
+- `section_size` dan `camera_bounds`;
+- `EntryAnchor`, `ExitAnchor`, `RespawnAnchor`;
+- `Placers` dan `AuthoredContent` owner;
+- `special_tags` hanya bila validator/code benar-benar membutuhkannya.
+
+Terrain biasanya `TileMapLayer`. Authored NPC, gate, safe zone, POI, darkness region, background marker, dan map Rope berada di `AuthoredContent`, bukan placer.
+
+Variation untuk slot yang sama wajib mempunyai seam compatible. Current baseline memakai entry `(640, 0)`, exit `(640, 800)`, opening 96 px, dan safe clearance 96 px, kecuali slot/scene menyatakan bounds khusus.
+
+Jangan mengubah `slot_id` untuk memakai scene variation milik slot lain. Generator menolak mismatch.
+
+## 3. Workflow membuat variation
+
+1. Mulai dari template/inherited scene slot yang benar.
+2. Isi terrain melalui TileMap editor.
+3. Pertahankan root ID, anchors, bounds, dan required tags.
+4. Pastikan jalur utama dapat turun dan naik; Rope belum boleh menjadi satu-satunya jalan kecuali acquisition dijamin.
+5. Sisakan area aman pada entry, exit, respawn, gate, dan landing sempit.
+6. Tambahkan authored content dan placer pada owner yang benar.
+7. Beri setiap placer `persistent_id` global-unique.
+8. Jalankan section langsung, custom world F3, lalu Validate World.
+
+Target traversal lama seperti 3/10 menit adalah playtest guide, bukan validator. Jangan mengubah movement player agar map buruk lolos.
+
+## 4. Deterministic placer
+
+Semua placer umum memakai `game/world/deterministic_placer.gd`.
+
+| Property | Makna |
+| --- | --- |
+| `Persistent ID` | Stable ID global untuk manifest/save. Wajib unik. |
+| `Spawn Chance` | Satu activation roll untuk seluruh placer. |
+| `Entries` | Weighted content candidates. Satu dipilih per hasil. |
+| `Minimum/Maximum Quantity` | Rentang jumlah hasil setelah placer aktif. |
+| `Allocation Group` | Beberapa placer berkompetisi untuk satu winner run-wide. |
+| `Required Allocation` | Winner group dipaksa aktif saat resolve. |
+| `Spawn Group ID` | Optional coordination group yang disuntik ke spawned actor. |
+| `Attack Group Maximum/Spacing` | Optional coordinated attack limits. |
+| `Drop Scatter Radius/Height Offset` | Area drop breakable; terlihat di editor. |
+| `Facing` | Tanda horizontal awal, biasanya `1` atau `-1`. |
+| `Patrol Bounds` | Rectangle optional untuk actor yang menerimanya. |
+
+`Entries` berisi `WorldSpawnEntry`:
+
+- `content_id`: item/enemy stable ID;
+- `scene`: scene yang diinstansiasi;
+- `weight`: relative integer weight.
+
+## 5. SpawnPoint dan quantity
+
+Direct child `Marker2D` adalah SpawnPoint. Bila tidak ada direct child, array storage `spawn_points` dapat menjadi fallback, tetapi authoring baru harus memakai child marker.
+
+Quantity tidak dibatasi jumlah SpawnPoint. Setiap hasil memilih point dengan replacement. Contoh quantity 3 dengan satu SpawnPoint menghasilkan tiga object pada marker yang sama, masing-masing dengan persistent ID berbeda:
 
 ```text
-WorldSection
-├── Terrain              TileMapLayer
-├── EntryAnchor          Marker2D
-├── ExitAnchor           Marker2D
-├── RespawnAnchor        Marker2D
-├── Placers              Node2D
-└── AuthoredContent      Node2D
+placer_id:0
+placer_id:0:1
+placer_id:0:2
 ```
 
-Field root wajib:
+Gunakan beberapa SpawnPoint bila perlu penyebaran authored. Gunakan satu point bila overlap awal aman atau spawned scene sendiri melakukan scatter. Loot breakable memakai `drop_scatter_radius` dan `drop_height_offset` untuk menyebar static pickup setelah pecah.
 
-- `slot_id`, contoh `layer1_east_02`;
-- `variation_id`, contoh `layer1_east_02_a`;
-- `selection_weight`, default `1`;
-- `section_size = Vector2(1280, 800)`;
-- `camera_bounds = Rect2(0, 0, 1280, 800)`;
-- reference Entry, Exit, Respawn, Placers, dan AuthoredContent;
-- special tags jika section memiliki shop, crossing, atau ending entrance.
+Jangan mengandalkan urutan SpawnPoint yang berubah setelah save compatibility dianggap penting.
 
-Geometry seam:
+## 6. Allocation dan group
 
-- entry pada `(640, 0)`;
-- exit pada `(640, 800)`;
-- respawn default pada `(640, 64)`, tetapi level designer boleh memindahkannya ke titik mana pun di dalam section;
-- opening 96 px;
-- collision clearance 96 px ke dalam section;
-- 96 px atau enam tile dari entry/exit bebas random enemy dan hazard placer;
-- semua variation pada slot sama memakai seam identik.
+`allocation_group` dipakai untuk unique content lintas selected variation. Generator mengurutkan candidate berdasarkan persistent ID, memilih winner deterministic, lalu hanya winner yang resolve.
 
-Sisi luar route tertutup collision. Connector horizontal hanya boleh ada pada slot khusus. Terrain utama tidak destructible; breakable adalah scene object terpisah.
+- Kosong: placer resolve sendiri memakai chance.
+- Group optional: hanya winner boleh resolve, tetapi chance winner tetap dapat menghasilkan kosong.
+- Group required: winner resolve tanpa activation failure.
 
-Semua variation aktif adalah template authoring dengan `Terrain` kosong. Garis cyan 1280×800 terlihat di editor sebagai batas section, tetapi tidak dirender saat game berjalan. Gate, shop, entrance, dan tag progression yang sudah ada tidak boleh dihapus.
+`spawn_group_id` berbeda fungsi. Field ini menyambungkan actor yang perlu berbagi coordinator/alert; ia tidak menentukan apakah placer dipilih.
 
-## 3. Tanggung jawab slot khusus
+## 7. Preset placer
 
-- Layer 1 west/east slot 03: masing-masing menyediakan separuh crossing kompatibel dan entrance sisi menuju Layer 2.
-- Layer 2 east slot 02: setiap variation mempunyai optional shop branch dan guidance yang terlihat.
-- Layer 2 west/east slot 03: masing-masing menyediakan separuh gauntlet/crossing kompatibel.
-- Layer 2 east slot 03: setiap variation mempunyai tepat satu interactable Layer 3 entrance.
+| Scene | Pemakaian |
+| --- | --- |
+| `enemy_placer.tscn` | Ordinary Layer 1 enemy/hazard. |
+| `loot_placer.tscn` | Breakable source berisi weighted item. |
+| `bird_nest_placer.tscn` | 1–3 Knockback Bird dengan circular patrol radius editor preview. |
+| `large_flyer_placer.tscn` | Candidate untuk satu Large Flyer Layer 1. |
+| `layer2_enemy_placer.tscn` | Weighted Layer 2 foundation enemy. |
+| relic placer Layer 2 | Unique Umbrella, Lacerator, atau required Resonance Core. |
 
-Gatekeeper shop optional. Quest memberi Moon Whistle dan powerful relic, tetapi tidak membuka hard gate. Player terampil boleh melewati gauntlet tanpa reward. Interaction entrance Layer 3 selalu mengakhiri build.
+Loot placer mengisi `BreakableLoot.item_id`. Ketika pecah, source menghasilkan Throwable Rock dan configured item sebagai static pickup yang langsung dapat diambil. Posisi masing-masing diacak dalam circular scatter area di atas source.
 
-## 4. Workflow level designer
+Bird Nest memakai `patrol_radius`, bukan `patrol_bounds`. Large Flyer membutuhkan authored `LargeFlyerPOI`; transparent `LargeFlyerBlocker` hanya menghalangi movement, bukan sight.
 
-1. Buka variation slot yang tepat sebagai inherited scene; jangan duplicate slot lain lalu mengganti ID saja.
-2. Pilih child `Terrain`, lalu lukis map memakai TileMap GUI pada grid 80×50. Jangan mengubah root ID, tags, anchors, atau bounds.
-3. Seam berada pada kolom tile 40. Sisakan enam baris tile paling atas dan bawah dari random enemy/hazard; buat landing aman di bawah `RespawnAnchor`.
-4. Buat jalur turun dan naik yang jelas. Persistence/seam Rope sudah tersedia, tetapi map wajib dapat dilalui dua arah tanpa Rope sampai acquisition/stock menjamin pemain membawa jumlah Rope yang dibutuhkan.
-5. Pastikan surface shop selalu mempunyai Rope yang terjangkau dan beri warning sebelum rope-required drop.
-6. Buat optional branch di dalam section; generator tidak menyusun topology branch.
-7. Drag `enemy_placer.tscn` atau `loot_placer.tscn` ke child `Placers`, isi `persistent_id` unik, lalu pindahkan child `SpawnPoint` melalui GUI. Duplicate `SpawnPoint` jika quantity lebih dari satu; marker dibaca otomatis sesuai urutan Scene tree.
-8. Run section melalui shared section test runner, lalu jalankan `Validate World` dari F3.
+## 8. Generation lifecycle
 
-Target traversal setelah detailed graybox:
+`WorldGenerator.build_manifest()`:
 
-- sekitar 10 menit per layer untuk run normal dengan eksplorasi;
-- sekitar 3 menit per layer jika player bergerak cepat;
-- jalur wajib memakai maksimal sekitar 80% kemampuan movement agar tidak pixel-perfect.
-- untuk controller saat ini, graybox wajib memakai rise maksimal 32 px, gap horizontal maksimal 48 px, dan landing minimal 96 px.
+1. instantiate dan validate layer pool;
+2. pilih variation, termasuk optional debug override Layer 1;
+3. validate section/special contract;
+4. kumpulkan placer dan cek duplicate ID;
+5. pilih allocation winner;
+6. resolve placer;
+7. simpan generation log dan errors.
 
-## 5. Kontrak placer
+Generator yield antar unit kerja agar startup tetap responsive. Error menghentikan player spawn dan tampil pada loading panel.
 
-Placer menyimpan:
+`WorldLayer.instantiate_manifest()` membuat selected section, memulihkan resolved placer data, lalu spawn ke runtime root. Surface tidak memakai section manifest.
 
-- `persistent_id` unik;
-- `spawn_chance` 0–1;
-- `minimum_quantity` dan `maximum_quantity`;
-- weighted entries berisi stable content ID, scene, dan integer weight positif;
-- authored SpawnPoint children;
-- optional facing dan patrol bounds;
-- optional allocation group dan required flag.
+## 9. Activation, camera, dan bounds
 
-Resolve order:
+`WorldRun` memeriksa section player secara berkala. Layer memilih active slot, mengatur processing content, camera bounds, current route/slot, dan safe position.
 
-1. roll activation satu kali;
-2. jika aktif, roll quantity minimal satu;
-3. pilih SpawnPoint tanpa replacement;
-4. pilih weighted entry untuk tiap hasil;
-5. beri child ID `placer_id:spawn_point_index`.
+Player di luar layer bounds + margin kembali ke safe position. Dynamic world object yang mempunyai `handle_world_out_of_bounds()` menentukan recovery atau destruction sendiri.
 
-Quantity tidak boleh melebihi jumlah SpawnPoint. Runtime memakai posisi authored apa adanya; overlap atau marker tanpa ground adalah validation error.
+Rope ditempatkan pada runtime root dan dapat melewati seam section. Map-authored Rope memakai `placed_rope.tscn`; player-created Rope mempunyai runtime ID dan geometry persistent.
 
-Preset `EnemyPlacer` berisi production Tongue Amphibian. Preset `LootPlacer` berisi breakable rock dengan nested loot Multitool. Isi `entries` dapat diganti atau ditambah melalui Inspector tanpa mengubah generator. Breakable membutuhkan dua hit Multitool, lalu menghasilkan satu Throwable Rock dan item hasil placer sebagai object physics yang jatuh. Kedua drop memakai ID turunan dari ID breakable.
+Darkness region boleh berada sebagian di luar cave/layer bounds. Background adalah camera-space presentation, bukan terrain world object.
 
-### 5.1 Referensi property EnemyPlacer dan LootPlacer
+## 10. Save ownership
 
-Kedua preset memakai `DeterministicPlacer`, sehingga property dasarnya sama:
+Manifest menyimpan keputusan generation. Object save menyimpan hasil runtime. Jangan memakai salah satunya untuk mengganti yang lain.
 
-- `Position`: memindahkan seluruh placer. SpawnPoint default berada pada posisi lokal `(0, 0)`, sehingga content muncul pada posisi placer.
-- `Persistent Id`: ID permanen yang wajib unik. Gunakan pola seperti `layer1_east_02_a_enemy_01` atau `layer2_west_01_a_loot_02`. Jangan mengganti ID setelah content freeze karena save memakai ID ini.
-- `Spawn Chance`: peluang seluruh placer aktif saat New Game, dari `0.0` sampai `1.0`. Nilai `1.0` selalu aktif dan `0.5` berarti peluang 50%.
-- `Entries`: daftar weighted content yang dapat dipilih. Setiap hasil spawn memilih satu entry.
-- `Minimum Quantity`: jumlah minimum object ketika placer aktif. Nilai minimum adalah `1`; kondisi kosong diatur melalui `Spawn Chance`.
-- `Maximum Quantity`: jumlah maksimum object. Nilai ini tidak boleh melebihi jumlah SpawnPoint.
-- `Allocation Group`: ID group opsional untuk content unik. Placer dengan group sama berkompetisi dan maksimal satu placer menjadi pemenang.
-- `Required Allocation`: jika aktif bersama `Allocation Group`, world wajib memilih satu pemenang dari group. Gunakan untuk quest atau progression item yang tidak boleh hilang dari run.
-- `Facing`: arah horizontal scene hasil spawn. Gunakan `1` untuk arah normal/kanan dan `-1` untuk flip/kiri. Property ini terutama dipakai enemy; loot biasanya memakai `1`.
-- `Patrol Bounds`: rectangle patrol authored yang diteruskan kepada enemy yang mempunyai property `patrol_bounds`. Abaikan untuk loot. `BirdNestPlacer` memakai `Patrol Radius` sebagai flight region lingkaran.
-- child `SpawnPoint`: direct child `Marker2D` yang menentukan posisi spawn. Urutan Scene tree menghasilkan suffix ID `:0`, `:1`, dan seterusnya. Jangan mengubah urutannya setelah content freeze.
+- Placer result tidak di-roll ulang saat Continue.
+- Destroyed ID mencegah child respawn.
+- Enemy biasa menyimpan alive, health, status, position; transient AI reset.
+- Item menyimpan ID/state/transform/velocity/frozen state.
+- Rope menyimpan placement dan segment lengths.
+- Layer transition baru disimpan setelah destination siap dan restore selesai.
 
-Setiap object `WorldSpawnEntry` di dalam `Entries` mempunyai:
+## 11. Debug dan preview
 
-- `Content Id`: stable ID content. Pada EnemyPlacer, isi dengan ID seperti `tongue_amphibian`, `thorn_bloom`, atau `cave_spider`. Pada LootPlacer, isi dengan ID item di dalam breakable seperti `multitool`.
-- `Scene`: scene yang dibuat. EnemyPlacer memakai scene enemy. LootPlacer tetap memakai `breakable_loot.tscn`; `Content Id` menentukan item di dalamnya.
-- `Weight`: bobot relatif pemilihan entry. Dua entry dengan weight `3` dan `1` mempunyai peluang sekitar 75% dan 25%.
+F3 main menu membuka Custom World:
 
-Default EnemyPlacer memakai `tongue_amphibian`, quantity `1–1`, dan chance `1.0`. Gunakan `BirdNestPlacer` untuk 1–3 Knockback Bird dan `LargeFlyerPlacer` untuk large flyer. Semua `LargeFlyerPlacer` mempertahankan allocation group `layer_1_large_flyer`, sehingga tepat satu placer terpilih per run. Letakkan `LargeFlyerPOI` untuk rute roam dan `LargeFlyerBlocker` untuk penghalang fisik transparan yang tidak menutup sight.
+- pilih explicit variation untuk enam Layer 1 slot;
+- default tiap slot adalah option pertama dari owning `WorldSlot`;
+- run tetap dimulai di Surface;
+- override hanya berlaku pada requested Layer 1 debug run.
 
-Default LootPlacer memakai `breakable_loot.tscn` dengan nested item `multitool`, quantity `1–1`, dan chance `1.0`. Loot rock selalu menghasilkan satu `throwable_rock` ditambah satu item dari `Content Id`. Jangan mengisi `persistent_id` atau `item_id` pada breakable secara manual karena placer mengisinya saat spawn.
+F3 gameplay menyediakan current layer/route/slot, world log, manifest dump, validation, teleport, dan category-based gameplay ranges. Toggle range tetap aktif setelah panel ditutup.
 
-Allocation group memilih maksimal satu placer pemenang di seluruh run. Required group selalu mempunyai satu pemenang; ini dipakai quest relic. Optional group boleh kosong; ini dipakai rare item maksimum satu per run.
+`layer1_section_preview.tscn` hanya editor preview untuk merakit enam chosen variation. Ia bukan runtime generator dan tidak disimpan.
 
-## 6. Generation dan loading
+`foundation_test_room.tscn` dapat menjalankan placer langsung melalui bootstrap test-room script, tetapi tidak menggantikan full generated-run test.
 
-New Run memilih seluruh layout dan placer result kedua playable layer. Hanya layer aktif yang diinstansiasi. Continue membaca manifest tersimpan.
+## 12. Acceptance checklist
 
-Stage loading:
+- Root layer/section type benar.
+- Semua slot memilih variation miliknya sendiri.
+- Stable ID dan variation ID unik.
+- Semua required anchors/reference tersedia.
+- Entries valid dan mempunyai positive weight.
+- Quantity range valid; satu SpawnPoint boleh menerima beberapa hasil.
+- Allocation required mempunyai candidate pada setiap layout yang relevan.
+- Seam dan collision compatible antar variation.
+- Spawn tidak berada dalam terrain/respawn/gate trigger.
+- Continue mempertahankan manifest dan destroyed objects.
+- Player selalu mulai New Run di Surface.
+- Gate Layer 2 dapat dicapai dari kedua route Layer 1.
+- F3 Validate World tidak menemukan error.
 
-1. validate pools,
-2. select sections,
-3. validate selected scenes,
-4. resolve allocation groups,
-5. resolve placers,
-6. instantiate current layer,
-7. spawn persistent content,
-8. restore saved state,
-9. spawn player,
-10. final validation.
+## 13. Command verifikasi
 
-Generator yield minimal sekali per unit kerja sehingga window tetap responsive dan progress menunjukkan kerja nyata. Tidak ada fixed delay setelah generation. Error development menghentikan player spawn dan ditampilkan lengkap; export mencoba fallback scene eksplisit lalu mencatat warning.
+```bash
+/usr/bin/Godot --headless --path . --editor --quit
+/usr/bin/Godot --headless --path . --scene res://tests/foundation_smoke.tscn
+/usr/bin/Godot --headless --path . --scene res://tests/content_smoke.tscn
+```
 
-## 7. Activation, camera, dan out-of-bounds
-
-Seluruh terrain layer aktif tetap loaded. Enemy processing aktif hanya pada:
-
-- section player,
-- tetangga vertical langsung,
-- section pasangan saat player berada pada crossing slot 03.
-
-F3 menampilkan current layer/route/slot dan daftar section aktif.
-
-Camera mengikuti player secara horizontal dan vertikal. Depth 01–02 memakai bounds seluruh route 1280×2400 agar seam vertikal tidak menghentikan camera. Depth 03 memakai bounds seluruh layer 2560×2400 agar crossing east/west mulus. `Camera2D` native limit/smoothing dipakai; jangan membuat custom camera framework.
-
-Keluar world tanpa seam valid mengembalikan player ke `last_safe_position` dengan tepat 1 HP. Safe position diperbarui hanya pada surface, shop, dan seam valid. Enemy out-of-bounds menerima fall damage; survivor atau enemy fall-immune kembali ke placer.
-
-## 8. Persistence ownership
-
-Manifest menyimpan seed, world revision, selected variation, resolved placer entries/points, semantic player location, dan runtime ID counter.
-
-Placer result terpisah dari spawned object state. Destroyed child tidak muncul lagi. Enemy biasa menyimpan alive/dead dan health, lalu Continue menaruh survivor kembali di placer dengan AI state netral.
-
-Item, enemy, dan Rope yang dapat melewati seam berada pada layer runtime root. Dynamic object menyimpan layer ID dan global position. Rope boleh melewati seam karena seluruh layer tetap instantiated; Rope menyimpan root placement dan geometry/state miliknya.
-
-Rope sekarang mengikuti contract tersebut: root chain berada pada layer runtime root, mempunyai stable runtime ID, dan menyimpan posisi serta daftar panjang segment. Extension dibangun kembali dari satu record root saat layer dimuat atau Continue. Climbing state player tetap transient. Level designer belum boleh menjadikan Rope syarat jalur utama sampai acquisition/stock menjamin jumlah Rope yang diperlukan.
-
-Autosave layer transition dilakukan setelah destination selesai dibuat, player berada pada safe anchor, dan restore selesai. State source ditahan di memory selama transition agar tidak hilang.
-
-## 9. Debug tools
-
-Main menu Debug Run menampilkan seed input. Seed `0` berarti random; nilai lain mereproduksi run.
-
-Pause menu selalu menunjukkan seed. Debug Mode menambah World Gen Log berisi:
-
-- duration setiap stage dan total;
-- selected variation per slot;
-- placer result dan quantity;
-- fallback, warning, dan error.
-
-F3 selalu membuka panel scrollable berisi unlimited health, active-section text, bounds/seam draw, manifest dump, teleport ke slot/shop/gate, dan validate world. World Gen Log hanya ada pada Debug Run dan dapat ditutup dengan tombol Close atau Esc. Regenerate hanya melalui New Run.
-
-## 10. Acceptance minimum
-
-- Seed sama menghasilkan manifest sama; seed berbeda dapat menghasilkan variation berbeda.
-- Menambah slot/placer tidak mereroll stable ID lain.
-- Semua A/B combination pada seam valid.
-- Missing/duplicate ID, anchor, root, bounds, SpawnPoint, atau weight menjadi error.
-- Semua special slot memenuhi tag/count contract.
-- Continue tidak mereroll, respawn destroyed content, atau memindahkan state antar-layer.
-- Player tidak ada sebelum generation selesai.
-- Kedua sisi Layer 1 mencapai kedua entrance Layer 2.
-- Shop optional dapat ditemukan di east slot 02.
-- Gauntlet dan ending dapat dicapai tanpa quest reward.
-- Camera tidak berhenti pada seam `y = 800` atau `y = 1600`, dan mengikuti gerak horizontal dalam route.
-- Setiap map authored dapat dimainkan turun dan naik tanpa Rope sampai guaranteed acquisition/stock ditetapkan.
-- Rope yang melintasi seam section kembali pada posisi, panjang, collision, dan end-cap yang sama setelah layer round-trip dan Continue.
-- Debug panel dan World Gen Log tidak keluar dari viewport 640×360.
-- Headless import dan smoke test selesai tanpa error.
+Untuk masalah pathfinding, tambahkan `ground_traversal_smoke.tscn`. Untuk background/darkness, jalankan smoke scene subsystem tersebut.

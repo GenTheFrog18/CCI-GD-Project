@@ -8,8 +8,8 @@
 
 This questionnaire was prepared from:
 
-- `docs/layer_2_enemies_programmer_handoff.md`;
-- `docs/layer_2_relics_programmer_specification.md`;
+- `docs/reference/technical_history/layer_2_enemies_programmer_handoff.md`;
+- `docs/reference/technical_history/layer_2_relics_programmer_specification.md`;
 - the current Layer 1 runtime and implementation documents;
 - `docs/pertanyaan_lanjutan_gdd.md`;
 - unanswered sections of the earlier GDD/content questionnaire.

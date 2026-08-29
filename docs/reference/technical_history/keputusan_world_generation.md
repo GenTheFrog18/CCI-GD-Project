@@ -1,5 +1,7 @@
 # Keputusan World & Map Generation
 
+> **Diarsipkan:** riwayat questionnaire jam. Contract aktif: [`../../panduan_world_generation.md`](../../panduan_world_generation.md).
+
 **Status:** dijawab dan dikunci oleh lead designer pada 7 Agustus 2026. Dokumen ini adalah decision history; kontrak ringkas ada di `fondasi_teknis_godot.md` dan workflow implementasi ada di `panduan_world_generation.md`.
 
 Dokumen ini merangkum hal yang belum dikunci setelah membaca ulang:

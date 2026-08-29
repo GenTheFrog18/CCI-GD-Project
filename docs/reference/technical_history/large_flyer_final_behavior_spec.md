@@ -1,5 +1,7 @@
 # Large Flyer — Final Behaviour Design Specification
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_1_enemies.md`](../../implementation/layer_1_enemies.md).
+
 **Status:** implementation and tuning handoff.
 **Scope:** defines the final Layer 1 Large Flyer movement, player interaction, Tracking Mark, blocker response, and existing persistence/combat contracts.
 

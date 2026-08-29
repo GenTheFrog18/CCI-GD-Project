@@ -1,5 +1,7 @@
 # Layer 2 Relics — Programmer Specification
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_2_relics.md`](../../implementation/layer_2_relics.md).
+
 **Project:** Two-layer game-jam build
 **Engine:** Godot
 **Document purpose:** Implementation contract for the four Layer 2 relics

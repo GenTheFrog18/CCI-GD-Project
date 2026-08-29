@@ -1,16 +1,50 @@
 # Ascension Curse Implementation Contract
 
-The player owns one persistent tracker. Scale is 32 px/metre; default band is 320 px. Because Godot Y grows downward, ascent is `reference_y - player_y`.
+> **Status:** current runtime contract. Tuning authority is `game/player/player.tscn`, `game/player/curse_tracker.gd`, and `data/effects/curse_*.tres`.
 
-Reference follows new deepest positions. Curse application never moves it upward. Track greatest crossed band so descending/reclimbing does not retrigger; crossing several bands queues each. Vertical motion within 32 px for ten seconds counts as rest even while walking horizontally. Grounded or safe Rope rest resets reference/band to current position.
+## Tracking
 
-Surface and authored safe zones reset. Transition/load/recovery uses arrival position plus short grace. Jump, knockback, Rope, and continuous traversal count only when crossing a full band.
+Player owns one `CurseTracker`. Godot Y grows downward, so ascent is `reference_y - player_y`. Reference follows new deepest positions and never moves upward merely because Curse was applied.
 
-Numbing Pill adds 300 seconds to 999. Crossing under suppression applies no Curse, subtracts 20 seconds in Layer 1 or 40 in Layer 2, resets reference/band to current position, and retains any remaining suppression.
+Default trigger band is 320 px. `crossed_band` prevents descending then reclimbing the same band from rerolling Curse. Crossing multiple complete bands processes each threshold.
 
-Layer packages replace one another; Layer 2 does not include Layer 1:
+Rest within `stillness_tolerance` for `stillness_seconds` resets reference/band. Surface, `CurseSafeZone`, layer transition, Continue placement, and out-of-bounds recovery reset or grant transition grace through the same tracker API.
 
-- Layer 1: one adjustable 20-second refresh/reroll effect reducing movement, healing, throw range, and changing colour; never grants benefit.
-- Layer 2: refresh one 40-second throw/colour penalty; add an independent 40-second 10% health-cap stack to maximum five; once/second roll adjustable 5% for 0.5-second control lock and Rope detach. Existing health is not deleted; only healing is capped.
+## Warning
 
-Save layer, reference, crossed band, rest progress, grace, suppression, package modifier/duration, and each cap timer. Gameplay/inventory advances timers; pause/menu/loading stops. F3 draws reference and supports reset, clear effects, add healing, and force current-layer Curse.
+At `warning_threshold_ratio` of the next band, default 70%, HUD shows the warning icon above player and text `Naik terlalu cepat, akan terkena curse` in the status area.
+
+Warning remains while player moves upward. Stopping starts `warning_stop_delay`, default 1 s. Crossing the threshold or resetting the reference clears warning immediately. Warning is presentation only and does not change Curse math.
+
+## Suppression
+
+Numbing Pill applies `curse_suppression`. Crossing a band while suppressed:
+
+1. does not apply layer Curse;
+2. subtracts the package duration from suppression;
+3. advances/reset threshold state so the same climb is not retriggered.
+
+Current consumable behavior adds 300 s up to 999 s.
+
+## Layer packages
+
+- Layer 1 applies/refreshes one 20 s `curse_layer_1`: movement ×0.75, healing ×0.6, throw range ×0.7, plus presentation colour.
+- Layer 2 applies/refreshes one 40 s `curse_layer_2_penalty`, adds one independent 40 s `curse_layer_2_health_cap` stack up to five, and rolls once per second for an adjustable short control stop.
+- Layer packages replace the relevant layer behavior; Layer 2 does not silently include Layer 1 modifiers.
+
+Layer 2 exists as implementation foundation but is outside normal current progression.
+
+## Save and debug
+
+Save stores reference, crossed band, rest progress, transition grace, warning-relevant motion state, and persistent effect applications. UI warning itself is rebuilt.
+
+F3 categories can draw Curse reference/threshold and provide reset, clear effects, healing, and force-current-layer-Curse actions.
+
+## Acceptance
+
+- Descend/reclimb within an already crossed band does not reroll.
+- Warning begins at configured ratio and clears after configured stop delay.
+- Rope, jump, and knockback count only when they cross a full band.
+- Safe transition/recovery never creates an immediate false Curse.
+- Suppression consumes the crossed band and remaining suppression persists through Continue.
+- Layer 2 cap stacks independently and does not delete current HP directly.

@@ -1,5 +1,7 @@
 # Cave Spider — Final Behaviour Design Specification
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_1_enemies.md`](../../implementation/layer_1_enemies.md).
+
 **Status:** design handoff for implementation and tuning.  
 **Scope:** replaces the Cave Spider's current continuous idle movement and simple shoot/cooldown loop.  
 **Role:** a small ranged status enemy whose first successful projectile creates an escalating close-range problem and makes the Large Flyer a layer-wide threat.

@@ -89,6 +89,8 @@ Read the [documentation index](docs/README.md), [programming guide](docs/panduan
 - [Editable GDD — Bahasa Indonesia](docs/gdd_id.md)
 - [Formatted GDD PDF — English](docs/delvers_of_the_abyss_gdd_en.pdf)
 - [Formatted GDD PDF — Bahasa Indonesia](docs/delvers_of_the_abyss_gdd_id.pdf)
+- [Current technical foundation](docs/fondasi_teknis_godot.md)
+- [Live implementation contracts](docs/implementation/)
 
 ## Inspirations
 
@@ -203,6 +205,8 @@ Baca [indeks dokumentasi](docs/README.md), [panduan programming](docs/panduan_pr
 - [GDD editable — Bahasa Indonesia](docs/gdd_id.md)
 - [GDD PDF terformat — English](docs/delvers_of_the_abyss_gdd_en.pdf)
 - [GDD PDF terformat — Bahasa Indonesia](docs/delvers_of_the_abyss_gdd_id.pdf)
+- [Fondasi teknis aktif](docs/fondasi_teknis_godot.md)
+- [Kontrak implementation aktif](docs/implementation/)
 
 ## Inspirasi
 

@@ -1,32 +1,43 @@
-# Layer 2 Relics Implementation Contract
+# Layer 2 Relics — Implemented Foundation
 
-This file records implemented behavior, save boundaries, Inspector tuning, and the level-designer handoff. It must be updated in the same checkpoint as relic code.
+> **Status:** code and content Resource exist, but Layer 2 is outside normal current progression. Resource/scene exports are tuning authority.
 
-Stable IDs are `plate_umbrella`, `lacerator`, `resonance_core`, `bolt_shock`, and `whistle_moon`. All four relics default to one item per stack and one acquisition per run. Umbrella and Lacerator use deterministic unique loot allocation, Core uses a required unique allocation, and Bolt Shock is quest-only.
+## Stable IDs
 
-- Plate Umbrella: both actions toggle; cursor-facing directional block; editable `BlockingArea/BlockHitbox` polygon; no throwing; durable stability/recovery; movement, jump, and Rope modifiers.
-- Lacerator: primary loads, secondary fires, context unloads safely; four adjustable shots; horizontal left/right aim; loaded state shows a dotted gravity trajectory; persistent gravity balls with four accepted contacts and shared Bleed.
-- Resonance Core: primary unavailable, secondary throws; physical impacts deal adjustable damage/force, emit tiered `SoundEvent`s, and discover on first qualifying resonance.
-- Bolt Shock: primary loads, secondary fires; seven non-rechargeable uses; straight rod; accepted hit interrupts, suppresses detectors, stuns movement, applies low electrical DOT, and disables flight.
+`plate_umbrella`, `lacerator`, `resonance_core`, `bolt_shock`, and `whistle_moon`.
 
-Final art, audio, and balance are intentionally deferred. Placeholder presentation must still make active state, aim, telegraph, impact, and failure readable.
+## Behavior
 
-## Implemented foundation
-
-- `Layer2RelicBehavior` prepares Umbrella/Lacerator/Bolt without duplicating inventory logic. Prepared launchers are real consumed instances; cancellation returns the same state unarmed.
-- `PreparedLayer2Relic` owns cursor aim, Umbrella stability, and launcher firing. Lacerator creates `LaceratorBall`; Bolt creates `BoltShockRod`.
-- `ResonanceCoreBehavior` reuses normal thrown-item weight, pickup, preview, persistence, and collision behavior while adding tiered resonance.
-- `ItemDefinition.recover_out_of_bounds` returns Core and Bolt pickups to `quest_item_recovery_marker`; other relics use ordinary loss rules.
-- Durable state keys are `stability`, `recovery_remaining`, `remaining_ammo`, and `remaining_uses`. `loaded` is always false outside a prepared action.
-- `Layer2Gatekeeper` uses a two-interaction confirmation before taking exactly one Core. It immediately saves the idempotent `layer_2_core_rewarded` flag, Moon rank/physical Moon Whistle, and one seven-use Bolt Shock. A failed inventory insertion creates the protected persistent pickup `layer_2_bolt_shock_reward` at the shop marker.
-
-## Provisional values
-
-| Relic | Defaults |
+| Relic | Current contract |
 | --- | --- |
-| Plate Umbrella | weight 8; stability 100; arc 120°; open/close 0.3 s; forced recovery 2 s; movement/jump/climb 1.0/0.75/0.6 |
-| Lacerator | weight 4; 4 shots; 260 speed; 3 damage; 8 s Bleed; 4 accepted ball contacts |
-| Resonance Core | weight 18; 100 impact damage; resonance tiers at 80/180/280 impact strength |
-| Bolt Shock | weight 5; 7 uses; 500 speed; 10 impact damage; 3 s stun; 5 s suppression; 6 one-damage ticks |
+| Plate Umbrella | Primary or secondary toggles opening/closing. Open cursor-facing block reduces accepted directional damage while force still acts. Stability and forced recovery persist in item state. Not throwable. |
+| Lacerator | Primary loads, secondary fires one gravity ball. Context change unloads without spending ammunition. Ball persists, accepts four contacts, and applies Bleed. Not throwable. |
+| Resonance Core | No primary. Secondary uses ordinary weighted physical throw plus high impact damage and tiered SoundEvent. Qualifying impact discovers it. Protected out-of-bounds recovery. |
+| Bolt Shock | Primary loads, secondary fires one straight rod from seven-use capacity. Hit interrupts, suppresses detectors, electrically stuns, applies electrical DOT, and disables flight. Context change unloads safely. Protected recovery. |
+| Moon Whistle | Progression/physical whistle granted with Core exchange foundation. |
 
-These values live in item resources and remain editable without changing scripts.
+## Runtime ownership
+
+- `Layer2RelicBehavior` prepares Umbrella/Lacerator/Bolt without special inventory mutation.
+- `PreparedLayer2Relic` owns aim, transition state, Umbrella blocking/stability, and launcher firing.
+- `LaceratorBall` and `BoltShockRod` own their payload lifecycle.
+- `ResonanceCoreBehavior` reuses `ThrownItem` preview, weight, collision, pickup, and save.
+- Durable keys include stability/recovery/ammunition/use counts. `loaded` is transient and false outside prepared action.
+
+## Quest foundation
+
+`Layer2Gatekeeper` uses two interactions to accept one `resonance_core`. Reward path sets idempotent progression flag, Moon rank/physical whistle, and one Bolt Shock. Failed inventory insertion creates protected persistent pickup at reward marker.
+
+This exchange is not reachable through normal current progression and does not redefine the current Layer 2-gate ending.
+
+## Placement and persistence
+
+- Umbrella and Lacerator use optional run-wide allocation groups.
+- Resonance Core uses required run-wide allocation.
+- Bolt Shock is quest reward, not ordinary loot placer content.
+- All stateful relics remain max-stack-one in practice.
+- Core/Bolt world forms use `recover_out_of_bounds` and authored `quest_item_recovery_marker`.
+
+## Verification status
+
+`tests/content_smoke.gd` covers registration, prepared state, impact behavior, quest reward, and recovery. The Resonance Core assertion was failing before the 30 August documentation audit; runtime/test correction remains separate work.

@@ -1,36 +1,82 @@
 # Layer 1 Items Implementation Contract
 
-## Shared Rules
+> **Status:** current runtime contract. Item Resource and attached behavior Resource are tuning authority.
 
-- Every definition explicitly assigns primary and secondary behaviour.
-- Failure never removes, duplicates, or changes an item.
-- Activation transfers one real unit to a prepared/world owner. Completion destroys it; cancellation returns/drops it by item rule.
-- Active throws have no ordinary physical damage. Inactive throws use configured impact.
-- Only default/stateless instances stack. Acquisition origin participates in compatibility.
-- Successful signature effects count discovery; invalid use does not.
-- Real inactive drops persist. Temporary fields and spent active items do not.
+## Shared rules
 
-| Item | Primary | Secondary/special |
+- Primary and secondary behavior are explicit; `behavior` is compatibility fallback.
+- Failed action never consumes or mutates item.
+- Prepared action transfers one real unit out of inventory; cancel returns that unit/state when possible.
+- Inactive throw creates persistent `ThrownItem`; prepared throw keeps active state.
+- Default/stateless compatible instances may stack. Stateful forms remain individual.
+- Signature use increments discovery only after successful behavior.
+- Map/enemy drop origin remains in instance state for theft/confiscation/progression rules.
+- World collision comes from `world_hitbox` or `world_hitbox_scene`; fallback is generic circle.
+
+## Supplies and tools
+
+| Item | Primary | Secondary |
 | --- | --- | --- |
-| Red/Blue Whistle | dedicated-slot high-priority sound | physical slot may be stolen/dropped |
-| Multitool | existing thrust/tool | disabled |
-| Rope | existing placement/extension | generic throw |
-| Throwable Rock | held thrust | physical throw |
-| Bandage | reject at full health; remove bleed; heal 2 HP/s for 25 s | generic throw |
-| Info Book | reveal remaining discoverable descriptions | generic throw |
-| Numbing Pill | add 300 s suppression to max 999 | generic throw |
-| Sun Sphere | prepare active light | active throw; inactive impact activates |
-| Lantern Crystal | LOS dazzle/lure at player, consume | physical throw then dazzle/lure, consume |
-| Rattlepod | active pod, 2 pulses/s, 10 pulses | active throw; inactive physical/recoverable |
-| Hushcap | cloud at player | cloud at first impact |
-| Cling Resin | small patch | larger impact patch |
-| Driftseed | apply to player; normal ascent, 0.25 falling gravity, 140 px/s fall cap | valid target consumes; miss recoverable |
-| Silver Weight | toggle prepared heavy; 0.45 movement and 0.35 jump | multi-hit; full ID becomes damaged ID, second breaks |
+| Red/Blue/Moon Whistle | High-priority sound from dedicated whistle slot | Not an active hotbar throw contract |
+| Multitool | Cursor-facing thrust for special interaction, breakable, then damage | Disabled; cannot be thrown |
+| Rope | Place or extend persistent 160 px climbable Rope | Ordinary physical throw |
+| Throwable Rock | Multitool-style short thrust | Physical throw with velocity-scaled impact |
+| Bandage | Reject at full HP, remove Bleed, add 15 s Healing (30 HP total) | Ordinary physical throw |
+| Info Book | Reveal every currently registered discoverable item description | Ordinary physical throw |
+| Numbing Pill | Add 300 s Curse suppression up to 999 s | Ordinary physical throw |
 
-Active Rattlepod drops on inventory/shop/slot change/Save & Menu and is not restored. Temporary light/cloud/resin clears on Continue. Driftseed and actor statuses save duration. `silver_weight` and `silver_weight_damaged` are separate maximum-stack-one IDs.
+The current Numbing Pill description says 180 s while code applies 300 s. This is a known content mismatch; runtime value above is authoritative until design resolves it.
 
-Use shared damage, force, status, sound, sight, agitation, and target contracts. Flying actors ignore ordinary/resin slow but accept Driftseed. Silver Weight deals adjustable 200 heavy damage to every damageable actor; low-health enemies die from damage rather than a tag-based instant-kill rule.
+## Layer 1 relics
 
-Item-created effect areas expose separate primary and impact `Shape2D` resources in each item definition. Edit those shapes through the Godot Inspector; no script change is required.
+| Item | Primary | Secondary/impact |
+| --- | --- | --- |
+| Sun Sphere | Prepare carried active light | Active sphere can be thrown while remaining active; inactive impact at speed threshold converts into moving active light |
+| Lantern Crystal | Immediate LOS flash/sound around player | Physical throw; qualifying impact flashes actors with clear head LOS, emits sound, consumes crystal |
+| Rattlepod | Prepared pod sends ten strong pulses over roughly 5 s | Inactive physical/recoverable throw |
+| Hushcap | Small detector-suppression cloud at player | Qualifying impact creates larger cloud and consumes item |
+| Cling Resin | Small resin patch at player | Qualifying impact creates larger patch; loose-item velocity decays by configured multiplier while inside |
+| Driftseed | Apply Driftseed to player for 30 s | Qualifying hit applies it to valid actor; miss remains recoverable |
+| Silver Weight | Prepared heavy carry with movement/jump penalty | Multi-hit 200 damage; first qualifying impact becomes intermediate damaged world form |
 
-Map drops, enemy drops, purchases, starting equipment, and replacements record origin. Senior diver removes only map-found items. Harvest/growth sources are persistent, configurable, two-hit Multitool targets.
+## Special world behavior
+
+Hushcap cloud owns layered player overlay. Enter/exit count prevents overlapping clouds from fighting; fade times and layer opacity are editable on overlay scene.
+
+Resin uses provider status for actors and continuous velocity damping for loose items. Entry must not zero horizontal velocity. Flying enemies reject `resin_bound`.
+
+Lantern flash raycasts from source to player `get_detection_origin()`. Snail and crystal use the same visibility rule. Player dazzled overlay captures viewport image plus white fill, fades in, then decays from remaining effect time.
+
+Sun Sphere impact activation creates `PreparedRelic`, copies transform and impact velocity, and defers tree/physics changes. It does not disappear into a static effect area.
+
+## Silver Weight lifecycle
+
+```text
+silver_weight inventory
+  -> qualifying impact
+silver_weight_impact_damaged world item
+  -> pickup
+silver_weight_damaged inventory
+  -> qualifying impact and later comes to rest
+destroyed
+```
+
+Intermediate world form is pickupable and persistent. It becomes normal damaged ID only when player/frog takes it. A damaged weight thrown again remains physical until it is still and available, then removes itself.
+
+## World/save boundary
+
+- Inactive drops, Rope, moving throws, intermediate Silver Weight, and recoverable quest items save.
+- Temporary cloud/resin, warning visuals, active Rattlepod pulses, and spent active forms do not restore.
+- Actor statuses save according to `EffectDefinition.persists`.
+- `recover_out_of_bounds` sends protected Core/Bolt objects to authored recovery marker; ordinary items are destroyed.
+
+## Acceptance
+
+- Preview and actual throw use identical launch velocity.
+- Inventory commits only after world/prepared node succeeds.
+- Physics monitoring/mode changes from impact are deferred.
+- Hushcap blocks enemy detector updates.
+- Resin slows loose items over time without erasing momentum at entry.
+- Lantern/Snail flash respects LOS to player head.
+- Sun Sphere keeps motion after activation.
+- Silver Weight follows all three IDs without duplicate or premature disappearance.

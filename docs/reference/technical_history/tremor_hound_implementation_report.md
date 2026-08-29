@@ -1,5 +1,7 @@
 # Tremor Hound Implementation Report
 
+> **Archived:** point-in-time report. Current contract: [`../../implementation/layer_2_enemies.md`](../../implementation/layer_2_enemies.md).
+
 Status: Layer 2 prototype exists; final behavior is not complete.
 
 This report consolidates the current Tremor Hound code, scene, enemy definition, Layer 2 handoff, implementation contract, placer guidance, clarification answers, and smoke-test coverage. The Layer 2 handoff is a guideline: existing shared systems and project conventions take priority over copying its suggested class names literally.
@@ -322,7 +324,7 @@ Initial clarification decisions already made:
 - `game/enemies/layer2/tremor_hound.tscn`
 - `data/enemies/tremor_hound.tres`
 - `game/world/placers/layer2_enemy_placer.tscn`
-- `docs/layer_2_enemies_programmer_handoff.md`
+- `docs/reference/technical_history/layer_2_enemies_programmer_handoff.md`
 - `docs/implementation/layer_2_enemies.md`
 - `docs/implementation/layer_2_world_integration.md`
 - `docs/pertanyaan_klarifikasi_layer_2.md`

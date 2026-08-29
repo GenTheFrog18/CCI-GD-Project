@@ -1,5 +1,7 @@
 # Optional Ground Traversal and Jump Pathfinding
 
+> **Archived:** implementation proposal. Current architecture: [`../../fondasi_teknis_godot.md`](../../fondasi_teknis_godot.md).
+
 **Engine:** Godot  
 **System type:** General-purpose optional enemy movement mechanic  
 **Status:** Implementation handoff  
@@ -682,4 +684,3 @@ The static section navigation cache may be rebuilt or reused when the section lo
 12. Add F3 debug rendering.
 13. Test the mechanic on one simple enemy before connecting additional enemies.
 14. Reuse the same component for Tremor Hound and future enemies only after the generic tests pass.
-

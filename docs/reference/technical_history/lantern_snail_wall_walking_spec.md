@@ -1,5 +1,7 @@
 # Lantern Snail — Wall and Ceiling Walking Handoff
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_1_enemies.md`](../../implementation/layer_1_enemies.md).
+
 ## 1. Recommendation
 
 Do not implement wall/ceiling walking as ordinary gravity with a changing gravity vector.

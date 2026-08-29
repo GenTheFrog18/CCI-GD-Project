@@ -1,5 +1,7 @@
 # Knockback Bird — Programmer Implementation Specification
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_1_enemies.md`](../../implementation/layer_1_enemies.md).
+
 ## 1. Purpose
 
 This document defines the intended implementation for the **Knockback Bird** enemy.

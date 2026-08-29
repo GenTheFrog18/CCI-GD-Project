@@ -1,5 +1,7 @@
 # Cave Spider — Game Jam Programmer Specification
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_1_enemies.md`](../../implementation/layer_1_enemies.md).
+
 ## 1. Purpose and design role
 
 The Cave Spider is a small ranged setup enemy for Layer 1. Its individual projectile hit should feel manageable; the danger comes from applying several statuses at once and creating pressure from a larger enemy elsewhere in the layer.

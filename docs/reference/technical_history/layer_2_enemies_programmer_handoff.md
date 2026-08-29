@@ -1,5 +1,7 @@
 # Layer 2 Enemies — Programmer Handoff
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_2_enemies.md`](../../implementation/layer_2_enemies.md).
+
 **Project:** Two-layer game-jam build
 **Engine:** Godot
 **Document purpose:** Implementation contract for the complete Layer 2 enemy roster

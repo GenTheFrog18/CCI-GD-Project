@@ -1,5 +1,7 @@
 # World Darkness and Lighting — Programmer Handoff
 
+> **Archived:** implementation proposal. Current architecture: [`../../fondasi_teknis_godot.md`](../../fondasi_teknis_godot.md).
+
 **Project:** CCI GD two-layer game-jam build  
 **Engine:** Godot 4.7.1, GDScript, Compatibility renderer  
 **Purpose:** Concrete implementation contract for dark map sections and light relics  

@@ -1,5 +1,7 @@
 # Large Layer 1 Flyer — Programmer Specification
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_1_enemies.md`](../../implementation/layer_1_enemies.md).
+
 ## 1. Role and design purpose
 
 The Large Layer 1 Flyer is one persistent, layer-wide living threat. It is not a normal per-room enemy and should not be duplicated when the player crosses between Layer 1 sections.

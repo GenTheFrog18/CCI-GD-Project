@@ -1,5 +1,7 @@
 # Layer 1 Enemy and Item Design Reference
 
+> **Archived:** old concept baseline. Current contracts: [`../../implementation/`](../../implementation/) and [`../../enemy_implementation_handoff.md`](../../enemy_implementation_handoff.md).
+
 > Status: current implementation reference for Layer 2 concept development.
 > Baseline: `feature/contents`, 16 August 2026.
 > This document describes what the current build actually supports. Numerical values are provisional tuning, not final balance.
@@ -14,7 +16,7 @@ Layer 2 concepts should extend the existing game instead of becoming a separate 
 - how enemies, items, effects, terrain, and progression interact;
 - which roles are already occupied, so Layer 2 can introduce meaningful new problems and tools.
 
-The authoritative high-level design remains [gdd_en.md](gdd_en.md). Technical contracts remain in [layer_1_enemies.md](implementation/layer_1_enemies.md), [layer_1_items.md](implementation/layer_1_items.md), and [effects.md](implementation/effects.md).
+The authoritative high-level design remains [gdd_en.md](../../gdd_en.md). Technical contracts remain in [layer_1_enemies.md](../../implementation/layer_1_enemies.md), [layer_1_items.md](../../implementation/layer_1_items.md), and [effects.md](../../implementation/effects.md).
 
 ## 2. Core Content Philosophy
 

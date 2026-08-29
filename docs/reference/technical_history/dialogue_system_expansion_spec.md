@@ -1,5 +1,7 @@
 # Dialogue System Expansion — Programmer Handoff
 
+> **Archived:** implementation proposal. Current architecture: [`../../fondasi_teknis_godot.md`](../../fondasi_teknis_godot.md).
+
 **Status:** approved design handoff.
 **Scope:** extend the current linear dialogue viewer into a reusable NPC dialogue system with first/repeat interactions, configurable choices, one-time item exchange, tutorial opening, persistence, and hold-to-fast-forward.
 

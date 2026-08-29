@@ -2,6 +2,8 @@
 
 Tutorial ini ditujukan untuk programmer yang hampir belum pernah memakai Godot. Versi project yang digunakan adalah **Godot 4.7.1**.
 
+> **Status:** diaudit terhadap contract item aktif pada 30 Agustus 2026. Untuk ownership dan lifecycle terbaru, lihat [`fondasi_teknis_godot.md`](fondasi_teknis_godot.md) dan [`implementation/layer_1_items.md`](implementation/layer_1_items.md).
+
 Target tutorial:
 
 1. memahami bagian GUI Godot yang dipakai sehari-hari,
@@ -58,7 +60,7 @@ Sebelum membuat file, minta atau tulis jawaban untuk checklist ini:
 - Apakah item dikonsumsi?
 - Apakah item dapat dilempar dan diambil kembali?
 - Berapa `max_stack`?
-- Berapa integer `weight`? Field ini direncanakan untuk tahap player/item berikutnya; jangan mengarang field sebelum code foundation menyediakannya.
+- Berapa integer `weight`? Field ini sudah dipakai oleh encumbrance, throw, impact mass, dan UI.
 - Apakah item menyimpan state seperti `active`, durability, atau timer?
 - Target validnya player, enemy, terrain, atau interaction object?
 - Apakah item dapat dijual dan berapa nilainya?
@@ -189,7 +191,7 @@ Field pentingnya:
 | `Sellable` | Apakah shop boleh menjual item dari inventory player. |
 | `Persistent When Dropped` | Apakah world item ikut living-run save. |
 | `Retrievable` | Apakah item lempar dapat diambil kembali. |
-| `Behavior` | Resource yang menjalankan primary/secondary action. Tidak boleh kosong. |
+| `Behavior` | Compatibility fallback. Isi `Primary Behavior` dan `Secondary Behavior` secara eksplisit untuk content baru. |
 
 `ContentCatalog` otomatis membaca semua `.tres` di `data/items/`. Tidak perlu menambahkan item ke daftar manual.
 
@@ -298,7 +300,7 @@ Jika art team sudah memberikan PNG:
 
 Project sudah memakai nearest filtering. Jangan mengubah import setting global hanya untuk satu item.
 
-Penting: HUD dan world scene prototype saat ini masih memakai label/polygon placeholder. Mengisi `Icon` belum tentu langsung mengganti visual hotbar atau object dunia. Itu bukan error item definition. Jangan membuat sistem UI baru dari dalam task item.
+Icon dipakai inventory/hotbar dan generic world item. Untuk state visual berbeda, isi `State Visuals`. Bila world form masih memakai fallback, periksa `world_scene`, `world_hitbox_scene`, dan state ID sebelum membuat UI baru.
 
 ### State visuals
 
@@ -530,7 +532,7 @@ result.message = "Item diaktifkan"
 return result
 ```
 
-Untuk prototype sekarang, set `Max Stack = 1` pada item stateful. Sistem pemisahan satu unit aktif dari stack belum lengkap untuk semua behavior, sehingga stack stateful quantity besar berisiko mengubah state seluruh stack.
+Set `Max Stack = 1` untuk item stateful kecuali lifecycle stack tersebut sudah diuji end-to-end. Inventory membandingkan instance state, tetapi prepared/world behavior tetap harus memindahkan tepat satu unit tanpa mengubah unit lain.
 
 ## 10.5 Membuat world node
 
@@ -594,7 +596,7 @@ Simpan data per-item di:
 
 Item bertimer seperti Rattlepod membutuhkan owner node runtime yang melakukan `_process`/timer. Jangan menaruh timer berjalan pada shared behavior Resource.
 
-`ThrownItem.on_impact()` saat ini cocok untuk effect impact sederhana, tetapi result dari hook tersebut belum melakukan consume/state commit kedua. Jika item membutuhkan lifecycle kompleks, berhenti dan diskusikan contract dengan lead sebelum mengubah `ThrownItem`.
+`ThrownItem.on_impact()` cocok untuk effect impact sederhana, tetapi return result tidak melakukan inventory commit kedua karena unit sudah dimiliki world node. Lifecycle kompleks harus diselesaikan oleh world/prepared owner atau direview sebagai perubahan contract bersama.
 
 ## 12.1 World hitbox dan impact threshold
 

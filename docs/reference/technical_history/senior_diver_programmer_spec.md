@@ -1,5 +1,7 @@
 # Senior Diver — Programmer Specification
 
+> **Archived:** historical proposal. Current contract: [`../../implementation/layer_1_enemies.md`](../../implementation/layer_1_enemies.md).
+
 ## 1. Role and design purpose
 
 The Senior Diver is a systemic gatekeeper and progression check for Layer 1.
