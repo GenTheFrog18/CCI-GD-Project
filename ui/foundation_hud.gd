@@ -302,6 +302,14 @@ func _build_ui() -> void:
 	_add_debug_button(effects_section, "Emit Sound", _debug_emit_sound)
 	_add_debug_button(effects_section, "Apply Slow", _debug_apply_slow)
 	_add_debug_button(effects_section, "Damage 10", _debug_damage)
+	_add_debug_button(effects_section, "Heal 10 HP", _debug_heal)
+	var effect_ids: Array = ContentCatalog.effects.keys()
+	effect_ids.sort()
+	for raw_effect_id in effect_ids:
+		var effect_id := StringName(raw_effect_id)
+		var definition := ContentCatalog.get_effect(effect_id)
+		if definition != null:
+			_add_debug_button(effects_section, "Apply %s" % (definition.display_name if not definition.display_name.is_empty() else String(effect_id)), _debug_apply_effect.bind(effect_id))
 	for spec in [
 		["Reset Curse Height", &"curse_reset"],
 		["Clear Effects", &"curse_clear"],
@@ -309,6 +317,18 @@ func _build_ui() -> void:
 		["Apply Layer Curse", &"curse_apply"],
 	]:
 		_add_debug_button(effects_section, spec[0], _emit_world_debug_action.bind(spec[1]))
+
+	var gameplay_ranges_section := _add_debug_section(debug_column, "Gameplay Ranges")
+	_add_debug_draw_toggle(gameplay_ranges_section, "Enemy Roaming Ranges", &"enemy_ranges")
+	_add_debug_draw_toggle(gameplay_ranges_section, "Enemy Placer Ranges", &"placer_ranges")
+	_add_debug_draw_toggle(gameplay_ranges_section, "Sight Cones and Rays", &"sight_ranges")
+	_add_debug_draw_toggle(gameplay_ranges_section, "Sound Event Ranges", &"sound_ranges")
+	_add_debug_draw_toggle(gameplay_ranges_section, "Interaction Ranges", &"interaction_ranges")
+	_add_debug_draw_toggle(gameplay_ranges_section, "Combat Hitboxes", &"combat_hitboxes")
+	_add_debug_draw_toggle(gameplay_ranges_section, "Item Debug", &"item_debug")
+	_add_debug_draw_toggle(gameplay_ranges_section, "Pathfinding", &"pathfinding")
+	_add_debug_draw_toggle(gameplay_ranges_section, "Enemy Labels", &"enemy_labels")
+	_add_debug_draw_toggle(gameplay_ranges_section, "Player Debug", &"player_debug")
 
 	var world_section := _add_debug_section(debug_column, "World")
 	for spec in [
@@ -326,11 +346,6 @@ func _build_ui() -> void:
 	_add_debug_button(diagnostics_section, "Load", _debug_load)
 	_add_debug_button(diagnostics_section, "Validate World", _emit_world_debug_action.bind(&"validate_world"))
 	_add_debug_button(diagnostics_section, "Dump Manifest", _emit_world_debug_action.bind(&"dump_manifest"))
-	var gameplay_draw_toggle := CheckButton.new()
-	gameplay_draw_toggle.text = "Show Gameplay Ranges"
-	gameplay_draw_toggle.button_pressed = GameSession.debug_gameplay_draw
-	gameplay_draw_toggle.toggled.connect(func(enabled: bool): GameSession.debug_gameplay_draw = enabled)
-	diagnostics_section.add_child(gameplay_draw_toggle)
 	world_log_panel = PanelContainer.new()
 	world_log_panel.position = Vector2(40, 30)
 	world_log_panel.size = Vector2(560, 300)
@@ -376,6 +391,13 @@ func _add_debug_button(parent: VBoxContainer, text: String, callback: Callable) 
 	button.text = text
 	button.pressed.connect(callback)
 	parent.add_child(button)
+
+func _add_debug_draw_toggle(parent: VBoxContainer, text: String, category: StringName) -> void:
+	var toggle := CheckButton.new()
+	toggle.text = text
+	toggle.button_pressed = GameSession.is_debug_draw_enabled(category)
+	toggle.toggled.connect(func(enabled: bool): GameSession.set_debug_draw_enabled(category, enabled))
+	parent.add_child(toggle)
 
 func _build_health_flames() -> void:
 	var row := HBoxContainer.new()
@@ -777,6 +799,17 @@ func _debug_apply_slow() -> void:
 
 func _debug_damage() -> void:
 	player.apply_damage(DamageInfo.new(10.0))
+
+func _debug_heal() -> void:
+	if player != null and player.is_alive():
+		player.health.heal(10.0)
+
+func _debug_apply_effect(effect_id: StringName) -> void:
+	if player == null:
+		return
+	var definition := ContentCatalog.get_effect(effect_id)
+	if definition != null:
+		player.apply_status(effect_id, {"duration": definition.duration, "origin": "debug"})
 
 func _debug_save() -> void:
 	SaveManager.save_run()

@@ -5,6 +5,7 @@ signal money_changed(value: int)
 signal whistle_changed(tier: StringName)
 signal delivery_changed(value: int)
 signal display_settings_changed
+signal debug_draw_changed(category: StringName, enabled: bool)
 
 const STARTING_MONEY := 50
 const DESIGN_SIZE := Vector2(640.0, 360.0)
@@ -28,6 +29,12 @@ var current_slot_id: StringName = &""
 var debug_enabled := false
 var debug_unlimited_health := false
 var debug_gameplay_draw := false
+const DEBUG_DRAW_CATEGORIES: Array[StringName] = [
+	&"enemy_ranges", &"placer_ranges", &"sight_ranges", &"sound_ranges",
+	&"interaction_ranges", &"combat_hitboxes", &"item_debug", &"pathfinding",
+	&"enemy_labels", &"player_debug",
+]
+var debug_draw_flags: Dictionary = _default_debug_draw_flags()
 var debug_custom_layer_id: StringName = &""
 var debug_custom_section_overrides: Dictionary = {}
 var runtime_id_counter := 0
@@ -67,6 +74,7 @@ func start_new_run(seed_value := 0, enable_debug := false) -> void:
 	debug_enabled = enable_debug
 	debug_unlimited_health = false
 	debug_gameplay_draw = false
+	debug_draw_flags = _default_debug_draw_flags()
 	debug_custom_layer_id = &""
 	debug_custom_section_overrides.clear()
 	runtime_id_counter = 0
@@ -106,6 +114,7 @@ func capture_state() -> Dictionary:
 		"debug_enabled": debug_enabled,
 		"debug_unlimited_health": debug_unlimited_health,
 		"debug_gameplay_draw": debug_gameplay_draw,
+		"debug_draw_flags": debug_draw_flags.duplicate(true),
 		"runtime_id_counter": runtime_id_counter,
 		"world_generation_log": world_generation_log.duplicate(true),
 	}
@@ -124,6 +133,11 @@ func restore_state(data: Dictionary) -> void:
 	debug_enabled = bool(data.get("debug_enabled", false))
 	debug_unlimited_health = bool(data.get("debug_unlimited_health", false))
 	debug_gameplay_draw = bool(data.get("debug_gameplay_draw", false))
+	debug_draw_flags = _default_debug_draw_flags()
+	var saved_debug_draw_flags: Variant = data.get("debug_draw_flags", {})
+	if saved_debug_draw_flags is Dictionary:
+		for category in DEBUG_DRAW_CATEGORIES:
+			debug_draw_flags[category] = bool((saved_debug_draw_flags as Dictionary).get(category, false))
 	runtime_id_counter = int(data.get("runtime_id_counter", 0))
 	world_generation_log.assign(data.get("world_generation_log", []))
 	money_changed.emit(money)
@@ -133,6 +147,21 @@ func restore_state(data: Dictionary) -> void:
 func next_runtime_id(prefix: StringName, layer_id: StringName) -> String:
 	runtime_id_counter += 1
 	return "%s:%s:%d" % [layer_id, prefix, runtime_id_counter]
+
+func is_debug_draw_enabled(category: StringName) -> bool:
+	return bool(debug_draw_flags.get(category, false))
+
+func set_debug_draw_enabled(category: StringName, enabled: bool) -> void:
+	if is_debug_draw_enabled(category) == enabled:
+		return
+	debug_draw_flags[category] = enabled
+	debug_draw_changed.emit(category, enabled)
+
+func _default_debug_draw_flags() -> Dictionary:
+	var flags: Dictionary = {}
+	for category in DEBUG_DRAW_CATEGORIES:
+		flags[category] = false
+	return flags
 
 func capture_meta() -> Dictionary:
 	var known: Array[String] = []

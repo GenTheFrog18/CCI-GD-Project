@@ -81,6 +81,7 @@ var _patrol_timer := 0.0
 var _patrol_hover := false
 var _blocker_remaining := 0.0
 var _blocker_cooldown_remaining := 0.0
+var _debug_was_visible := false
 var _finishing_attack_animation := false
 var _surround_sight: SightSensor
 var _surround_sight_active := false
@@ -115,7 +116,10 @@ func _physics_process(delta: float) -> void:
 	if not _process_committed(delta): _process_request(delta)
 	if not velocity.is_zero_approx(): sight.facing = velocity.normalized()
 	_update_visual()
-	if GameSession.debug_gameplay_draw: queue_redraw()
+	var debug_visible := GameSession.is_debug_draw_enabled(&"enemy_labels") or GameSession.is_debug_draw_enabled(&"combat_hitboxes")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
+		queue_redraw()
 
 func _process_committed(delta: float) -> bool:
 	match state:
@@ -564,11 +568,14 @@ func _update_visual() -> void:
 		visual.play(&"idle")
 
 func _draw() -> void:
-	if not GameSession.debug_gameplay_draw:
+	var show_labels := GameSession.is_debug_draw_enabled(&"enemy_labels")
+	var show_hitbox := GameSession.is_debug_draw_enabled(&"combat_hitboxes")
+	if not show_labels and not show_hitbox:
 		return
 	var state_names := ["ROAM", "POI_PATROL", "POI_IDLE", "INVESTIGATE", "CHASE", "ATTACK_SETUP", "DIVE", "RECOVER", "RECOVERY_TRAVEL", "COOLDOWN_PATROL", "SEARCH", "BLOCKER_POI", "DISABLED_FLIGHT"]
-	draw_string(ThemeDB.fallback_font, Vector2(-96.0, -72.0), "State: %s" % state_names[state], HORIZONTAL_ALIGNMENT_CENTER, 192.0, 12, Color(1.0, 0.9, 0.35, 1.0))
-	if body_collision == null or body_collision.shape == null:
+	if show_labels:
+		draw_string(ThemeDB.fallback_font, Vector2(-96.0, -72.0), "State: %s" % state_names[state], HORIZONTAL_ALIGNMENT_CENTER, 192.0, 12, Color(1.0, 0.9, 0.35, 1.0))
+	if not show_hitbox or body_collision == null or body_collision.shape == null:
 		return
 	draw_set_transform(body_collision.position, body_collision.rotation, body_collision.scale)
 	if body_collision.shape is RectangleShape2D:

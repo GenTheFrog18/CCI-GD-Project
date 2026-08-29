@@ -16,6 +16,7 @@ var timer := 0.0
 var stability := 100.0
 var aim_direction := Vector2.RIGHT
 var _visual: Sprite2D
+var _debug_was_visible := false
 @onready var blocking_hitbox: CollisionPolygon2D = $BlockingArea/BlockHitbox
 
 func configure(item: ItemDefinition, state: Dictionary, actor: Node2D, relic_kind: StringName, values: Dictionary) -> void:
@@ -51,7 +52,10 @@ func _process(delta: float) -> void:
 	if _visual != null:
 		_visual.flip_v = kind != &"plate_umbrella" and aim_direction.x < 0.0
 	source_actor._set_facing(signf(aim_direction.x) if not is_zero_approx(aim_direction.x) else source_actor.facing_direction)
-	queue_redraw()
+	var debug_visible := GameSession.is_debug_draw_enabled(&"item_debug")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
+		queue_redraw()
 	if kind != &"plate_umbrella":
 		return
 	timer = maxf(0.0, timer - delta)
@@ -204,7 +208,7 @@ func _is_blocking_direction(incoming: Vector2) -> bool:
 	return aim_direction.dot(incoming) >= cos(deg_to_rad(float(settings.block_arc_degrees) * 0.5))
 
 func _draw() -> void:
-	if not GameSession.debug_gameplay_draw or kind != &"plate_umbrella" or blocking_hitbox == null or blocking_hitbox.polygon.size() < 3:
+	if not GameSession.is_debug_draw_enabled(&"item_debug") or kind != &"plate_umbrella" or blocking_hitbox == null or blocking_hitbox.polygon.size() < 3:
 		return
 	var color := Color(0.2, 1.0, 0.35, 0.22) if umbrella_state == UmbrellaState.OPEN else Color(1.0, 0.75, 0.2, 0.18)
 	draw_colored_polygon(blocking_hitbox.polygon, color)

@@ -14,6 +14,7 @@ var _recovery_remaining := 0.18
 var _recovery_duration := 0.18
 var _enemy_recovery_seconds := 0.5
 var _resolved := false
+var _debug_was_visible := false
 
 @onready var visual: Sprite2D = $Visual
 @onready var hit_shape: CollisionShape2D = $CollisionShape2D
@@ -52,7 +53,10 @@ func _ready() -> void:
 	monitoring = true
 
 func _physics_process(delta: float) -> void:
-	queue_redraw()
+	var debug_visible := GameSession.is_debug_draw_enabled(&"combat_hitboxes")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
+		queue_redraw()
 	if not _resolved:
 		_resolved = true
 		_resolve_hit()
@@ -133,7 +137,7 @@ func _target_priority(target: Node) -> int:
 	return 3
 
 func _draw() -> void:
-	if not GameSession.debug_gameplay_draw or hit_shape == null or hit_shape.shape is not RectangleShape2D:
+	if not GameSession.is_debug_draw_enabled(&"combat_hitboxes") or hit_shape == null or hit_shape.shape is not RectangleShape2D:
 		return
 	var size := (hit_shape.shape as RectangleShape2D).size
 	draw_rect(Rect2(hit_shape.position - size * 0.5, size), Color(1.0, 0.2, 0.2, 0.75), false, 1.0)

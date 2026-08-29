@@ -33,8 +33,9 @@ func _process(delta: float) -> void:
 			_editor_preview_remaining = 0.25
 			queue_redraw()
 		return
-	if GameSession.debug_gameplay_draw or _debug_was_visible:
-		_debug_was_visible = GameSession.debug_gameplay_draw
+	var debug_visible := GameSession.is_debug_draw_enabled(&"sight_ranges")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
 		queue_redraw()
 	_scan_remaining -= delta
 	if _scan_remaining > 0.0:
@@ -110,7 +111,7 @@ func _draw() -> void:
 	if Engine.is_editor_hint():
 		if not show_editor_preview:
 			return
-	elif not GameSession.debug_gameplay_draw:
+	elif not GameSession.is_debug_draw_enabled(&"sight_ranges"):
 		return
 	var sight_range := aggravated_range if aggravated else normal_range
 	var angle := aggravated_angle_degrees if aggravated else normal_angle_degrees

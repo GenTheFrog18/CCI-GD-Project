@@ -32,8 +32,9 @@ func _process(delta: float) -> void:
 			_editor_preview_remaining = 0.25
 			queue_redraw()
 		return
-	if GameSession.debug_gameplay_draw or _debug_was_visible:
-		_debug_was_visible = GameSession.debug_gameplay_draw
+	var debug_visible := GameSession.is_debug_draw_enabled(&"sound_ranges")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
 		queue_redraw()
 	if current_event == null:
 		return
@@ -110,5 +111,5 @@ func _draw() -> void:
 			draw_circle(Vector2.ZERO, hearing_radius, Color(0.3, 0.75, 1.0, 0.08))
 			draw_arc(Vector2.ZERO, hearing_radius, 0.0, TAU, 48, Color(0.3, 0.75, 1.0, 0.75), 1.0)
 		return
-	if GameSession.debug_gameplay_draw and current_event != null:
+	if GameSession.is_debug_draw_enabled(&"sound_ranges") and current_event != null:
 		draw_arc(to_local(current_event.position), minf(current_event.radius, hearing_radius), 0.0, TAU, 48, Color(0.3, 0.75, 1.0, 0.55), 1.0)

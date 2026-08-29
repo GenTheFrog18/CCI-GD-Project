@@ -17,6 +17,7 @@ var rest_anchor_y := 0.0
 var rest_elapsed := 0.0
 var grace_remaining := 0.0
 var _layer2_roll_remaining := 1.0
+var _debug_was_visible := false
 
 func setup(owner_player: PlayerController) -> void:
 	player = owner_player
@@ -42,7 +43,9 @@ func _physics_process(delta: float) -> void:
 			crossed_band += 1
 			if _cross_threshold(layer): break
 	_update_layer2_stop(delta)
-	if GameSession.debug_gameplay_draw:
+	var debug_visible := GameSession.is_debug_draw_enabled(&"player_debug")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
 		player.queue_redraw()
 
 func _update_rest(delta: float) -> void:

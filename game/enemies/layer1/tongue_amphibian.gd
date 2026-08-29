@@ -40,6 +40,7 @@ var _target: Node2D
 var _timer := 0.0
 var _jump_timer := 0.0
 var _theft_cooldown := 0.0
+var _debug_was_visible := false
 var _roam_target := Vector2.ZERO
 var _has_roam_target := false
 var _facing_direction := 1.0
@@ -134,7 +135,9 @@ func _physics_process(delta: float) -> void:
 	_update_roam_stuck(delta, desired, horizontal_position)
 	_update_visual(grounded)
 	sight.facing = Vector2(_facing_direction, 0.0)
-	if GameSession.debug_gameplay_draw:
+	var debug_visible := GameSession.is_debug_draw_enabled(&"combat_hitboxes")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
 		queue_redraw()
 
 func _nearest_loose_item() -> Node2D:
@@ -335,7 +338,7 @@ func restore_state(data: Dictionary) -> void:
 		_has_roam_target = false
 
 func _draw() -> void:
-	if not GameSession.debug_gameplay_draw:
+	if not GameSession.is_debug_draw_enabled(&"combat_hitboxes"):
 		return
 	var direction := _tongue_direction()
 	var angle := direction.angle()

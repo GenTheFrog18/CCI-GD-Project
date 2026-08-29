@@ -67,14 +67,14 @@ func _process(delta: float) -> void:
 	if _label_refresh_elapsed < 0.25:
 		return
 	_label_refresh_elapsed = 0.0
-	if GameSession.debug_gameplay_draw or not status.active.is_empty() or (effect_label != null and effect_label.visible):
+	if GameSession.is_debug_draw_enabled(&"enemy_labels") or not status.active.is_empty() or (effect_label != null and effect_label.visible):
 		_refresh_effect_label()
 
 func _refresh_effect_label() -> void:
 	if effect_label == null or status == null:
 		return
 	var lines := PackedStringArray()
-	if GameSession.debug_gameplay_draw:
+	if GameSession.is_debug_draw_enabled(&"enemy_labels"):
 		lines.append("%d/%d" % [int(health.health), int(health.max_health)])
 	for id: StringName in status.active:
 		var definition := ContentCatalog.get_effect(id)

@@ -37,6 +37,7 @@ var _pending_reason: StringName
 var _last_failure_reason: StringName
 var _air_elapsed := 0.0
 var _launch_elapsed := 0.0
+var _debug_was_visible := false
 
 func _ready() -> void:
 	body = get_parent() as CharacterBody2D
@@ -302,11 +303,13 @@ func _set_action(action: StringName) -> void:
 		body.call("on_ground_traversal_action", action)
 
 func _process(_delta: float) -> void:
-	if GameSession.debug_gameplay_draw:
+	var debug_visible := GameSession.is_debug_draw_enabled(&"pathfinding")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
 		queue_redraw()
 
 func _draw() -> void:
-	if not GameSession.debug_gameplay_draw or cache == null:
+	if not GameSession.is_debug_draw_enabled(&"pathfinding") or cache == null:
 		return
 	for index in range(_route_index, _route.size()):
 		var link := _route[index]

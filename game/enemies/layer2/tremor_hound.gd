@@ -64,6 +64,7 @@ var _investigation := Vector2.ZERO
 var _retaliation_target: Node2D
 var _current_event: Dictionary = {}
 var _sound_queue: Array[Dictionary] = []
+var _debug_was_visible := false
 var _state_timer := 0.0
 var _roam_timer := 0.0
 var _pause_timer := 0.0
@@ -144,7 +145,9 @@ func _physics_process(delta: float) -> void:
 		State.SPAWN:
 			_enter_roam()
 	_update_facing()
-	if GameSession.debug_gameplay_draw:
+	var debug_visible := GameSession.is_debug_draw_enabled(&"sight_ranges") or GameSession.is_debug_draw_enabled(&"sound_ranges") or GameSession.is_debug_draw_enabled(&"combat_hitboxes") or GameSession.is_debug_draw_enabled(&"enemy_labels")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
 		queue_redraw()
 
 func _process_roam(delta: float) -> void:
@@ -803,11 +806,17 @@ func _set_pounce_hitbox(active: bool) -> void:
 	pounce_shape.set_deferred("disabled", not active)
 
 func _draw() -> void:
-	if not GameSession.debug_gameplay_draw:
+	var show_sight := GameSession.is_debug_draw_enabled(&"sight_ranges")
+	var show_sound := GameSession.is_debug_draw_enabled(&"sound_ranges")
+	var show_hitboxes := GameSession.is_debug_draw_enabled(&"combat_hitboxes")
+	var show_labels := GameSession.is_debug_draw_enabled(&"enemy_labels")
+	if not show_sight and not show_sound and not show_hitboxes and not show_labels:
 		return
-	draw_arc(Vector2.ZERO, proximity_detection_radius, 0.0, TAU, 32, Color(1.0, 0.3, 0.2, 0.8), 1.0)
-	draw_arc(Vector2.ZERO, hearing_radius, 0.0, TAU, 64, Color(0.3, 0.75, 1.0, 0.25), 1.0)
-	if state in [State.INVESTIGATE, State.SEARCH]:
+	if show_sight:
+		draw_arc(Vector2.ZERO, proximity_detection_radius, 0.0, TAU, 32, Color(1.0, 0.3, 0.2, 0.8), 1.0)
+	if show_sound:
+		draw_arc(Vector2.ZERO, hearing_radius, 0.0, TAU, 64, Color(0.3, 0.75, 1.0, 0.25), 1.0)
+	if show_labels and state in [State.INVESTIGATE, State.SEARCH]:
 		var sound_center: Vector2 = _search_center if state == State.SEARCH else _last_known_position
 		var center := to_local(sound_center)
 		draw_circle(center, 6.0, Color(1.0, 0.75, 0.2, 0.9), false, 2.0)
@@ -815,7 +824,8 @@ func _draw() -> void:
 		draw_line(center - Vector2(0.0, 9.0), center + Vector2(0.0, 9.0), Color(1.0, 0.75, 0.2, 0.9), 1.0)
 		draw_line(Vector2.ZERO, center, Color(1.0, 0.75, 0.2, 0.25), 1.0)
 		draw_string(ThemeDB.fallback_font, center + Vector2(8.0, -8.0), "sound center", HORIZONTAL_ALIGNMENT_LEFT, -1.0, 10, Color(1.0, 0.85, 0.4, 0.95))
-	if state == State.POUNCE:
+	if show_hitboxes and state == State.POUNCE:
 		draw_circle(to_local(global_position + _pounce_direction * 16.0), 12.0, Color(1.0, 0.2, 0.2, 0.35))
-	var text := "%s  %d/%d  q:%d" % [State.keys()[state], int(support.health.health), int(support.health.max_health), _sound_queue.size()]
-	draw_string(ThemeDB.fallback_font, Vector2(-100.0, -34.0), text, HORIZONTAL_ALIGNMENT_CENTER, 200.0, 10, Color.WHITE)
+	if show_labels:
+		var text := "%s  %d/%d  q:%d" % [State.keys()[state], int(support.health.health), int(support.health.max_health), _sound_queue.size()]
+		draw_string(ThemeDB.fallback_font, Vector2(-100.0, -34.0), text, HORIZONTAL_ALIGNMENT_CENTER, 200.0, 10, Color.WHITE)

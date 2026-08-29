@@ -5,17 +5,20 @@ const RANGE_COLOR := Color(0.95, 0.35, 0.9, 0.8)
 const RANGE_FILL := Color(0.95, 0.35, 0.9, 0.08)
 
 var world_root: Node2D
-var show_ranges := false
 var show_bounds := false
 
-func refresh(root: Node2D, ranges_visible: bool, bounds_visible := false) -> void:
+func refresh(root: Node2D, bounds_visible := false) -> void:
+	var was_visible := show_bounds or GameSession.is_debug_draw_enabled(&"enemy_ranges") or GameSession.is_debug_draw_enabled(&"placer_ranges")
+	var root_changed := world_root != root
+	var bounds_changed := show_bounds != bounds_visible
 	world_root = root
-	show_ranges = ranges_visible
 	show_bounds = bounds_visible
-	queue_redraw()
+	var is_visible := show_bounds or GameSession.is_debug_draw_enabled(&"enemy_ranges") or GameSession.is_debug_draw_enabled(&"placer_ranges")
+	if was_visible or is_visible or root_changed or bounds_changed:
+		queue_redraw()
 
 func _process(_delta: float) -> void:
-	if show_ranges or show_bounds:
+	if show_bounds or GameSession.is_debug_draw_enabled(&"enemy_ranges") or GameSession.is_debug_draw_enabled(&"placer_ranges"):
 		queue_redraw()
 
 func _draw() -> void:
@@ -23,8 +26,9 @@ func _draw() -> void:
 		return
 	if show_bounds and world_root is WorldLayer:
 		_draw_world_bounds(world_root as WorldLayer)
-	if show_ranges:
+	if GameSession.is_debug_draw_enabled(&"enemy_ranges"):
 		_draw_enemy_ranges()
+	if GameSession.is_debug_draw_enabled(&"placer_ranges"):
 		_draw_enemy_placer_ranges()
 
 func _draw_world_bounds(world_layer: WorldLayer) -> void:

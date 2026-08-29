@@ -50,6 +50,7 @@ var terrain_mask := 1
 var raw_samples: Array[SurfaceSample] = []
 var graphs: Dictionary = {}
 var build_count := 0
+var _debug_was_visible := false
 
 func configure(owner_section: WorldSection, spacing: float, collision_mask: int) -> void:
 	section = owner_section
@@ -369,11 +370,13 @@ func _link_key(from_id: int, to_id: int) -> String:
 	return "%d:%d" % [from_id, to_id]
 
 func _process(_delta: float) -> void:
-	if GameSession.debug_gameplay_draw:
+	var debug_visible := GameSession.is_debug_draw_enabled(&"pathfinding")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
 		queue_redraw()
 
 func _draw() -> void:
-	if not GameSession.debug_gameplay_draw:
+	if not GameSession.is_debug_draw_enabled(&"pathfinding"):
 		return
 	for sample: SurfaceSample in raw_samples:
 		draw_circle(to_local(sample.position), 2.0, Color(0.2, 1.0, 0.45, 0.9))

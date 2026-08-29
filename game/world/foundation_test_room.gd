@@ -27,4 +27,4 @@ func _prepare_test_room() -> void:
 
 func _process(_delta: float) -> void:
 	if _debug_draw != null:
-		_debug_draw.refresh(self, GameSession.debug_gameplay_draw)
+		_debug_draw.refresh(self)

@@ -546,5 +546,5 @@ func _set_facing(direction: float) -> void:
 	$HeldItemAnchor/HeldItemIcon.flip_h = facing_direction < 0.0
 
 func _draw() -> void:
-	if GameSession.debug_gameplay_draw and curse_tracker != null:
+	if GameSession.is_debug_draw_enabled(&"player_debug") and curse_tracker != null:
 		draw_line(Vector2(-1000.0, curse_tracker.reference_y - global_position.y), Vector2(1000.0, curse_tracker.reference_y - global_position.y), Color(0.8, 0.2, 0.8, 0.8), 2.0)

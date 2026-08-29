@@ -9,6 +9,7 @@ const PREVIEW_INTERVAL := 1.0 / 30.0
 var player: PlayerController
 var preview: Dictionary = {}
 var _preview_elapsed := PREVIEW_INTERVAL
+var _debug_interaction_was_visible := false
 
 func _ready() -> void:
 	player = get_parent() as PlayerController
@@ -25,12 +26,14 @@ func _process(delta: float) -> void:
 		if is_instance_valid(player.interaction_sensor.last_target):
 			target = player.interaction_sensor.last_target
 		next_preview = player.item_controller.get_preview(player, player.get_parent(), cursor, target)
-	if next_preview != preview or GameSession.debug_gameplay_draw:
+	var debug_visible := GameSession.is_debug_draw_enabled(&"interaction_ranges")
+	if next_preview != preview or debug_visible != _debug_interaction_was_visible:
 		preview = next_preview
+		_debug_interaction_was_visible = debug_visible
 		queue_redraw()
 
 func _draw() -> void:
-	if GameSession.debug_gameplay_draw and player != null:
+	if GameSession.is_debug_draw_enabled(&"interaction_ranges") and player != null:
 		var origin := to_local(player.interaction_sensor.last_query_origin)
 		var end := to_local(player.interaction_sensor.last_query_point)
 		var direction := end - origin

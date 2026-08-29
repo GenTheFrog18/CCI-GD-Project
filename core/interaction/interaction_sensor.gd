@@ -13,18 +13,28 @@ extends Node2D
 var last_query_point := Vector2.ZERO
 var last_query_origin := Vector2.ZERO
 var last_target: Node
+var _debug_was_visible := false
 var _editor_preview_remaining := 0.0
 
 func _process(delta: float) -> void:
-	if not Engine.is_editor_hint() or not show_editor_preview:
+	if Engine.is_editor_hint():
+		if not show_editor_preview:
+			return
+		_editor_preview_remaining -= delta
+		if _editor_preview_remaining <= 0.0:
+			_editor_preview_remaining = 0.25
+			queue_redraw()
 		return
-	_editor_preview_remaining -= delta
-	if _editor_preview_remaining <= 0.0:
-		_editor_preview_remaining = 0.25
+	var debug_visible := GameSession.is_debug_draw_enabled(&"interaction_ranges")
+	if debug_visible or _debug_was_visible:
+		_debug_was_visible = debug_visible
 		queue_redraw()
 
 func _draw() -> void:
-	if not Engine.is_editor_hint() or not show_editor_preview:
+	if Engine.is_editor_hint():
+		if not show_editor_preview:
+			return
+	elif not GameSession.is_debug_draw_enabled(&"interaction_ranges"):
 		return
 	var half_width := maxf(query_width, 1.0) * 0.5
 	var reach := maxf(maximum_reach, 0.0)
